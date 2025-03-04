@@ -1565,7 +1565,7 @@ pub struct CallExpressionKw {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabeledArg {
-    pub label: Identifier,
+    pub label: Node<Identifier>,
     pub arg: Expr,
 }
 
@@ -1663,8 +1663,11 @@ impl CallExpressionKw {
     }
 
     /// Iterate over all arguments (labeled or not)
-    pub fn iter_arguments(&self) -> impl Iterator<Item = &Expr> {
-        self.unlabeled.iter().chain(self.arguments.iter().map(|arg| &arg.arg))
+    pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
+        self.unlabeled
+            .iter()
+            .map(|e| (None, e))
+            .chain(self.arguments.iter().map(|arg| (Some(&arg.label), &arg.arg)))
     }
 
     /// Is at least one argument the '%' i.e. the substitution operator?

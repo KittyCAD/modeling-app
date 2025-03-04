@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing kittycad_svg.kcl
 ---
 {
@@ -93,8 +93,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 78,
+                      "name": "endAbsolute",
+                      "start": 67,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -152,8 +154,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 134,
+                      "name": "endAbsolute",
+                      "start": 123,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -211,8 +215,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 197,
+                      "name": "endAbsolute",
+                      "start": 186,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -270,8 +276,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 262,
+                      "name": "endAbsolute",
+                      "start": 251,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -329,8 +337,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 326,
+                      "name": "endAbsolute",
+                      "start": 315,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -388,8 +398,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 389,
+                      "name": "endAbsolute",
+                      "start": 378,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -447,8 +459,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 449,
+                      "name": "endAbsolute",
+                      "start": 438,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -506,8 +520,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 514,
+                      "name": "endAbsolute",
+                      "start": 503,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -565,8 +581,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 577,
+                      "name": "endAbsolute",
+                      "start": 566,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -624,8 +642,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 642,
+                      "name": "endAbsolute",
+                      "start": 631,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -683,8 +703,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 705,
+                      "name": "endAbsolute",
+                      "start": 694,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -742,8 +764,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 770,
+                      "name": "endAbsolute",
+                      "start": 759,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -801,8 +825,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 832,
+                      "name": "endAbsolute",
+                      "start": 821,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -860,8 +886,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 896,
+                      "name": "endAbsolute",
+                      "start": 885,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -919,8 +947,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 959,
+                      "name": "endAbsolute",
+                      "start": 948,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -978,8 +1008,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1025,
+                      "name": "endAbsolute",
+                      "start": 1014,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1037,8 +1069,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1088,
+                      "name": "endAbsolute",
+                      "start": 1077,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1096,8 +1130,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1153,
+                      "name": "endAbsolute",
+                      "start": 1142,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1155,8 +1191,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1218,
+                      "name": "endAbsolute",
+                      "start": 1207,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1214,8 +1252,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1284,
+                      "name": "endAbsolute",
+                      "start": 1273,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1273,8 +1313,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1349,
+                      "name": "endAbsolute",
+                      "start": 1338,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1332,8 +1374,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1415,
+                      "name": "endAbsolute",
+                      "start": 1404,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1391,8 +1435,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1479,
+                      "name": "endAbsolute",
+                      "start": 1468,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1450,8 +1496,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1542,
+                      "name": "endAbsolute",
+                      "start": 1531,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1509,8 +1557,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1605,
+                      "name": "endAbsolute",
+                      "start": 1594,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1568,8 +1618,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1672,
+                      "name": "endAbsolute",
+                      "start": 1661,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1627,8 +1679,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1737,
+                      "name": "endAbsolute",
+                      "start": 1726,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1686,8 +1740,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1803,
+                      "name": "endAbsolute",
+                      "start": 1792,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1745,8 +1801,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1869,
+                      "name": "endAbsolute",
+                      "start": 1858,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1804,8 +1862,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1936,
+                      "name": "endAbsolute",
+                      "start": 1925,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1863,8 +1923,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2002,
+                      "name": "endAbsolute",
+                      "start": 1991,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1922,8 +1984,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2068,
+                      "name": "endAbsolute",
+                      "start": 2057,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1981,8 +2045,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2133,
+                      "name": "endAbsolute",
+                      "start": 2122,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2040,8 +2106,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2200,
+                      "name": "endAbsolute",
+                      "start": 2189,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2099,8 +2167,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2265,
+                      "name": "endAbsolute",
+                      "start": 2254,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2158,8 +2228,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2331,
+                      "name": "endAbsolute",
+                      "start": 2320,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2217,8 +2289,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2395,
+                      "name": "endAbsolute",
+                      "start": 2384,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2276,8 +2350,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2460,
+                      "name": "endAbsolute",
+                      "start": 2449,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2335,8 +2411,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2524,
+                      "name": "endAbsolute",
+                      "start": 2513,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2394,8 +2472,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2590,
+                      "name": "endAbsolute",
+                      "start": 2579,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2453,8 +2533,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2655,
+                      "name": "endAbsolute",
+                      "start": 2644,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2512,8 +2594,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2720,
+                      "name": "endAbsolute",
+                      "start": 2709,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2571,8 +2655,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2784,
+                      "name": "endAbsolute",
+                      "start": 2773,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2630,8 +2716,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2850,
+                      "name": "endAbsolute",
+                      "start": 2839,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2689,8 +2777,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2915,
+                      "name": "endAbsolute",
+                      "start": 2904,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2748,8 +2838,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2975,
+                      "name": "endAbsolute",
+                      "start": 2964,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2807,8 +2899,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3044,
+                      "name": "endAbsolute",
+                      "start": 3033,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2866,8 +2960,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3110,
+                      "name": "endAbsolute",
+                      "start": 3099,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2925,8 +3021,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3174,
+                      "name": "endAbsolute",
+                      "start": 3163,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2984,8 +3082,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3240,
+                      "name": "endAbsolute",
+                      "start": 3229,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3043,8 +3143,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3306,
+                      "name": "endAbsolute",
+                      "start": 3295,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3102,8 +3204,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3373,
+                      "name": "endAbsolute",
+                      "start": 3362,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3161,8 +3265,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3456,
+                      "name": "endAbsolute",
+                      "start": 3445,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3220,8 +3326,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3512,
+                      "name": "endAbsolute",
+                      "start": 3501,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3279,8 +3387,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3577,
+                      "name": "endAbsolute",
+                      "start": 3566,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3338,8 +3448,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3644,
+                      "name": "endAbsolute",
+                      "start": 3633,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3397,8 +3509,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3710,
+                      "name": "endAbsolute",
+                      "start": 3699,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3456,8 +3570,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3766,
+                      "name": "endAbsolute",
+                      "start": 3755,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3515,8 +3631,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3831,
+                      "name": "endAbsolute",
+                      "start": 3820,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3574,8 +3692,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3897,
+                      "name": "endAbsolute",
+                      "start": 3886,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3633,8 +3753,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3962,
+                      "name": "endAbsolute",
+                      "start": 3951,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3692,8 +3814,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4018,
+                      "name": "endAbsolute",
+                      "start": 4007,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3751,8 +3875,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4083,
+                      "name": "endAbsolute",
+                      "start": 4072,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3810,8 +3936,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4149,
+                      "name": "endAbsolute",
+                      "start": 4138,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3869,8 +3997,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4214,
+                      "name": "endAbsolute",
+                      "start": 4203,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3928,8 +4058,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4271,
+                      "name": "endAbsolute",
+                      "start": 4260,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3987,8 +4119,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4337,
+                      "name": "endAbsolute",
+                      "start": 4326,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4046,8 +4180,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4417,
+                      "name": "endAbsolute",
+                      "start": 4406,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4105,8 +4241,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4496,
+                      "name": "endAbsolute",
+                      "start": 4485,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4164,8 +4302,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4552,
+                      "name": "endAbsolute",
+                      "start": 4541,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4223,8 +4363,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4617,
+                      "name": "endAbsolute",
+                      "start": 4606,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4282,8 +4424,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4684,
+                      "name": "endAbsolute",
+                      "start": 4673,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4341,8 +4485,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4750,
+                      "name": "endAbsolute",
+                      "start": 4739,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4400,8 +4546,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4807,
+                      "name": "endAbsolute",
+                      "start": 4796,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4459,8 +4607,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4873,
+                      "name": "endAbsolute",
+                      "start": 4862,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4518,8 +4668,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 4940,
+                      "name": "endAbsolute",
+                      "start": 4929,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4577,8 +4729,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5006,
+                      "name": "endAbsolute",
+                      "start": 4995,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4636,8 +4790,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5063,
+                      "name": "endAbsolute",
+                      "start": 5052,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4695,8 +4851,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5129,
+                      "name": "endAbsolute",
+                      "start": 5118,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4754,8 +4912,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5196,
+                      "name": "endAbsolute",
+                      "start": 5185,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4813,8 +4973,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5262,
+                      "name": "endAbsolute",
+                      "start": 5251,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4872,8 +5034,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5318,
+                      "name": "endAbsolute",
+                      "start": 5307,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4931,8 +5095,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5382,
+                      "name": "endAbsolute",
+                      "start": 5371,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4990,8 +5156,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5448,
+                      "name": "endAbsolute",
+                      "start": 5437,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5049,8 +5217,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5511,
+                      "name": "endAbsolute",
+                      "start": 5500,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5108,8 +5278,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5575,
+                      "name": "endAbsolute",
+                      "start": 5564,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5167,8 +5339,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5638,
+                      "name": "endAbsolute",
+                      "start": 5627,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5226,8 +5400,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5703,
+                      "name": "endAbsolute",
+                      "start": 5692,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5285,8 +5461,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5766,
+                      "name": "endAbsolute",
+                      "start": 5755,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5344,8 +5522,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5831,
+                      "name": "endAbsolute",
+                      "start": 5820,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5403,8 +5583,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5894,
+                      "name": "endAbsolute",
+                      "start": 5883,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5462,8 +5644,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5963,
+                      "name": "endAbsolute",
+                      "start": 5952,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5521,8 +5705,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6029,
+                      "name": "endAbsolute",
+                      "start": 6018,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5580,8 +5766,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6094,
+                      "name": "endAbsolute",
+                      "start": 6083,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5639,8 +5827,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6158,
+                      "name": "endAbsolute",
+                      "start": 6147,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5698,8 +5888,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6224,
+                      "name": "endAbsolute",
+                      "start": 6213,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5757,8 +5949,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6288,
+                      "name": "endAbsolute",
+                      "start": 6277,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5816,8 +6010,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6344,
+                      "name": "endAbsolute",
+                      "start": 6333,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5875,8 +6071,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6413,
+                      "name": "endAbsolute",
+                      "start": 6402,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5934,8 +6132,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6481,
+                      "name": "endAbsolute",
+                      "start": 6470,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5993,8 +6193,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6548,
+                      "name": "endAbsolute",
+                      "start": 6537,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6052,8 +6254,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6604,
+                      "name": "endAbsolute",
+                      "start": 6593,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6111,8 +6315,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6670,
+                      "name": "endAbsolute",
+                      "start": 6659,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6170,8 +6376,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6739,
+                      "name": "endAbsolute",
+                      "start": 6728,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6229,8 +6437,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6804,
+                      "name": "endAbsolute",
+                      "start": 6793,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6288,8 +6498,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6871,
+                      "name": "endAbsolute",
+                      "start": 6860,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6347,8 +6559,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6936,
+                      "name": "endAbsolute",
+                      "start": 6925,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6406,8 +6620,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7002,
+                      "name": "endAbsolute",
+                      "start": 6991,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6465,8 +6681,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7068,
+                      "name": "endAbsolute",
+                      "start": 7057,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6524,8 +6742,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7134,
+                      "name": "endAbsolute",
+                      "start": 7123,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6583,8 +6803,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7197,
+                      "name": "endAbsolute",
+                      "start": 7186,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6642,8 +6864,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7262,
+                      "name": "endAbsolute",
+                      "start": 7251,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6701,8 +6925,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7340,
+                      "name": "endAbsolute",
+                      "start": 7329,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6760,8 +6986,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7397,
+                      "name": "endAbsolute",
+                      "start": 7386,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6819,8 +7047,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7463,
+                      "name": "endAbsolute",
+                      "start": 7452,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6878,8 +7108,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7530,
+                      "name": "endAbsolute",
+                      "start": 7519,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6937,8 +7169,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7596,
+                      "name": "endAbsolute",
+                      "start": 7585,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6996,8 +7230,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7663,
+                      "name": "endAbsolute",
+                      "start": 7652,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7055,8 +7291,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7719,
+                      "name": "endAbsolute",
+                      "start": 7708,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7114,8 +7352,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7786,
+                      "name": "endAbsolute",
+                      "start": 7775,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7173,8 +7413,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7852,
+                      "name": "endAbsolute",
+                      "start": 7841,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7232,8 +7474,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 7924,
+                      "name": "endAbsolute",
+                      "start": 7913,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7291,8 +7535,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8003,
+                      "name": "endAbsolute",
+                      "start": 7992,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7350,8 +7596,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8083,
+                      "name": "endAbsolute",
+                      "start": 8072,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7409,8 +7657,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8149,
+                      "name": "endAbsolute",
+                      "start": 8138,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7468,8 +7718,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8216,
+                      "name": "endAbsolute",
+                      "start": 8205,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7527,8 +7779,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8295,
+                      "name": "endAbsolute",
+                      "start": 8284,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7586,8 +7840,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8375,
+                      "name": "endAbsolute",
+                      "start": 8364,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7645,8 +7901,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8439,
+                      "name": "endAbsolute",
+                      "start": 8428,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7704,8 +7962,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8504,
+                      "name": "endAbsolute",
+                      "start": 8493,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7763,8 +8023,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8568,
+                      "name": "endAbsolute",
+                      "start": 8557,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7822,8 +8084,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8634,
+                      "name": "endAbsolute",
+                      "start": 8623,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7881,8 +8145,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8712,
+                      "name": "endAbsolute",
+                      "start": 8701,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7940,8 +8206,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8791,
+                      "name": "endAbsolute",
+                      "start": 8780,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7999,8 +8267,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8856,
+                      "name": "endAbsolute",
+                      "start": 8845,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8058,8 +8328,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8923,
+                      "name": "endAbsolute",
+                      "start": 8912,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8117,8 +8389,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 8988,
+                      "name": "endAbsolute",
+                      "start": 8977,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8176,8 +8450,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9054,
+                      "name": "endAbsolute",
+                      "start": 9043,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8235,8 +8511,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9109,
+                      "name": "endAbsolute",
+                      "start": 9098,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8294,8 +8572,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9173,
+                      "name": "endAbsolute",
+                      "start": 9162,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8353,8 +8633,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9239,
+                      "name": "endAbsolute",
+                      "start": 9228,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8412,8 +8694,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9302,
+                      "name": "endAbsolute",
+                      "start": 9291,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8471,8 +8755,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9366,
+                      "name": "endAbsolute",
+                      "start": 9355,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8530,8 +8816,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9430,
+                      "name": "endAbsolute",
+                      "start": 9419,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8589,8 +8877,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9496,
+                      "name": "endAbsolute",
+                      "start": 9485,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8648,8 +8938,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9561,
+                      "name": "endAbsolute",
+                      "start": 9550,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8707,8 +8999,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9641,
+                      "name": "endAbsolute",
+                      "start": 9630,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8766,8 +9060,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9720,
+                      "name": "endAbsolute",
+                      "start": 9709,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8825,8 +9121,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9785,
+                      "name": "endAbsolute",
+                      "start": 9774,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8884,8 +9182,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9848,
+                      "name": "endAbsolute",
+                      "start": 9837,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -8943,8 +9243,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9903,
+                      "name": "endAbsolute",
+                      "start": 9892,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9002,8 +9304,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 9966,
+                      "name": "endAbsolute",
+                      "start": 9955,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9061,8 +9365,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10030,
+                      "name": "endAbsolute",
+                      "start": 10019,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9120,8 +9426,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10092,
+                      "name": "endAbsolute",
+                      "start": 10081,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9179,8 +9487,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10157,
+                      "name": "endAbsolute",
+                      "start": 10146,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9238,8 +9548,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10220,
+                      "name": "endAbsolute",
+                      "start": 10209,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9297,8 +9609,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10285,
+                      "name": "endAbsolute",
+                      "start": 10274,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9356,8 +9670,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10354,
+                      "name": "endAbsolute",
+                      "start": 10343,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9415,8 +9731,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10425,
+                      "name": "endAbsolute",
+                      "start": 10414,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9474,8 +9792,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10488,
+                      "name": "endAbsolute",
+                      "start": 10477,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9533,8 +9853,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10553,
+                      "name": "endAbsolute",
+                      "start": 10542,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9592,8 +9914,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10616,
+                      "name": "endAbsolute",
+                      "start": 10605,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9651,8 +9975,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10680,
+                      "name": "endAbsolute",
+                      "start": 10669,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9710,8 +10036,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10743,
+                      "name": "endAbsolute",
+                      "start": 10732,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9769,8 +10097,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10808,
+                      "name": "endAbsolute",
+                      "start": 10797,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9828,8 +10158,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10872,
+                      "name": "endAbsolute",
+                      "start": 10861,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9887,8 +10219,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10928,
+                      "name": "endAbsolute",
+                      "start": 10917,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -9946,8 +10280,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 10992,
+                      "name": "endAbsolute",
+                      "start": 10981,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10005,8 +10341,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11058,
+                      "name": "endAbsolute",
+                      "start": 11047,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10064,8 +10402,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11122,
+                      "name": "endAbsolute",
+                      "start": 11111,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10123,8 +10463,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11187,
+                      "name": "endAbsolute",
+                      "start": 11176,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10182,8 +10524,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11250,
+                      "name": "endAbsolute",
+                      "start": 11239,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10241,8 +10585,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11316,
+                      "name": "endAbsolute",
+                      "start": 11305,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10300,8 +10646,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11380,
+                      "name": "endAbsolute",
+                      "start": 11369,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10359,8 +10707,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11446,
+                      "name": "endAbsolute",
+                      "start": 11435,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10418,8 +10768,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11516,
+                      "name": "endAbsolute",
+                      "start": 11505,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10477,8 +10829,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11588,
+                      "name": "endAbsolute",
+                      "start": 11577,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10536,8 +10890,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11652,
+                      "name": "endAbsolute",
+                      "start": 11641,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10595,8 +10951,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11731,
+                      "name": "endAbsolute",
+                      "start": 11720,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10654,8 +11012,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11809,
+                      "name": "endAbsolute",
+                      "start": 11798,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10713,8 +11073,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11874,
+                      "name": "endAbsolute",
+                      "start": 11863,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10772,8 +11134,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11938,
+                      "name": "endAbsolute",
+                      "start": 11927,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10831,8 +11195,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 11994,
+                      "name": "endAbsolute",
+                      "start": 11983,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10890,8 +11256,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12055,
+                      "name": "endAbsolute",
+                      "start": 12044,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -10949,8 +11317,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12131,
+                      "name": "endAbsolute",
+                      "start": 12120,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11008,8 +11378,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12209,
+                      "name": "endAbsolute",
+                      "start": 12198,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11067,8 +11439,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12274,
+                      "name": "endAbsolute",
+                      "start": 12263,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11126,8 +11500,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12338,
+                      "name": "endAbsolute",
+                      "start": 12327,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11185,8 +11561,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12404,
+                      "name": "endAbsolute",
+                      "start": 12393,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11244,8 +11622,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12468,
+                      "name": "endAbsolute",
+                      "start": 12457,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11303,8 +11683,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12533,
+                      "name": "endAbsolute",
+                      "start": 12522,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11362,8 +11744,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12596,
+                      "name": "endAbsolute",
+                      "start": 12585,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11421,8 +11805,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12662,
+                      "name": "endAbsolute",
+                      "start": 12651,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11480,8 +11866,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12726,
+                      "name": "endAbsolute",
+                      "start": 12715,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11539,8 +11927,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12792,
+                      "name": "endAbsolute",
+                      "start": 12781,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11598,8 +11988,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12862,
+                      "name": "endAbsolute",
+                      "start": 12851,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11657,8 +12049,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12934,
+                      "name": "endAbsolute",
+                      "start": 12923,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11716,8 +12110,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 12998,
+                      "name": "endAbsolute",
+                      "start": 12987,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11775,8 +12171,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13064,
+                      "name": "endAbsolute",
+                      "start": 13053,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11834,8 +12232,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13128,
+                      "name": "endAbsolute",
+                      "start": 13117,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11893,8 +12293,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13193,
+                      "name": "endAbsolute",
+                      "start": 13182,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -11952,8 +12354,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13256,
+                      "name": "endAbsolute",
+                      "start": 13245,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12011,8 +12415,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13322,
+                      "name": "endAbsolute",
+                      "start": 13311,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12070,8 +12476,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13386,
+                      "name": "endAbsolute",
+                      "start": 13375,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12129,8 +12537,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13451,
+                      "name": "endAbsolute",
+                      "start": 13440,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12188,8 +12598,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13514,
+                      "name": "endAbsolute",
+                      "start": 13503,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12247,8 +12659,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13569,
+                      "name": "endAbsolute",
+                      "start": 13558,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12306,8 +12720,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13629,
+                      "name": "endAbsolute",
+                      "start": 13618,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12365,8 +12781,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13691,
+                      "name": "endAbsolute",
+                      "start": 13680,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12424,8 +12842,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13754,
+                      "name": "endAbsolute",
+                      "start": 13743,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12483,8 +12903,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13818,
+                      "name": "endAbsolute",
+                      "start": 13807,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12542,8 +12964,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13880,
+                      "name": "endAbsolute",
+                      "start": 13869,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12601,8 +13025,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 13945,
+                      "name": "endAbsolute",
+                      "start": 13934,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12660,8 +13086,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14008,
+                      "name": "endAbsolute",
+                      "start": 13997,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12719,8 +13147,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14072,
+                      "name": "endAbsolute",
+                      "start": 14061,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12778,8 +13208,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14134,
+                      "name": "endAbsolute",
+                      "start": 14123,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12837,8 +13269,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14199,
+                      "name": "endAbsolute",
+                      "start": 14188,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12896,8 +13330,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14262,
+                      "name": "endAbsolute",
+                      "start": 14251,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -12955,8 +13391,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14327,
+                      "name": "endAbsolute",
+                      "start": 14316,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13014,8 +13452,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14396,
+                      "name": "endAbsolute",
+                      "start": 14385,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13073,8 +13513,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14467,
+                      "name": "endAbsolute",
+                      "start": 14456,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13132,8 +13574,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14530,
+                      "name": "endAbsolute",
+                      "start": 14519,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13191,8 +13635,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14595,
+                      "name": "endAbsolute",
+                      "start": 14584,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13250,8 +13696,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14658,
+                      "name": "endAbsolute",
+                      "start": 14647,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13309,8 +13757,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14722,
+                      "name": "endAbsolute",
+                      "start": 14711,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13368,8 +13818,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14784,
+                      "name": "endAbsolute",
+                      "start": 14773,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13427,8 +13879,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14849,
+                      "name": "endAbsolute",
+                      "start": 14838,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13486,8 +13940,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14912,
+                      "name": "endAbsolute",
+                      "start": 14901,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13545,8 +14001,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 14976,
+                      "name": "endAbsolute",
+                      "start": 14965,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13604,8 +14062,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15038,
+                      "name": "endAbsolute",
+                      "start": 15027,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13663,8 +14123,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15094,
+                      "name": "endAbsolute",
+                      "start": 15083,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13722,8 +14184,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15158,
+                      "name": "endAbsolute",
+                      "start": 15147,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13781,8 +14245,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15224,
+                      "name": "endAbsolute",
+                      "start": 15213,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13840,8 +14306,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15287,
+                      "name": "endAbsolute",
+                      "start": 15276,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13899,8 +14367,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15352,
+                      "name": "endAbsolute",
+                      "start": 15341,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -13958,8 +14428,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15417,
+                      "name": "endAbsolute",
+                      "start": 15406,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14017,8 +14489,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15496,
+                      "name": "endAbsolute",
+                      "start": 15485,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14076,8 +14550,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15574,
+                      "name": "endAbsolute",
+                      "start": 15563,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14135,8 +14611,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15629,
+                      "name": "endAbsolute",
+                      "start": 15618,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14194,8 +14672,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15691,
+                      "name": "endAbsolute",
+                      "start": 15680,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14253,8 +14733,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15755,
+                      "name": "endAbsolute",
+                      "start": 15744,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14312,8 +14794,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15818,
+                      "name": "endAbsolute",
+                      "start": 15807,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14371,8 +14855,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15883,
+                      "name": "endAbsolute",
+                      "start": 15872,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14430,8 +14916,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 15946,
+                      "name": "endAbsolute",
+                      "start": 15935,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14489,8 +14977,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16011,
+                      "name": "endAbsolute",
+                      "start": 16000,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14548,8 +15038,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16074,
+                      "name": "endAbsolute",
+                      "start": 16063,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14607,8 +15099,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16130,
+                      "name": "endAbsolute",
+                      "start": 16119,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14666,8 +15160,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16194,
+                      "name": "endAbsolute",
+                      "start": 16183,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14725,8 +15221,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16259,
+                      "name": "endAbsolute",
+                      "start": 16248,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14784,8 +15282,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16321,
+                      "name": "endAbsolute",
+                      "start": 16310,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14843,8 +15343,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16386,
+                      "name": "endAbsolute",
+                      "start": 16375,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14902,8 +15404,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16451,
+                      "name": "endAbsolute",
+                      "start": 16440,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -14961,8 +15465,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16517,
+                      "name": "endAbsolute",
+                      "start": 16506,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15020,8 +15526,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16582,
+                      "name": "endAbsolute",
+                      "start": 16571,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15079,8 +15587,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16637,
+                      "name": "endAbsolute",
+                      "start": 16626,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15138,8 +15648,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16700,
+                      "name": "endAbsolute",
+                      "start": 16689,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15197,8 +15709,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16765,
+                      "name": "endAbsolute",
+                      "start": 16754,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15256,8 +15770,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16828,
+                      "name": "endAbsolute",
+                      "start": 16817,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15315,8 +15831,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16893,
+                      "name": "endAbsolute",
+                      "start": 16882,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15374,8 +15892,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 16955,
+                      "name": "endAbsolute",
+                      "start": 16944,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15433,8 +15953,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17018,
+                      "name": "endAbsolute",
+                      "start": 17007,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15492,8 +16014,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17081,
+                      "name": "endAbsolute",
+                      "start": 17070,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15551,8 +16075,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17134,
+                      "name": "endAbsolute",
+                      "start": 17123,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15610,8 +16136,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17198,
+                      "name": "endAbsolute",
+                      "start": 17187,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15669,8 +16197,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17262,
+                      "name": "endAbsolute",
+                      "start": 17251,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15728,8 +16258,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17328,
+                      "name": "endAbsolute",
+                      "start": 17317,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15787,8 +16319,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17392,
+                      "name": "endAbsolute",
+                      "start": 17381,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15846,8 +16380,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17457,
+                      "name": "endAbsolute",
+                      "start": 17446,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15905,8 +16441,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17520,
+                      "name": "endAbsolute",
+                      "start": 17509,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -15964,8 +16502,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17584,
+                      "name": "endAbsolute",
+                      "start": 17573,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16023,8 +16563,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17639,
+                      "name": "endAbsolute",
+                      "start": 17628,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16082,8 +16624,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17703,
+                      "name": "endAbsolute",
+                      "start": 17692,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16141,8 +16685,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17766,
+                      "name": "endAbsolute",
+                      "start": 17755,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16200,8 +16746,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17832,
+                      "name": "endAbsolute",
+                      "start": 17821,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16259,8 +16807,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17896,
+                      "name": "endAbsolute",
+                      "start": 17885,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16318,8 +16868,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 17962,
+                      "name": "endAbsolute",
+                      "start": 17951,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16377,8 +16929,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 18026,
+                      "name": "endAbsolute",
+                      "start": 18015,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16436,8 +16990,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 18092,
+                      "name": "endAbsolute",
+                      "start": 18081,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16495,8 +17051,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 18149,
+                      "name": "endAbsolute",
+                      "start": 18138,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16554,8 +17112,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 18216,
+                      "name": "endAbsolute",
+                      "start": 18205,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16613,8 +17173,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 18282,
+                      "name": "endAbsolute",
+                      "start": 18271,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -16692,8 +17254,10 @@ description: Result of parsing kittycad_svg.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 18361,
+                      "name": "length",
+                      "start": 18355,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 18365,

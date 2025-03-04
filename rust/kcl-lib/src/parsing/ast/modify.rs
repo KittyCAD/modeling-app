@@ -225,10 +225,10 @@ fn create_start_sketch_on(
         "line",
         None,
         vec![LabeledArg {
-            label: super::types::Identifier {
+            label: Node::no_src(super::types::Identifier {
                 name: "end".to_owned(),
                 digest: None,
-            },
+            }),
             arg: expr,
         }],
     )?;
@@ -264,10 +264,10 @@ fn create_start_sketch_on(
             None,
             vec![LabeledArg {
                 arg: expr,
-                label: Identifier {
+                label: Node::no_src(Identifier {
                     name: "end".to_owned(),
                     digest: None,
-                },
+                }),
             }],
         )?;
         pipe_body.push(line.into());

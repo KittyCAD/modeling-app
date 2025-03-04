@@ -42,10 +42,7 @@ use crate::{
     docs::kcl_doc::DocData,
     errors::Suggestion,
     exec::KclValue,
-    execution::{
-        cache::{self, OldAstState},
-        kcl_value::FunctionSource,
-    },
+    execution::{cache, kcl_value::FunctionSource},
     lsp::{
         backend::Backend as _,
         kcl::hover::{Hover, HoverOpts},
@@ -109,6 +106,8 @@ pub struct Backend {
     pub stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
+    /// For all KwArg functions in std, a map from their arg names to arg help snippets (markdown format).
+    pub stdlib_args: HashMap<String, HashMap<String, String>>,
     /// Token maps.
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
@@ -178,12 +177,14 @@ impl Backend {
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
         let stdlib_completions = get_completions_from_stdlib(&stdlib, &kcl_std).map_err(|e| e.to_string())?;
         let stdlib_signatures = get_signatures_from_stdlib(&stdlib, &kcl_std);
+        let stdlib_args = get_arg_maps_from_stdlib(&stdlib, &kcl_std);
 
         Ok(Self {
             client,
             fs: Arc::new(fs),
             stdlib_completions,
             stdlib_signatures,
+            stdlib_args,
             zoo_client,
             can_send_telemetry,
             can_execute: Arc::new(RwLock::new(executor_ctx.is_some())),
@@ -1104,6 +1105,29 @@ impl LanguageServer for Backend {
                     range: Some(range),
                 }))
             }
+            Hover::KwArg {
+                name,
+                callee_name,
+                range,
+            } => {
+                // TODO handle user-defined functions too
+
+                let Some(arg_map) = self.stdlib_args.get(&callee_name) else {
+                    return Ok(None);
+                };
+
+                let Some(tip) = arg_map.get(&name) else {
+                    return Ok(None);
+                };
+
+                Ok(Some(LspHover {
+                    contents: HoverContents::Markup(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: tip.clone(),
+                    }),
+                    range: Some(range),
+                }))
+            }
             Hover::Variable {
                 name,
                 ty: Some(ty),
@@ -1521,6 +1545,50 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocDat
     signatures
 }
 
+/// Get signatures from our stdlib.
+pub fn get_arg_maps_from_stdlib(
+    stdlib: &crate::std::StdLib,
+    kcl_std: &[DocData],
+) -> HashMap<String, HashMap<String, String>> {
+    let mut result = HashMap::new();
+    let combined = stdlib.combined();
+
+    for internal_fn in combined.values() {
+        if internal_fn.keyword_arguments() {
+            let arg_map: HashMap<String, String> = internal_fn
+                .args(false)
+                .into_iter()
+                .map(|data| {
+                    let mut tip = "```\n".to_owned();
+                    tip.push_str(&data.name.clone());
+                    if !data.required {
+                        tip.push('?');
+                    }
+                    if !data.type_.is_empty() {
+                        tip.push_str(": ");
+                        tip.push_str(&data.type_);
+                    }
+                    tip.push_str("\n```");
+                    if !data.description.is_empty() {
+                        tip.push_str("\n\n");
+                        tip.push_str(&data.description);
+                    }
+                    (data.name, tip)
+                })
+                .collect();
+            if !arg_map.is_empty() {
+                result.insert(internal_fn.name(), arg_map);
+            }
+        }
+    }
+
+    for _d in kcl_std {
+        // TODO add KCL std fns
+    }
+
+    result
+}
+
 /// Convert a position to a character index from the start of the file.
 fn position_to_char_index(position: Position, code: &str) -> usize {
     // Get the character position from the start of the file.
@@ -1538,15 +1606,9 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
-    let Some(OldAstState { result_env, .. }) = cache::read_old_ast().await else {
-        return None;
-    };
-    let Some(mem) = cache::read_old_memory().await else {
-        return None;
-    };
-    let Ok(value) = mem.get_from(&name, result_env, SourceRange::default()) else {
-        return None;
-    };
+    let result_env = cache::read_old_ast().await?.result_env;
+    let mem = cache::read_old_memory().await?;
+    let value = mem.get_from(name, result_env, SourceRange::default()).ok()?;
 
     Some(f(value))
 }

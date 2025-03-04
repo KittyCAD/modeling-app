@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing helix_ccw.kcl
 ---
 {
@@ -43,8 +43,10 @@ description: Result of parsing helix_ccw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 48,
+                      "name": "center",
+                      "start": 42,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -80,8 +82,10 @@ description: Result of parsing helix_ccw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 65,
+                      "name": "radius",
+                      "start": 59,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 70,
@@ -113,8 +117,10 @@ description: Result of parsing helix_ccw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 91,
+                      "name": "length",
+                      "start": 85,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 96,

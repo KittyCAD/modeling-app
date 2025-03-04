@@ -27,6 +27,11 @@ pub(super) enum Hover {
         ty: Option<String>,
         range: LspRange,
     },
+    KwArg {
+        name: String,
+        callee_name: String,
+        range: LspRange,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -187,7 +192,7 @@ impl CallExpressionKw {
             });
         }
 
-        for (index, arg) in self.iter_arguments().enumerate() {
+        for (index, (label, arg)) in self.iter_arguments().enumerate() {
             let source_range: SourceRange = arg.into();
             if source_range.contains(pos) {
                 return if opts.prefer_sig {
@@ -199,6 +204,16 @@ impl CallExpressionKw {
                 } else {
                     arg.get_hover_value_for_position(pos, code, opts)
                 };
+            }
+
+            if let Some(id) = label {
+                if id.as_source_range().contains(pos) {
+                    return Some(Hover::KwArg {
+                        name: id.name.clone(),
+                        callee_name: self.callee.name.clone(),
+                        range: id.as_source_range().to_lsp_range(code),
+                    });
+                }
             }
         }
 

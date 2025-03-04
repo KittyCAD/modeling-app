@@ -701,8 +701,8 @@ impl KclValue {
             KclValue::TagDeclarator(tag) => Some(format!("${}", tag.name)),
             KclValue::TagIdentifier(tag) => Some(format!("${}", tag.value)),
             // TODO better Array and Object stringification
-            KclValue::Array { .. } => Some(format!("[...]")),
-            KclValue::Object { .. } => Some(format!("{{ ... }}")),
+            KclValue::Array { .. } => Some("[...]".to_owned()),
+            KclValue::Object { .. } => Some("{ ... }".to_owned()),
             KclValue::Module { .. }
             | KclValue::Solid { .. }
             | KclValue::Solids { .. }

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -42,8 +42,10 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "center"
+                    "end": 57,
+                    "name": "center",
+                    "start": 51,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -79,8 +81,10 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "radius"
+                    "end": 73,
+                    "name": "radius",
+                    "start": 67,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 77,
@@ -112,8 +116,10 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "length"
+                    "end": 100,
+                    "name": "length",
+                    "start": 94,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 105,

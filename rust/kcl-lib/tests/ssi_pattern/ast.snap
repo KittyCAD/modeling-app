@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing ssi_pattern.kcl
 ---
 {
@@ -138,8 +138,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 105,
+                      "name": "end",
+                      "start": 102,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -285,8 +287,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 205,
+                      "name": "endAbsolute",
+                      "start": 194,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -340,8 +344,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 249,
+                      "name": "tag",
+                      "start": 246,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 258,
@@ -406,8 +412,10 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 312,
+                  "name": "length",
+                  "start": 306,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 317,
@@ -493,8 +501,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 383,
+                      "name": "center",
+                      "start": 377,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -537,8 +547,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 407,
+                      "name": "radius",
+                      "start": 401,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 413,
@@ -570,8 +582,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 445,
+                      "name": "instances",
+                      "start": 436,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 449,
@@ -588,8 +602,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 459,
+                      "name": "distance",
+                      "start": 451,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 463,
@@ -606,8 +622,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 469,
+                      "name": "axis",
+                      "start": 465,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -658,8 +676,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 563,
+                      "name": "instances",
+                      "start": 554,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 567,
@@ -676,8 +696,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 577,
+                      "name": "distance",
+                      "start": 569,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 581,
@@ -694,8 +716,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 587,
+                      "name": "axis",
+                      "start": 583,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -753,8 +777,10 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 618,
+                      "name": "length",
+                      "start": 612,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {

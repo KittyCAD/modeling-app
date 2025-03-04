@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing helix_simple.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -94,8 +93,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 110,
+                      "name": "end",
+                      "start": 107,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -131,8 +132,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 125,
+                      "name": "tag",
+                      "start": 122,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 136,
@@ -184,8 +187,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "angleStart"
+                  "end": 170,
+                  "name": "angleStart",
+                  "start": 160,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 174,
@@ -202,8 +207,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "ccw"
+                  "end": 181,
+                  "name": "ccw",
+                  "start": 178,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 188,
@@ -217,8 +224,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "revolutions"
+                  "end": 203,
+                  "name": "revolutions",
+                  "start": 192,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 207,
@@ -235,8 +244,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 217,
+                  "name": "length",
+                  "start": 211,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 222,
@@ -253,8 +264,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "radius"
+                  "end": 232,
+                  "name": "radius",
+                  "start": 226,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 236,
@@ -271,8 +284,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 244,
+                  "name": "axis",
+                  "start": 240,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 254,

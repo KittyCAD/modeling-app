@@ -664,7 +664,7 @@ fn normalize_comment_string(s: String) -> Vec<String> {
             // Rust-style comments are intrinsically single-line.
             // We only want to trim a single space character from the start of
             // a line, and only if it's the first character.
-            if s.starts_with(' ') { &s[1..] } else { s }.trim_end().to_owned()
+            s.strip_prefix(' ').unwrap_or(s).trim_end().to_owned()
         })
         .collect()
 }

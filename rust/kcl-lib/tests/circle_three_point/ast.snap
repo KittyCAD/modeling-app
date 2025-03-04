@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing circle_three_point.kcl
 ---
 {
@@ -43,8 +43,10 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "p1"
+                      "end": 56,
+                      "name": "p1",
+                      "start": 54,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -80,8 +82,10 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "p2"
+                      "end": 71,
+                      "name": "p2",
+                      "start": 69,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -117,8 +121,10 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "p3"
+                      "end": 86,
+                      "name": "p3",
+                      "start": 84,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -169,8 +175,10 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 118,
+                      "name": "length",
+                      "start": 112,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 123,
