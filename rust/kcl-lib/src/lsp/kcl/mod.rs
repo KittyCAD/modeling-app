@@ -1247,13 +1247,13 @@ impl LanguageServer for Backend {
         };
 
         let position = position_to_char_index(params.text_document_position.position, current_code);
-        if ast.ast.get_non_code_meta_for_position(position).is_some() {
+        if ast.ast.in_comment(position) {
             // If we are in a code comment we don't want to show completions.
             return Ok(None);
         }
 
         // Get the completion items for the ast.
-        let Ok(variables) = ast.ast.completion_items() else {
+        let Ok(variables) = ast.ast.completion_items(position) else {
             return Ok(Some(CompletionResponse::Array(completions)));
         };
 
