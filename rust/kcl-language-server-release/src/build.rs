@@ -10,7 +10,7 @@ use clap::Parser;
 use flate2::{write::GzEncoder, Compression};
 use time::OffsetDateTime;
 use xshell::{cmd, Shell};
-use zip::{write::FileOptions, ZipWriter};
+use zip::ZipWriter;
 
 /// A subcommand for building and packaging a release.
 #[derive(Parser, Clone, Debug)]
@@ -236,12 +236,12 @@ impl Drop for Patch {
 fn convert_date_time(offset_dt: OffsetDateTime) -> anyhow::Result<zip::DateTime> {
     // Convert to MS-DOS date time format that the zip crate expects
     zip::DateTime::from_date_and_time(
-        (offset_dt.year() as u16).try_into().unwrap_or(1980),
+        offset_dt.year() as u16,
         offset_dt.month() as u8,
-        offset_dt.day() as u8,
-        offset_dt.hour() as u8,
-        offset_dt.minute() as u8,
-        offset_dt.second() as u8,
+        offset_dt.day(),
+        offset_dt.hour(),
+        offset_dt.minute(),
+        offset_dt.second(),
     )
     .map_err(|err| anyhow::anyhow!("Failed to convert date time to MS-DOS format: {}", err))
 }
