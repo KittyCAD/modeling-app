@@ -14,7 +14,7 @@ appearance(
   color: String,
   metalness?: number,
   roughness?: number,
-) -> SolidSet
+): SolidSet
 ```
 
 

@@ -31,7 +31,7 @@ rotate(
   axis?: [number],
   angle?: number,
   global?: bool,
-) -> Solid
+): Solid
 ```
 
 

@@ -12,7 +12,7 @@ Given a list like `[a, b, c]`, and a function like `f`, returns `[f(a), f(b), f(
 map(
   array: [KclValue],
   mapFn: FunctionSource,
-) -> [KclValue]
+): [KclValue]
 ```
 
 

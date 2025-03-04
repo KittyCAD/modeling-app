@@ -9,7 +9,7 @@ Get the opposite edge to the edge given.
 
 
 ```js
-getOppositeEdge(tag: TagIdentifier) -> Uuid
+getOppositeEdge(tag: TagIdentifier): Uuid
 ```
 
 

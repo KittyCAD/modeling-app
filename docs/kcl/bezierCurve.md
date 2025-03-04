@@ -1,19 +1,19 @@
 ---
 title: "bezierCurve"
-excerpt: "Draw a smooth, continuous, curved line segment from the current origin to"
+excerpt: "Draw a smooth, continuous, curved line segment from the current origin to the desired (x, y), using a number of control points to shape the curve's shape."
 layout: manual
 ---
 
-Draw a smooth, continuous, curved line segment from the current origin to
+Draw a smooth, continuous, curved line segment from the current origin to the desired (x, y), using a number of control points to shape the curve's shape.
 
-the desired (x, y), using a number of control points to shape the curve's shape.
+
 
 ```js
 bezierCurve(
   data: BezierData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

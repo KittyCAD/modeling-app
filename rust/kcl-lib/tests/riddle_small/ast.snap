@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing riddle_small.kcl
 ---
 {
@@ -426,8 +426,10 @@ description: Result of parsing riddle_small.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 207,
+                      "name": "end",
+                      "start": 204,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -478,8 +480,10 @@ description: Result of parsing riddle_small.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 231,
+                      "name": "end",
+                      "start": 228,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -537,8 +541,10 @@ description: Result of parsing riddle_small.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 256,
+                      "name": "end",
+                      "start": 253,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -616,8 +622,10 @@ description: Result of parsing riddle_small.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 301,
+                      "name": "length",
+                      "start": 295,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 305,

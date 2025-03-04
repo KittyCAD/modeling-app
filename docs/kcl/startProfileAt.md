@@ -13,7 +13,7 @@ startProfileAt(
   to: [number],
   sketchSurface: SketchSurface,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

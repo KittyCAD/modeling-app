@@ -14,7 +14,7 @@ patternTransform2d(
   instances: integer,
   transform: FunctionSource,
   useOriginal?: bool,
-) -> [Sketch]
+): [Sketch]
 ```
 
 

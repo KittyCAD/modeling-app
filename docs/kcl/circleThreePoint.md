@@ -15,7 +15,7 @@ circleThreePoint(
   p3: [number],
   sketchSurfaceOrGroup: SketchOrSurface,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

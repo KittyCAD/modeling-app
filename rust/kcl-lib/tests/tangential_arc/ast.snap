@@ -92,8 +92,10 @@ description: Result of parsing tangential_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 74,
+                      "name": "end",
+                      "start": 71,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -216,8 +218,10 @@ description: Result of parsing tangential_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 150,
+                      "name": "end",
+                      "start": 147,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -275,8 +279,10 @@ description: Result of parsing tangential_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 182,
+                      "name": "length",
+                      "start": 176,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 187,

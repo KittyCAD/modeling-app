@@ -252,15 +252,29 @@ export const AllSettingsFields = forwardRef(
               {/* This uses a Vite plugin, set in vite.config.ts
                   to inject the version from package.json */}
               App version {APP_VERSION}.{' '}
-              <a
-                onClick={openExternalBrowserIfDesktop(getReleaseUrl())}
-                href={getReleaseUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
+            </p>
+            <div className="flex gap-2 flex-wrap my-4">
+              <ActionButton
+                Element="externalLink"
+                to={getReleaseUrl()}
+                iconStart={{ icon: 'file', className: 'p-1' }}
               >
                 View release on GitHub
-              </a>
-            </p>
+              </ActionButton>
+              <ActionButton
+                Element="button"
+                onClick={() => {
+                  window.electron.appCheckForUpdates().catch(reportRejection)
+                }}
+                iconStart={{
+                  icon: 'refresh',
+                  size: 'sm',
+                  className: 'p-1',
+                }}
+              >
+                Check for updates
+              </ActionButton>
+            </div>
             <p className="max-w-2xl mt-6">
               Don't see the feature you want? Check to see if it's on{' '}
               <a

@@ -502,8 +502,10 @@ description: Result of parsing cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
+                              "end": 255,
+                              "name": "endAbsolute",
+                              "start": 244,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "end": 260,
@@ -531,8 +533,10 @@ description: Result of parsing cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
+                              "end": 285,
+                              "name": "endAbsolute",
+                              "start": 274,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "end": 290,
@@ -560,8 +564,10 @@ description: Result of parsing cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
+                              "end": 315,
+                              "name": "endAbsolute",
+                              "start": 304,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "end": 320,
@@ -589,8 +595,10 @@ description: Result of parsing cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
+                              "end": 345,
+                              "name": "endAbsolute",
+                              "start": 334,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "end": 350,
@@ -631,8 +639,10 @@ description: Result of parsing cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "length"
+                              "end": 388,
+                              "name": "length",
+                              "start": 382,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "end": 401,
@@ -733,8 +743,10 @@ description: Result of parsing cube.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "sideLength"
+                  "end": 430,
+                  "name": "sideLength",
+                  "start": 420,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 435,
@@ -751,8 +763,10 @@ description: Result of parsing cube.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 443,
+                  "name": "center",
+                  "start": 437,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [

@@ -14,7 +14,7 @@ sweep(
   path: SweepPath,
   sectional?: bool,
   tolerance?: number,
-) -> Solid
+): Solid
 ```
 
 

@@ -1,19 +1,19 @@
 ---
 title: "shell"
-excerpt: "Remove volume from a 3-dimensional shape such that a wall of the"
+excerpt: "Remove volume from a 3-dimensional shape such that a wall of the provided thickness remains, taking volume starting at the provided face, leaving it open in that direction."
 layout: manual
 ---
 
-Remove volume from a 3-dimensional shape such that a wall of the
+Remove volume from a 3-dimensional shape such that a wall of the provided thickness remains, taking volume starting at the provided face, leaving it open in that direction.
 
-provided thickness remains, taking volume starting at the provided face, leaving it open in that direction.
+
 
 ```js
 shell(
   solidSet: SolidSet,
   thickness: number,
   faces: [FaceTag],
-) -> SolidSet
+): SolidSet
 ```
 
 

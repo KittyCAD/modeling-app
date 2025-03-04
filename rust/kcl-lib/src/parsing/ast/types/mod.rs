@@ -14,7 +14,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
-    CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
+    CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, SymbolKind,
 };
 
 pub use crate::parsing::ast::types::{
@@ -307,23 +307,6 @@ impl Program {
             return false;
         };
         matches!(last, BodyItem::ExpressionStatement(_))
-    }
-
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        // Check if we are in shebang.
-        if let Some(node) = &self.shebang {
-            if node.contains(pos) {
-                let source_range: SourceRange = node.into();
-                return Some(Hover::Comment {
-                    value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
-                    range: source_range.to_lsp_range(code),
-                });
-            }
-        }
-
-        let value = self.get_expr_for_position(pos)?;
-
-        value.get_hover_value_for_position(pos, code)
     }
 
     /// Returns the body item that includes the given character position.
@@ -798,37 +781,6 @@ impl Expr {
         }
     }
 
-    /// Returns a hover value that includes the given character position.
-    /// This is really recursive so keep that in mind.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        match self {
-            Expr::BinaryExpression(binary_expression) => binary_expression.get_hover_value_for_position(pos, code),
-            Expr::FunctionExpression(function_expression) => {
-                function_expression.get_hover_value_for_position(pos, code)
-            }
-            Expr::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
-            Expr::CallExpressionKw(call_expression) => call_expression.get_hover_value_for_position(pos, code),
-            Expr::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
-            Expr::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
-            Expr::ArrayRangeExpression(array_range) => array_range.get_hover_value_for_position(pos, code),
-            Expr::ObjectExpression(object_expression) => object_expression.get_hover_value_for_position(pos, code),
-            Expr::MemberExpression(member_expression) => member_expression.get_hover_value_for_position(pos, code),
-            Expr::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
-            Expr::IfExpression(expr) => expr.get_hover_value_for_position(pos, code),
-            // TODO: LSP hover information for values/types. https://github.com/KittyCAD/modeling-app/issues/1126
-            Expr::None(_) => None,
-            Expr::Literal(_) => None,
-            Expr::Identifier(_) => None,
-            Expr::TagDeclarator(_) => None,
-            // TODO LSP hover info for tag
-            Expr::LabelledExpression(expr) => expr.expr.get_hover_value_for_position(pos, code),
-            // TODO LSP hover info for type
-            Expr::AscribedExpression(expr) => expr.expr.get_hover_value_for_position(pos, code),
-            // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
-            Expr::PipeSubstitution(_) => None,
-        }
-    }
-
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
@@ -1111,24 +1063,6 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
             BinaryPart::IfExpression(e) => e.end,
-        }
-    }
-
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        match self {
-            BinaryPart::Literal(_literal) => None,
-            BinaryPart::Identifier(_identifier) => None,
-            BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_hover_value_for_position(pos, code)
-            }
-            BinaryPart::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
-            BinaryPart::CallExpressionKw(call_expression) => call_expression.get_hover_value_for_position(pos, code),
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
-            BinaryPart::IfExpression(e) => e.get_hover_value_for_position(pos, code),
-            BinaryPart::MemberExpression(member_expression) => {
-                member_expression.get_hover_value_for_position(pos, code)
-            }
         }
     }
 
@@ -1631,7 +1565,7 @@ pub struct CallExpressionKw {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabeledArg {
-    pub label: Identifier,
+    pub label: Node<Identifier>,
     pub arg: Expr,
 }
 
@@ -1707,30 +1641,6 @@ impl CallExpression {
         }
     }
 
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        let callee_source_range: SourceRange = self.callee.clone().into();
-        if callee_source_range.contains(pos) {
-            return Some(Hover::Function {
-                name: self.callee.name.clone(),
-                range: callee_source_range.to_lsp_range(code),
-            });
-        }
-
-        for (index, arg) in self.arguments.iter().enumerate() {
-            let source_range: SourceRange = arg.into();
-            if source_range.contains(pos) {
-                return Some(Hover::Signature {
-                    name: self.callee.name.clone(),
-                    parameter_index: index as u32,
-                    range: source_range.to_lsp_range(code),
-                });
-            }
-        }
-
-        None
-    }
-
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.callee.rename(old_name, new_name);
@@ -1753,8 +1663,11 @@ impl CallExpressionKw {
     }
 
     /// Iterate over all arguments (labeled or not)
-    pub fn iter_arguments(&self) -> impl Iterator<Item = &Expr> {
-        self.unlabeled.iter().chain(self.arguments.iter().map(|arg| &arg.arg))
+    pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
+        self.unlabeled
+            .iter()
+            .map(|e| (None, e))
+            .chain(self.arguments.iter().map(|arg| (Some(&arg.label), &arg.arg)))
     }
 
     /// Is at least one argument the '%' i.e. the substitution operator?
@@ -1768,30 +1681,6 @@ impl CallExpressionKw {
         for arg in &mut self.arguments {
             arg.arg.replace_value(source_range, new_value.clone());
         }
-    }
-
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        let callee_source_range: SourceRange = self.callee.clone().into();
-        if callee_source_range.contains(pos) {
-            return Some(Hover::Function {
-                name: self.callee.name.clone(),
-                range: callee_source_range.to_lsp_range(code),
-            });
-        }
-
-        for (index, arg) in self.iter_arguments().enumerate() {
-            let source_range: SourceRange = arg.into();
-            if source_range.contains(pos) {
-                return Some(Hover::Signature {
-                    name: self.callee.name.clone(),
-                    parameter_index: index as u32,
-                    range: source_range.to_lsp_range(code),
-                });
-            }
-        }
-
-        None
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2340,18 +2229,6 @@ impl ArrayExpression {
         }
     }
 
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        for element in &self.elements {
-            let element_source_range: SourceRange = element.into();
-            if element_source_range.contains(pos) {
-                return element.get_hover_value_for_position(pos, code);
-            }
-        }
-
-        None
-    }
-
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for element in &mut self.elements {
@@ -2403,18 +2280,6 @@ impl ArrayRangeExpression {
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.start_element.replace_value(source_range, new_value.clone());
         self.end_element.replace_value(source_range, new_value.clone());
-    }
-
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        for element in [&self.start_element, &self.end_element] {
-            let element_source_range: SourceRange = element.into();
-            if element_source_range.contains(pos) {
-                return element.get_hover_value_for_position(pos, code);
-            }
-        }
-
-        None
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2469,18 +2334,6 @@ impl ObjectExpression {
         }
     }
 
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        for property in &self.properties {
-            let property_source_range: SourceRange = property.into();
-            if property_source_range.contains(pos) {
-                return property.get_hover_value_for_position(pos, code);
-            }
-        }
-
-        None
-    }
-
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for property in &mut self.properties {
@@ -2529,16 +2382,6 @@ impl ObjectProperty {
             digest: None,
         })
     }
-
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        let value_source_range: SourceRange = self.value.clone().into();
-        if value_source_range.contains(pos) {
-            return self.value.get_hover_value_for_position(pos, code);
-        }
-
-        None
-    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -2550,16 +2393,6 @@ pub enum MemberObject {
 }
 
 impl MemberObject {
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        match self {
-            MemberObject::MemberExpression(member_expression) => {
-                member_expression.get_hover_value_for_position(pos, code)
-            }
-            MemberObject::Identifier(_identifier) => None,
-        }
-    }
-
     pub fn start(&self) -> usize {
         match self {
             MemberObject::MemberExpression(member_expression) => member_expression.start,
@@ -2647,16 +2480,6 @@ impl Node<MemberExpression> {
 }
 
 impl MemberExpression {
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        let object_source_range: SourceRange = self.object.clone().into();
-        if object_source_range.contains(pos) {
-            return self.object.get_hover_value_for_position(pos, code);
-        }
-
-        None
-    }
-
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match &mut self.object {
@@ -2723,22 +2546,6 @@ impl BinaryExpression {
 
     pub fn precedence(&self) -> u8 {
         self.operator.precedence()
-    }
-
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        let left_source_range: SourceRange = self.left.clone().into();
-        let right_source_range: SourceRange = self.right.clone().into();
-
-        if left_source_range.contains(pos) {
-            return self.left.get_hover_value_for_position(pos, code);
-        }
-
-        if right_source_range.contains(pos) {
-            return self.right.get_hover_value_for_position(pos, code);
-        }
-
-        None
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2902,16 +2709,6 @@ impl UnaryExpression {
         self.argument.get_constraint_level()
     }
 
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        let argument_source_range: SourceRange = self.argument.clone().into();
-        if argument_source_range.contains(pos) {
-            return self.argument.get_hover_value_for_position(pos, code);
-        }
-
-        None
-    }
-
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.argument.rename_identifiers(old_name, new_name);
@@ -2994,18 +2791,6 @@ impl PipeExpression {
         for value in &mut self.body {
             value.replace_value(source_range, new_value.clone());
         }
-    }
-
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        for b in &self.body {
-            let b_source_range: SourceRange = b.into();
-            if b_source_range.contains(pos) {
-                return b.get_hover_value_for_position(pos, code);
-            }
-        }
-
-        None
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -3275,13 +3060,31 @@ impl FunctionExpression {
         self.body.replace_value(source_range, new_value);
     }
 
-    /// Returns a hover value that includes the given character position.
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        if let Some(value) = self.body.get_expr_for_position(pos) {
-            return value.get_hover_value_for_position(pos, code);
+    pub fn signature(&self) -> String {
+        let mut signature = String::new();
+
+        if self.params.is_empty() {
+            signature.push_str("()");
+        } else if self.params.len() == 1 {
+            signature.push('(');
+            signature.push_str(&self.params[0].recast(&FormatOptions::default(), 0));
+            signature.push(')');
+        } else {
+            signature.push('(');
+            for a in &self.params {
+                signature.push_str("\n  ");
+                signature.push_str(&a.recast(&FormatOptions::default(), 0));
+                signature.push(',');
+            }
+            signature.push('\n');
+            signature.push(')');
         }
 
-        None
+        if let Some(ty) = &self.return_type {
+            signature.push_str(&format!(": {ty}"));
+        }
+
+        signature
     }
 
     #[cfg(test)]
@@ -3309,25 +3112,6 @@ pub struct ReturnStatement {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
-}
-
-/// Describes information about a hover.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub enum Hover {
-    Function {
-        name: String,
-        range: LspRange,
-    },
-    Signature {
-        name: String,
-        parameter_index: u32,
-        range: LspRange,
-    },
-    Comment {
-        value: String,
-        range: LspRange,
-    },
 }
 
 /// Format options.

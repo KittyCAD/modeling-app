@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing function_sketch.kcl
 ---
 {
@@ -105,8 +105,10 @@ description: Result of parsing function_sketch.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 96,
+                                "name": "end",
+                                "start": 93,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -153,8 +155,10 @@ description: Result of parsing function_sketch.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 122,
+                                "name": "end",
+                                "start": 119,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -201,8 +205,10 @@ description: Result of parsing function_sketch.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 148,
+                                "name": "end",
+                                "start": 145,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -276,8 +282,10 @@ description: Result of parsing function_sketch.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "length"
+                                "end": 197,
+                                "name": "length",
+                                "start": 191,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 201,

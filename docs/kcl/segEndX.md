@@ -9,7 +9,7 @@ Compute the ending point of the provided line segment along the 'x' axis.
 
 
 ```js
-segEndX(tag: TagIdentifier) -> number
+segEndX(tag: TagIdentifier): number
 ```
 
 

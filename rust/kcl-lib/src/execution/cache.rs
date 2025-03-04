@@ -19,7 +19,7 @@ lazy_static::lazy_static! {
 }
 
 /// Read the old ast memory from the lock.
-pub(super) async fn read_old_ast() -> Option<OldAstState> {
+pub(crate) async fn read_old_ast() -> Option<OldAstState> {
     let old_ast = OLD_AST.read().await;
     old_ast.clone()
 }
@@ -29,7 +29,7 @@ pub(super) async fn write_old_ast(old_state: OldAstState) {
     *old_ast = Some(old_state);
 }
 
-pub(super) async fn read_old_memory() -> Option<ProgramMemory> {
+pub(crate) async fn read_old_memory() -> Option<ProgramMemory> {
     let old_mem = PREV_MEMORY.read().await;
     old_mem.clone()
 }

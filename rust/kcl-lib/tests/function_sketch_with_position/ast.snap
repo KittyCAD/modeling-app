@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing function_sketch_with_position.kcl
 ---
 {
@@ -82,8 +82,10 @@ description: Result of parsing function_sketch_with_position.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 94,
+                                "name": "end",
+                                "start": 91,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -130,8 +132,10 @@ description: Result of parsing function_sketch_with_position.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 120,
+                                "name": "end",
+                                "start": 117,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -178,8 +182,10 @@ description: Result of parsing function_sketch_with_position.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 146,
+                                "name": "end",
+                                "start": 143,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -253,8 +259,10 @@ description: Result of parsing function_sketch_with_position.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "length"
+                                "end": 195,
+                                "name": "length",
+                                "start": 189,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 199,

@@ -13,7 +13,7 @@ translate(
   solid: Solid,
   translate: [number],
   global?: bool,
-) -> Solid
+): Solid
 ```
 
 

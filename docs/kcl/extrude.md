@@ -1,18 +1,18 @@
 ---
 title: "extrude"
-excerpt: "Extend a 2-dimensional sketch through a third dimension in order to"
+excerpt: "Extend a 2-dimensional sketch through a third dimension in order to create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid."
 layout: manual
 ---
 
-Extend a 2-dimensional sketch through a third dimension in order to
+Extend a 2-dimensional sketch through a third dimension in order to create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid.
 
-create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid.
+
 
 ```js
 extrude(
   sketchSet: SketchSet,
   length: number,
-) -> SolidSet
+): SolidSet
 ```
 
 

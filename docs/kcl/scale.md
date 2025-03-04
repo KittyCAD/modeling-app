@@ -15,7 +15,7 @@ scale(
   solid: Solid,
   scale: [number],
   global?: bool,
-) -> Solid
+): Solid
 ```
 
 
