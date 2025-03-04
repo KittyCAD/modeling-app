@@ -31,6 +31,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: 'KittyCAD/kcl-samples'
+          ref: next
           path: kcl-samples-repo
           token: ${{ steps.app-token.outputs.token }}
       - name: Move files to repo work tree
@@ -59,7 +60,7 @@ jobs:
               --body "Updating files from the modeling-app repo" \
               --head "$NEW_BRANCH" \
               --reviewer jtran \
-              --base main || true
+              --base next || true
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
