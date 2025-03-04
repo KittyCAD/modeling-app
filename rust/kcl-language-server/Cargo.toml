@@ -1,0 +1,62 @@
+[package]
+name = "kcl-language-server"
+description = "A language server for KCL."
+authors = ["KittyCAD Inc <kcl@kittycad.io>"]
+version = "0.1.71"
+edition = "2021"
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "kcl-language-server"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0.97"
+clap = { version = "4.5.31", features = ["cargo", "derive", "env", "unicode"] }
+dashmap = "6.1.0"
+kcl-lib = { version = "0.2.45", default-features = false, features = [
+	"cli",
+	"engine",
+	"disable-println",
+] }
+kittycad = {workspace = true}
+lazy_static = "1.5.0"
+log = { version = "0.4.26", features = ["serde"] }
+slog = "2.7.0"
+slog-async = "2.8.0"
+slog-json = "2.6.1"
+slog-term = "2.9.1"
+tracing-subscriber = { version = "0.3.19", features = [
+	"registry",
+	"std",
+	"fmt",
+	"smallvec",
+	"ansi",
+	"tracing-log",
+	"json",
+] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+signal-hook = "0.3.17"
+tokio = { version = "1.43.0", features = ["full"] }
+tower-lsp = { version = "0.20.0", features = ["proposed"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+tower-lsp = { version = "0.20.0", default-features = false, features = [
+	"runtime-agnostic",
+] }
+
+[lints]
+workspace = true
+
+[profile.dev]
+# Disabling debug info speeds up builds a bunch,
+# and we don't rely on it for debugging that much.
+debug = 0
+
+[profile.release]
+incremental = true
+# Set this to 1 or 2 to get more useful backtraces in debugger.
+debug = 0

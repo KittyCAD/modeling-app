@@ -1,0 +1,159 @@
+{
+  "name": "kcl-language-server",
+  "displayName": "KittyCAD Language Server",
+  "description": "KittyCAD language support for Visual Studio Code",
+  "private": true,
+  "icon": "icon.png",
+  "publisher": "kittycad",
+  "homepage": "https://kittycad.io",
+  "license": "MIT",
+  "version": "0.0.0",
+  "releaseTag": null,
+  "keywords": [
+    "language-server",
+    "kittycad",
+    "kcl",
+    "hardware",
+    "cad",
+    "manufacturing"
+  ],
+  "categories": [
+    "Programming Languages"
+  ],
+  "repository": {
+    "url": "https://github.com/kittycad/kcl-lsp.git",
+    "type": "git"
+  },
+  "engines": {
+    "vscode": "^1.97.0"
+  },
+  "enabledApiProposals": [],
+  "activationEvents": [
+    "onLanguage:kcl"
+  ],
+  "main": "./dist/main.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "kcl",
+        "extensions": [
+          ".kcl"
+        ]
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "kcl-language-server",
+      "properties": {
+        "kcl-language-server.server.path": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "scope": "machine-overridable",
+          "default": null,
+          "markdownDescription": "Path to kcl-language-server executable (points to bundled binary by default)."
+        },
+        "kcl-language-server.trace.server": {
+          "type": "string",
+          "scope": "window",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "enumDescriptions": [
+            "No traces",
+            "Error only",
+            "Full log"
+          ],
+          "default": "off",
+          "description": "Trace requests to the kcl-language-server (this is usually overly verbose and not recommended for regular users)."
+        },
+        "kcl-language-server.trace.extension": {
+          "description": "Enable logging of VS Code extensions itself.",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[kcl]": {
+        "editor.semanticHighlighting.enabled": true
+      }
+    },
+    "commands": [
+      {
+        "command": "kcl-language-server.restartServer",
+        "title": "Restart server",
+        "category": "kcl-language-server"
+      },
+      {
+        "command": "kcl-language-server.startServer",
+        "title": "Start server",
+        "category": "kcl-language-server"
+      },
+      {
+        "command": "kcl-language-server.stopServer",
+        "title": "Stop server",
+        "category": "kcl-language-server"
+      },
+      {
+        "command": "kcl-language-server.serverVersion",
+        "title": "Show server version",
+        "category": "kcl-language-server"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "kcl-language-server.restartServer",
+          "when": "inKclProject"
+        },
+        {
+          "command": "kcl-language-server.serverVersion",
+          "when": "inKclProject"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run build-base -- --minify",
+    "deploy": "vsce publish --yarn",
+    "build-base": "esbuild ./client/src/main.ts --bundle --outfile=dist/main.js --external:vscode --format=cjs --platform=node --target=node16",
+    "test-compile": "tsc -p ./",
+    "compile": "cross-env NODE_ENV=production tsc -b",
+    "build": "yarn run build-base -- --sourcemap",
+    "watch": "yarn run build-base -- --sourcemap --watch",
+    "fmt": "prettier --write .",
+    "fmt:check": "prettier --check .",
+    "lint": "eslint -c .eslintrc.js --ext ts ./client",
+    "lint:fix": "yarn run lint -- --fix",
+    "typecheck": "tsc",
+    "pretest": "yarn run typecheck && yarn run build && yarn run lint",
+    "test": "node ./dist/client/src/test/runTest.js",
+    "package": "vsce package -o kcl-language-server.vsix"
+  },
+  "devDependencies": {
+    "@tsconfig/strictest": "^2.0.5",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.13.9",
+    "@types/vscode": "^1.97.0",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^2.30.0",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.25.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.0.2",
+    "glob": "^10.4.3",
+    "mocha": "^11.1.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}
