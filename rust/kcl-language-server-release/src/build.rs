@@ -10,7 +10,7 @@ use clap::Parser;
 use flate2::{write::GzEncoder, Compression};
 use time::OffsetDateTime;
 use xshell::{cmd, Shell};
-use zip::{write::FileOptions, DateTime, ZipWriter};
+use zip::{write::FileOptions, ZipWriter};
 
 /// A subcommand for building and packaging a release.
 #[derive(Parser, Clone, Debug)]
@@ -137,28 +137,18 @@ fn gzip(src_path: &Path, dest_path: &Path) -> anyhow::Result<()> {
 fn zip(src_path: &Path, symbols_path: Option<&PathBuf>, dest_path: &Path) -> anyhow::Result<()> {
     let file = File::create(dest_path)?;
     let mut writer = ZipWriter::new(BufWriter::new(file));
-    writer.start_file(
-        src_path.file_name().unwrap().to_str().unwrap(),
-        FileOptions::default()
-            .last_modified_time(
-                DateTime::try_from(OffsetDateTime::from(std::fs::metadata(src_path)?.modified()?)).unwrap(),
-            )
-            .unix_permissions(0o755)
-            .compression_method(zip::CompressionMethod::Deflated)
-            .compression_level(Some(9)),
-    )?;
+    let file_options = zip::write::SimpleFileOptions::default()
+        .last_modified_time(convert_date_time(OffsetDateTime::from(
+            std::fs::metadata(src_path)?.modified()?,
+        ))?)
+        .unix_permissions(0o755)
+        .compression_method(zip::CompressionMethod::Deflated)
+        .compression_level(Some(9));
+    writer.start_file(src_path.file_name().unwrap().to_str().unwrap(), file_options)?;
     let mut input = io::BufReader::new(File::open(src_path)?);
     io::copy(&mut input, &mut writer)?;
     if let Some(symbols_path) = symbols_path {
-        writer.start_file(
-            symbols_path.file_name().unwrap().to_str().unwrap(),
-            FileOptions::default()
-                .last_modified_time(
-                    DateTime::try_from(OffsetDateTime::from(std::fs::metadata(src_path)?.modified()?)).unwrap(),
-                )
-                .compression_method(zip::CompressionMethod::Deflated)
-                .compression_level(Some(9)),
-        )?;
+        writer.start_file(symbols_path.file_name().unwrap().to_str().unwrap(), file_options)?;
         let mut input = io::BufReader::new(File::open(symbols_path)?);
         io::copy(&mut input, &mut writer)?;
     }
@@ -241,4 +231,17 @@ impl Drop for Patch {
         let _ = &self.original_contents;
         // write_file(&self.path, &self.original_contents).unwrap();
     }
+}
+
+fn convert_date_time(offset_dt: OffsetDateTime) -> anyhow::Result<zip::DateTime> {
+    // Convert to MS-DOS date time format that the zip crate expects
+    zip::DateTime::from_date_and_time(
+        (offset_dt.year() as u16).try_into().unwrap_or(1980),
+        offset_dt.month() as u8,
+        offset_dt.day() as u8,
+        offset_dt.hour() as u8,
+        offset_dt.minute() as u8,
+        offset_dt.second() as u8,
+    )
+    .map_err(|err| anyhow::anyhow!("Failed to convert date time to MS-DOS format: {}", err))
 }

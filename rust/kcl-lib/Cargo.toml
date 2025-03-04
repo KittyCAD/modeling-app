@@ -74,7 +74,7 @@ uuid = { workspace = true, features = ["v4", "js", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
 web-time = "1.1"
 winnow = "=0.6.24"
-zip = { version = "2.2.2", default-features = false }
+zip = { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 js-sys = { version = "0.3.72" }

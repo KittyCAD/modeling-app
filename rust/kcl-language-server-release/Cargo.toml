@@ -12,15 +12,15 @@ clap = { workspace = true, features = ["cargo", "derive", "env", "unicode"] }
 flate2 = "1.1.0"
 lazy_static = { workspace = true }
 log = { version = "0.4.26", features = ["serde"] }
-slog = "2.7.0"
-slog-async = "2.8.0"
-slog-json = "2.6.1"
-slog-term = "2.9.1"
+slog = { workspace = true }
+slog-async = { workspace = true }
+slog-json = { workspace = true }
+slog-term = { workspace = true }
 time = "0.3.37"
 tokio = { workspace = true, features = ["full"] }
-tracing-subscriber = { version = "0.3.19", features = ["registry", "std", "fmt", "smallvec", "ansi", "tracing-log", "json"] }
+tracing-subscriber = { workspace = true }
 xshell = "0.2.6"
-zip = "0.6.6"
+zip = { workspace = true, features = ["default"] }
 
 [lints]
 workspace = true
