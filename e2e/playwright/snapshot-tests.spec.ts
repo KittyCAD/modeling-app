@@ -14,6 +14,7 @@ import {
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { SceneFixture } from './fixtures/sceneFixture'
+import { CmdBarFixture } from './fixtures/cmdBarFixture'
 
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404
@@ -30,6 +31,7 @@ test.beforeEach(async ({ page, context }) => {
 // Help engine-manager: tear shit down.
 test.afterEach(async ({ page }) => {
   await page.evaluate(() => {
+    // @ts-expect-error
     window.tearDown()
   })
 })

@@ -1,6 +1,7 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '../zoo-test'
 import { isArray, uuidv4 } from 'lib/utils'
+import { CmdBarFixture } from './cmdBarFixture'
 import {
   closeDebugPanel,
   doAndWaitForImageDiff,
@@ -243,7 +244,7 @@ export class SceneFixture {
     await expect(this.networkToggleConnected).toBeVisible({ timeout })
   }
 
-  settled = async (cmdBar) => {
+  settled = async (cmdBar: CmdBarFixture) => {
     const u = await getUtils(this.page)
 
     await cmdBar.openCmdBar()
