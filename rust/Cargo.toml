@@ -3,6 +3,7 @@ resolver = "2"
 members = [
 	"kcl-bumper",
 	"kcl-derive-docs",
+	"kcl-language-server",
 	"kcl-lib",
 	"kcl-python-bindings",
 	"kcl-test-server",
@@ -27,6 +28,8 @@ debug = "line-tables-only"
 [workspace.dependencies]
 async-trait = "0.1.85"
 anyhow = { version = "1" }
+clap = { version = "4.5.31", features = ["derive"] }
+dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.7.0"
 kittycad = { version = "0.3.28", default-features = false, features = ["js", "requests"] }

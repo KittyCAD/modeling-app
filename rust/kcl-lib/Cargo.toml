@@ -21,7 +21,7 @@ clap = { version = "4.5.27", default-features = false, optional = true, features
     "derive",
 ] }
 convert_case = "0.8.0"
-dashmap = "6.1.0"
+dashmap = {workspace = true}
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
 form_urlencoded = "1.2.1"
