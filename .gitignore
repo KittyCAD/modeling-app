@@ -35,6 +35,7 @@ rust/lcov.info
 rust/kcl-wasm-lib/pkg
 *.snap.new
 rust/kcl-lib/fuzz/Cargo.lock
+rust/kcl-language-server-release/Cargo.lock
 
 e2e/playwright/playwright-secrets.env
 e2e/playwright/temp1.png
