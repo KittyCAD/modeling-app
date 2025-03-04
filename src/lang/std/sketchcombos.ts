@@ -284,9 +284,9 @@ const xyLineSetLength =
       : referenceSeg
       ? segRef
       : args[0].expr
-    const literalARg = asNum(args[0].expr.value)
-    if (err(literalARg)) return literalARg
-    return createCallWrapper(xOrY, lineVal, tag, literalARg)
+    const literalArg = asNum(args[0].expr.value)
+    if (err(literalArg)) return literalArg
+    return createCallWrapper(xOrY, lineVal, tag, literalArg)
   }
 
 type AngLenNone = 'ang' | 'len' | 'none'
