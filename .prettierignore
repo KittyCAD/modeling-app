@@ -7,7 +7,6 @@ coverage
 *.rs
 *.hbs
 target
-rust/
 e2e/playwright/export-snapshots
 e2e/playwright/snapshots/prompt-to-edit
 

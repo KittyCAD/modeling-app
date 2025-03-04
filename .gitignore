@@ -37,6 +37,9 @@ rust/kcl-wasm-lib/pkg
 rust/kcl-lib/fuzz/Cargo.lock
 rust/kcl-language-server-release/Cargo.lock
 
+# kcl language server package
+rust/kcl-language-server/dist/
+
 e2e/playwright/playwright-secrets.env
 e2e/playwright/temp1.png
 e2e/playwright/temp2.png
