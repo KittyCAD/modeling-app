@@ -1606,9 +1606,8 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
-    let result_env = cache::read_old_ast().await?.result_env;
     let mem = cache::read_old_memory().await?;
-    let value = mem.get_from(name, result_env, SourceRange::default()).ok()?;
+    let value = mem.get(name, SourceRange::default()).ok()?;
 
     Some(f(value))
 }
