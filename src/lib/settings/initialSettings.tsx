@@ -155,32 +155,39 @@ export function createSettings() {
         description: 'The hue of the primary theme color for the app',
         validate: (v) => Number(v) >= 0 && Number(v) < 360,
         Component: ({ value, updateValue }) => {
-          const preview = (e: React.SyntheticEvent) => e.isTrusted && 'value' in e.currentTarget && document.documentElement.style.setProperty(
-            `--primary-hue`,
-            String(e.currentTarget.value
+          const preview = (e: React.SyntheticEvent) =>
+            e.isTrusted &&
+            'value' in e.currentTarget &&
+            document.documentElement.style.setProperty(
+              `--primary-hue`,
+              String(e.currentTarget.value)
             )
-          )
-          const save = (e: React.SyntheticEvent) => e.isTrusted && 'value' in e.currentTarget && e.currentTarget.value && updateValue(String(e.currentTarget.value))
-          return (<div className="flex item-center gap-4 px-2 m-0 py-0">
-            <div
-              className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
-              style={{
-                backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) var(--primary-hue))`,
-              }}
-            />
-            <input
-              type="range"
-              onInput={preview}
-              onMouseUp={save}
-              onKeyUp={save}
-              onPointerUp={save}
-              defaultValue={value}
-              min={0}
-              max={259}
-              step={1}
-              className="block flex-1"
-            />
-          </div>
+          const save = (e: React.SyntheticEvent) =>
+            e.isTrusted &&
+            'value' in e.currentTarget &&
+            e.currentTarget.value &&
+            updateValue(String(e.currentTarget.value))
+          return (
+            <div className="flex item-center gap-4 px-2 m-0 py-0">
+              <div
+                className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
+                style={{
+                  backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) var(--primary-hue))`,
+                }}
+              />
+              <input
+                type="range"
+                onInput={preview}
+                onMouseUp={save}
+                onKeyUp={save}
+                onPointerUp={save}
+                defaultValue={value}
+                min={0}
+                max={259}
+                step={1}
+                className="block flex-1"
+              />
+            </div>
           )
         },
       }),
