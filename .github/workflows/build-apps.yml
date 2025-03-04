@@ -134,6 +134,7 @@ jobs:
         # Windows is picky sometimes and fails on fetch. Step takes about ~30s
         uses: nick-fields/retry@v3.0.2
         with:
+          shell: bash
           timeout_minutes: 2
           max_attempts: 3
           command: yarn install
@@ -185,6 +186,7 @@ jobs:
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.2
         with:
+          shell: bash
           timeout_minutes: 10
           max_attempts: 3
           command: yarn tronb:package:prod
@@ -246,6 +248,7 @@ jobs:
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.2
         with:
+          shell: bash
           timeout_minutes: 10
           max_attempts: 3
           command: yarn tronb:package:prod
