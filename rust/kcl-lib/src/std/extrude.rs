@@ -267,6 +267,17 @@ pub(crate) async fn do_post_extrude(
                         });
                         Some(extrude_surface)
                     }
+                    Path::ArcThreePoint { .. } => {
+                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
+                            face_id: *actual_face_id,
+                            tag: path.get_base().tag.clone(),
+                            geo_meta: GeoMeta {
+                                id: path.get_base().geo_meta.id,
+                                metadata: path.get_base().geo_meta.metadata,
+                            },
+                        });
+                        Some(extrude_surface)
+                    }
                 }
             } else if no_engine_commands {
                 // Only pre-populate the extrude surface if we are in mock mode.

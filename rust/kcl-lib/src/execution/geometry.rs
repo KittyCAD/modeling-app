@@ -881,6 +881,19 @@ pub enum Path {
         #[ts(type = "[number, number]")]
         p3: [f64; 2],
     },
+    ArcThreePoint {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Point 1 of the circle
+        #[ts(type = "[number, number]")]
+        p1: [f64; 2],
+        /// Point 2 of the circle
+        #[ts(type = "[number, number]")]
+        p2: [f64; 2],
+        /// Point 3 of the circle
+        #[ts(type = "[number, number]")]
+        p3: [f64; 2],
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -941,6 +954,7 @@ impl From<&Path> for PathType {
             Path::AngledLineTo { .. } => Self::AngledLineTo,
             Path::Base { .. } => Self::Base,
             Path::Arc { .. } => Self::Arc,
+            Path::ArcThreePoint { .. } => Self::Arc,
         }
     }
 }
@@ -957,6 +971,7 @@ impl Path {
             Path::Circle { base, .. } => base.geo_meta.id,
             Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
+            Path::ArcThreePoint { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -971,6 +986,7 @@ impl Path {
             Path::Circle { base, .. } => base.tag.clone(),
             Path::CircleThreePoint { base, .. } => base.tag.clone(),
             Path::Arc { base, .. } => base.tag.clone(),
+            Path::ArcThreePoint { base, .. } => base.tag.clone(),
         }
     }
 
@@ -985,6 +1001,7 @@ impl Path {
             Path::Circle { base, .. } => base,
             Path::CircleThreePoint { base, .. } => base,
             Path::Arc { base, .. } => base,
+            Path::ArcThreePoint { base, .. } => base,
         }
     }
 
@@ -1034,6 +1051,10 @@ impl Path {
                 // TODO: Call engine utils to figure this out.
                 linear_distance(self.get_from(), self.get_to())
             }
+            Self::ArcThreePoint { .. } => {
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
         }
     }
 
@@ -1048,6 +1069,7 @@ impl Path {
             Path::Circle { base, .. } => Some(base),
             Path::CircleThreePoint { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
+            Path::ArcThreePoint { base, .. } => Some(base),
         }
     }
 
@@ -1059,6 +1081,17 @@ impl Path {
                 center: *center,
                 ccw: *ccw,
             },
+            Path::ArcThreePoint { p1, p2, p3, .. } => {
+                let circle_center =
+                    crate::std::utils::calculate_circle_from_3_points([(*p1).into(), (*p2).into(), (*p3).into()]);
+                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], p1);
+                let center_point = [circle_center.center.x, circle_center.center.y];
+                GetTangentialInfoFromPathsResult::Circle {
+                    center: center_point,
+                    ccw: true,
+                    radius,
+                }
+            }
             Path::Circle {
                 center, ccw, radius, ..
             } => GetTangentialInfoFromPathsResult::Circle {

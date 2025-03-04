@@ -1670,18 +1670,7 @@ pub(crate) async fn inner_arc_to(
     let interior = data.interior;
     let end = data.end;
 
-    // compute the center of the circle since we do not have the value returned from the engine
-    let center = calculate_circle_center(start, interior, end);
-
-    // compute the radius since we do not have the value returned from the engine
-    // Pick any of the 3 points since they all lie along the circle
-    let sum_of_square_differences =
-        (center[0] - start[0] * center[0] - start[0]) + (center[1] - start[1] * center[1] - start[1]);
-    let radius = sum_of_square_differences.sqrt();
-
-    let ccw = is_ccw(start, interior, end);
-
-    let current_path = Path::Arc {
+    let current_path = Path::ArcThreePoint {
         base: BasePath {
             from: from.into(),
             to: data.end,
@@ -1692,9 +1681,9 @@ pub(crate) async fn inner_arc_to(
                 metadata: args.source_range.into(),
             },
         },
-        center,
-        radius,
-        ccw,
+        p1: start,
+        p2: interior,
+        p3: end,
     };
 
     let mut new_sketch = sketch.clone();
