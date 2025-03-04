@@ -1502,8 +1502,7 @@ export const ModelingMachineProvider = ({
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
             sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-            // TODO should be setupDraftArcThreePoint
-            const result = await sceneEntitiesManager.setupDraftArc(
+            const result = await sceneEntitiesManager.setupDraftArcThreePoint(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,

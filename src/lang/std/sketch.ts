@@ -1510,7 +1510,13 @@ export const arcTo: SketchLineHelper = {
 
       return {
         modifiedAst: _node,
-        pathToNode,
+        pathToNode: [
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          ),
+          [pipe.body.length - 1, 'CallExpression'],
+        ],
         valueUsedInTransform,
       }
     }
@@ -1520,7 +1526,10 @@ export const arcTo: SketchLineHelper = {
       end,
     })
 
-    const newLine = createCallExpression('arcTo' as ToolTip, [objExp])
+    const newLine = createCallExpression('arcTo', [
+      objExp,
+      createPipeSubstitution(),
+    ])
 
     if (spliceBetween) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
@@ -1531,12 +1540,17 @@ export const arcTo: SketchLineHelper = {
 
     return {
       modifiedAst: _node,
-      pathToNode,
+      pathToNode: [
+        ...pathToNode.slice(
+          0,
+          pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+        ),
+        [pipe.body.length - 1, 'CallExpression'],
+      ],
     }
   },
   updateArgs: ({ node, pathToNode, input }) => {
     if (input.type !== 'circle-three-point-segment') return ARC_SEGMENT_ERR
-    // console.log('input', input)
 
     const { p1, p2, p3 } = input
     const _node = { ...node }
