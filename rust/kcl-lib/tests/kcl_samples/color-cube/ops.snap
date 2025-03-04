@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed color-cube.kcl
 ---
 [
@@ -152,14 +152,14 @@ description: Operations executed color-cube.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": 50.0,
+          "value": 49.0,
           "ty": {
             "type": "Unknown"
           }
         },
         "sourceRange": [
           581,
-          589,
+          605,
           0
         ]
       }
@@ -167,7 +167,7 @@ description: Operations executed color-cube.kcl
     "name": "offsetPlane",
     "sourceRange": [
       554,
-      590,
+      606,
       0
     ],
     "type": "StdLibCall",
@@ -194,16 +194,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          630,
-          639,
+          646,
+          655,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      603,
-      640,
+      619,
+      656,
       0
     ],
     "type": "StdLibCall",
@@ -213,8 +213,8 @@ description: Operations executed color-cube.kcl
         "value": "YZ"
       },
       "sourceRange": [
-        615,
-        619,
+        631,
+        635,
         0
       ]
     }
@@ -223,15 +223,15 @@ description: Operations executed color-cube.kcl
     "type": "UserDefinedFunctionCall",
     "name": "sketchRectangle",
     "functionSourceRange": [
-      721,
-      1293,
+      737,
+      1309,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1327,
-      1363,
+      1343,
+      1379,
       0
     ]
   },
@@ -252,16 +252,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1188,
-          1201,
+          1204,
+          1217,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1168,
-      1202,
+      1184,
+      1218,
       0
     ],
     "type": "StdLibCall",
@@ -273,71 +273,8 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1176,
-        1177,
-        0
-      ]
-    }
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "sketchRectangle",
-    "functionSourceRange": [
-      721,
-      1293,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      1364,
-      1402,
-      0
-    ]
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 1.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          1188,
-          1201,
-          0
-        ]
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [
-      1168,
-      1202,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        1176,
-        1177,
+        1192,
+        1193,
         0
       ]
     }
@@ -349,15 +286,15 @@ description: Operations executed color-cube.kcl
     "type": "UserDefinedFunctionCall",
     "name": "sketchRectangle",
     "functionSourceRange": [
-      721,
-      1293,
+      737,
+      1309,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1403,
-      1440,
+      1380,
+      1418,
       0
     ]
   },
@@ -378,16 +315,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1188,
-          1201,
+          1204,
+          1217,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1168,
-      1202,
+      1184,
+      1218,
       0
     ],
     "type": "StdLibCall",
@@ -399,8 +336,8 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1176,
-        1177,
+        1192,
+        1193,
         0
       ]
     }
@@ -412,15 +349,15 @@ description: Operations executed color-cube.kcl
     "type": "UserDefinedFunctionCall",
     "name": "sketchRectangle",
     "functionSourceRange": [
-      721,
-      1293,
+      737,
+      1309,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1441,
-      1476,
+      1419,
+      1456,
       0
     ]
   },
@@ -441,16 +378,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1188,
-          1201,
+          1204,
+          1217,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1168,
-      1202,
+      1184,
+      1218,
       0
     ],
     "type": "StdLibCall",
@@ -462,8 +399,8 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1176,
-        1177,
+        1192,
+        1193,
         0
       ]
     }
@@ -475,15 +412,15 @@ description: Operations executed color-cube.kcl
     "type": "UserDefinedFunctionCall",
     "name": "sketchRectangle",
     "functionSourceRange": [
-      721,
-      1293,
+      737,
+      1309,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1477,
-      1513,
+      1457,
+      1492,
       0
     ]
   },
@@ -504,16 +441,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1188,
-          1201,
+          1204,
+          1217,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1168,
-      1202,
+      1184,
+      1218,
       0
     ],
     "type": "StdLibCall",
@@ -525,8 +462,8 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1176,
-        1177,
+        1192,
+        1193,
         0
       ]
     }
@@ -538,15 +475,15 @@ description: Operations executed color-cube.kcl
     "type": "UserDefinedFunctionCall",
     "name": "sketchRectangle",
     "functionSourceRange": [
-      721,
-      1293,
+      737,
+      1309,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1514,
-      1552,
+      1493,
+      1529,
       0
     ]
   },
@@ -567,16 +504,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1188,
-          1201,
+          1204,
+          1217,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1168,
-      1202,
+      1184,
+      1218,
       0
     ],
     "type": "StdLibCall",
@@ -588,8 +525,71 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1176,
-        1177,
+        1192,
+        1193,
+        0
+      ]
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "sketchRectangle",
+    "functionSourceRange": [
+      737,
+      1309,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      1530,
+      1568,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          1204,
+          1217,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      1184,
+      1218,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        1192,
+        1193,
         0
       ]
     }

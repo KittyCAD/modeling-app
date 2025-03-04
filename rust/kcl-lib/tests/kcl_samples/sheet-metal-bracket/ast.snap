@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing sheet-metal-bracket.kcl
 ---
 {
@@ -335,8 +335,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 769,
+                      "name": "end",
+                      "start": 766,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -368,8 +370,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 791,
+                      "name": "tag",
+                      "start": 788,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 797,
@@ -397,8 +401,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 812,
+                      "name": "end",
+                      "start": 809,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -430,8 +436,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 837,
+                      "name": "tag",
+                      "start": 834,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 843,
@@ -459,8 +467,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 858,
+                      "name": "end",
+                      "start": 855,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -492,8 +502,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 880,
+                      "name": "tag",
+                      "start": 877,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 886,
@@ -521,8 +533,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 901,
+                      "name": "end",
+                      "start": 898,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -554,8 +568,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 922,
+                      "name": "tag",
+                      "start": 919,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 928,
@@ -583,8 +599,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 943,
+                      "name": "end",
+                      "start": 940,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -623,8 +641,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 966,
+                      "name": "tag",
+                      "start": 963,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 972,
@@ -652,8 +672,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 987,
+                      "name": "end",
+                      "start": 984,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -685,8 +707,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 1012,
+                      "name": "tag",
+                      "start": 1009,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1018,
@@ -714,8 +738,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1033,
+                      "name": "end",
+                      "start": 1030,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -754,8 +780,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 1056,
+                      "name": "tag",
+                      "start": 1053,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1062,
@@ -783,8 +811,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1077,
+                      "name": "end",
+                      "start": 1074,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -837,8 +867,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 1115,
+                      "name": "tag",
+                      "start": 1112,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1121,
@@ -866,8 +898,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1136,
+                      "name": "end",
+                      "start": 1133,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -899,8 +933,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 1158,
+                      "name": "tag",
+                      "start": 1155,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1164,
@@ -928,8 +964,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1179,
+                      "name": "end",
+                      "start": 1176,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1000,8 +1038,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 1217,
+                      "name": "tag",
+                      "start": 1214,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1224,
@@ -1029,8 +1069,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1239,
+                      "name": "end",
+                      "start": 1236,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1069,8 +1111,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 1262,
+                      "name": "tag",
+                      "start": 1259,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1269,
@@ -1098,8 +1142,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 1285,
+                      "name": "tag",
+                      "start": 1282,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1292,
@@ -1127,8 +1173,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 1313,
+                      "name": "length",
+                      "start": 1307,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1324,
@@ -1156,8 +1204,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1352,
+                      "name": "radius",
+                      "start": 1346,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1362,
@@ -1170,8 +1220,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1375,
+                      "name": "tags",
+                      "start": 1371,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1221,8 +1273,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1437,
+                      "name": "radius",
+                      "start": 1431,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1454,
@@ -1235,8 +1289,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1467,
+                      "name": "tags",
+                      "start": 1463,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1286,8 +1342,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1529,
+                      "name": "radius",
+                      "start": 1523,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1546,
@@ -1300,8 +1358,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1559,
+                      "name": "tags",
+                      "start": 1555,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1351,8 +1411,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1621,
+                      "name": "radius",
+                      "start": 1615,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1631,
@@ -1365,8 +1427,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1644,
+                      "name": "tags",
+                      "start": 1640,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1416,8 +1480,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1706,
+                      "name": "radius",
+                      "start": 1700,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1723,
@@ -1430,8 +1496,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1736,
+                      "name": "tags",
+                      "start": 1732,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1481,8 +1549,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1798,
+                      "name": "radius",
+                      "start": 1792,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1808,
@@ -1495,8 +1565,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1821,
+                      "name": "tags",
+                      "start": 1817,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1546,8 +1618,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1883,
+                      "name": "radius",
+                      "start": 1877,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1893,
@@ -1560,8 +1634,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1906,
+                      "name": "tags",
+                      "start": 1902,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1611,8 +1687,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1969,
+                      "name": "radius",
+                      "start": 1963,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1986,
@@ -1625,8 +1703,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1999,
+                      "name": "tags",
+                      "start": 1995,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1791,8 +1871,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2158,
+                      "name": "end",
+                      "start": 2155,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1839,8 +1921,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2189,
+                      "name": "end",
+                      "start": 2186,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1872,8 +1956,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2213,
+                      "name": "tag",
+                      "start": 2210,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2220,
@@ -1901,8 +1987,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2235,
+                      "name": "end",
+                      "start": 2232,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1941,8 +2029,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2257,
+                      "name": "tag",
+                      "start": 2254,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2264,
@@ -1985,8 +2075,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 2310,
+                          "name": "center",
+                          "start": 2304,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -2022,8 +2114,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 2337,
+                          "name": "radius",
+                          "start": 2331,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 2348,
@@ -2071,8 +2165,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 2391,
+                          "name": "center",
+                          "start": 2385,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -2108,8 +2204,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 2418,
+                          "name": "radius",
+                          "start": 2412,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 2429,
@@ -2155,8 +2253,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2460,
+                      "name": "length",
+                      "start": 2454,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2472,
@@ -2184,8 +2284,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 2500,
+                      "name": "radius",
+                      "start": 2494,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2506,
@@ -2202,8 +2304,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 2519,
+                      "name": "tags",
+                      "start": 2515,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2379,8 +2483,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2685,
+                      "name": "end",
+                      "start": 2682,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2427,8 +2533,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2716,
+                      "name": "end",
+                      "start": 2713,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2467,8 +2575,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2741,
+                      "name": "tag",
+                      "start": 2738,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2748,
@@ -2496,8 +2606,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2763,
+                      "name": "end",
+                      "start": 2760,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2536,8 +2648,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2785,
+                      "name": "tag",
+                      "start": 2782,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2792,
@@ -2580,8 +2694,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 2838,
+                          "name": "center",
+                          "start": 2832,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -2624,8 +2740,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 2866,
+                          "name": "radius",
+                          "start": 2860,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 2877,
@@ -2673,8 +2791,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 2920,
+                          "name": "center",
+                          "start": 2914,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -2717,8 +2837,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 2948,
+                          "name": "radius",
+                          "start": 2942,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 2959,
@@ -2764,8 +2886,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2990,
+                      "name": "length",
+                      "start": 2984,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3002,
@@ -2793,8 +2917,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 3030,
+                      "name": "radius",
+                      "start": 3024,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3037,
@@ -2811,8 +2937,10 @@ description: Result of parsing sheet-metal-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 3050,
+                      "name": "tags",
+                      "start": 3046,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [

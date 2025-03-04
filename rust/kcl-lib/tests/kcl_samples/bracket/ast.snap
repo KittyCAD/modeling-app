@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing bracket.kcl
 ---
 {
@@ -521,8 +521,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1210,
+                      "name": "end",
+                      "start": 1207,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -568,8 +570,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 1249,
+                      "name": "tag",
+                      "start": 1246,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1260,
@@ -597,8 +601,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1275,
+                      "name": "end",
+                      "start": 1272,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -630,8 +636,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 1293,
+                      "name": "tag",
+                      "start": 1290,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1304,
@@ -659,8 +667,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1319,
+                      "name": "end",
+                      "start": 1316,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -743,8 +753,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 1400,
+                          "name": "center",
+                          "start": 1394,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -780,8 +792,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 1424,
+                          "name": "radius",
+                          "start": 1418,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1451,
@@ -847,8 +861,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 1494,
+                          "name": "center",
+                          "start": 1488,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -912,8 +928,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 1542,
+                          "name": "radius",
+                          "start": 1536,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1569,
@@ -979,8 +997,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 1612,
+                          "name": "center",
+                          "start": 1606,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -1030,8 +1050,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 1644,
+                          "name": "radius",
+                          "start": 1638,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1671,
@@ -1097,8 +1119,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 1714,
+                          "name": "center",
+                          "start": 1708,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -1148,8 +1172,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 1754,
+                          "name": "radius",
+                          "start": 1748,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1781,
@@ -1256,8 +1282,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 1884,
+                      "name": "length",
+                      "start": 1878,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1896,
@@ -1291,8 +1319,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1924,
+                      "name": "radius",
+                      "start": 1918,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1942,
@@ -1305,8 +1335,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1955,
+                      "name": "tags",
+                      "start": 1951,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1492,8 +1524,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2158,
+                      "name": "end",
+                      "start": 2155,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1644,8 +1678,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2300,
+                      "name": "end",
+                      "start": 2297,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1823,8 +1859,10 @@ description: Result of parsing bracket.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 2481,
+                  "name": "length",
+                  "start": 2475,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -2347,8 +2385,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2888,
+                      "name": "end",
+                      "start": 2885,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2395,8 +2435,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2916,
+                      "name": "end",
+                      "start": 2913,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2435,8 +2477,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2940,
+                      "name": "tag",
+                      "start": 2937,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2951,
@@ -2464,8 +2508,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2966,
+                      "name": "end",
+                      "start": 2963,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2504,8 +2550,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2985,
+                      "name": "tag",
+                      "start": 2982,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2996,
@@ -2548,8 +2596,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 3042,
+                          "name": "center",
+                          "start": 3036,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -2592,8 +2642,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 3069,
+                          "name": "radius",
+                          "start": 3063,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 3096,
@@ -2659,8 +2711,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 3139,
+                          "name": "center",
+                          "start": 3133,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -2703,8 +2757,10 @@ description: Result of parsing bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 3166,
+                          "name": "radius",
+                          "start": 3160,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 3193,
@@ -2811,8 +2867,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 3286,
+                      "name": "length",
+                      "start": 3280,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -2853,8 +2911,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 3327,
+                      "name": "radius",
+                      "start": 3321,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3345,
@@ -2867,8 +2927,10 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 3358,
+                      "name": "tags",
+                      "start": 3354,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [

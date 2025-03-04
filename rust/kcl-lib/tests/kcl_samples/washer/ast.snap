@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing washer.kcl
 ---
 {
@@ -170,8 +170,10 @@ description: Result of parsing washer.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "center"
+                                "end": 851,
+                                "name": "center",
+                                "start": 845,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -207,8 +209,10 @@ description: Result of parsing washer.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "radius"
+                                "end": 877,
+                                "name": "radius",
+                                "start": 871,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 892,
@@ -256,8 +260,10 @@ description: Result of parsing washer.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "type": "Identifier",
-                                    "name": "center"
+                                    "end": 937,
+                                    "name": "center",
+                                    "start": 931,
+                                    "type": "Identifier"
                                   },
                                   "arg": {
                                     "elements": [
@@ -293,8 +299,10 @@ description: Result of parsing washer.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "type": "Identifier",
-                                    "name": "radius"
+                                    "end": 963,
+                                    "name": "radius",
+                                    "start": 957,
+                                    "type": "Identifier"
                                   },
                                   "arg": {
                                     "end": 978,
@@ -382,8 +390,10 @@ description: Result of parsing washer.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "type": "Identifier",
-                            "name": "length"
+                            "end": 1032,
+                            "name": "length",
+                            "start": 1026,
+                            "type": "Identifier"
                           },
                           "arg": {
                             "end": 1038,

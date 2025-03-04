@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing 80-20-rail.kcl
 ---
 {
@@ -5828,8 +5828,10 @@ description: Result of parsing 80-20-rail.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "type": "Identifier",
-                                    "name": "center"
+                                    "end": 5480,
+                                    "name": "center",
+                                    "start": 5474,
+                                    "type": "Identifier"
                                   },
                                   "arg": {
                                     "elements": [
@@ -5957,8 +5959,10 @@ description: Result of parsing 80-20-rail.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "type": "Identifier",
-                                    "name": "radius"
+                                    "end": 5601,
+                                    "name": "radius",
+                                    "start": 5595,
+                                    "type": "Identifier"
                                   },
                                   "arg": {
                                     "end": 5625,
@@ -6040,8 +6044,10 @@ description: Result of parsing 80-20-rail.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "length"
+                                "end": 5660,
+                                "name": "length",
+                                "start": 5654,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 5673,
@@ -6069,8 +6075,10 @@ description: Result of parsing 80-20-rail.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "radius"
+                                "end": 5705,
+                                "name": "radius",
+                                "start": 5699,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 5712,
@@ -6087,8 +6095,10 @@ description: Result of parsing 80-20-rail.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tags"
+                                "end": 5727,
+                                "name": "tags",
+                                "start": 5723,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -6453,8 +6463,10 @@ description: Result of parsing 80-20-rail.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "radius"
+                                "end": 6417,
+                                "name": "radius",
+                                "start": 6411,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 6424,
@@ -6471,8 +6483,10 @@ description: Result of parsing 80-20-rail.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tags"
+                                "end": 6439,
+                                "name": "tags",
+                                "start": 6435,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [

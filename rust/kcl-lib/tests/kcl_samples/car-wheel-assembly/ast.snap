@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing car-wheel-assembly.kcl
 ---
 {
@@ -169,8 +169,10 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "arcDegrees"
+                    "end": 407,
+                    "name": "arcDegrees",
+                    "start": 397,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 413,
@@ -187,8 +189,10 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "axis"
+                    "end": 424,
+                    "name": "axis",
+                    "start": 420,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -235,8 +239,10 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "center"
+                    "end": 449,
+                    "name": "center",
+                    "start": 443,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -283,8 +289,10 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "instances"
+                    "end": 477,
+                    "name": "instances",
+                    "start": 468,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 488,
@@ -297,8 +305,10 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "rotateDuplicates"
+                    "end": 511,
+                    "name": "rotateDuplicates",
+                    "start": 495,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 519,

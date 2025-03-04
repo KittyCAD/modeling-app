@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing color-cube.kcl
 ---
 {
@@ -178,8 +178,10 @@ description: Result of parsing color-cube.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "offset"
+                  "end": 374,
+                  "name": "offset",
+                  "start": 368,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 385,
@@ -232,8 +234,10 @@ description: Result of parsing color-cube.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "offset"
+                  "end": 425,
+                  "name": "offset",
+                  "start": 419,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -293,8 +297,10 @@ description: Result of parsing color-cube.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "offset"
+                  "end": 476,
+                  "name": "offset",
+                  "start": 470,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -354,8 +360,10 @@ description: Result of parsing color-cube.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "offset"
+                  "end": 529,
+                  "name": "offset",
+                  "start": 523,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -403,7 +411,7 @@ description: Result of parsing color-cube.kcl
       },
       {
         "declaration": {
-          "end": 590,
+          "end": 606,
           "id": {
             "end": 551,
             "name": "redPlane",
@@ -415,15 +423,31 @@ description: Result of parsing color-cube.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "offset"
+                  "end": 578,
+                  "name": "offset",
+                  "start": 572,
+                  "type": "Identifier"
                 },
                 "arg": {
-                  "end": 589,
-                  "name": "halfSize",
+                  "end": 605,
+                  "left": {
+                    "end": 589,
+                    "name": "halfSize",
+                    "start": 581,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "-",
+                  "right": {
+                    "end": 605,
+                    "name": "extrudeLength",
+                    "start": 592,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
                   "start": 581,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
                 }
               }
             ],
@@ -433,7 +457,7 @@ description: Result of parsing color-cube.kcl
               "start": 554,
               "type": "Identifier"
             },
-            "end": 590,
+            "end": 606,
             "start": 554,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -449,7 +473,7 @@ description: Result of parsing color-cube.kcl
           "start": 543,
           "type": "VariableDeclarator"
         },
-        "end": 590,
+        "end": 606,
         "kind": "const",
         "start": 543,
         "type": "VariableDeclaration",
@@ -457,11 +481,11 @@ description: Result of parsing color-cube.kcl
       },
       {
         "declaration": {
-          "end": 640,
+          "end": 656,
           "id": {
-            "end": 600,
+            "end": 616,
             "name": "tealPlane",
-            "start": 591,
+            "start": 607,
             "type": "Identifier"
           },
           "init": {
@@ -469,60 +493,62 @@ description: Result of parsing color-cube.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "offset"
+                  "end": 643,
+                  "name": "offset",
+                  "start": 637,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
-                    "end": 639,
+                    "end": 655,
                     "name": "halfSize",
-                    "start": 631,
+                    "start": 647,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 639,
+                  "end": 655,
                   "operator": "-",
-                  "start": 630,
+                  "start": 646,
                   "type": "UnaryExpression",
                   "type": "UnaryExpression"
                 }
               }
             ],
             "callee": {
-              "end": 614,
+              "end": 630,
               "name": "offsetPlane",
-              "start": 603,
+              "start": 619,
               "type": "Identifier"
             },
-            "end": 640,
-            "start": 603,
+            "end": 656,
+            "start": 619,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 619,
+              "end": 635,
               "raw": "'YZ'",
-              "start": 615,
+              "start": 631,
               "type": "Literal",
               "type": "Literal",
               "value": "YZ"
             }
           },
-          "start": 591,
+          "start": 607,
           "type": "VariableDeclarator"
         },
-        "end": 640,
+        "end": 656,
         "kind": "const",
-        "start": 591,
+        "start": 607,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1293,
+          "end": 1309,
           "id": {
-            "end": 720,
+            "end": 736,
             "name": "sketchRectangle",
-            "start": 705,
+            "start": 721,
             "type": "Identifier"
           },
           "init": {
@@ -532,9 +558,9 @@ description: Result of parsing color-cube.kcl
                   "argument": {
                     "body": [
                       {
-                        "end": 756,
+                        "end": 772,
                         "name": "profile",
-                        "start": 749,
+                        "start": 765,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
@@ -544,46 +570,46 @@ description: Result of parsing color-cube.kcl
                             "elements": [
                               {
                                 "argument": {
-                                  "end": 787,
+                                  "end": 803,
                                   "name": "halfSize",
-                                  "start": 779,
+                                  "start": 795,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "end": 787,
+                                "end": 803,
                                 "operator": "-",
-                                "start": 778,
+                                "start": 794,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               },
                               {
-                                "end": 797,
+                                "end": 813,
                                 "name": "halfSize",
-                                "start": 789,
+                                "start": 805,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             ],
-                            "end": 798,
-                            "start": 777,
+                            "end": 814,
+                            "start": 793,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           },
                           {
-                            "end": 801,
-                            "start": 800,
+                            "end": 817,
+                            "start": 816,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 776,
+                          "end": 792,
                           "name": "startProfileAt",
-                          "start": 762,
+                          "start": 778,
                           "type": "Identifier"
                         },
-                        "end": 802,
-                        "start": 762,
+                        "end": 818,
+                        "start": 778,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -592,9 +618,9 @@ description: Result of parsing color-cube.kcl
                           {
                             "elements": [
                               {
-                                "end": 821,
+                                "end": 837,
                                 "raw": "0",
-                                "start": 820,
+                                "start": 836,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -603,40 +629,40 @@ description: Result of parsing color-cube.kcl
                                 }
                               },
                               {
-                                "end": 827,
+                                "end": 843,
                                 "name": "size",
-                                "start": 823,
+                                "start": 839,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             ],
-                            "end": 828,
-                            "start": 819,
+                            "end": 844,
+                            "start": 835,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           },
                           {
-                            "end": 831,
-                            "start": 830,
+                            "end": 847,
+                            "start": 846,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           },
                           {
-                            "end": 854,
-                            "start": 833,
+                            "end": 870,
+                            "start": 849,
                             "type": "TagDeclarator",
                             "type": "TagDeclarator",
                             "value": "rectangleSegmentA001"
                           }
                         ],
                         "callee": {
-                          "end": 818,
+                          "end": 834,
                           "name": "angledLine",
-                          "start": 808,
+                          "start": 824,
                           "type": "Identifier"
                         },
-                        "end": 855,
-                        "start": 808,
+                        "end": 871,
+                        "start": 824,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -645,33 +671,33 @@ description: Result of parsing color-cube.kcl
                           {
                             "elements": [
                               {
-                                "end": 914,
+                                "end": 930,
                                 "left": {
                                   "arguments": [
                                     {
-                                      "end": 908,
+                                      "end": 924,
                                       "name": "rectangleSegmentA001",
-                                      "start": 888,
+                                      "start": 904,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 887,
+                                    "end": 903,
                                     "name": "segAng",
-                                    "start": 881,
+                                    "start": 897,
                                     "type": "Identifier"
                                   },
-                                  "end": 909,
-                                  "start": 881,
+                                  "end": 925,
+                                  "start": 897,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 "operator": "-",
                                 "right": {
-                                  "end": 914,
+                                  "end": 930,
                                   "raw": "90",
-                                  "start": 912,
+                                  "start": 928,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -679,45 +705,45 @@ description: Result of parsing color-cube.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 881,
+                                "start": 897,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               {
-                                "end": 927,
+                                "end": 943,
                                 "name": "size",
-                                "start": 923,
+                                "start": 939,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             ],
-                            "end": 934,
-                            "start": 872,
+                            "end": 950,
+                            "start": 888,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           },
                           {
-                            "end": 937,
-                            "start": 936,
+                            "end": 953,
+                            "start": 952,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           },
                           {
-                            "end": 960,
-                            "start": 939,
+                            "end": 976,
+                            "start": 955,
                             "type": "TagDeclarator",
                             "type": "TagDeclarator",
                             "value": "rectangleSegmentB001"
                           }
                         ],
                         "callee": {
-                          "end": 871,
+                          "end": 887,
                           "name": "angledLine",
-                          "start": 861,
+                          "start": 877,
                           "type": "Identifier"
                         },
-                        "end": 961,
-                        "start": 861,
+                        "end": 977,
+                        "start": 877,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -728,21 +754,21 @@ description: Result of parsing color-cube.kcl
                               {
                                 "arguments": [
                                   {
-                                    "end": 1014,
+                                    "end": 1030,
                                     "name": "rectangleSegmentA001",
-                                    "start": 994,
+                                    "start": 1010,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 ],
                                 "callee": {
-                                  "end": 993,
+                                  "end": 1009,
                                   "name": "segAng",
-                                  "start": 987,
+                                  "start": 1003,
                                   "type": "Identifier"
                                 },
-                                "end": 1015,
-                                "start": 987,
+                                "end": 1031,
+                                "start": 1003,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
                               },
@@ -750,58 +776,58 @@ description: Result of parsing color-cube.kcl
                                 "argument": {
                                   "arguments": [
                                     {
-                                      "end": 1052,
+                                      "end": 1068,
                                       "name": "rectangleSegmentA001",
-                                      "start": 1032,
+                                      "start": 1048,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 1031,
+                                    "end": 1047,
                                     "name": "segLen",
-                                    "start": 1025,
+                                    "start": 1041,
                                     "type": "Identifier"
                                   },
-                                  "end": 1053,
-                                  "start": 1025,
+                                  "end": 1069,
+                                  "start": 1041,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
-                                "end": 1053,
+                                "end": 1069,
                                 "operator": "-",
-                                "start": 1024,
+                                "start": 1040,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               }
                             ],
-                            "end": 1060,
-                            "start": 978,
+                            "end": 1076,
+                            "start": 994,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           },
                           {
-                            "end": 1063,
-                            "start": 1062,
+                            "end": 1079,
+                            "start": 1078,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           },
                           {
-                            "end": 1086,
-                            "start": 1065,
+                            "end": 1102,
+                            "start": 1081,
                             "type": "TagDeclarator",
                             "type": "TagDeclarator",
                             "value": "rectangleSegmentC001"
                           }
                         ],
                         "callee": {
-                          "end": 977,
+                          "end": 993,
                           "name": "angledLine",
-                          "start": 967,
+                          "start": 983,
                           "type": "Identifier"
                         },
-                        "end": 1087,
-                        "start": 967,
+                        "end": 1103,
+                        "start": 983,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -810,67 +836,69 @@ description: Result of parsing color-cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
+                              "end": 1125,
+                              "name": "endAbsolute",
+                              "start": 1114,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "elements": [
                                 {
                                   "arguments": [
                                     {
-                                      "end": 1128,
-                                      "start": 1127,
+                                      "end": 1144,
+                                      "start": 1143,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 1126,
+                                    "end": 1142,
                                     "name": "profileStartX",
-                                    "start": 1113,
+                                    "start": 1129,
                                     "type": "Identifier"
                                   },
-                                  "end": 1129,
-                                  "start": 1113,
+                                  "end": 1145,
+                                  "start": 1129,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 1146,
-                                      "start": 1145,
+                                      "end": 1162,
+                                      "start": 1161,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 1144,
+                                    "end": 1160,
                                     "name": "profileStartY",
-                                    "start": 1131,
+                                    "start": 1147,
                                     "type": "Identifier"
                                   },
-                                  "end": 1147,
-                                  "start": 1131,
+                                  "end": 1163,
+                                  "start": 1147,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 }
                               ],
-                              "end": 1148,
-                              "start": 1112,
+                              "end": 1164,
+                              "start": 1128,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 1097,
+                          "end": 1113,
                           "name": "line",
-                          "start": 1093,
+                          "start": 1109,
                           "type": "Identifier"
                         },
-                        "end": 1149,
-                        "start": 1093,
+                        "end": 1165,
+                        "start": 1109,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -878,13 +906,13 @@ description: Result of parsing color-cube.kcl
                       {
                         "arguments": [],
                         "callee": {
-                          "end": 1160,
+                          "end": 1176,
                           "name": "close",
-                          "start": 1155,
+                          "start": 1171,
                           "type": "Identifier"
                         },
-                        "end": 1162,
-                        "start": 1155,
+                        "end": 1178,
+                        "start": 1171,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -893,31 +921,33 @@ description: Result of parsing color-cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "length"
+                              "end": 1201,
+                              "name": "length",
+                              "start": 1195,
+                              "type": "Identifier"
                             },
                             "arg": {
-                              "end": 1201,
+                              "end": 1217,
                               "name": "extrudeLength",
-                              "start": 1188,
+                              "start": 1204,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 1175,
+                          "end": 1191,
                           "name": "extrude",
-                          "start": 1168,
+                          "start": 1184,
                           "type": "Identifier"
                         },
-                        "end": 1202,
-                        "start": 1168,
+                        "end": 1218,
+                        "start": 1184,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": {
-                          "end": 1177,
-                          "start": 1176,
+                          "end": 1193,
+                          "start": 1192,
                           "type": "PipeSubstitution",
                           "type": "PipeSubstitution"
                         }
@@ -927,13 +957,15 @@ description: Result of parsing color-cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "color"
-                            },
-                            "arg": {
-                              "end": 1232,
+                              "end": 1240,
                               "name": "color",
-                              "start": 1227,
+                              "start": 1235,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "end": 1248,
+                              "name": "color",
+                              "start": 1243,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
@@ -941,13 +973,15 @@ description: Result of parsing color-cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "metalness"
-                            },
-                            "arg": {
                               "end": 1259,
+                              "name": "metalness",
+                              "start": 1250,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "end": 1275,
                               "name": "metalConstant",
-                              "start": 1246,
+                              "start": 1262,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
@@ -955,291 +989,293 @@ description: Result of parsing color-cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "roughness"
+                              "end": 1286,
+                              "name": "roughness",
+                              "start": 1277,
+                              "type": "Identifier"
                             },
                             "arg": {
-                              "end": 1290,
+                              "end": 1306,
                               "name": "roughnessConstant",
-                              "start": 1273,
+                              "start": 1289,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 1218,
+                          "end": 1234,
                           "name": "appearance",
-                          "start": 1208,
+                          "start": 1224,
                           "type": "Identifier"
                         },
-                        "end": 1291,
-                        "start": 1208,
+                        "end": 1307,
+                        "start": 1224,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
                       }
                     ],
-                    "end": 1291,
-                    "start": 749,
+                    "end": 1307,
+                    "start": 765,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 1291,
-                  "start": 742,
+                  "end": 1307,
+                  "start": 758,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1293,
-              "start": 738
+              "end": 1309,
+              "start": 754
             },
-            "end": 1293,
+            "end": 1309,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 729,
+                  "end": 745,
                   "name": "profile",
-                  "start": 722,
+                  "start": 738,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 736,
+                  "end": 752,
                   "name": "color",
-                  "start": 731,
+                  "start": 747,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 721,
+            "start": 737,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 705,
+          "start": 721,
           "type": "VariableDeclarator"
         },
-        "end": 1293,
+        "end": 1309,
         "kind": "fn",
-        "start": 702,
+        "start": 718,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 1363,
+        "end": 1379,
         "expression": {
           "arguments": [
             {
-              "end": 1352,
+              "end": 1368,
               "name": "bluePlane",
-              "start": 1343,
+              "start": 1359,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1362,
+              "end": 1378,
               "raw": "'#0000FF'",
-              "start": 1353,
+              "start": 1369,
               "type": "Literal",
               "type": "Literal",
               "value": "#0000FF"
             }
           ],
           "callee": {
-            "end": 1342,
+            "end": 1358,
             "name": "sketchRectangle",
-            "start": 1327,
+            "start": 1343,
             "type": "Identifier"
           },
-          "end": 1363,
-          "start": 1327,
+          "end": 1379,
+          "start": 1343,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1327,
+        "start": 1343,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1402,
+        "end": 1418,
         "expression": {
           "arguments": [
             {
-              "end": 1391,
+              "end": 1407,
               "name": "yellowPlane",
-              "start": 1380,
+              "start": 1396,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1401,
+              "end": 1417,
               "raw": "'#FFFF00'",
-              "start": 1392,
+              "start": 1408,
               "type": "Literal",
               "type": "Literal",
               "value": "#FFFF00"
             }
           ],
           "callee": {
-            "end": 1379,
+            "end": 1395,
             "name": "sketchRectangle",
-            "start": 1364,
+            "start": 1380,
             "type": "Identifier"
           },
-          "end": 1402,
-          "start": 1364,
+          "end": 1418,
+          "start": 1380,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1364,
+        "start": 1380,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1440,
+        "end": 1456,
         "expression": {
           "arguments": [
             {
-              "end": 1429,
+              "end": 1445,
               "name": "greenPlane",
-              "start": 1419,
+              "start": 1435,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1439,
+              "end": 1455,
               "raw": "'#00FF00'",
-              "start": 1430,
+              "start": 1446,
               "type": "Literal",
               "type": "Literal",
               "value": "#00FF00"
             }
           ],
           "callee": {
-            "end": 1418,
+            "end": 1434,
             "name": "sketchRectangle",
-            "start": 1403,
+            "start": 1419,
             "type": "Identifier"
           },
-          "end": 1440,
-          "start": 1403,
+          "end": 1456,
+          "start": 1419,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1403,
+        "start": 1419,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1476,
+        "end": 1492,
         "expression": {
           "arguments": [
             {
-              "end": 1465,
+              "end": 1481,
               "name": "redPlane",
-              "start": 1457,
+              "start": 1473,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1475,
+              "end": 1491,
               "raw": "'#FF0000'",
-              "start": 1466,
+              "start": 1482,
               "type": "Literal",
               "type": "Literal",
               "value": "#FF0000"
             }
           ],
           "callee": {
-            "end": 1456,
+            "end": 1472,
             "name": "sketchRectangle",
-            "start": 1441,
+            "start": 1457,
             "type": "Identifier"
           },
-          "end": 1476,
-          "start": 1441,
+          "end": 1492,
+          "start": 1457,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1441,
+        "start": 1457,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1513,
+        "end": 1529,
         "expression": {
           "arguments": [
             {
-              "end": 1502,
+              "end": 1518,
               "name": "tealPlane",
-              "start": 1493,
+              "start": 1509,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1512,
+              "end": 1528,
               "raw": "'#00FFFF'",
-              "start": 1503,
+              "start": 1519,
               "type": "Literal",
               "type": "Literal",
               "value": "#00FFFF"
             }
           ],
           "callee": {
-            "end": 1492,
+            "end": 1508,
             "name": "sketchRectangle",
-            "start": 1477,
+            "start": 1493,
             "type": "Identifier"
           },
-          "end": 1513,
-          "start": 1477,
+          "end": 1529,
+          "start": 1493,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1477,
+        "start": 1493,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1552,
+        "end": 1568,
         "expression": {
           "arguments": [
             {
-              "end": 1541,
+              "end": 1557,
               "name": "purplePlane",
-              "start": 1530,
+              "start": 1546,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1551,
+              "end": 1567,
               "raw": "'#FF00FF'",
-              "start": 1542,
+              "start": 1558,
               "type": "Literal",
               "type": "Literal",
               "value": "#FF00FF"
             }
           ],
           "callee": {
-            "end": 1529,
+            "end": 1545,
             "name": "sketchRectangle",
-            "start": 1514,
+            "start": 1530,
             "type": "Identifier"
           },
-          "end": 1552,
-          "start": 1514,
+          "end": 1568,
+          "start": 1530,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1514,
+        "start": 1530,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 1553,
+    "end": 1569,
     "innerAttrs": [
       {
         "end": 166,
@@ -1289,8 +1325,8 @@ description: Result of parsing color-cube.kcl
         ],
         "10": [
           {
-            "end": 701,
-            "start": 640,
+            "end": 717,
+            "start": 656,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -1301,8 +1337,8 @@ description: Result of parsing color-cube.kcl
         ],
         "11": [
           {
-            "end": 1326,
-            "start": 1293,
+            "end": 1342,
+            "start": 1309,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",

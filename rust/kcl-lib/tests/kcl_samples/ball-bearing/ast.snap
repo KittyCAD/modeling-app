@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing ball-bearing.kcl
 ---
 {
@@ -780,8 +780,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 941,
+                      "name": "center",
+                      "start": 935,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -817,8 +819,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 965,
+                      "name": "radius",
+                      "start": 959,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 996,
@@ -880,8 +884,10 @@ description: Result of parsing ball-bearing.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 1035,
+                          "name": "center",
+                          "start": 1029,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -917,8 +923,10 @@ description: Result of parsing ball-bearing.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 1059,
+                          "name": "radius",
+                          "start": 1053,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1074,
@@ -1023,8 +1031,10 @@ description: Result of parsing ball-bearing.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 1168,
+                  "name": "length",
+                  "start": 1162,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1187,
@@ -1390,8 +1400,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 1597,
+                      "name": "arcDegrees",
+                      "start": 1587,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1603,
@@ -1408,8 +1420,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 1616,
+                      "name": "axis",
+                      "start": 1612,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1456,8 +1470,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 1643,
+                      "name": "center",
+                      "start": 1637,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1504,8 +1520,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 1673,
+                      "name": "instances",
+                      "start": 1664,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1682,
@@ -1518,8 +1536,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 1707,
+                      "name": "rotateDuplicates",
+                      "start": 1691,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1714,
@@ -1909,8 +1929,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2060,
+                      "name": "end",
+                      "start": 2057,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1957,8 +1979,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2097,
+                      "name": "end",
+                      "start": 2094,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2116,8 +2140,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 2250,
+                      "name": "arcDegrees",
+                      "start": 2240,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2256,
@@ -2134,8 +2160,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 2269,
+                      "name": "axis",
+                      "start": 2265,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2182,8 +2210,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 2296,
+                      "name": "center",
+                      "start": 2290,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2230,8 +2260,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 2326,
+                      "name": "instances",
+                      "start": 2317,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2335,
@@ -2244,8 +2276,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 2360,
+                      "name": "rotateDuplicates",
+                      "start": 2344,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2367,
@@ -2339,8 +2373,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 2492,
+                      "name": "center",
+                      "start": 2486,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2436,8 +2472,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 2586,
+                      "name": "radius",
+                      "start": 2580,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2605,
@@ -2610,8 +2648,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 2754,
+                      "name": "arcDegrees",
+                      "start": 2744,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2760,
@@ -2628,8 +2668,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 2773,
+                      "name": "axis",
+                      "start": 2769,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2676,8 +2718,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 2800,
+                      "name": "center",
+                      "start": 2794,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2724,8 +2768,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 2830,
+                      "name": "instances",
+                      "start": 2821,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2839,
@@ -2738,8 +2784,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 2864,
+                      "name": "rotateDuplicates",
+                      "start": 2848,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2871,
@@ -2832,8 +2880,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 2996,
+                      "name": "center",
+                      "start": 2990,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2869,8 +2919,10 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 3020,
+                      "name": "radius",
+                      "start": 3014,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3042,
@@ -2918,8 +2970,10 @@ description: Result of parsing ball-bearing.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 3081,
+                          "name": "center",
+                          "start": 3075,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -2955,8 +3009,10 @@ description: Result of parsing ball-bearing.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 3105,
+                          "name": "radius",
+                          "start": 3099,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 3148,
@@ -3072,8 +3128,10 @@ description: Result of parsing ball-bearing.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 3208,
+                  "name": "length",
+                  "start": 3202,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 3227,

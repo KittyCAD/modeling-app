@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
 ---
 {
@@ -458,8 +458,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 675,
+                                "name": "endAbsolute",
+                                "start": 664,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -587,8 +589,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 717,
+                                "name": "tag",
+                                "start": 714,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 727,
@@ -616,8 +620,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 752,
+                                "name": "endAbsolute",
+                                "start": 741,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -745,8 +751,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 792,
+                                "name": "tag",
+                                "start": 789,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 802,
@@ -774,8 +782,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 827,
+                                "name": "endAbsolute",
+                                "start": 816,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -903,8 +913,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 869,
+                                "name": "tag",
+                                "start": 866,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 879,
@@ -932,8 +944,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 897,
+                                "name": "tag",
+                                "start": 894,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 907,
@@ -1595,8 +1609,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 1327,
+                                "name": "endAbsolute",
+                                "start": 1316,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -1670,8 +1686,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 1351,
+                                "name": "tag",
+                                "start": 1348,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1360,
@@ -1699,8 +1717,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 1385,
+                                "name": "endAbsolute",
+                                "start": 1374,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -1767,8 +1787,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 1408,
+                                "name": "tag",
+                                "start": 1405,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1417,
@@ -1796,8 +1818,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 1442,
+                                "name": "endAbsolute",
+                                "start": 1431,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -1871,8 +1895,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 1468,
+                                "name": "tag",
+                                "start": 1465,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1477,
@@ -1900,8 +1926,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 1502,
+                                "name": "endAbsolute",
+                                "start": 1491,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -1961,8 +1989,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 1524,
+                                "name": "tag",
+                                "start": 1521,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1533,
@@ -1990,8 +2020,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 1558,
+                                "name": "endAbsolute",
+                                "start": 1547,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -2041,8 +2073,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 1576,
+                                "name": "tag",
+                                "start": 1573,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1585,
@@ -2070,8 +2104,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 1610,
+                                "name": "endAbsolute",
+                                "start": 1599,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -2128,8 +2164,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 1629,
+                                "name": "tag",
+                                "start": 1626,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1638,
@@ -2157,8 +2195,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 1663,
+                                "name": "endAbsolute",
+                                "start": 1652,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -2225,8 +2265,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 1686,
+                                "name": "tag",
+                                "start": 1683,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1695,
@@ -2254,8 +2296,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 1713,
+                                "name": "tag",
+                                "start": 1710,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1722,
@@ -2429,8 +2473,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 1845,
+                      "name": "length",
+                      "start": 1839,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1864,
@@ -2490,8 +2536,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1892,
+                      "name": "radius",
+                      "start": 1886,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1901,
@@ -2504,8 +2552,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1914,
+                      "name": "tags",
+                      "start": 1910,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3295,8 +3345,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2505,
+                      "name": "end",
+                      "start": 2502,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3349,8 +3401,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2539,
+                      "name": "tag",
+                      "start": 2536,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2549,
@@ -3378,8 +3432,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2564,
+                      "name": "end",
+                      "start": 2561,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3454,8 +3510,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2595,
+                      "name": "tag",
+                      "start": 2592,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2605,
@@ -3483,8 +3541,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2620,
+                      "name": "end",
+                      "start": 2617,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3544,8 +3604,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2655,
+                      "name": "tag",
+                      "start": 2652,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2665,
@@ -3573,8 +3635,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2681,
+                      "name": "tag",
+                      "start": 2678,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2691,
@@ -3604,8 +3668,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 2724,
+                          "name": "center",
+                          "start": 2718,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -3779,8 +3845,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 2843,
+                          "name": "radius",
+                          "start": 2837,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 2858,
@@ -3844,8 +3912,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2889,
+                      "name": "length",
+                      "start": 2883,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -3880,8 +3950,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 2927,
+                      "name": "radius",
+                      "start": 2921,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2942,
@@ -3912,8 +3984,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 2955,
+                      "name": "tags",
+                      "start": 2951,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3984,8 +4058,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 3084,
+                      "name": "axis",
+                      "start": 3080,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4039,8 +4115,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3115,
+                      "name": "instances",
+                      "start": 3106,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3119,
@@ -4057,8 +4135,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 3136,
+                      "name": "distance",
+                      "start": 3128,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3176,
@@ -4345,8 +4425,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3346,
+                      "name": "end",
+                      "start": 3343,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4406,8 +4488,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 3381,
+                      "name": "tag",
+                      "start": 3378,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3391,
@@ -4435,8 +4519,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3406,
+                      "name": "end",
+                      "start": 3403,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4511,8 +4597,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 3437,
+                      "name": "tag",
+                      "start": 3434,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3447,
@@ -4540,8 +4628,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3462,
+                      "name": "end",
+                      "start": 3459,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4594,8 +4684,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 3496,
+                      "name": "tag",
+                      "start": 3493,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3506,
@@ -4623,8 +4715,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 3522,
+                      "name": "tag",
+                      "start": 3519,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3532,
@@ -4654,8 +4748,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 3565,
+                          "name": "center",
+                          "start": 3559,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -4836,8 +4932,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 3687,
+                          "name": "radius",
+                          "start": 3681,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 3702,
@@ -4901,8 +4999,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 3733,
+                      "name": "length",
+                      "start": 3727,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -4937,8 +5037,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 3771,
+                      "name": "radius",
+                      "start": 3765,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3786,
@@ -4969,8 +5071,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 3799,
+                      "name": "tags",
+                      "start": 3795,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5041,8 +5145,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 3928,
+                      "name": "axis",
+                      "start": 3924,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5096,8 +5202,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3959,
+                      "name": "instances",
+                      "start": 3950,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3963,
@@ -5114,8 +5222,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 3980,
+                      "name": "distance",
+                      "start": 3972,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4020,
@@ -5798,8 +5908,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4398,
+                      "name": "end",
+                      "start": 4395,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5846,8 +5958,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4424,
+                      "name": "end",
+                      "start": 4421,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5910,8 +6024,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 4472,
+                      "name": "length",
+                      "start": 4466,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4485,
@@ -6099,8 +6215,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4621,
+                      "name": "end",
+                      "start": 4618,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6147,8 +6265,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4647,
+                      "name": "end",
+                      "start": 4644,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6202,8 +6322,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4674,
+                      "name": "end",
+                      "start": 4671,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6270,8 +6392,10 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 4720,
+                      "name": "length",
+                      "start": 4714,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4733,

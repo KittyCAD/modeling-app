@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing color-cube.kcl
 ---
 {
@@ -173,7 +173,7 @@ description: Variables in memory after executing color-cube.kcl
       "artifactId": "[uuid]",
       "value": "Custom",
       "origin": {
-        "x": 50.0,
+        "x": 49.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -247,8 +247,8 @@ description: Variables in memory after executing color-cube.kcl
     "__meta": [
       {
         "sourceRange": [
-          721,
-          1293,
+          737,
+          1309,
           0
         ]
       }

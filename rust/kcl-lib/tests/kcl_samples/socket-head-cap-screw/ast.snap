@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing socket-head-cap-screw.kcl
 ---
 {
@@ -500,8 +500,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "center"
+                                "end": 1007,
+                                "name": "center",
+                                "start": 1001,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -565,8 +567,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "radius"
+                                "end": 1047,
+                                "name": "radius",
+                                "start": 1041,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1068,
@@ -667,8 +671,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "type": "Identifier",
-                            "name": "length"
+                            "end": 1159,
+                            "name": "length",
+                            "start": 1153,
+                            "type": "Identifier"
                           },
                           "arg": {
                             "end": 1175,
@@ -1334,8 +1340,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "type": "Identifier",
-                            "name": "length"
+                            "end": 2024,
+                            "name": "length",
+                            "start": 2018,
+                            "type": "Identifier"
                           },
                           "arg": {
                             "end": 2045,
@@ -1443,8 +1451,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "center"
+                                "end": 2132,
+                                "name": "center",
+                                "start": 2126,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -1508,8 +1518,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "radius"
+                                "end": 2172,
+                                "name": "radius",
+                                "start": 2166,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 2182,
@@ -1579,8 +1591,10 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "type": "Identifier",
-                            "name": "length"
+                            "end": 2237,
+                            "name": "length",
+                            "start": 2231,
+                            "type": "Identifier"
                           },
                           "arg": {
                             "end": 2246,

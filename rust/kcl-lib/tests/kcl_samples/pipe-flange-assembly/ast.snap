@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing pipe-flange-assembly.kcl
 ---
 {
@@ -1317,8 +1317,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "center"
+                                "end": 1577,
+                                "name": "center",
+                                "start": 1571,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -1354,8 +1356,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "radius"
+                                "end": 1603,
+                                "name": "radius",
+                                "start": 1597,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1617,
@@ -1442,8 +1446,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "type": "Identifier",
-                            "name": "length"
+                            "end": 1708,
+                            "name": "length",
+                            "start": 1702,
+                            "type": "Identifier"
                           },
                           "arg": {
                             "end": 1714,
@@ -2162,8 +2168,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "type": "Identifier",
-                            "name": "length"
+                            "end": 2612,
+                            "name": "length",
+                            "start": 2606,
+                            "type": "Identifier"
                           },
                           "arg": {
                             "end": 2633,
@@ -2797,8 +2805,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "center"
+                                "end": 2995,
+                                "name": "center",
+                                "start": 2989,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -2862,8 +2872,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "radius"
+                                "end": 3035,
+                                "name": "radius",
+                                "start": 3029,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 3050,
@@ -2911,8 +2923,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "type": "Identifier",
-                                    "name": "center"
+                                    "end": 3095,
+                                    "name": "center",
+                                    "start": 3089,
+                                    "type": "Identifier"
                                   },
                                   "arg": {
                                     "elements": [
@@ -2976,8 +2990,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "type": "Identifier",
-                                    "name": "radius"
+                                    "end": 3135,
+                                    "name": "radius",
+                                    "start": 3129,
+                                    "type": "Identifier"
                                   },
                                   "arg": {
                                     "end": 3150,
@@ -3041,8 +3057,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "length"
+                                "end": 3185,
+                                "name": "length",
+                                "start": 3179,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 3191,
@@ -4119,8 +4137,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "type": "Identifier",
-                                    "name": "center"
+                                    "end": 4168,
+                                    "name": "center",
+                                    "start": 4162,
+                                    "type": "Identifier"
                                   },
                                   "arg": {
                                     "elements": [
@@ -4156,8 +4176,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "type": "Identifier",
-                                    "name": "radius"
+                                    "end": 4194,
+                                    "name": "radius",
+                                    "start": 4188,
+                                    "type": "Identifier"
                                   },
                                   "arg": {
                                     "end": 4209,
@@ -4221,8 +4243,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "length"
+                                "end": 4244,
+                                "name": "length",
+                                "start": 4238,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "argument": {
@@ -4365,8 +4389,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 4372,
+                      "name": "center",
+                      "start": 4366,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4430,8 +4456,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 4420,
+                      "name": "radius",
+                      "start": 4414,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4441,
@@ -4491,8 +4519,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 4490,
+                      "name": "arcDegrees",
+                      "start": 4480,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4496,
@@ -4509,8 +4539,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 4511,
+                      "name": "center",
+                      "start": 4505,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4546,8 +4578,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 4538,
+                      "name": "instances",
+                      "start": 4529,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4542,
@@ -4564,8 +4598,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 4567,
+                      "name": "rotateDuplicates",
+                      "start": 4551,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4574,
@@ -4737,8 +4773,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4707,
+                      "name": "end",
+                      "start": 4704,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4875,8 +4913,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4781,
+                      "name": "end",
+                      "start": 4778,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4934,8 +4974,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4806,
+                      "name": "end",
+                      "start": 4803,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4989,8 +5031,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4845,
+                      "name": "end",
+                      "start": 4842,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5120,8 +5164,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4919,
+                      "name": "end",
+                      "start": 4916,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5244,8 +5290,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 4991,
+                      "name": "end",
+                      "start": 4988,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5296,8 +5344,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5015,
+                      "name": "end",
+                      "start": 5012,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5344,8 +5394,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5053,
+                      "name": "end",
+                      "start": 5050,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5535,8 +5587,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "color"
+                      "end": 5180,
+                      "name": "color",
+                      "start": 5175,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 5192,
@@ -5694,8 +5748,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5299,
+                      "name": "end",
+                      "start": 5296,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5746,8 +5802,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5323,
+                      "name": "end",
+                      "start": 5320,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5798,8 +5856,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5347,
+                      "name": "end",
+                      "start": 5344,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5899,8 +5959,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 5437,
+                          "name": "center",
+                          "start": 5431,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -5936,8 +5998,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 5461,
+                          "name": "radius",
+                          "start": 5455,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 5481,
@@ -6001,8 +6065,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 5512,
+                      "name": "length",
+                      "start": 5506,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 5528,
@@ -6030,8 +6096,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "color"
+                      "end": 5551,
+                      "name": "color",
+                      "start": 5546,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 5563,
@@ -6125,8 +6193,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 5658,
+                      "name": "center",
+                      "start": 5652,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6162,8 +6232,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 5682,
+                      "name": "radius",
+                      "start": 5676,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 5698,
@@ -6220,8 +6292,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 5771,
+                          "name": "center",
+                          "start": 5765,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -6257,8 +6331,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 5795,
+                          "name": "radius",
+                          "start": 5789,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 5815,
@@ -6322,8 +6398,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 5846,
+                      "name": "length",
+                      "start": 5840,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -6358,8 +6436,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "color"
+                      "end": 5888,
+                      "name": "color",
+                      "start": 5883,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 5900,
@@ -6546,8 +6626,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "axis"
+                    "end": 6073,
+                    "name": "axis",
+                    "start": 6069,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -6594,8 +6676,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "center"
+                    "end": 6100,
+                    "name": "center",
+                    "start": 6094,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -6642,8 +6726,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "instances"
+                    "end": 6130,
+                    "name": "instances",
+                    "start": 6121,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6134,
@@ -6660,8 +6746,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "arcDegrees"
+                    "end": 6153,
+                    "name": "arcDegrees",
+                    "start": 6143,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6159,
@@ -6678,8 +6766,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "rotateDuplicates"
+                    "end": 6184,
+                    "name": "rotateDuplicates",
+                    "start": 6168,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6191,
@@ -6708,8 +6798,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "color"
+                    "end": 6220,
+                    "name": "color",
+                    "start": 6215,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6232,
@@ -6848,8 +6940,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "axis"
+                    "end": 6431,
+                    "name": "axis",
+                    "start": 6427,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -6896,8 +6990,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "center"
+                    "end": 6458,
+                    "name": "center",
+                    "start": 6452,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -6944,8 +7040,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "instances"
+                    "end": 6488,
+                    "name": "instances",
+                    "start": 6479,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6492,
@@ -6962,8 +7060,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "arcDegrees"
+                    "end": 6511,
+                    "name": "arcDegrees",
+                    "start": 6501,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6517,
@@ -6980,8 +7080,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "rotateDuplicates"
+                    "end": 6542,
+                    "name": "rotateDuplicates",
+                    "start": 6526,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6549,
@@ -7010,8 +7112,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "color"
+                    "end": 6578,
+                    "name": "color",
+                    "start": 6573,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6590,
@@ -7082,8 +7186,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 6663,
+                      "name": "center",
+                      "start": 6657,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7119,8 +7225,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 6687,
+                      "name": "radius",
+                      "start": 6681,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 6702,
@@ -7192,8 +7300,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 6753,
+                      "name": "length",
+                      "start": 6747,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -7234,8 +7344,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 6805,
+                      "name": "axis",
+                      "start": 6801,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7282,8 +7394,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 6832,
+                      "name": "center",
+                      "start": 6826,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7330,8 +7444,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 6862,
+                      "name": "instances",
+                      "start": 6853,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 6866,
@@ -7348,8 +7464,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 6885,
+                      "name": "arcDegrees",
+                      "start": 6875,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 6891,
@@ -7366,8 +7484,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 6916,
+                      "name": "rotateDuplicates",
+                      "start": 6900,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 6923,
@@ -7396,8 +7516,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "color"
+                      "end": 6952,
+                      "name": "color",
+                      "start": 6947,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 6964,
@@ -7986,8 +8108,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "axis"
+                    "end": 7450,
+                    "name": "axis",
+                    "start": 7446,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -8034,8 +8158,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "center"
+                    "end": 7477,
+                    "name": "center",
+                    "start": 7471,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -8082,8 +8208,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "instances"
+                    "end": 7507,
+                    "name": "instances",
+                    "start": 7498,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 7511,
@@ -8100,8 +8228,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "arcDegrees"
+                    "end": 7530,
+                    "name": "arcDegrees",
+                    "start": 7520,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 7536,
@@ -8118,8 +8248,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "rotateDuplicates"
+                    "end": 7561,
+                    "name": "rotateDuplicates",
+                    "start": 7545,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 7568,
@@ -8148,8 +8280,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "color"
+                    "end": 7597,
+                    "name": "color",
+                    "start": 7592,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 7609,
@@ -8338,8 +8472,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "axis"
+                    "end": 7802,
+                    "name": "axis",
+                    "start": 7798,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -8386,8 +8522,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "center"
+                    "end": 7829,
+                    "name": "center",
+                    "start": 7823,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -8434,8 +8572,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "instances"
+                    "end": 7859,
+                    "name": "instances",
+                    "start": 7850,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 7863,
@@ -8452,8 +8592,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "arcDegrees"
+                    "end": 7882,
+                    "name": "arcDegrees",
+                    "start": 7872,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 7888,
@@ -8470,8 +8612,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "rotateDuplicates"
+                    "end": 7913,
+                    "name": "rotateDuplicates",
+                    "start": 7897,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 7920,
@@ -8500,8 +8644,10 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "color"
+                    "end": 7949,
+                    "name": "color",
+                    "start": 7944,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 7961,

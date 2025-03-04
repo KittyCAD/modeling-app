@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing 3d-boaty.kcl
 ---
 {
@@ -233,8 +233,10 @@ description: Result of parsing 3d-boaty.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "offset"
+                    "end": 847,
+                    "name": "offset",
+                    "start": 841,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 865,
@@ -307,8 +309,10 @@ description: Result of parsing 3d-boaty.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "offset"
+                    "end": 900,
+                    "name": "offset",
+                    "start": 894,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 918,
@@ -381,8 +385,10 @@ description: Result of parsing 3d-boaty.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "offset"
+                    "end": 1002,
+                    "name": "offset",
+                    "start": 996,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 1021,
@@ -469,8 +475,10 @@ description: Result of parsing 3d-boaty.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "offset"
+                    "end": 1097,
+                    "name": "offset",
+                    "start": 1091,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 1139,
@@ -603,8 +611,10 @@ description: Result of parsing 3d-boaty.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "offset"
+                    "end": 1234,
+                    "name": "offset",
+                    "start": 1228,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 1276,

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing pipe.kcl
 ---
 {
@@ -377,8 +377,10 @@ description: Result of parsing pipe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 699,
+                      "name": "end",
+                      "start": 696,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -425,8 +427,10 @@ description: Result of parsing pipe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 731,
+                      "name": "end",
+                      "start": 728,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -555,8 +559,10 @@ description: Result of parsing pipe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 868,
+                      "name": "end",
+                      "start": 865,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -644,8 +650,10 @@ description: Result of parsing pipe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 936,
+                      "name": "end",
+                      "start": 933,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing dodecahedron.kcl
 ---
 {
@@ -1341,8 +1341,10 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 1505,
+                  "name": "length",
+                  "start": 1499,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1521,
@@ -1394,8 +1396,10 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 1566,
+                  "name": "length",
+                  "start": 1560,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1582,
@@ -1447,8 +1451,10 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 1694,
+                  "name": "instances",
+                  "start": 1685,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1698,
@@ -1465,8 +1471,10 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 1706,
+                  "name": "axis",
+                  "start": 1702,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1513,8 +1521,10 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 1728,
+                  "name": "center",
+                  "start": 1722,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1561,8 +1571,10 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 1754,
+                  "name": "arcDegrees",
+                  "start": 1744,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1760,
@@ -1579,8 +1591,10 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 1780,
+                  "name": "rotateDuplicates",
+                  "start": 1764,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1787,
@@ -1626,8 +1640,10 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "instances"
+                "end": 1876,
+                "name": "instances",
+                "start": 1867,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 1880,
@@ -1644,8 +1660,10 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "axis"
+                "end": 1888,
+                "name": "axis",
+                "start": 1884,
+                "type": "Identifier"
               },
               "arg": {
                 "elements": [
@@ -1692,8 +1710,10 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "center"
+                "end": 1910,
+                "name": "center",
+                "start": 1904,
+                "type": "Identifier"
               },
               "arg": {
                 "elements": [
@@ -1736,8 +1756,10 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "arcDegrees"
+                "end": 1940,
+                "name": "arcDegrees",
+                "start": 1930,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 1946,
@@ -1754,8 +1776,10 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "rotateDuplicates"
+                "end": 1966,
+                "name": "rotateDuplicates",
+                "start": 1950,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 1973,
@@ -1796,8 +1820,10 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "instances"
+                "end": 2074,
+                "name": "instances",
+                "start": 2065,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 2078,
@@ -1814,8 +1840,10 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "axis"
+                "end": 2086,
+                "name": "axis",
+                "start": 2082,
+                "type": "Identifier"
               },
               "arg": {
                 "elements": [
@@ -1862,8 +1890,10 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "center"
+                "end": 2108,
+                "name": "center",
+                "start": 2102,
+                "type": "Identifier"
               },
               "arg": {
                 "elements": [
@@ -1906,8 +1936,10 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "arcDegrees"
+                "end": 2138,
+                "name": "arcDegrees",
+                "start": 2128,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 2144,
@@ -1924,8 +1956,10 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "rotateDuplicates"
+                "end": 2164,
+                "name": "rotateDuplicates",
+                "start": 2148,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 2171,

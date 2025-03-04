@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing lego.kcl
 ---
 {
@@ -1554,8 +1554,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1674,
+                      "name": "end",
+                      "start": 1671,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1602,8 +1604,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1707,
+                      "name": "end",
+                      "start": 1704,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1650,8 +1654,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1741,
+                      "name": "end",
+                      "start": 1738,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1718,8 +1724,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 1794,
+                      "name": "length",
+                      "start": 1788,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1803,
@@ -1939,8 +1947,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2083,
+                      "name": "end",
+                      "start": 2080,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2019,8 +2029,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2126,
+                      "name": "end",
+                      "start": 2123,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2099,8 +2111,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2170,
+                      "name": "end",
+                      "start": 2167,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2199,8 +2213,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2235,
+                      "name": "length",
+                      "start": 2229,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -2321,8 +2337,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 2352,
+                      "name": "center",
+                      "start": 2346,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2464,8 +2482,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 2455,
+                      "name": "radius",
+                      "start": 2449,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2470,
@@ -2511,8 +2531,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 2511,
+                      "name": "axis",
+                      "start": 2507,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2548,8 +2570,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 2538,
+                      "name": "instances",
+                      "start": 2529,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2547,
@@ -2562,8 +2586,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 2564,
+                      "name": "distance",
+                      "start": 2556,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2572,
@@ -2591,8 +2617,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 2613,
+                      "name": "axis",
+                      "start": 2609,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2628,8 +2656,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 2640,
+                      "name": "instances",
+                      "start": 2631,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2649,
@@ -2642,8 +2672,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 2666,
+                      "name": "distance",
+                      "start": 2658,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2674,
@@ -2671,8 +2703,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2701,
+                      "name": "length",
+                      "start": 2695,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2714,
@@ -2764,8 +2798,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 2826,
+                      "name": "center",
+                      "start": 2820,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2971,8 +3007,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 2957,
+                      "name": "radius",
+                      "start": 2951,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2972,
@@ -3018,8 +3056,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 3013,
+                      "name": "axis",
+                      "start": 3009,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3055,8 +3095,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3040,
+                      "name": "instances",
+                      "start": 3031,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3053,
@@ -3087,8 +3129,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 3070,
+                      "name": "distance",
+                      "start": 3062,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3078,
@@ -3116,8 +3160,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 3119,
+                      "name": "axis",
+                      "start": 3115,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3153,8 +3199,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3146,
+                      "name": "instances",
+                      "start": 3137,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3159,
@@ -3185,8 +3233,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 3176,
+                      "name": "distance",
+                      "start": 3168,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3184,
@@ -3214,8 +3264,10 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 3211,
+                      "name": "length",
+                      "start": 3205,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {

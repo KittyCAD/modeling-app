@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing kitt.kcl
 ---
 {
@@ -103,8 +103,10 @@ description: Result of parsing kitt.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 285,
+                                "name": "end",
+                                "start": 282,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -151,8 +153,10 @@ description: Result of parsing kitt.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 316,
+                                "name": "end",
+                                "start": 313,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -199,8 +203,10 @@ description: Result of parsing kitt.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 346,
+                                "name": "end",
+                                "start": 343,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -254,8 +260,10 @@ description: Result of parsing kitt.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 386,
+                                "name": "endAbsolute",
+                                "start": 375,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -337,8 +345,10 @@ description: Result of parsing kitt.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "length"
+                                "end": 463,
+                                "name": "length",
+                                "start": 457,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 471,
@@ -693,8 +703,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 697,
+                      "name": "end",
+                      "start": 694,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -741,8 +753,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 733,
+                      "name": "end",
+                      "start": 730,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -774,8 +788,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 758,
+                      "name": "tag",
+                      "start": 755,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 767,
@@ -803,8 +819,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 782,
+                      "name": "end",
+                      "start": 779,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -843,8 +861,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 809,
+                      "name": "tag",
+                      "start": 806,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 818,
@@ -872,8 +892,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 841,
+                      "name": "endAbsolute",
+                      "start": 830,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -955,8 +977,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 914,
+                      "name": "length",
+                      "start": 908,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 929,
@@ -1627,8 +1651,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1568,
+                      "name": "end",
+                      "start": 1565,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1679,8 +1705,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1616,
+                      "name": "end",
+                      "start": 1613,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1738,8 +1766,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1667,
+                      "name": "end",
+                      "start": 1664,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1786,8 +1816,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1719,
+                      "name": "end",
+                      "start": 1716,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1838,8 +1870,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1770,
+                      "name": "end",
+                      "start": 1767,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1890,8 +1924,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1818,
+                      "name": "end",
+                      "start": 1815,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1938,8 +1974,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1873,
+                      "name": "end",
+                      "start": 1870,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1997,8 +2035,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1925,
+                      "name": "end",
+                      "start": 1922,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2049,8 +2089,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1977,
+                      "name": "end",
+                      "start": 1974,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2104,8 +2146,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2033,
+                      "name": "end",
+                      "start": 2030,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2163,8 +2207,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2085,
+                      "name": "end",
+                      "start": 2082,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2222,8 +2268,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2145,
+                      "name": "endAbsolute",
+                      "start": 2134,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2305,8 +2353,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2218,
+                      "name": "length",
+                      "start": 2212,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -3233,8 +3283,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2944,
+                      "name": "end",
+                      "start": 2941,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3285,8 +3337,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2985,
+                      "name": "end",
+                      "start": 2982,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3337,8 +3391,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3029,
+                      "name": "end",
+                      "start": 3026,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3389,8 +3445,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3068,
+                      "name": "end",
+                      "start": 3065,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3448,8 +3506,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3112,
+                      "name": "end",
+                      "start": 3109,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3500,8 +3560,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3153,
+                      "name": "end",
+                      "start": 3150,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3552,8 +3614,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3196,
+                      "name": "end",
+                      "start": 3193,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3611,8 +3675,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3241,
+                      "name": "end",
+                      "start": 3238,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3670,8 +3736,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3286,
+                      "name": "end",
+                      "start": 3283,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3729,8 +3797,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3328,
+                      "name": "end",
+                      "start": 3325,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3781,8 +3851,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3373,
+                      "name": "end",
+                      "start": 3370,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3840,8 +3912,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3426,
+                      "name": "endAbsolute",
+                      "start": 3415,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3923,8 +3997,10 @@ description: Result of parsing kitt.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 3499,
+                      "name": "length",
+                      "start": 3493,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3513,
@@ -6744,8 +6820,10 @@ description: Result of parsing kitt.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 6298,
+                                "name": "end",
+                                "start": 6295,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -6792,8 +6870,10 @@ description: Result of parsing kitt.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 6335,
+                                "name": "end",
+                                "start": 6332,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -6847,8 +6927,10 @@ description: Result of parsing kitt.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 6374,
+                                "name": "end",
+                                "start": 6371,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -6902,8 +6984,10 @@ description: Result of parsing kitt.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 6420,
+                                "name": "endAbsolute",
+                                "start": 6409,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -7009,8 +7093,10 @@ description: Result of parsing kitt.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "type": "Identifier",
-                            "name": "length"
+                            "end": 6517,
+                            "name": "length",
+                            "start": 6511,
+                            "type": "Identifier"
                           },
                           "arg": {
                             "end": 6533,

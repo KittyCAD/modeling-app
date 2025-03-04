@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing router-template-slate.kcl
 ---
 {
@@ -1160,8 +1160,10 @@ description: Result of parsing router-template-slate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1159,
+                      "name": "endAbsolute",
+                      "start": 1148,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1296,8 +1298,10 @@ description: Result of parsing router-template-slate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 1280,
+                  "name": "length",
+                  "start": 1274,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1284,
@@ -1700,8 +1704,10 @@ description: Result of parsing router-template-slate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1777,
+                      "name": "endAbsolute",
+                      "start": 1766,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1824,8 +1830,10 @@ description: Result of parsing router-template-slate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 1899,
+                  "name": "length",
+                  "start": 1893,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1905,
@@ -2200,8 +2208,10 @@ description: Result of parsing router-template-slate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2349,
+                      "name": "endAbsolute",
+                      "start": 2338,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2324,8 +2334,10 @@ description: Result of parsing router-template-slate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 2470,
+                  "name": "length",
+                  "start": 2464,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2476,

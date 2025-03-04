@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing gridfinity-bins-stacking-lip.kcl
 ---
 {
@@ -1181,8 +1181,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 1610,
+                  "name": "length",
+                  "start": 1604,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1642,
@@ -1242,8 +1244,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                     {
                       "type": "LabeledArg",
                       "label": {
-                        "type": "Identifier",
-                        "name": "offset"
+                        "end": 1576,
+                        "name": "offset",
+                        "start": 1570,
+                        "type": "Identifier"
                       },
                       "arg": {
                         "end": 1600,
@@ -1323,8 +1327,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 1764,
+                  "name": "arcDegrees",
+                  "start": 1754,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1770,
@@ -1341,8 +1347,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 1778,
+                  "name": "axis",
+                  "start": 1774,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1389,8 +1397,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 1800,
+                  "name": "center",
+                  "start": 1794,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1529,8 +1539,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 1895,
+                  "name": "instances",
+                  "start": 1886,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1899,
@@ -1547,8 +1559,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 1919,
+                  "name": "rotateDuplicates",
+                  "start": 1903,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1926,
@@ -1807,8 +1821,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "offset"
+                          "end": 2211,
+                          "name": "offset",
+                          "start": 2205,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 2235,
@@ -1899,8 +1915,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 2330,
+                  "name": "arcDegrees",
+                  "start": 2320,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2336,
@@ -1917,8 +1935,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 2344,
+                  "name": "axis",
+                  "start": 2340,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1965,8 +1985,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 2366,
+                  "name": "center",
+                  "start": 2360,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -2105,8 +2127,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 2461,
+                  "name": "instances",
+                  "start": 2452,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2465,
@@ -2123,8 +2147,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 2485,
+                  "name": "rotateDuplicates",
+                  "start": 2469,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2492,
@@ -2271,8 +2297,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2639,
+                      "name": "end",
+                      "start": 2636,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2336,8 +2364,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2683,
+                      "name": "tag",
+                      "start": 2680,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2694,
@@ -2365,8 +2395,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2709,
+                      "name": "end",
+                      "start": 2706,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2430,8 +2462,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2753,
+                      "name": "tag",
+                      "start": 2750,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2764,
@@ -2506,8 +2540,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2824,
+                      "name": "tag",
+                      "start": 2821,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2835,
@@ -2535,8 +2571,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2856,
+                      "name": "length",
+                      "start": 2850,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2865,
@@ -2564,8 +2602,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 2893,
+                      "name": "radius",
+                      "start": 2887,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2905,
@@ -2578,8 +2618,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 2918,
+                      "name": "tags",
+                      "start": 2914,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2747,8 +2789,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 3182,
+                      "name": "center",
+                      "start": 3176,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2839,8 +2883,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 3300,
+                      "name": "radius",
+                      "start": 3294,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3319,
@@ -2886,8 +2932,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 3368,
+                      "name": "arcDegrees",
+                      "start": 3358,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3374,
@@ -2904,8 +2952,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 3389,
+                      "name": "center",
+                      "start": 3383,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3040,8 +3090,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3498,
+                      "name": "instances",
+                      "start": 3489,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3502,
@@ -3058,8 +3110,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 3527,
+                      "name": "rotateDuplicates",
+                      "start": 3511,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3534,
@@ -3088,8 +3142,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 3561,
+                      "name": "length",
+                      "start": 3555,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -3167,8 +3223,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 3673,
+                      "name": "axis",
+                      "start": 3669,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3215,8 +3273,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3709,
+                      "name": "instances",
+                      "start": 3700,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3725,
@@ -3229,8 +3289,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 3742,
+                      "name": "distance",
+                      "start": 3734,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3767,
@@ -3296,8 +3358,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 3808,
+                      "name": "axis",
+                      "start": 3804,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3344,8 +3408,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3844,
+                      "name": "instances",
+                      "start": 3835,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3861,
@@ -3358,8 +3424,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 3878,
+                      "name": "distance",
+                      "start": 3870,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3903,
@@ -3462,8 +3530,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 4034,
+                      "name": "axis",
+                      "start": 4030,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3510,8 +3580,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 4070,
+                      "name": "instances",
+                      "start": 4061,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4086,
@@ -3524,8 +3596,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 4103,
+                      "name": "distance",
+                      "start": 4095,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4128,
@@ -3591,8 +3665,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 4169,
+                      "name": "axis",
+                      "start": 4165,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3639,8 +3715,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 4205,
+                      "name": "instances",
+                      "start": 4196,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4222,
@@ -3653,8 +3731,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 4239,
+                      "name": "distance",
+                      "start": 4231,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4264,
@@ -3757,8 +3837,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 4389,
+                      "name": "axis",
+                      "start": 4385,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3805,8 +3887,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 4425,
+                      "name": "instances",
+                      "start": 4416,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4441,
@@ -3819,8 +3903,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 4458,
+                      "name": "distance",
+                      "start": 4450,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4483,
@@ -3886,8 +3972,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 4524,
+                      "name": "axis",
+                      "start": 4520,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3934,8 +4022,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 4560,
+                      "name": "instances",
+                      "start": 4551,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4577,
@@ -3948,8 +4038,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 4594,
+                      "name": "distance",
+                      "start": 4586,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4619,
@@ -4054,8 +4146,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "offset"
+                          "end": 4678,
+                          "name": "offset",
+                          "start": 4672,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 4687,
@@ -4359,8 +4453,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 4912,
+                      "name": "tag",
+                      "start": 4909,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4923,
@@ -4388,8 +4484,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 4944,
+                      "name": "length",
+                      "start": 4938,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4973,
@@ -4431,8 +4529,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 5001,
+                      "name": "radius",
+                      "start": 4995,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 5016,
@@ -4445,8 +4545,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 5029,
+                      "name": "tags",
+                      "start": 5025,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4559,8 +4661,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "faces"
+                      "end": 5229,
+                      "name": "faces",
+                      "start": 5224,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4582,8 +4686,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "thickness"
+                      "end": 5250,
+                      "name": "thickness",
+                      "start": 5241,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 5259,
@@ -4737,8 +4843,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 5473,
+                                "name": "end",
+                                "start": 5470,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -4774,8 +4882,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 5496,
+                                "name": "tag",
+                                "start": 5493,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 5507,
@@ -4904,8 +5014,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "end"
+                                "end": 5708,
+                                "name": "end",
+                                "start": 5705,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -4948,8 +5060,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 5737,
+                                "name": "tag",
+                                "start": 5734,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 5748,
@@ -6182,8 +6296,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 6755,
+                  "name": "length",
+                  "start": 6749,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 6833,
@@ -6341,8 +6457,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 6933,
+                  "name": "length",
+                  "start": 6927,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 7013,
@@ -6500,8 +6618,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 7145,
+                  "name": "arcDegrees",
+                  "start": 7135,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 7151,
@@ -6518,8 +6638,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 7159,
+                  "name": "axis",
+                  "start": 7155,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -6566,8 +6688,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 7181,
+                  "name": "center",
+                  "start": 7175,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -6734,8 +6858,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 7309,
+                  "name": "instances",
+                  "start": 7300,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 7313,
@@ -6752,8 +6878,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 7333,
+                  "name": "rotateDuplicates",
+                  "start": 7317,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 7340,
@@ -6806,8 +6934,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 7471,
+                  "name": "arcDegrees",
+                  "start": 7461,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 7477,
@@ -6824,8 +6954,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 7485,
+                  "name": "axis",
+                  "start": 7481,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -6872,8 +7004,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 7507,
+                  "name": "center",
+                  "start": 7501,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -7040,8 +7174,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 7635,
+                  "name": "instances",
+                  "start": 7626,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 7639,
@@ -7058,8 +7194,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 7659,
+                  "name": "rotateDuplicates",
+                  "start": 7643,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 7666,
@@ -7440,8 +7578,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 8140,
+                  "name": "arcDegrees",
+                  "start": 8130,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 8146,
@@ -7458,8 +7598,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 8154,
+                  "name": "axis",
+                  "start": 8150,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -7506,8 +7648,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 8176,
+                  "name": "center",
+                  "start": 8170,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -7674,8 +7818,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 8304,
+                  "name": "instances",
+                  "start": 8295,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 8308,
@@ -7692,8 +7838,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 8328,
+                  "name": "rotateDuplicates",
+                  "start": 8312,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 8335,
@@ -7746,8 +7894,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 8443,
+                  "name": "arcDegrees",
+                  "start": 8433,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 8449,
@@ -7764,8 +7914,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 8457,
+                  "name": "axis",
+                  "start": 8453,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -7812,8 +7964,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 8479,
+                  "name": "center",
+                  "start": 8473,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -7980,8 +8134,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 8607,
+                  "name": "instances",
+                  "start": 8598,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 8611,
@@ -7998,8 +8154,10 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 8631,
+                  "name": "rotateDuplicates",
+                  "start": 8615,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 8638,

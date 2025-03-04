@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing i-beam.kcl
 ---
 {
@@ -472,8 +472,10 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 636,
+                      "name": "length",
+                      "start": 630,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 649,

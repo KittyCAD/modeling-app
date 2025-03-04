@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing food-service-spatula.kcl
 ---
 {
@@ -1988,8 +1988,10 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1561,
+                      "name": "end",
+                      "start": 1558,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2074,8 +2076,10 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 1630,
+                      "name": "end",
+                      "start": 1627,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2782,8 +2786,10 @@ description: Result of parsing food-service-spatula.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 2367,
+                  "name": "length",
+                  "start": 2361,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2386,
@@ -2828,8 +2834,10 @@ description: Result of parsing food-service-spatula.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "radius"
+                "end": 2451,
+                "name": "radius",
+                "start": 2445,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 2473,
@@ -2842,8 +2850,10 @@ description: Result of parsing food-service-spatula.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "tags"
+                "end": 2481,
+                "name": "tags",
+                "start": 2477,
+                "type": "Identifier"
               },
               "arg": {
                 "elements": [
@@ -2935,8 +2945,10 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "offset"
+                      "end": 2682,
+                      "name": "offset",
+                      "start": 2676,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2701,
@@ -3075,8 +3087,10 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2827,
+                      "name": "end",
+                      "start": 2824,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3112,8 +3126,10 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2857,
+                      "name": "tag",
+                      "start": 2854,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2877,
@@ -3141,8 +3157,10 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2892,
+                      "name": "end",
+                      "start": 2889,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3193,8 +3211,10 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2933,
+                      "name": "end",
+                      "start": 2930,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3252,8 +3272,10 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2972,
+                      "name": "end",
+                      "start": 2969,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3303,8 +3325,10 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 3005,
+                      "name": "tag",
+                      "start": 3002,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3022,
@@ -3332,8 +3356,10 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3037,
+                      "name": "end",
+                      "start": 3034,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3483,8 +3509,10 @@ description: Result of parsing food-service-spatula.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 3176,
+                  "name": "length",
+                  "start": 3170,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 3190,
@@ -3529,8 +3557,10 @@ description: Result of parsing food-service-spatula.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "radius"
+                "end": 3260,
+                "name": "radius",
+                "start": 3254,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 3264,
@@ -3547,8 +3577,10 @@ description: Result of parsing food-service-spatula.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "tags"
+                "end": 3272,
+                "name": "tags",
+                "start": 3268,
+                "type": "Identifier"
               },
               "arg": {
                 "elements": [
@@ -4696,8 +4728,10 @@ description: Result of parsing food-service-spatula.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 4516,
+                  "name": "length",
+                  "start": 4510,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -4901,8 +4935,10 @@ description: Result of parsing food-service-spatula.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "length"
+                "end": 4788,
+                "name": "length",
+                "start": 4782,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 4804,

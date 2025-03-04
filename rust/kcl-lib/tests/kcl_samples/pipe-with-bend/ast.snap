@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing pipe-with-bend.kcl
 ---
 {
@@ -175,8 +175,10 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 458,
+                  "name": "center",
+                  "start": 452,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -208,8 +210,10 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "radius"
+                  "end": 486,
+                  "name": "radius",
+                  "start": 480,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 506,
@@ -279,8 +283,10 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 597,
+                  "name": "center",
+                  "start": 591,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -312,8 +318,10 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "radius"
+                  "end": 625,
+                  "name": "radius",
+                  "start": 619,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 645,

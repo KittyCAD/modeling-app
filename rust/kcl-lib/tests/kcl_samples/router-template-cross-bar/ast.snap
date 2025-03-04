@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing router-template-cross-bar.kcl
 ---
 {
@@ -1583,8 +1583,10 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1436,
+                      "name": "endAbsolute",
+                      "start": 1425,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1690,8 +1692,10 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 1528,
+                  "name": "length",
+                  "start": 1522,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1532,
@@ -2042,8 +2046,10 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 1966,
+                      "name": "endAbsolute",
+                      "start": 1955,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2149,8 +2155,10 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 2058,
+                  "name": "length",
+                  "start": 2052,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2063,
@@ -2508,8 +2516,10 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2496,
+                      "name": "endAbsolute",
+                      "start": 2485,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2615,8 +2625,10 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 2589,
+                  "name": "length",
+                  "start": 2583,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2594,
@@ -2992,8 +3004,10 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3032,
+                      "name": "endAbsolute",
+                      "start": 3021,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3099,8 +3113,10 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 3124,
+                  "name": "length",
+                  "start": 3118,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 3128,

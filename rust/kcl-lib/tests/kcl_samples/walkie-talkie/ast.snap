@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing walkie-talkie.kcl
 ---
 {
@@ -326,8 +326,10 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "offset"
+                    "end": 862,
+                    "name": "offset",
+                    "start": 856,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 874,
@@ -486,8 +488,10 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "offset"
+                    "end": 989,
+                    "name": "offset",
+                    "start": 983,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 1001,
@@ -621,8 +625,10 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "offset"
+                    "end": 1109,
+                    "name": "offset",
+                    "start": 1103,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 1121,
@@ -774,8 +780,10 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "offset"
+                    "end": 1235,
+                    "name": "offset",
+                    "start": 1229,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 1247,

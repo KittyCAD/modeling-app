@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing french-press.kcl
 ---
 {
@@ -427,8 +427,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 617,
+                      "name": "endAbsolute",
+                      "start": 606,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2163,8 +2165,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2047,
+                      "name": "endAbsolute",
+                      "start": 2036,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2246,8 +2250,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2120,
+                      "name": "length",
+                      "start": 2114,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2127,
@@ -2279,8 +2285,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 2164,
+                      "name": "axis",
+                      "start": 2160,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2327,8 +2335,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 2191,
+                      "name": "center",
+                      "start": 2185,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2375,8 +2385,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 2221,
+                      "name": "instances",
+                      "start": 2212,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2225,
@@ -2393,8 +2405,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 2244,
+                      "name": "arcDegrees",
+                      "start": 2234,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2250,
@@ -2411,8 +2425,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 2275,
+                      "name": "rotateDuplicates",
+                      "start": 2259,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2282,
@@ -2486,8 +2502,10 @@ description: Result of parsing french-press.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "offset"
+                          "end": 2356,
+                          "name": "offset",
+                          "start": 2350,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 2360,
@@ -2538,8 +2556,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 2389,
+                      "name": "center",
+                      "start": 2383,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2575,8 +2595,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 2413,
+                      "name": "radius",
+                      "start": 2407,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2441,
@@ -2664,8 +2686,10 @@ description: Result of parsing french-press.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 2488,
+                  "name": "length",
+                  "start": 2482,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2496,
@@ -2934,8 +2958,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 2709,
+                      "name": "endAbsolute",
+                      "start": 2698,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3017,8 +3043,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 2800,
+                      "name": "center",
+                      "start": 2794,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3054,8 +3082,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 2827,
+                      "name": "instances",
+                      "start": 2818,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2831,
@@ -3072,8 +3102,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 2850,
+                      "name": "arcDegrees",
+                      "start": 2840,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2856,
@@ -3090,8 +3122,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 2881,
+                      "name": "rotateDuplicates",
+                      "start": 2865,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2888,
@@ -3144,8 +3178,10 @@ description: Result of parsing french-press.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 2935,
+                  "name": "length",
+                  "start": 2929,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -3655,8 +3691,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3325,
+                      "name": "endAbsolute",
+                      "start": 3314,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3900,8 +3938,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3510,
+                      "name": "end",
+                      "start": 3507,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4055,8 +4095,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 3603,
+                      "name": "end",
+                      "start": 3600,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4224,8 +4266,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 3711,
+                      "name": "endAbsolute",
+                      "start": 3700,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4399,8 +4443,10 @@ description: Result of parsing french-press.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "offset"
+                          "end": 3864,
+                          "name": "offset",
+                          "start": 3858,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 3871,
@@ -4451,8 +4497,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 3900,
+                      "name": "center",
+                      "start": 3894,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4488,8 +4536,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 3924,
+                      "name": "radius",
+                      "start": 3918,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3952,
@@ -4555,8 +4605,10 @@ description: Result of parsing french-press.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 3983,
+                          "name": "center",
+                          "start": 3977,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -4592,8 +4644,10 @@ description: Result of parsing french-press.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 4000,
+                          "name": "radius",
+                          "start": 3994,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 4006,
@@ -4667,8 +4721,10 @@ description: Result of parsing french-press.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 4051,
+                  "name": "length",
+                  "start": 4045,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 4059,
@@ -4755,8 +4811,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 4162,
+                      "name": "center",
+                      "start": 4156,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4792,8 +4850,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 4181,
+                      "name": "radius",
+                      "start": 4175,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4186,
@@ -4825,8 +4885,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 4225,
+                      "name": "center",
+                      "start": 4219,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4862,8 +4924,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 4252,
+                      "name": "instances",
+                      "start": 4243,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4256,
@@ -4880,8 +4944,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 4275,
+                      "name": "arcDegrees",
+                      "start": 4265,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4281,
@@ -4898,8 +4964,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 4306,
+                      "name": "rotateDuplicates",
+                      "start": 4290,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4313,
@@ -4952,8 +5020,10 @@ description: Result of parsing french-press.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 4360,
+                  "name": "length",
+                  "start": 4354,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -5047,8 +5117,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 4472,
+                      "name": "center",
+                      "start": 4466,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5084,8 +5156,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 4491,
+                      "name": "radius",
+                      "start": 4485,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4496,
@@ -5117,8 +5191,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 4535,
+                      "name": "center",
+                      "start": 4529,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5154,8 +5230,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 4562,
+                      "name": "instances",
+                      "start": 4553,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4566,
@@ -5172,8 +5250,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 4585,
+                      "name": "arcDegrees",
+                      "start": 4575,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4591,
@@ -5190,8 +5270,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 4616,
+                      "name": "rotateDuplicates",
+                      "start": 4600,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4623,
@@ -5244,8 +5326,10 @@ description: Result of parsing french-press.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 4670,
+                  "name": "length",
+                  "start": 4664,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -5332,8 +5416,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 4771,
+                      "name": "center",
+                      "start": 4765,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5369,8 +5455,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 4795,
+                      "name": "radius",
+                      "start": 4789,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4816,
@@ -5459,8 +5547,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 4944,
+                      "name": "length",
+                      "start": 4938,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4959,
@@ -5494,8 +5584,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "faces"
+                      "end": 4977,
+                      "name": "faces",
+                      "start": 4972,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -5517,8 +5609,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "thickness"
+                      "end": 4998,
+                      "name": "thickness",
+                      "start": 4989,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 5004,
@@ -5835,8 +5929,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5227,
+                      "name": "end",
+                      "start": 5224,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6105,8 +6201,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 5412,
+                      "name": "endAbsolute",
+                      "start": 5401,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6280,8 +6378,10 @@ description: Result of parsing french-press.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "offset"
+                          "end": 5576,
+                          "name": "offset",
+                          "start": 5570,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 5598,
@@ -6396,8 +6496,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5649,
+                      "name": "end",
+                      "start": 5646,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6598,8 +6700,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5788,
+                      "name": "end",
+                      "start": 5785,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6657,8 +6761,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5816,
+                      "name": "end",
+                      "start": 5813,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6709,8 +6815,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5843,
+                      "name": "end",
+                      "start": 5840,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6918,8 +7026,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 5987,
+                      "name": "end",
+                      "start": 5984,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -6977,8 +7087,10 @@ description: Result of parsing french-press.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 6022,
+                      "name": "endAbsolute",
+                      "start": 6011,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -7084,8 +7196,10 @@ description: Result of parsing french-press.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 6114,
+                  "name": "length",
+                  "start": 6108,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {

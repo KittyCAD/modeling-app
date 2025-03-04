@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing poopy-shoe.kcl
 ---
 {
@@ -1949,8 +1949,10 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 1594,
+                      "name": "length",
+                      "start": 1588,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1616,
@@ -2687,8 +2689,10 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2066,
+                      "name": "length",
+                      "start": 2060,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2082,
@@ -3422,8 +3426,10 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2708,
+                      "name": "tag",
+                      "start": 2705,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2717,
@@ -3451,8 +3457,10 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2738,
+                      "name": "length",
+                      "start": 2732,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2754,
@@ -4299,8 +4307,10 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 3364,
+                      "name": "length",
+                      "start": 3358,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3380,
@@ -4579,8 +4589,10 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 3590,
+                      "name": "length",
+                      "start": 3584,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3606,
@@ -4811,8 +4823,10 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 3790,
+                      "name": "length",
+                      "start": 3784,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3824,
@@ -5524,8 +5538,10 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 4320,
+                      "name": "length",
+                      "start": 4314,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {

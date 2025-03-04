@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing gridfinity-bins.kcl
 ---
 {
@@ -926,8 +926,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 1351,
+                  "name": "length",
+                  "start": 1345,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1383,
@@ -987,8 +989,10 @@ description: Result of parsing gridfinity-bins.kcl
                     {
                       "type": "LabeledArg",
                       "label": {
-                        "type": "Identifier",
-                        "name": "offset"
+                        "end": 1317,
+                        "name": "offset",
+                        "start": 1311,
+                        "type": "Identifier"
                       },
                       "arg": {
                         "end": 1341,
@@ -1068,8 +1072,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 1507,
+                  "name": "arcDegrees",
+                  "start": 1497,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1513,
@@ -1086,8 +1092,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 1521,
+                  "name": "axis",
+                  "start": 1517,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1134,8 +1142,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 1543,
+                  "name": "center",
+                  "start": 1537,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1274,8 +1284,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 1638,
+                  "name": "instances",
+                  "start": 1629,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1642,
@@ -1292,8 +1304,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 1662,
+                  "name": "rotateDuplicates",
+                  "start": 1646,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1669,
@@ -1552,8 +1566,10 @@ description: Result of parsing gridfinity-bins.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "offset"
+                          "end": 1954,
+                          "name": "offset",
+                          "start": 1948,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1978,
@@ -1644,8 +1660,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 2073,
+                  "name": "arcDegrees",
+                  "start": 2063,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2079,
@@ -1662,8 +1680,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 2087,
+                  "name": "axis",
+                  "start": 2083,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1710,8 +1730,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 2109,
+                  "name": "center",
+                  "start": 2103,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1850,8 +1872,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 2204,
+                  "name": "instances",
+                  "start": 2195,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2208,
@@ -1868,8 +1892,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 2228,
+                  "name": "rotateDuplicates",
+                  "start": 2212,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2235,
@@ -2016,8 +2042,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2382,
+                      "name": "end",
+                      "start": 2379,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2081,8 +2109,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2426,
+                      "name": "tag",
+                      "start": 2423,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2437,
@@ -2110,8 +2140,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 2452,
+                      "name": "end",
+                      "start": 2449,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2175,8 +2207,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2496,
+                      "name": "tag",
+                      "start": 2493,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2507,
@@ -2251,8 +2285,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 2567,
+                      "name": "tag",
+                      "start": 2564,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2578,
@@ -2280,8 +2316,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2599,
+                      "name": "length",
+                      "start": 2593,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2608,
@@ -2309,8 +2347,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 2636,
+                      "name": "radius",
+                      "start": 2630,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2648,
@@ -2323,8 +2363,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 2661,
+                      "name": "tags",
+                      "start": 2657,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2492,8 +2534,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 2925,
+                      "name": "center",
+                      "start": 2919,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2584,8 +2628,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 3043,
+                      "name": "radius",
+                      "start": 3037,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3062,
@@ -2631,8 +2677,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 3111,
+                      "name": "arcDegrees",
+                      "start": 3101,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3117,
@@ -2649,8 +2697,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 3132,
+                      "name": "center",
+                      "start": 3126,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2785,8 +2835,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3241,
+                      "name": "instances",
+                      "start": 3232,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3245,
@@ -2803,8 +2855,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 3270,
+                      "name": "rotateDuplicates",
+                      "start": 3254,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3277,
@@ -2833,8 +2887,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 3304,
+                      "name": "length",
+                      "start": 3298,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -2912,8 +2968,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 3416,
+                      "name": "axis",
+                      "start": 3412,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2960,8 +3018,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3452,
+                      "name": "instances",
+                      "start": 3443,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3468,
@@ -2974,8 +3034,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 3485,
+                      "name": "distance",
+                      "start": 3477,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3510,
@@ -3041,8 +3103,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 3551,
+                      "name": "axis",
+                      "start": 3547,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3089,8 +3153,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3587,
+                      "name": "instances",
+                      "start": 3578,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3604,
@@ -3103,8 +3169,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 3621,
+                      "name": "distance",
+                      "start": 3613,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3646,
@@ -3207,8 +3275,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 3777,
+                      "name": "axis",
+                      "start": 3773,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3255,8 +3325,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3813,
+                      "name": "instances",
+                      "start": 3804,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3829,
@@ -3269,8 +3341,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 3846,
+                      "name": "distance",
+                      "start": 3838,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3871,
@@ -3336,8 +3410,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 3912,
+                      "name": "axis",
+                      "start": 3908,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3384,8 +3460,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 3948,
+                      "name": "instances",
+                      "start": 3939,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 3965,
@@ -3398,8 +3476,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 3982,
+                      "name": "distance",
+                      "start": 3974,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4007,
@@ -3502,8 +3582,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 4132,
+                      "name": "axis",
+                      "start": 4128,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3550,8 +3632,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 4168,
+                      "name": "instances",
+                      "start": 4159,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4184,
@@ -3564,8 +3648,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 4201,
+                      "name": "distance",
+                      "start": 4193,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4226,
@@ -3631,8 +3717,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 4267,
+                      "name": "axis",
+                      "start": 4263,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -3679,8 +3767,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 4303,
+                      "name": "instances",
+                      "start": 4294,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4320,
@@ -3693,8 +3783,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 4337,
+                      "name": "distance",
+                      "start": 4329,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4362,
@@ -3799,8 +3891,10 @@ description: Result of parsing gridfinity-bins.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "offset"
+                          "end": 4447,
+                          "name": "offset",
+                          "start": 4441,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 4456,
@@ -4104,8 +4198,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 4681,
+                      "name": "tag",
+                      "start": 4678,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4692,
@@ -4133,8 +4229,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 4713,
+                      "name": "length",
+                      "start": 4707,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4742,
@@ -4176,8 +4274,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 4770,
+                      "name": "radius",
+                      "start": 4764,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4785,
@@ -4190,8 +4290,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 4798,
+                      "name": "tags",
+                      "start": 4794,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4304,8 +4406,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "faces"
+                      "end": 4998,
+                      "name": "faces",
+                      "start": 4993,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4327,8 +4431,10 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "thickness"
+                      "end": 5019,
+                      "name": "thickness",
+                      "start": 5010,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 5028,

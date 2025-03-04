@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing hex-nut.kcl
 ---
 {
@@ -607,8 +607,10 @@ description: Result of parsing hex-nut.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "type": "Identifier",
-                                    "name": "center"
+                                    "end": 962,
+                                    "name": "center",
+                                    "start": 956,
+                                    "type": "Identifier"
                                   },
                                   "arg": {
                                     "elements": [
@@ -672,8 +674,10 @@ description: Result of parsing hex-nut.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "type": "Identifier",
-                                    "name": "radius"
+                                    "end": 1002,
+                                    "name": "radius",
+                                    "start": 996,
+                                    "type": "Identifier"
                                   },
                                   "arg": {
                                     "end": 1017,
@@ -737,8 +741,10 @@ description: Result of parsing hex-nut.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "length"
+                                "end": 1052,
+                                "name": "length",
+                                "start": 1046,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 1058,

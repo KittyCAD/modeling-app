@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing mounting-plate.kcl
 ---
 {
@@ -342,8 +342,10 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 646,
+                                "name": "endAbsolute",
+                                "start": 635,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -471,8 +473,10 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 688,
+                                "name": "tag",
+                                "start": 685,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 697,
@@ -500,8 +504,10 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 722,
+                                "name": "endAbsolute",
+                                "start": 711,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -629,8 +635,10 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 762,
+                                "name": "tag",
+                                "start": 759,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 771,
@@ -658,8 +666,10 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "endAbsolute"
+                                "end": 796,
+                                "name": "endAbsolute",
+                                "start": 785,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
@@ -787,8 +797,10 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 838,
+                                "name": "tag",
+                                "start": 835,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 847,
@@ -816,8 +828,10 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 865,
+                                "name": "tag",
+                                "start": 862,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 874,
@@ -1074,8 +1088,10 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 1127,
+                          "name": "center",
+                          "start": 1121,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -1174,8 +1190,10 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 1230,
+                          "name": "radius",
+                          "start": 1224,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1243,
@@ -1223,8 +1241,10 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 1286,
+                          "name": "center",
+                          "start": 1280,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -1316,8 +1336,10 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 1388,
+                          "name": "radius",
+                          "start": 1382,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1401,
@@ -1365,8 +1387,10 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 1444,
+                          "name": "center",
+                          "start": 1438,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -1472,8 +1496,10 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 1548,
+                          "name": "radius",
+                          "start": 1542,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1561,
@@ -1521,8 +1547,10 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 1604,
+                          "name": "center",
+                          "start": 1598,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -1621,8 +1649,10 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 1707,
+                          "name": "radius",
+                          "start": 1701,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1720,
@@ -1670,8 +1700,10 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "center"
+                          "end": 1763,
+                          "name": "center",
+                          "start": 1757,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
@@ -1707,8 +1739,10 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "radius"
+                          "end": 1787,
+                          "name": "radius",
+                          "start": 1781,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1808,
@@ -1754,8 +1788,10 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 1839,
+                      "name": "length",
+                      "start": 1833,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1856,
@@ -1783,8 +1819,10 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 1884,
+                      "name": "radius",
+                      "start": 1878,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1899,
@@ -1797,8 +1835,10 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 1912,
+                      "name": "tags",
+                      "start": 1908,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing gridfinity-baseplate-magnets.kcl
 ---
 {
@@ -737,8 +737,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 1283,
+                  "name": "length",
+                  "start": 1277,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1315,
@@ -798,8 +800,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                     {
                       "type": "LabeledArg",
                       "label": {
-                        "type": "Identifier",
-                        "name": "offset"
+                        "end": 1258,
+                        "name": "offset",
+                        "start": 1252,
+                        "type": "Identifier"
                       },
                       "arg": {
                         "end": 1273,
@@ -865,8 +869,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 1439,
+                  "name": "arcDegrees",
+                  "start": 1429,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1445,
@@ -883,8 +889,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 1453,
+                  "name": "axis",
+                  "start": 1449,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -931,8 +939,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 1475,
+                  "name": "center",
+                  "start": 1469,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1007,8 +1017,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 1524,
+                  "name": "instances",
+                  "start": 1515,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1528,
@@ -1025,8 +1037,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 1548,
+                  "name": "rotateDuplicates",
+                  "start": 1532,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1555,
@@ -1257,8 +1271,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "type": "Identifier",
-                          "name": "offset"
+                          "end": 1804,
+                          "name": "offset",
+                          "start": 1798,
+                          "type": "Identifier"
                         },
                         "arg": {
                           "end": 1819,
@@ -1335,8 +1351,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 1914,
+                  "name": "arcDegrees",
+                  "start": 1904,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 1920,
@@ -1353,8 +1371,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 1928,
+                  "name": "axis",
+                  "start": 1924,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1401,8 +1421,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 1950,
+                  "name": "center",
+                  "start": 1944,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -1477,8 +1499,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 1999,
+                  "name": "instances",
+                  "start": 1990,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2003,
@@ -1495,8 +1519,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 2023,
+                  "name": "rotateDuplicates",
+                  "start": 2007,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 2030,
@@ -1551,8 +1577,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 2137,
+                      "name": "axis",
+                      "start": 2133,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1599,8 +1627,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 2173,
+                      "name": "instances",
+                      "start": 2164,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2189,
@@ -1613,8 +1643,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 2206,
+                      "name": "distance",
+                      "start": 2198,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2218,
@@ -1648,8 +1680,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 2259,
+                      "name": "axis",
+                      "start": 2255,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1696,8 +1730,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 2295,
+                      "name": "instances",
+                      "start": 2286,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2312,
@@ -1710,8 +1746,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 2329,
+                      "name": "distance",
+                      "start": 2321,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2341,
@@ -1782,8 +1820,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 2478,
+                      "name": "axis",
+                      "start": 2474,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1830,8 +1870,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 2514,
+                      "name": "instances",
+                      "start": 2505,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2530,
@@ -1844,8 +1886,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 2547,
+                      "name": "distance",
+                      "start": 2539,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2559,
@@ -1879,8 +1923,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "axis"
+                      "end": 2600,
+                      "name": "axis",
+                      "start": 2596,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1927,8 +1973,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 2636,
+                      "name": "instances",
+                      "start": 2627,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2653,
@@ -1941,8 +1989,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "distance"
+                      "end": 2670,
+                      "name": "distance",
+                      "start": 2662,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2682,
@@ -3956,8 +4006,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "type": "Identifier",
-                                "name": "tag"
+                                "end": 4557,
+                                "name": "tag",
+                                "start": 4554,
+                                "type": "Identifier"
                               },
                               "arg": {
                                 "end": 4568,
@@ -4116,8 +4168,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 4748,
+                      "name": "center",
+                      "start": 4742,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4181,8 +4235,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 4802,
+                      "name": "radius",
+                      "start": 4796,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4821,
@@ -4228,8 +4284,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "center"
+                      "end": 4866,
+                      "name": "center",
+                      "start": 4860,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -4293,8 +4351,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "instances"
+                      "end": 4917,
+                      "name": "instances",
+                      "start": 4908,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4921,
@@ -4311,8 +4371,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "arcDegrees"
+                      "end": 4940,
+                      "name": "arcDegrees",
+                      "start": 4930,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4946,
@@ -4329,8 +4391,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "rotateDuplicates"
+                      "end": 4971,
+                      "name": "rotateDuplicates",
+                      "start": 4955,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 4978,
@@ -4492,8 +4556,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 5201,
+                  "name": "length",
+                  "start": 5195,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -4552,8 +4618,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "radius"
+                  "end": 5315,
+                  "name": "radius",
+                  "start": 5309,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 5330,
@@ -4566,8 +4634,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "tags"
+                  "end": 5338,
+                  "name": "tags",
+                  "start": 5334,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -4874,8 +4944,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "offset"
+                      "end": 5731,
+                      "name": "offset",
+                      "start": 5725,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -4947,8 +5019,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 5865,
+                  "name": "length",
+                  "start": 5859,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -5007,8 +5081,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "radius"
+                  "end": 5981,
+                  "name": "radius",
+                  "start": 5975,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 5996,
@@ -5021,8 +5097,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "tags"
+                  "end": 6004,
+                  "name": "tags",
+                  "start": 6000,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -5322,8 +5400,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "axis"
+                    "end": 6390,
+                    "name": "axis",
+                    "start": 6386,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -5370,8 +5450,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "instances"
+                    "end": 6426,
+                    "name": "instances",
+                    "start": 6417,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6442,
@@ -5384,8 +5466,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "distance"
+                    "end": 6459,
+                    "name": "distance",
+                    "start": 6451,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6471,
@@ -5419,8 +5503,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "axis"
+                    "end": 6512,
+                    "name": "axis",
+                    "start": 6508,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -5467,8 +5553,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "instances"
+                    "end": 6548,
+                    "name": "instances",
+                    "start": 6539,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6565,
@@ -5481,8 +5569,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "distance"
+                    "end": 6582,
+                    "name": "distance",
+                    "start": 6574,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6594,
@@ -5541,8 +5631,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "axis"
+                    "end": 6710,
+                    "name": "axis",
+                    "start": 6706,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -5589,8 +5681,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "instances"
+                    "end": 6746,
+                    "name": "instances",
+                    "start": 6737,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6762,
@@ -5603,8 +5697,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "distance"
+                    "end": 6779,
+                    "name": "distance",
+                    "start": 6771,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6791,
@@ -5638,8 +5734,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "axis"
+                    "end": 6832,
+                    "name": "axis",
+                    "start": 6828,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
@@ -5686,8 +5784,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "instances"
+                    "end": 6868,
+                    "name": "instances",
+                    "start": 6859,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6885,
@@ -5700,8 +5800,10 @@ description: Result of parsing gridfinity-baseplate-magnets.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "distance"
+                    "end": 6902,
+                    "name": "distance",
+                    "start": 6894,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 6914,

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing cycloidal-gear.kcl
 ---
 {
@@ -100,8 +100,10 @@ description: Result of parsing cycloidal-gear.kcl
                                           {
                                             "type": "LabeledArg",
                                             "label": {
-                                              "type": "Identifier",
-                                              "name": "offset"
+                                              "end": 568,
+                                              "name": "offset",
+                                              "start": 562,
+                                              "type": "Identifier"
                                             },
                                             "arg": {
                                               "end": 578,
@@ -973,8 +975,10 @@ description: Result of parsing cycloidal-gear.kcl
                                           {
                                             "type": "LabeledArg",
                                             "label": {
-                                              "type": "Identifier",
-                                              "name": "center"
+                                              "end": 1423,
+                                              "name": "center",
+                                              "start": 1417,
+                                              "type": "Identifier"
                                             },
                                             "arg": {
                                               "elements": [
@@ -1010,8 +1014,10 @@ description: Result of parsing cycloidal-gear.kcl
                                           {
                                             "type": "LabeledArg",
                                             "label": {
-                                              "type": "Identifier",
-                                              "name": "radius"
+                                              "end": 1451,
+                                              "name": "radius",
+                                              "start": 1445,
+                                              "type": "Identifier"
                                             },
                                             "arg": {
                                               "end": 1470,
