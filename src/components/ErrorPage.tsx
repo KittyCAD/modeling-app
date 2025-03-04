@@ -8,9 +8,32 @@ import {
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
 
+/** Type narrowing function of unknown error to a string */
+function errorMessage(error: unknown): string {
+  if (isRouteErrorResponse(error)) {
+    return `${error.status} ${error.statusText}`
+  } else if (error != undefined && error instanceof Error) {
+    return error.message
+  } else if (error instanceof Object) {
+    return JSON.stringify(error)
+  } else if (typeof error === 'string') {
+    return error
+  } else {
+    return 'Unknown error'
+  }
+}
+
+/** Generate a GitHub issue URL from the error */
+function generateToUrl(error: unknown) {
+  const title: string = 'An unexpected error occurred'
+  const body = errorMessage(error)
+  const result = `https://github.com/KittyCAD/modeling-app/issues/new?title=${title}&body=${body}`
+  return result
+}
+
 export const ErrorPage = () => {
   let error = useRouteError()
-
+  // We log the error to the console no matter what
   console.error('error', error)
 
   return (
@@ -20,13 +43,7 @@ export const ErrorPage = () => {
           An unexpected error occurred
         </h1>
         <p className="mb-8">
-          {isRouteErrorResponse(error) ? (
-            <>
-              {error.status}: {error.data}
-            </>
-          ) : (
-            <>JSON.stringify(error)</>
-          )}
+          <>{errorMessage(error)}</>
         </p>
         <div className="flex justify-between gap-2 mt-6">
           {isDesktop() && (
@@ -58,7 +75,7 @@ export const ErrorPage = () => {
           <ActionButton
             Element="externalLink"
             iconStart={{ icon: faBug }}
-            to="https://github.com/KittyCAD/modeling-app/issues/new"
+            to={generateToUrl(error)}
           >
             Report Bug
           </ActionButton>
