@@ -1,4 +1,5 @@
 @no_std
+@settings(defaultLengthUnit = mm)
 
 // Note that everything in the prelude is treated as exported.
 
