@@ -36,13 +36,8 @@ jobs:
       - name: Move files to repo work tree
         shell: bash
         run: |
-          find kcl-samples-repo -type f \
-            ! -path "./.github/*" \
-            ! -path "./screenshots/*" \
-            ! -path "./step/*" \
-            -delete
-          # Copy files, including dotfiles, but excluding the .github directory.
-          rsync -av \
+          rsync -av --delete \
+            --exclude='.git' \
             --exclude='.github' \
             --exclude='screenshots' \
             --exclude='step' \
