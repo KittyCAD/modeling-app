@@ -576,7 +576,7 @@ impl ExecutorContext {
     ) -> Result<KclValue, KclError> {
         let item = match init {
             Expr::None(none) => KclValue::from(none),
-            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), &exec_state.mod_local.settings),
+            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
             Expr::Identifier(identifier) => {
                 let value = exec_state.stack().get(&identifier.name, identifier.into())?.clone();
@@ -706,10 +706,7 @@ impl BinaryPart {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         match self {
-            BinaryPart::Literal(literal) => Ok(KclValue::from_literal(
-                (**literal).clone(),
-                &exec_state.mod_local.settings,
-            )),
+            BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state)),
             BinaryPart::Identifier(identifier) => {
                 let value = exec_state.stack().get(&identifier.name, identifier.into())?;
                 Ok(value.clone())
@@ -1746,15 +1743,12 @@ fn assign_args_to_params(
         return Err(err_wrong_number_args);
     }
 
-    let mem = &mut exec_state.mod_local.stack;
-    let settings = &exec_state.mod_local.settings;
-
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
     for (index, param) in function_expression.params.iter().enumerate() {
         if let Some(arg) = args.get(index) {
             // Argument was provided.
-            mem.add(
+            exec_state.mut_stack().add(
                 param.identifier.name.clone(),
                 arg.value.clone(),
                 (&param.identifier).into(),
@@ -1764,11 +1758,10 @@ fn assign_args_to_params(
             if let Some(ref default_val) = param.default_value {
                 // If the corresponding parameter is optional,
                 // then it's fine, the user doesn't need to supply it.
-                mem.add(
-                    param.identifier.name.clone(),
-                    KclValue::from_default_param(default_val.clone(), settings),
-                    (&param.identifier).into(),
-                )?;
+                let value = KclValue::from_default_param(default_val.clone(), exec_state);
+                exec_state
+                    .mut_stack()
+                    .add(param.identifier.name.clone(), value, (&param.identifier).into())?;
             } else {
                 // But if the corresponding parameter was required,
                 // then the user has called with too few arguments.
@@ -1787,8 +1780,6 @@ fn assign_args_to_params_kw(
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
     let source_ranges = vec![function_expression.into()];
-    let mem = &mut exec_state.mod_local.stack;
-    let settings = &exec_state.mod_local.settings;
 
     for param in function_expression.params.iter() {
         if param.labeled {
@@ -1796,7 +1787,7 @@ fn assign_args_to_params_kw(
             let arg_val = match arg {
                 Some(arg) => arg.value.clone(),
                 None => match param.default_value {
-                    Some(ref default_val) => KclValue::from_default_param(default_val.clone(), settings),
+                    Some(ref default_val) => KclValue::from_default_param(default_val.clone(), exec_state),
                     None => {
                         return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges,
@@ -1808,7 +1799,9 @@ fn assign_args_to_params_kw(
                     }
                 },
             };
-            mem.add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
+            exec_state
+                .mut_stack()
+                .add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
         } else {
             let Some(unlabeled) = args.unlabeled.take() else {
                 let param_name = &param.identifier.name;
@@ -1825,7 +1818,7 @@ fn assign_args_to_params_kw(
                     })
                 });
             };
-            mem.add(
+            exec_state.mut_stack().add(
                 param.identifier.name.clone(),
                 unlabeled.value.clone(),
                 (&param.identifier).into(),

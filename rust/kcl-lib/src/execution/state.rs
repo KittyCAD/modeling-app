@@ -299,6 +299,7 @@ impl ModuleState {
             settings: MetaSettings {
                 default_length_units: exec_settings.units.into(),
                 default_angle_units: Default::default(),
+                explicit_length_units: false,
                 std_path,
             },
         }
@@ -311,6 +312,7 @@ impl ModuleState {
 pub struct MetaSettings {
     pub default_length_units: types::UnitLen,
     pub default_angle_units: types::UnitAngle,
+    pub explicit_length_units: bool,
     pub std_path: Option<String>,
 }
 
@@ -327,6 +329,7 @@ impl MetaSettings {
                     let value = annotations::expect_ident(&p.inner.value)?;
                     let value = types::UnitLen::from_str(value, annotation.as_source_range())?;
                     self.default_length_units = value;
+                    self.explicit_length_units = true;
                 }
                 annotations::SETTINGS_UNIT_ANGLE => {
                     let value = annotations::expect_ident(&p.inner.value)?;
