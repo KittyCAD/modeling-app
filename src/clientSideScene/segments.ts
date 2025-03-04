@@ -73,7 +73,7 @@ import {
   SEGMENT_LENGTH_LABEL_TEXT,
 } from './sceneInfra'
 import { Themes, getThemeColorForThreeJs } from 'lib/theme'
-import { normaliseAngle, roundOff } from 'lib/utils'
+import { isClockwise, normaliseAngle, roundOff } from 'lib/utils'
 import {
   SegmentOverlay,
   SegmentOverlayPayload,
@@ -1339,7 +1339,7 @@ class ThreePointArcSegment implements SegmentUtils {
       radius,
       startAngle,
       endAngle,
-      ccw: false,
+      ccw: !isClockwise([p1, p2, p3]),
       isDashed: isDraftSegment,
       scale,
     })
@@ -1374,6 +1374,9 @@ class ThreePointArcSegment implements SegmentUtils {
       id,
       from: p1,
       to: p3,
+      p1,
+      p2,
+      p3,
       radius,
       center,
       ccw: false,
@@ -1422,6 +1425,9 @@ class ThreePointArcSegment implements SegmentUtils {
     const center: [number, number] = [center_x, center_y]
     group.userData.from = p1
     group.userData.to = p3
+    group.userData.p1 = p1
+    group.userData.p2 = p2
+    group.userData.p3 = p3
     group.userData.center = center
     group.userData.radius = radius
     group.userData.prevSegment = prevSegment
@@ -1443,7 +1449,7 @@ class ThreePointArcSegment implements SegmentUtils {
         center,
         startAngle,
         endAngle,
-        ccw: false,
+        ccw: !isClockwise([p1, p2, p3]),
         scale,
       })
       arcSegmentBody.geometry = newGeo
