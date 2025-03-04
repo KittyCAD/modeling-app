@@ -1,0 +1,35 @@
+// Pipe with bend
+// A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define constants
+innerDiameter = 10
+outerDiameter = 20
+bendRadius = 30
+bendAngle = 90
+
+// create a sketch in the 'XZ' plane
+sketch000 = startSketchOn("XZ")
+
+// create a profile for the outer diameter
+outerProfile = circle(
+  sketch000,
+  center = [bendRadius, 0],
+  radius = outerDiameter / 2
+)
+
+// create a profile for the inner diameter
+innerProfile = circle(
+  sketch000,
+  center = [bendRadius, 0],
+  radius = innerDiameter / 2
+)
+
+// create the profile of the pipe
+pipeProfile = outerProfile
+  |> hole(innerProfile, %)
+
+// revolve the pipe profile at the desired angle
+pipe = revolve({ axis = "Y", angle = bendAngle }, pipeProfile)

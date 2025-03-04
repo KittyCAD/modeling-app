@@ -17,6 +17,29 @@ permissions:
 
 
 jobs:
+
+  path-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      significant: ${{ steps.filter.outputs.significant }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: filter
+        name: Check for significant, non-kcl-samples changes
+        uses: dorny/paths-filter@v3
+        with:
+          # Don't combine this with other path checks since this requires
+          # everything to match.
+          predicate-quantifier: every
+          filters: |
+            significant:
+              - '!(public/kcl-samples/**|README.md)'
+      - name: Display path changes
+        run: |
+          echo "Significant changes: ${{ steps.filter.outputs.significant }}"
+
   electron:
     timeout-minutes: 60
     name: playwright:electron:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
@@ -29,6 +52,8 @@ jobs:
         shardTotal: [4]
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
+    needs: path-changes
+    if: ${{ needs.path-changes.outputs.significant == 'true' }}
     steps:
     - uses: actions/create-github-app-token@v1
       id: app-token

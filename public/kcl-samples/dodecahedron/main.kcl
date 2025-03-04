@@ -1,0 +1,90 @@
+// Hollow Dodecahedron
+// A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the individual faces of the dodecahedron and extruding inwards.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Input parameters
+// circumscribed radius
+circR = 25
+
+// Calculated parameters
+// thickness of the dodecahedron
+wallThickness = circR * 0.2
+
+// angle between faces in radians
+dihedral = acos(-(sqrt(5) / 5))
+
+// inscribed radius
+inscR = circR / 15 * sqrt(75 + 30 * sqrt(5))
+
+// pentagon edge length
+edgeL = 4 * circR / (sqrt(3) * (1 + sqrt(5)))
+
+// pentagon radius
+pentR = edgeL / 2 / sin(toRadians(36))
+
+// Define a plane for the bottom angled face
+plane = {
+  plane = {
+    origin = [
+      -inscR * cos(toRadians(toDegrees(dihedral) - 90)),
+      0,
+      inscR - (inscR * sin(toRadians(toDegrees(dihedral) - 90)))
+    ],
+    xAxis = [cos(dihedral), 0.0, sin(dihedral)],
+    yAxis = [0, 1, 0],
+    zAxis = [sin(dihedral), 0, -cos(dihedral)]
+  }
+}
+
+// Create a regular pentagon inscribed in a circle of radius pentR
+bottomFace = startSketchOn('XY')
+  |> polygon({
+       radius = pentR,
+       numSides = 5,
+       center = [0, 0],
+       inscribed = true
+     }, %)
+
+bottomSideFace = startSketchOn(plane)
+  |> polygon({
+       radius = pentR,
+       numSides = 5,
+       center = [0, 0],
+       inscribed = true
+     }, %)
+
+// Extrude the faces in each plane
+bottom = extrude(bottomFace, length = wallThickness)
+bottomSide = extrude(bottomSideFace, length = wallThickness)
+
+// Pattern the sides so we have a full dodecahedron
+bottomBowl = patternCircular3d(
+  bottomSide,
+  instances = 5,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+  arcDegrees = 360,
+  rotateDuplicates = true
+)
+
+// pattern the bottom to create the top face
+patternCircular3d(
+  bottom,
+  instances = 2,
+  axis = [0, 1, 0],
+  center = [0, 0, inscR],
+  arcDegrees = 360,
+  rotateDuplicates = true
+)
+
+// pattern the bottom angled faces to create the top
+patternCircular3d(
+  bottomBowl,
+  instances = 2,
+  axis = [0, 1, 0],
+  center = [0, 0, inscR],
+  arcDegrees = 360,
+  rotateDuplicates = true
+)

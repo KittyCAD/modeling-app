@@ -1,0 +1,47 @@
+// Color Cube
+// This is a color cube centered about the origin. It is used to help determine orientation in the scene.
+
+// Set unit
+@settings(defaultLengthUnit = mm)
+
+// Globals referenced in drawRectangle
+size = 100
+halfSize = size/2
+extrudeLength = 1.0
+metalConstant = 50
+roughnessConstant = 50
+
+// Create planes for 6 sides of a cube
+bluePlane = offsetPlane('XY', offset = halfSize)
+yellowPlane = offsetPlane('XY', offset = -halfSize)
+greenPlane = offsetPlane('XZ', offset = -halfSize)
+purplePlane = offsetPlane('-XZ', offset = -halfSize)
+redPlane = offsetPlane('YZ', offset = halfSize - extrudeLength)
+tealPlane = offsetPlane('YZ', offset = -halfSize)
+
+// Sketch a rectangle centered at the origin of the profile
+fn sketchRectangle (profile, color) {
+  return profile
+  |> startProfileAt([-halfSize, halfSize], %)
+  |> angledLine([0, size], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       size
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(%, length = extrudeLength)
+  |> appearance(color = color, metalness = metalConstant, roughness = roughnessConstant)
+}
+
+// Sketch each side of the cube
+sketchRectangle(bluePlane,'#0000FF')
+sketchRectangle(yellowPlane,'#FFFF00')
+sketchRectangle(greenPlane,'#00FF00')
+sketchRectangle(redPlane,'#FF0000')
+sketchRectangle(tealPlane,'#00FFFF')
+sketchRectangle(purplePlane,'#FF00FF')

@@ -1,0 +1,111 @@
+// Wheel rotor
+// A component of a disc brake system. It provides a surface for brake pads to press against, generating the friction needed to slow or stop the vehicle.
+
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+
+// Import Constants
+import rotorDiameter, rotorInnerDiameter, rotorSinglePlateThickness, rotorInnerDiameterThickness, lugHolePatternDia, lugSpacing, rotorTotalThickness, spacerPatternDiameter, spacerDiameter, spacerLength, spacerCount, wheelDiameter, lugCount, yAxisOffset, drillAndSlotCount from "globals.kcl"
+
+rotorPlane = {
+  plane = {
+    origin = { x = 0, y = yAxisOffset, z = 0 },
+    xAxis = { x = -1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+    zAxis = { x = 0, y = 1, z = 0 }
+  }
+}
+fn lugPattern(plane) {
+  lugHolePattern = circle(
+         plane,
+         center = [-lugSpacing / 2, 0],
+         radius = 0.315
+       )
+    |> patternCircular2d(
+         arcDegrees = 360,
+         center = [0, 0],
+         instances = lugCount,
+         rotateDuplicates = true
+       )
+  return lugHolePattern
+}
+rotorSketch = startSketchOn(rotorPlane)
+  |> circle(
+       center = [0, 0],
+       radius = rotorDiameter / 2
+     )
+  |> hole(lugPattern(%), %)
+rotor = extrude(rotorSketch, length = rotorSinglePlateThickness)
+  |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
+rotorBumpSketch = startSketchOn(rotorPlane)
+  |> circle(
+       center = [0, 0],
+       radius = rotorInnerDiameter / 2
+     )
+  |> hole(lugPattern(%), %)
+rotorBump = extrude(rotorBumpSketch, length = -rotorInnerDiameterThickness)
+  |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
+rotorSecondaryPlatePlane = {
+  plane = {
+    origin = {
+      x = 0,
+      y = yAxisOffset + rotorTotalThickness * 0.75,
+      z = 0
+    },
+    xAxis = { x = -1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+    zAxis = { x = 0, y = 1, z = 0 }
+  }
+}
+secondaryRotorSketch = startSketchOn(rotorSecondaryPlatePlane)
+  |> circle(
+       center = [0, 0],
+       radius = rotorDiameter / 2
+     )
+  |> hole(lugPattern(%), %)
+secondRotor = extrude(secondaryRotorSketch, length = rotorSinglePlateThickness)
+spacerSketch = startSketchOn(rotorSecondaryPlatePlane)
+  |> circle(
+       center = [spacerPatternDiameter / 2, 0],
+       radius = spacerDiameter
+     )
+  |> patternCircular2d(
+       arcDegrees = 360,
+       center = [0, 0],
+       instances = spacerCount,
+       rotateDuplicates = true
+     )
+spacers = extrude(spacerSketch, length = -spacerLength)
+  |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
+rotorSlottedSketch = startSketchOn(rotor, 'START')
+  |> startProfileAt([2.17, 2.56], %)
+  |> xLine(0.12, %)
+  |> yLine(2.56, %)
+  |> xLine(-0.12, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternCircular2d(
+       center = [0, 0],
+       instances = drillAndSlotCount,
+       arcDegrees = 360,
+       rotateDuplicates = true
+     )
+rotorSlotted = extrude(rotorSlottedSketch, length = -rotorSinglePlateThickness / 2)
+
+secondRotorSlottedSketch = startSketchOn(secondRotor, 'END')
+  |> startProfileAt([-2.17, 2.56], %)
+  |> xLine(-0.12, %)
+  |> yLine(2.56, %)
+  |> xLine(0.12, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternCircular2d(
+       center = [0, 0],
+       instances = drillAndSlotCount,
+       arcDegrees = 360,
+       rotateDuplicates = true
+     )
+secondRotorSlotted = extrude(secondRotorSlottedSketch, length = -rotorSinglePlateThickness / 2)
+  |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)

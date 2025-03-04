@@ -39,8 +39,10 @@ updates:
       wasm-bindgen-deps:
         patterns:
           - "wasm-bindgen*"
-  - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/rust/kcl-python-bindings/" # Location of package manifests
+  - package-ecosystem: "pip"
+    directories:
+      - "/public/kcl-samples/"
+      - "/rust/kcl-python-bindings/"
     schedule:
       interval: weekly
       day: monday

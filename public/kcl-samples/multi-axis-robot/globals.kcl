@@ -1,0 +1,64 @@
+// Global constants for the multi-axis robot
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+// Axis Angles
+export axisJ4 = 25
+export axisJ3 = 60
+export axisJ2 = 110
+export axisJ1 = 80
+
+// Robot Arm Base
+export basePlateRadius = 5
+export basePlateThickness = 0.5
+export baseChamfer = 2
+export baseHeight = 5
+
+// J2 Axis for Robot Arm
+export axisJ2ArmLength = 31
+export axisJ2ArmWidth = 4
+export axisJ2ArmThickness = 2.5
+
+// J3 Axis for Robot Arm
+export axisJ3C = axisJ3 - 180 + axisJ2
+export axisJ3CArmLength = 20
+export axisJ3CArmWidth = 3.75
+export axisJ3CArmThickness = 2.5
+
+// Planes
+export plane001 = {
+    plane = {
+      origin = [0.0, 0.0, baseHeight - 1.5 + 0.1],
+      xAxis = [1.0, 0.0, 0.0],
+      yAxis = [0.0, 1.0, 0.0],
+      zAxis = [0.0, 0.0, 1.0]
+    }
+  }
+
+export plane002 = {
+    plane = {
+      origin = [0.0, 0.0, 0.0],
+      xAxis = [
+        sin(toRadians(axisJ1)),
+        cos(toRadians(axisJ1)),
+        0.0
+      ],
+      yAxis = [0.0, 0.0, 1.0],
+      zAxis = [1.0, 0.0, 0.0]
+    }
+  }
+
+// Define Plane to Move J2 Axis Robot Arm
+export plane003 = {
+    plane = {
+      origin = [-0.1, 0.0, 0.0],
+      xAxis = [
+        sin(toRadians(axisJ1)),
+        cos(toRadians(axisJ1)),
+        0.0
+      ],
+      yAxis = [0.0, 0.0, 1.0],
+      zAxis = [1.0, 0.0, 0.0]
+    }
+  }

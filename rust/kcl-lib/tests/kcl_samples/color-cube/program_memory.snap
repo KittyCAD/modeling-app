@@ -1,0 +1,321 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing color-cube.kcl
+---
+{
+  "bluePlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 50.0
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": []
+    }
+  },
+  "extrudeLength": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          252,
+          255,
+          0
+        ]
+      }
+    ]
+  },
+  "greenPlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 50.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": []
+    }
+  },
+  "halfSize": {
+    "type": "Number",
+    "value": 50.0,
+    "ty": {
+      "type": "Unknown"
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          214,
+          217,
+          0
+        ]
+      },
+      {
+        "sourceRange": [
+          234,
+          235,
+          0
+        ]
+      }
+    ]
+  },
+  "metalConstant": {
+    "type": "Number",
+    "value": 50.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          272,
+          274,
+          0
+        ]
+      }
+    ]
+  },
+  "purplePlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": -50.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": []
+    }
+  },
+  "redPlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 49.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": []
+    }
+  },
+  "roughnessConstant": {
+    "type": "Number",
+    "value": 50.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          295,
+          297,
+          0
+        ]
+      }
+    ]
+  },
+  "size": {
+    "type": "Number",
+    "value": 100.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          214,
+          217,
+          0
+        ]
+      }
+    ]
+  },
+  "sketchRectangle": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          737,
+          1309,
+          0
+        ]
+      }
+    ]
+  },
+  "tealPlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": -50.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": []
+    }
+  },
+  "yellowPlane": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": -50.0
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": []
+    }
+  }
+}

@@ -1,0 +1,106 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Variables in memory after executing washer.kcl
+---
+{
+  "innerDiameter": {
+    "type": "Number",
+    "value": 0.203,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          571,
+          576,
+          0
+        ]
+      }
+    ]
+  },
+  "outerDiameter": {
+    "type": "Number",
+    "value": 0.438,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          593,
+          598,
+          0
+        ]
+      }
+    ]
+  },
+  "thicknessMax": {
+    "type": "Number",
+    "value": 0.038,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          614,
+          619,
+          0
+        ]
+      }
+    ]
+  },
+  "thicknessMin": {
+    "type": "Number",
+    "value": 0.024,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          635,
+          640,
+          0
+        ]
+      }
+    ]
+  },
+  "washer": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          711,
+          1057,
+          0
+        ]
+      }
+    ]
+  }
+}
