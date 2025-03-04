@@ -26,9 +26,6 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
 
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2.6.1
-
       - name: Run check
         run: |
           cd rust

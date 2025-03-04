@@ -35,9 +35,6 @@ jobs:
         with:
           components: clippy
 
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2.6.1
-
       - name: Run clippy
         run: |
           cd rust

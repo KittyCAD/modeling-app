@@ -37,9 +37,6 @@ jobs:
         with:
           components: rustfmt
 
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2.6.1
-
       - name: Run cargo fmt
         run: |
           cd rust
