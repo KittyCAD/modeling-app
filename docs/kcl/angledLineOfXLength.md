@@ -1,12 +1,12 @@
 ---
 title: "angledLineOfXLength"
-excerpt: "Create a line segment from the current 2-dimensional sketch origin"
+excerpt: "Create a line segment from the current 2-dimensional sketch origin along some angle (in degrees) for some relative length in the 'x' dimension."
 layout: manual
 ---
 
-Create a line segment from the current 2-dimensional sketch origin
+Create a line segment from the current 2-dimensional sketch origin along some angle (in degrees) for some relative length in the 'x' dimension.
 
-along some angle (in degrees) for some relative length in the 'x' dimension.
+
 
 ```js
 angledLineOfXLength(

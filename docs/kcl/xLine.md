@@ -1,12 +1,12 @@
 ---
 title: "xLine"
-excerpt: "Draw a line relative to the current origin to a specified distance away"
+excerpt: "Draw a line relative to the current origin to a specified distance away from the current position along the 'x' axis."
 layout: manual
 ---
 
-Draw a line relative to the current origin to a specified distance away
+Draw a line relative to the current origin to a specified distance away from the current position along the 'x' axis.
 
-from the current position along the 'x' axis.
+
 
 ```js
 xLine(

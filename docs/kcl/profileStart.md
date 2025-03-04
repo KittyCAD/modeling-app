@@ -1,12 +1,12 @@
 ---
 title: "profileStart"
-excerpt: "Extract the provided 2-dimensional sketch's profile's origin"
+excerpt: "Extract the provided 2-dimensional sketch's profile's origin value."
 layout: manual
 ---
 
-Extract the provided 2-dimensional sketch's profile's origin
+Extract the provided 2-dimensional sketch's profile's origin value.
 
-value.
+
 
 ```js
 profileStart(sketch: Sketch) -> [number]

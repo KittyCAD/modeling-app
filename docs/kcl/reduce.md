@@ -1,12 +1,12 @@
 ---
 title: "reduce"
-excerpt: "Take a starting value. Then, for each element of an array, calculate the next value,"
+excerpt: "Take a starting value. Then, for each element of an array, calculate the next value, using the previous value and the element."
 layout: manual
 ---
 
-Take a starting value. Then, for each element of an array, calculate the next value,
+Take a starting value. Then, for each element of an array, calculate the next value, using the previous value and the element.
 
-using the previous value and the element.
+
 
 ```js
 reduce(

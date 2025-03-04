@@ -1,12 +1,12 @@
 ---
 title: "assertLessThan"
-excerpt: "Check that a numerical value is less than to another at runtime,"
+excerpt: "Check that a numerical value is less than to another at runtime, otherwise raise an error."
 layout: manual
 ---
 
-Check that a numerical value is less than to another at runtime,
+Check that a numerical value is less than to another at runtime, otherwise raise an error.
 
-otherwise raise an error.
+
 
 ```js
 assertLessThan(

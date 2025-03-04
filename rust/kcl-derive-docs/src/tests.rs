@@ -124,10 +124,6 @@ fn test_stdlib_line_to() {
             /// This is some function.
             /// It does shit.
             ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     lineTo
-            ///
             /// ```
             /// This is another code block.
             /// yes sirrr.
@@ -144,7 +140,7 @@ fn test_stdlib_line_to() {
     )
     .unwrap();
 
-    assert!(errors.is_empty());
+    assert!(errors.is_empty(), "{errors:?}");
     expectorate::assert_contents("tests/lineTo.gen", &get_text_fmt(&item).unwrap());
 }
 
@@ -157,10 +153,6 @@ fn test_stdlib_min() {
         quote! {
             /// This is some function.
             /// It does shit.
-            ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     min
             ///
             /// ```
             /// This is another code block.
@@ -185,7 +177,7 @@ fn test_stdlib_min() {
     .unwrap();
     let _expected = quote! {};
 
-    assert!(errors.is_empty());
+    assert!(errors.is_empty(), "{errors:?}");
     expectorate::assert_contents("tests/min.gen", &get_text_fmt(&item).unwrap());
 }
 
@@ -199,9 +191,11 @@ fn test_stdlib_show() {
             /// This is some function.
             /// It does shit.
             ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     show
+            /// ```
+            /// This is code.
+            /// It does other shit.
+            /// show
+            /// ```
             fn inner_show(
                 /// The args to do shit to.
                 _args: Vec<f64>
@@ -212,7 +206,7 @@ fn test_stdlib_show() {
     .unwrap();
     let _expected = quote! {};
 
-    assert!(errors.is_empty());
+    assert!(errors.is_empty(), "{errors:?}");
     expectorate::assert_contents("tests/show.gen", &get_text_fmt(&item).unwrap());
 }
 
@@ -226,9 +220,11 @@ fn test_stdlib_box() {
             /// This is some function.
             /// It does shit.
             ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     show
+            /// ```
+            /// This is code.
+            /// It does other shit.
+            /// show
+            /// ```
             fn inner_show(
                 /// The args to do shit to.
                 args: Box<f64>
@@ -240,7 +236,7 @@ fn test_stdlib_box() {
     .unwrap();
     let _expected = quote! {};
 
-    assert!(errors.is_empty());
+    assert!(errors.is_empty(), "{errors:?}");
     expectorate::assert_contents("tests/box.gen", &get_text_fmt(&item).unwrap());
 }
 
@@ -254,9 +250,11 @@ fn test_stdlib_option() {
             /// This is some function.
             /// It does shit.
             ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     show
+            /// ```
+            /// This is code.
+            /// It does other shit.
+            /// show
+            /// ```
             fn inner_show(
                 /// The args to do shit to.
                 args: Option<f64>
@@ -267,7 +265,7 @@ fn test_stdlib_option() {
     )
     .unwrap();
 
-    assert!(errors.is_empty());
+    assert!(errors.is_empty(), "{errors:?}");
     expectorate::assert_contents("tests/option.gen", &get_text_fmt(&item).unwrap());
 }
 
@@ -280,10 +278,6 @@ fn test_stdlib_array() {
         quote! {
             /// This is some function.
             /// It does shit.
-            ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     show
             ///
             /// ```
             /// This is another code block.
@@ -300,7 +294,7 @@ fn test_stdlib_array() {
     )
     .unwrap();
 
-    assert!(errors.is_empty());
+    assert!(errors.is_empty(), "{errors:?}");
     expectorate::assert_contents("tests/array.gen", &get_text_fmt(&item).unwrap());
 }
 
@@ -314,9 +308,11 @@ fn test_stdlib_option_input_format() {
             /// This is some function.
             /// It does shit.
             ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     import
+            /// ```
+            /// This is code.
+            /// It does other shit.
+            /// import
+            /// ```
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
@@ -327,7 +323,7 @@ fn test_stdlib_option_input_format() {
     )
     .unwrap();
 
-    assert!(errors.is_empty());
+    assert!(errors.is_empty(), "{errors:?}");
     expectorate::assert_contents("tests/option_input_format.gen", &get_text_fmt(&item).unwrap());
 }
 
@@ -341,9 +337,11 @@ fn test_stdlib_return_vec_sketch() {
             /// This is some function.
             /// It does shit.
             ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     import
+            /// ```
+            /// This is code.
+            /// It does other shit.
+            /// import
+            /// ```
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
@@ -354,7 +352,7 @@ fn test_stdlib_return_vec_sketch() {
     )
     .unwrap();
 
-    assert!(errors.is_empty());
+    assert!(errors.is_empty(), "{errors:?}");
     expectorate::assert_contents("tests/return_vec_sketch.gen", &get_text_fmt(&item).unwrap());
 }
 
@@ -368,9 +366,11 @@ fn test_stdlib_return_vec_box_sketch() {
             /// This is some function.
             /// It does shit.
             ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     import
+            /// ```
+            /// This is code.
+            /// It does other shit.
+            /// import
+            /// ```
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
@@ -381,7 +381,7 @@ fn test_stdlib_return_vec_box_sketch() {
     )
     .unwrap();
 
-    assert!(errors.is_empty());
+    assert!(errors.is_empty(), "{errors:?}");
     expectorate::assert_contents("tests/return_vec_box_sketch.gen", &get_text_fmt(&item).unwrap());
 }
 
@@ -394,10 +394,6 @@ fn test_stdlib_doc_comment_with_code() {
         quote! {
             /// This is some function.
             /// It does shit.
-            ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     myFunc
             ///
             /// ```
             /// This is another code block.
@@ -414,7 +410,7 @@ fn test_stdlib_doc_comment_with_code() {
     )
     .unwrap();
 
-    assert!(errors.is_empty());
+    assert!(errors.is_empty(), "{errors:?}");
     expectorate::assert_contents("tests/doc_comment_with_code.gen", &get_text_fmt(&item).unwrap());
 }
 
@@ -427,9 +423,6 @@ fn test_stdlib_fail_non_camel_case() {
         quote! {
             /// This is some function.
             /// It does shit.
-            ///
-            ///     This is code.
-            ///     It does other shit.
             ///
             /// ```
             /// This is another code block.
@@ -485,9 +478,6 @@ fn test_stdlib_fail_name_not_in_code_block() {
         quote! {
             /// This is some function.
             /// It does shit.
-            ///
-            ///     This is code.
-            ///     It does other shit.
             ///
             /// ```
             /// This is another code block.

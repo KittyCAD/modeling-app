@@ -46,7 +46,11 @@ use crate::{
         cache::{self, OldAstState},
         kcl_value::FunctionSource,
     },
-    lsp::{backend::Backend as _, kcl::hover::Hover, util::IntoDiagnostic},
+    lsp::{
+        backend::Backend as _,
+        kcl::hover::{Hover, HoverOpts},
+        util::IntoDiagnostic,
+    },
     parsing::{
         ast::types::{Expr, VariableKind},
         token::TokenStream,
@@ -1033,7 +1037,10 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = ast.ast.get_hover_value_for_position(pos, current_code, None) else {
+        let Some(hover) = ast
+            .ast
+            .get_hover_value_for_position(pos, current_code, &HoverOpts::default_for_hover())
+        else {
             return Ok(None);
         };
 
@@ -1069,7 +1076,12 @@ impl LanguageServer for Backend {
                         Documentation::MarkupContent(MarkupContent { value, .. }) => value,
                     };
 
-                    // TODO trim docs
+                    let docs = if docs.len() > 320 {
+                        let end = docs.find("\n\n").or_else(|| docs.find("\n\r\n")).unwrap_or(320);
+                        &docs[..end]
+                    } else {
+                        &**docs
+                    };
 
                     let Some(label_details) = &completion.label_details else {
                         return Ok(None);
@@ -1081,7 +1093,7 @@ impl LanguageServer for Backend {
                         String::new()
                     };
 
-                    (sig, &**docs)
+                    (sig, docs)
                 };
 
                 Ok(Some(LspHover {
@@ -1122,7 +1134,6 @@ impl LanguageServer for Backend {
                 }
             })
             .await),
-            // TODO we're getting the signature help rather than carrying on to the variables in nested exprs
             Hover::Signature { .. } => Ok(None),
             Hover::Comment { value, range } => Ok(Some(LspHover {
                 contents: HoverContents::Markup(MarkupContent {
@@ -1277,7 +1288,9 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = value.get_hover_value_for_position(pos, current_code, None) else {
+        let Some(hover) =
+            value.get_hover_value_for_position(pos, current_code, &HoverOpts::default_for_signature_help())
+        else {
             return Ok(None);
         };
 
