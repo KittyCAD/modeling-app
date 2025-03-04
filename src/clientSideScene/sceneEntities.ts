@@ -153,6 +153,13 @@ export const ARC_ANGLE_END = 'arc-angle-end'
 export const ARC_CENTER_TO_FROM = 'arc-center-to-from'
 export const ARC_CENTER_TO_TO = 'arc-center-to-to'
 export const ARC_ANGLE_REFERENCE_LINE = 'arc-angle-reference-line'
+
+export const THREE_POINT_ARC_SEGMENT = 'three-point-arc-segment'
+export const THREE_POINT_ARC_SEGMENT_BODY = 'three-point-arc-segment-body'
+export const THREE_POINT_ARC_SEGMENT_DASH = 'three-point-arc-segment-dash'
+export const THREE_POINT_ARC_HANDLE2 = 'three-point-arc-handle2'
+export const THREE_POINT_ARC_HANDLE3 = 'three-point-arc-handle3'
+
 export const HIDE_SEGMENT_LENGTH = 75 // in pixels
 export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
 export const SEGMENT_BODIES = [
@@ -161,20 +168,12 @@ export const SEGMENT_BODIES = [
   CIRCLE_SEGMENT,
   CIRCLE_THREE_POINT_SEGMENT,
   ARC_SEGMENT,
+  THREE_POINT_ARC_SEGMENT,
 ]
 export const SEGMENT_BODIES_PLUS_PROFILE_START = [
   ...SEGMENT_BODIES,
   PROFILE_START,
 ]
-
-export const THREE_POINT_ARC_SEGMENT = 'three-point-arc-segment'
-export const THREE_POINT_ARC_SEGMENT_BODY = 'three-point-arc-segment-body'
-export const THREE_POINT_ARC_SEGMENT_DASH = 'three-point-arc-segment-dash'
-export const THREE_POINT_ARC_ANGLE_END = 'three-point-arc-angle-end'
-export const THREE_POINT_ARC_CENTER_TO_FROM = 'three-point-arc-center-to-from'
-export const THREE_POINT_ARC_CENTER_TO_TO = 'three-point-arc-center-to-to'
-export const THREE_POINT_ARC_ANGLE_REFERENCE_LINE =
-  'three-point-arc-angle-reference-line'
 
 type Vec3Array = [number, number, number]
 
@@ -287,14 +286,12 @@ export class SceneEntities {
         segment.userData.to &&
         segment.userData.type === THREE_POINT_ARC_SEGMENT
       ) {
-        update = segmentUtils.arc.update
+        update = segmentUtils.threePointArc.update
         input = {
-          type: 'three-point-arc-segment',
-          from: segment.userData.from,
-          to: segment.userData.to,
-          center: segment.userData.center,
-          radius: segment.userData.radius,
-          ccw: segment.userData.ccw,
+          type: 'circle-three-point-segment',
+          p1: segment.userData.p1,
+          p2: segment.userData.p2,
+          p3: segment.userData.p3,
         }
       }
 
@@ -742,6 +739,7 @@ export class SceneEntities {
         if (err(_node1)) return
         const callExpName = _node1.node?.callee?.name
 
+        console.log('segmentType', segment.type, segment)
         const initSegment =
           segment.type === 'TangentialArcTo'
             ? segmentUtils.tangentialArcTo.init
@@ -751,6 +749,8 @@ export class SceneEntities {
             ? segmentUtils.arc.init
             : segment.type === 'CircleThreePoint'
             ? segmentUtils.circleThreePoint.init
+            : segment.type === 'ArcThreePoint'
+            ? segmentUtils.threePointArc.init
             : segmentUtils.straight.init
         const input: SegmentInputs =
           segment.type === 'Circle'
@@ -762,7 +762,8 @@ export class SceneEntities {
                 center: segment.center,
                 radius: segment.radius,
               }
-            : segment.type === 'CircleThreePoint'
+            : segment.type === 'CircleThreePoint' ||
+              segment.type === 'ArcThreePoint'
             ? {
                 type: 'circle-three-point-segment',
                 p1: segment.p1,
@@ -2296,6 +2297,8 @@ export class SceneEntities {
       CIRCLE_THREE_POINT_HANDLE1,
       CIRCLE_THREE_POINT_HANDLE2,
       CIRCLE_THREE_POINT_HANDLE3,
+      THREE_POINT_ARC_HANDLE2,
+      THREE_POINT_ARC_HANDLE3,
       ARC_ANGLE_END,
     ])
     if (!group) return
