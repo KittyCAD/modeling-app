@@ -86,7 +86,7 @@ jobs:
         shell: bash
         run: |
           pushd rust/
-          just overwrite-sim-test kcl_samples || true
+          just overwrite-sim-test kcl_samples
           popd
           git add rust/kcl-lib/tests
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -104,6 +104,8 @@ jobs:
           cd rust
           cargo llvm-cov nextest --workspace --lcov --output-path lcov.info --retries=2 --no-fail-fast -P ci 2>&1 | tee /tmp/github-actions.log
         env:
+          EXPECTORATE: overwrite
+          TWENTY_TWENTY: overwrite
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           RUST_MIN_STACK: 10485760000
       - name: Upload to codecov.io
