@@ -65,7 +65,7 @@ jobs:
     - name: Download Wasm Cache
       id: download-wasm
       if: github.event_name != 'schedule' && steps.filter.outputs.rust == 'false'
-      uses: dawidd6/action-download-artifact@v7
+      uses: dawidd6/action-download-artifact@v9
       continue-on-error: true
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
