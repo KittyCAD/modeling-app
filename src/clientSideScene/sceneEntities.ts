@@ -739,7 +739,6 @@ export class SceneEntities {
         if (err(_node1)) return
         const callExpName = _node1.node?.callee?.name
 
-        console.log('segmentType', segment.type, segment)
         const initSegment =
           segment.type === 'TangentialArcTo'
             ? segmentUtils.tangentialArcTo.init
@@ -1869,6 +1868,213 @@ export class SceneEntities {
               center: center,
               radius: radius,
               ccw: true,
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+
+          const newCode = recast(modded)
+          if (err(newCode)) return
+          const pResult = parse(newCode)
+          if (trap(pResult) || !resultIsOk(pResult))
+            return Promise.reject(pResult)
+          _ast = pResult.program
+
+          // Update the primary AST and unequip the arc tool
+          await kclManager.executeAstMock(_ast)
+          sceneInfra.modelingSend({ type: 'Finish arc' })
+          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
+        }
+      },
+    })
+    return {
+      updatedEntryNodePath: sketchEntryNodePath,
+      updatedSketchNodePaths: sketchNodePaths,
+      expressionIndexToDelete: -1, // No need to delete any expression
+    }
+  }
+  setupDraftArcThreePoint = async (
+    sketchEntryNodePath: PathToNode,
+    sketchNodePaths: PathToNode[],
+    planeNodePath: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    sketchOrigin: [number, number, number],
+    p2: [x: number, y: number]
+  ): Promise<SketchDetailsUpdate | Error> => {
+    let _ast = structuredClone(kclManager.ast)
+
+    const _node1 = getNodeFromPath<VariableDeclaration>(
+      _ast,
+      sketchEntryNodePath || [],
+      'VariableDeclaration'
+    )
+    if (trap(_node1)) return Promise.reject(_node1)
+    const variableDeclarationName = _node1.node?.declaration.id?.name || ''
+
+    const sg = sketchFromKclValue(
+      kclManager.variables[variableDeclarationName],
+      variableDeclarationName
+    )
+    if (err(sg)) return Promise.reject(sg)
+    const lastSeg = sg?.paths?.slice(-1)[0] || sg.start
+
+    // Calculate a default center point and radius based on the last segment's endpoint
+    const p1: [number, number] = [lastSeg.to[0], lastSeg.to[1]]
+    const p3: [number, number] = [p2[0] + 0.1, p2[1] + 0.1]
+
+    // Use addNewSketchLn to append an arc to the existing sketch
+    const mod = addNewSketchLn({
+      node: _ast,
+      variables: kclManager.variables,
+      input: {
+        type: 'circle-three-point-segment',
+        p1,
+        p2,
+        p3,
+      },
+      fnName: 'arcTo' as ToolTip,
+      pathToNode: sketchEntryNodePath,
+    })
+
+    if (trap(mod)) return Promise.reject(mod)
+    const pResult = parse(recast(mod.modifiedAst))
+    if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+    _ast = pResult.program
+
+    // do a quick mock execution to get the program memory up-to-date
+    await kclManager.executeAstMock(_ast)
+
+    const index = sg.paths.length // because we've added a new segment that's not in the memory yet
+    const draftExpressionsIndices = { start: index, end: index }
+
+    this.tearDownSketch({ removeAxis: false })
+    sceneInfra.resetMouseListeners()
+
+    const { truncatedAst } = await this.setupSketch({
+      sketchEntryNodePath,
+      sketchNodePaths,
+      forward,
+      up,
+      position: sketchOrigin,
+      maybeModdedAst: _ast,
+      draftExpressionsIndices,
+    })
+
+    sceneInfra.setCallbacks({
+      onMove: async (args) => {
+        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
+        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
+          mod.pathToNode
+        )
+
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          firstProfileIndex
+        const _node = getNodeFromPath<VariableDeclaration>(
+          truncatedAst,
+          nodePathWithCorrectedIndexForTruncatedAst,
+          'VariableDeclaration'
+        )
+        let modded = structuredClone(truncatedAst)
+        if (trap(_node)) return
+        const sketchInit = _node.node.declaration.init
+
+        if (sketchInit.type === 'PipeExpression') {
+          const newP3: [number, number] = [
+            args.intersectionPoint.twoD.x,
+            args.intersectionPoint.twoD.y,
+          ]
+
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.variables,
+            {
+              type: 'path',
+              pathToNode: nodePathWithCorrectedIndexForTruncatedAst,
+            },
+            {
+              type: 'circle-three-point-segment',
+              p1,
+              p2,
+              p3: newP3,
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+        }
+        const { execState } = await executeAst({
+          ast: modded,
+          engineCommandManager: this.engineCommandManager,
+          isMock: true,
+        })
+        const sketch = sketchFromKclValue(
+          execState.variables[variableDeclarationName],
+          variableDeclarationName
+        )
+        if (err(sketch)) return
+        const sgPaths = sketch.paths
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+        const varDecIndex = Number(sketchEntryNodePath[1][0])
+
+        this.updateSegment(
+          sketch.start,
+          0,
+          varDecIndex,
+          _ast,
+          orthoFactor,
+          sketch
+        )
+        sgPaths.forEach((seg, index) =>
+          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+        )
+      },
+      onClick: async (args) => {
+        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
+        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
+          mod.pathToNode
+        )
+
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          firstProfileIndex
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
+        // Commit the arc to the full AST/code and return to sketch.idle
+        const mousePoint = args.intersectionPoint?.twoD
+        if (!mousePoint || args.mouseEvent.button !== 0) return
+
+        const _node = getNodeFromPath<VariableDeclaration>(
+          _ast,
+          sketchEntryNodePath || [],
+          'VariableDeclaration'
+        )
+        if (trap(_node)) return
+        const sketchInit = _node.node?.declaration.init
+
+        let modded = structuredClone(_ast)
+        if (sketchInit.type === 'PipeExpression') {
+          // Calculate end angle based on final mouse position
+
+          // Calculate the final 'to' point using the existing radius and the final end angle
+          const finalP3: [number, number] = [mousePoint.x, mousePoint.y]
+
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.variables,
+            {
+              type: 'path',
+              pathToNode: mod.pathToNode,
+            },
+            {
+              type: 'circle-three-point-segment',
+              p1,
+              p2,
+              p3: finalP3,
             }
           )
           if (err(moddedResult)) return
