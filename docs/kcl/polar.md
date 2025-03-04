@@ -9,7 +9,7 @@ Convert polar/sphere (azimuth, elevation, distance) coordinates to cartesian (x/
 
 
 ```js
-polar(data: PolarCoordsData) -> [number]
+polar(data: PolarCoordsData): [number]
 ```
 
 

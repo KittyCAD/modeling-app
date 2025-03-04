@@ -1539,15 +1539,12 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
     let Some(OldAstState { result_env, .. }) = cache::read_old_ast().await else {
-        crate::log::log("no cache");
         return None;
     };
     let Some(mem) = cache::read_old_memory().await else {
-        crate::log::log("no mem");
         return None;
     };
     let Ok(value) = mem.get_from(&name, result_env, SourceRange::default()) else {
-        crate::log::log(format!("no value {name} {result_env:?} {mem}"));
         return None;
     };
 

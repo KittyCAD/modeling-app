@@ -13,7 +13,7 @@ xLineTo(
   to: number,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

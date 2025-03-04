@@ -13,7 +13,7 @@ tangentialArcToRelative(
   delta: [number],
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

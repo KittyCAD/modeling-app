@@ -13,7 +13,7 @@ arcTo(
   data: ArcToData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

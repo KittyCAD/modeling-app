@@ -14,7 +14,7 @@ assertEqual(
   right: number,
   epsilon: number,
   message: string,
-) -> ()
+): ()
 ```
 
 

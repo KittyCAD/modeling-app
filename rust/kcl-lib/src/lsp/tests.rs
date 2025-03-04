@@ -873,7 +873,7 @@ x = b"#
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_on_hover() {
-    let server = kcl_lsp_server(false).await.unwrap();
+    let server = kcl_lsp_server(true).await.unwrap();
 
     // Send open file.
     server
@@ -882,12 +882,22 @@ async fn test_kcl_lsp_on_hover() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: "startSketchOn()".to_string(),
+                text: r#"startSketchOn(XY)
+foo = 42
+foo
+
+fn bar(x: string): string {
+  return x
+}
+
+bar("an arg")
+"#
+                .to_string(),
             },
         })
         .await;
 
-    // Send hover request.
+    // Std lib call
     let hover = server
         .hover(tower_lsp::lsp_types::HoverParams {
             text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
@@ -901,12 +911,74 @@ async fn test_kcl_lsp_on_hover() {
         .await
         .unwrap();
 
-    // Check the hover.
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            value.contains("startSketchOn");
-            value.contains("-> SketchSurface");
-            value.contains("Start a new 2-dimensional sketch on a specific");
+            assert!(value.contains("startSketchOn"));
+            assert!(value.contains(": SketchSurface"));
+            assert!(value.contains("Start a new 2-dimensional sketch on a specific"));
+        }
+        _ => unreachable!(),
+    }
+
+    // Variable use
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 2, character: 1 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("foo: number = 42"));
+        }
+        _ => unreachable!(),
+    }
+
+    // User-defined function call.
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 8, character: 1 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("bar(x: string): string"));
+        }
+        _ => unreachable!(),
+    }
+
+    // Variable inside a function
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 5, character: 9 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("x: string"));
         }
         _ => unreachable!(),
     }

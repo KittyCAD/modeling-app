@@ -14,7 +14,7 @@ circle(
   center: [number],
   radius: number,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

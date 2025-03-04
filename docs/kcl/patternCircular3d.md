@@ -17,7 +17,7 @@ patternCircular3d(
   arcDegrees: number,
   rotateDuplicates: bool,
   useOriginal?: bool,
-) -> [Solid]
+): [Solid]
 ```
 
 

@@ -16,7 +16,7 @@ patternCircular2d(
   arcDegrees: number,
   rotateDuplicates: bool,
   useOriginal?: bool,
-) -> [Sketch]
+): [Sketch]
 ```
 
 

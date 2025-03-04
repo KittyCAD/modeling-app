@@ -12,7 +12,7 @@ Compute the angle of the given leg for x.
 legAngX(
   hypotenuse: number,
   leg: number,
-) -> number
+): number
 ```
 
 ### Tags

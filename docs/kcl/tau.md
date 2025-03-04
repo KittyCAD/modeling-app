@@ -11,7 +11,7 @@ Return the value of `tau`. The full circle constant (τ). Equal to 2π.
 **DEPRECATED** use the constant TAU
 
 ```js
-tau() -> number
+tau(): number
 ```
 
 ### Tags

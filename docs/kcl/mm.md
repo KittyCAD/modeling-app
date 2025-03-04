@@ -15,7 +15,7 @@ For example, if the current project uses inches, this function will return `(1/2
 We merely provide these functions for convenience and readability, as `10 * mm()` is more readable that your intent is "I want 10 millimeters" than `10 * (1/25.4)`, if the project settings are in inches.
 
 ```js
-mm() -> number
+mm(): number
 ```
 
 ### Tags

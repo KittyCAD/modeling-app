@@ -9,7 +9,7 @@ Extract the provided 2-dimensional sketch's profile's origin's 'y' value.
 
 
 ```js
-profileStartY(sketch: Sketch) -> number
+profileStartY(sketch: Sketch): number
 ```
 
 

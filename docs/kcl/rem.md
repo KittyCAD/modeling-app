@@ -12,7 +12,7 @@ Compute the remainder after dividing `num` by `div`. If `num` is negative, the r
 rem(
   num: number,
   divisor: number,
-) -> number
+): number
 ```
 
 ### Tags

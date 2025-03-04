@@ -15,7 +15,7 @@ patternLinear3d(
   distance: number,
   axis: [number],
   useOriginal?: bool,
-) -> [Solid]
+): [Solid]
 ```
 
 

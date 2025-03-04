@@ -13,7 +13,7 @@ angledLineThatIntersects(
   data: AngledLineThatIntersectsData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

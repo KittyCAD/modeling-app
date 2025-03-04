@@ -12,7 +12,7 @@ Check a value at runtime, and raise an error if the argument provided is false.
 assert(
   data: bool,
   message: string,
-) -> ()
+): ()
 ```
 
 

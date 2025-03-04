@@ -13,7 +13,7 @@ angledLineToX(
   data: AngledLineToData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

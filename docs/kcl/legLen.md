@@ -12,7 +12,7 @@ Compute the length of the given leg.
 legLen(
   hypotenuse: number,
   leg: number,
-) -> number
+): number
 ```
 
 ### Tags

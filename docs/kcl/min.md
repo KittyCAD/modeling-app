@@ -9,7 +9,7 @@ Compute the minimum of the given arguments.
 
 
 ```js
-min(args: [number]) -> number
+min(args: [number]): number
 ```
 
 ### Tags

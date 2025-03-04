@@ -12,7 +12,7 @@ Construct a line segment from the current origin back to the profile's origin, e
 close(
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

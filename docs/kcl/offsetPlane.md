@@ -12,7 +12,7 @@ For example, if you offset the 'XZ' plane by 10, the new plane will be parallel 
 offsetPlane(
   plane: PlaneData,
   offset: number,
-) -> Plane
+): Plane
 ```
 
 

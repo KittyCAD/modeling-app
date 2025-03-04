@@ -9,7 +9,7 @@ Compute the absolute value of a number.
 
 
 ```js
-abs(num: number) -> number
+abs(num: number): number
 ```
 
 ### Tags

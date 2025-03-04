@@ -9,7 +9,7 @@ Extract the 'x' axis value of the last line segment in the provided 2-d sketch.
 
 
 ```js
-lastSegX(sketch: Sketch) -> number
+lastSegX(sketch: Sketch): number
 ```
 
 

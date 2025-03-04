@@ -13,7 +13,7 @@ bezierCurve(
   data: BezierData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

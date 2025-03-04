@@ -13,7 +13,7 @@ angledLineOfYLength(
   data: AngledLineData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

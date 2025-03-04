@@ -9,7 +9,7 @@ Compute the square root of a number.
 
 
 ```js
-sqrt(num: number) -> number
+sqrt(num: number): number
 ```
 
 ### Tags

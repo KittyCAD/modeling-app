@@ -15,7 +15,7 @@ patternLinear2d(
   distance: number,
   axis: [number],
   useOriginal?: bool,
-) -> [Sketch]
+): [Sketch]
 ```
 
 

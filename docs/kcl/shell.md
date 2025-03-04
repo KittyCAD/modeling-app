@@ -13,7 +13,7 @@ shell(
   solidSet: SolidSet,
   thickness: number,
   faces: [FaceTag],
-) -> SolidSet
+): SolidSet
 ```
 
 

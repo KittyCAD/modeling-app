@@ -14,7 +14,7 @@ Mirror occurs around a local sketch axis rather than a global axis.
 mirror2d(
   data: Mirror2dData,
   sketchSet: SketchSet,
-) -> [Sketch]
+): [Sketch]
 ```
 
 

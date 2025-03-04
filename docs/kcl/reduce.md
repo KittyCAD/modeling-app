@@ -13,7 +13,7 @@ reduce(
   array: [KclValue],
   start: KclValue,
   reduceFn: FunctionSource,
-) -> KclValue
+): KclValue
 ```
 
 

@@ -19,6 +19,7 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     };
 
     let can_execute = executor_ctx.is_some();
+    assert!(!execute || can_execute);
 
     // Create the backend.
     let (service, _) = tower_lsp::LspService::build(|client| crate::lsp::kcl::Backend {
