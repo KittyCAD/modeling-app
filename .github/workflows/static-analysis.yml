@@ -127,6 +127,8 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
+      # yarn install rust/kcl-language-server for the unit tests!
+      - run: yarn --cwd ./rust/kcl-language-server install
       - uses: taiki-e/install-action@a209ff0ce0349f9e7cadc4ba8f6a415c8d3b0813
         with:
           tool: wasm-pack
