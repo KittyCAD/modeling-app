@@ -35,7 +35,9 @@ function ProjectCard({
 
   function handleSave(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    void handleRenameProject(e, project).then(() => setIsEditing(false))
+    handleRenameProject(e, project)
+      .then(() => setIsEditing(false))
+      .catch(reportRejection)
   }
 
   function getDisplayedTime(dateTimeMs: number) {

@@ -306,6 +306,9 @@ const ProjectsContextDesktop = ({
               ('output' in event &&
                 typeof event.output === 'string' &&
                 event.output) ||
+              ('error' in event &&
+                event.error instanceof Error &&
+                event.error.message) ||
               ''
           ),
       },
@@ -338,6 +341,13 @@ const ProjectsContextDesktop = ({
           if (doesProjectNameNeedInterpolated(name)) {
             const nextIndex = getNextProjectIndex(name, projects)
             name = interpolateProjectNameWithIndex(name, nextIndex)
+          }
+
+          // Toast an error if the project name is taken
+          if (projects.find((p) => p.name === name)) {
+            return Promise.reject(
+              new Error(`Project with name "${name}" already exists`)
+            )
           }
 
           await renameProjectDirectory(
