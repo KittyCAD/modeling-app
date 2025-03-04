@@ -16,7 +16,7 @@ bluePlane = offsetPlane('XY', offset = halfSize)
 yellowPlane = offsetPlane('XY', offset = -halfSize)
 greenPlane = offsetPlane('XZ', offset = -halfSize)
 purplePlane = offsetPlane('-XZ', offset = -halfSize)
-redPlane = offsetPlane('YZ', offset = halfSize)
+redPlane = offsetPlane('YZ', offset = halfSize - extrudeLength)
 tealPlane = offsetPlane('YZ', offset = -halfSize)
 
 // Sketch a rectangle centered at the origin of the profile
