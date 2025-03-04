@@ -4,9 +4,9 @@ on:
       - main
     paths:
       - 'public/kcl-samples/**'
-  pull_request:
-    paths:
-      - .github/workflows/pr-kcl-samples-repo.yml
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/pr-kcl-samples-repo.yml
   workflow_dispatch:
 name: Create PR in kcl-samples repo
 permissions:
