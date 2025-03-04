@@ -9,7 +9,7 @@ node_modules
 /coverage
 
 # production
-/build
+build
 
 # misc
 .DS_Store
@@ -72,7 +72,7 @@ out/
 # python
 __pycache__/
 uv.lock
-rust/kcl-python-bindings/dist
+dist
 venv
 
 .vscode-test
