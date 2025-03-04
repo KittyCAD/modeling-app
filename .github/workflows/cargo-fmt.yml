@@ -35,6 +35,7 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
+          cache-workspaces: rust
           components: rustfmt
 
       - name: Run cargo fmt

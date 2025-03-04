@@ -25,6 +25,8 @@ jobs:
           cp --update=none rust/rust-toolchain.toml ./ || true
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-workspaces: rust
 
       - name: Run check
         run: |

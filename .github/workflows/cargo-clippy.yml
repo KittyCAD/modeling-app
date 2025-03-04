@@ -33,6 +33,7 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
+          cache-workspaces: rust
           components: clippy
 
       - name: Run clippy

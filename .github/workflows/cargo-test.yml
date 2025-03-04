@@ -42,6 +42,8 @@ jobs:
       - uses: taiki-e/install-action@nextest
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
+        with:
+          workspaces: rust
       - name: cargo test
         shell: bash
         run: |-
