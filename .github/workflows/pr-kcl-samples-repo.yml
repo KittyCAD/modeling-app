@@ -49,12 +49,10 @@ jobs:
           cd kcl-samples-repo
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add --all .
-          git commit -m "Updates from modeling-app repo" || exit 0
-          git fetch origin
-          git rebase origin/main || exit 0
           export NEW_BRANCH="update-from-modeling-app"
           git switch -c "$NEW_BRANCH"
+          git add --all .
+          git commit -m "Updates from modeling-app repo" || exit 0
           git push -f origin "$NEW_BRANCH"
           gh pr create --title "Update from modeling-app" \
               --body "Updating files from the modeling-app repo" \
