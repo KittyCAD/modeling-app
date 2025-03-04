@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing circular_pattern3d_a_pattern.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -94,8 +93,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 80,
+                      "name": "end",
+                      "start": 77,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -146,8 +147,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 104,
+                      "name": "end",
+                      "start": 101,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -198,8 +201,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 128,
+                      "name": "end",
+                      "start": 125,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -277,8 +282,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 173,
+                      "name": "length",
+                      "start": 167,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 177,
@@ -334,8 +341,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 229,
+                  "name": "axis",
+                  "start": 225,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -382,8 +391,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 254,
+                  "name": "instances",
+                  "start": 245,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 258,
@@ -400,8 +411,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "distance"
+                  "end": 270,
+                  "name": "distance",
+                  "start": 262,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 274,
@@ -457,8 +470,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "axis"
+                  "end": 323,
+                  "name": "axis",
+                  "start": 319,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -505,8 +520,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "center"
+                  "end": 345,
+                  "name": "center",
+                  "start": 339,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
@@ -574,8 +591,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "instances"
+                  "end": 376,
+                  "name": "instances",
+                  "start": 367,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 381,
@@ -592,8 +611,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "arcDegrees"
+                  "end": 395,
+                  "name": "arcDegrees",
+                  "start": 385,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 401,
@@ -610,8 +631,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "rotateDuplicates"
+                  "end": 421,
+                  "name": "rotateDuplicates",
+                  "start": 405,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 429,

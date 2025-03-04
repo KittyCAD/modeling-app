@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing basic_fillet_cube_start.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -94,8 +93,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 74,
+                      "name": "end",
+                      "start": 71,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -131,8 +132,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 89,
+                      "name": "tag",
+                      "start": 86,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 98,
@@ -160,8 +163,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 113,
+                      "name": "end",
+                      "start": 110,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -212,8 +217,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 138,
+                      "name": "end",
+                      "start": 135,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -256,8 +263,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 154,
+                      "name": "tag",
+                      "start": 151,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 164,
@@ -305,8 +314,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 199,
+                      "name": "length",
+                      "start": 193,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 204,
@@ -338,8 +349,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 224,
+                      "name": "radius",
+                      "start": 218,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 228,
@@ -356,8 +369,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 234,
+                      "name": "tags",
+                      "start": 230,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [

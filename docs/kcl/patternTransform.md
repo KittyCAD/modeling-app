@@ -40,7 +40,7 @@ patternTransform(
   instances: integer,
   transform: FunctionSource,
   useOriginal?: bool,
-) -> [Solid]
+): [Solid]
 ```
 
 

@@ -1,18 +1,18 @@
 ---
 title: "close"
-excerpt: "Construct a line segment from the current origin back to the profile's"
+excerpt: "Construct a line segment from the current origin back to the profile's origin, ensuring the resulting 2-dimensional sketch is not open-ended."
 layout: manual
 ---
 
-Construct a line segment from the current origin back to the profile's
+Construct a line segment from the current origin back to the profile's origin, ensuring the resulting 2-dimensional sketch is not open-ended.
 
-origin, ensuring the resulting 2-dimensional sketch is not open-ended.
+
 
 ```js
 close(
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

@@ -1,15 +1,15 @@
 ---
 title: "profileStartY"
-excerpt: "Extract the provided 2-dimensional sketch's profile's origin's 'y'"
+excerpt: "Extract the provided 2-dimensional sketch's profile's origin's 'y' value."
 layout: manual
 ---
 
-Extract the provided 2-dimensional sketch's profile's origin's 'y'
+Extract the provided 2-dimensional sketch's profile's origin's 'y' value.
 
-value.
+
 
 ```js
-profileStartY(sketch: Sketch) -> number
+profileStartY(sketch: Sketch): number
 ```
 
 

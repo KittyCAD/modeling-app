@@ -9,7 +9,7 @@ Compute the natural logarithm of the number.
 
 
 ```js
-ln(num: number) -> number
+ln(num: number): number
 ```
 
 ### Tags

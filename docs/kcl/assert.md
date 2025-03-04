@@ -1,18 +1,18 @@
 ---
 title: "assert"
-excerpt: "Check a value at runtime, and raise an error if the argument provided"
+excerpt: "Check a value at runtime, and raise an error if the argument provided is false."
 layout: manual
 ---
 
-Check a value at runtime, and raise an error if the argument provided
+Check a value at runtime, and raise an error if the argument provided is false.
 
-is false.
+
 
 ```js
 assert(
   data: bool,
   message: string,
-) -> ()
+): ()
 ```
 
 

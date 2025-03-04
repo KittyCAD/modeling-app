@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing artifact_graph_example_code1.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -108,8 +107,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 78,
+                      "name": "end",
+                      "start": 75,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -160,8 +161,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 103,
+                      "name": "end",
+                      "start": 100,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -197,8 +200,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 121,
+                      "name": "tag",
+                      "start": 118,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 130,
@@ -226,8 +231,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 145,
+                      "name": "end",
+                      "start": 142,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -270,8 +277,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 161,
+                      "name": "tag",
+                      "start": 158,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 170,
@@ -299,8 +308,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 193,
+                      "name": "endAbsolute",
+                      "start": 182,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -408,8 +419,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 285,
+                      "name": "length",
+                      "start": 279,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -454,8 +467,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 311,
+                      "name": "radius",
+                      "start": 305,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 315,
@@ -472,8 +487,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 321,
+                      "name": "tags",
+                      "start": 317,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -627,8 +644,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 424,
+                      "name": "end",
+                      "start": 421,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -679,8 +698,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 448,
+                      "name": "end",
+                      "start": 445,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -738,8 +759,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 481,
+                      "name": "endAbsolute",
+                      "start": 470,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -845,8 +868,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "length"
+                  "end": 573,
+                  "name": "length",
+                  "start": 567,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 577,

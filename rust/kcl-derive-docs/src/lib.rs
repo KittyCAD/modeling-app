@@ -551,8 +551,6 @@ struct DocInfo {
 
 fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> DocInfo {
     let doc = syn::Ident::new("doc", proc_macro2::Span::call_site());
-    let mut code_blocks: Vec<String> = Vec::new();
-
     let raw_lines = attrs.iter().flat_map(|attr| {
         if let syn::Meta::NameValue(nv) = &attr.meta {
             if nv.path.is_ident(&doc) {
@@ -568,6 +566,7 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> DocInfo {
     });
 
     // Parse any code blocks from the doc string.
+    let mut code_blocks: Vec<String> = Vec::new();
     let mut code_block: Option<String> = None;
     let mut parsed_lines = Vec::new();
     for line in raw_lines {
@@ -589,71 +588,68 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> DocInfo {
         }
     }
 
-    // Parse code blocks that start with a tab or a space.
-    let mut lines = Vec::new();
-    for line in parsed_lines {
-        if line.starts_with("    ") || line.starts_with('\t') {
-            if let Some(ref mut code_block) = code_block {
-                code_block.push_str(&line.trim_start_matches("    ").trim_start_matches('\t'));
-                code_block.push('\n');
-            } else {
-                code_block = Some(format!("{}\n", line));
-            }
-        } else {
-            if let Some(ref inner_code_block) = code_block {
-                code_blocks.push(inner_code_block.trim().to_string());
-                code_block = None;
-            }
-            lines.push(line);
-        }
-    }
-
-    let mut lines = lines.into_iter();
-
     if let Some(code_block) = code_block {
         code_blocks.push(code_block.trim().to_string());
     }
 
-    // Skip initial blank lines; they make for excessively terse summaries.
-    let summary = loop {
-        match lines.next() {
-            Some(s) if s.is_empty() => (),
-            next => break next,
+    let mut summary = None;
+    let mut description: Option<String> = None;
+    for line in parsed_lines {
+        if line.is_empty() {
+            if let Some(desc) = &mut description {
+                // Handle fully blank comments as newlines we keep.
+                if !desc.is_empty() && !desc.ends_with('\n') {
+                    if desc.ends_with(' ') {
+                        desc.pop().unwrap();
+                    }
+                    desc.push_str("\n\n");
+                }
+            } else if summary.is_some() {
+                description = Some(String::new());
+            }
+            continue;
         }
-    };
-    // Skip initial blank description lines.
-    let first = loop {
-        match lines.next() {
-            Some(s) if s.is_empty() => (),
-            next => break next,
-        }
-    };
 
-    let (summary, description) = match (summary, first) {
-        (None, _) => (None, None),
-        (summary, None) => (summary, None),
-        (Some(summary), Some(first)) => (
-            Some(summary),
-            Some(
-                lines
-                    .fold(first, |acc, comment| {
-                        if acc.ends_with('-') || acc.ends_with('\n') || acc.is_empty() {
-                            // Continuation lines and newlines.
-                            format!("{}{}", acc, comment)
-                        } else if comment.is_empty() {
-                            // Handle fully blank comments as newlines we keep.
-                            format!("{}\n", acc)
-                        } else {
-                            // Default to space-separating comment fragments.
-                            format!("{} {}", acc, comment)
-                        }
-                    })
-                    .trim_end()
-                    .replace('\n', "\n\n")
-                    .to_string(),
-            ),
-        ),
-    };
+        if let Some(desc) = &mut description {
+            desc.push_str(&line);
+            // Default to space-separating comment fragments.
+            desc.push(' ');
+            continue;
+        }
+
+        if summary.is_none() {
+            summary = Some(String::new());
+        }
+        match &mut summary {
+            Some(summary) => {
+                summary.push_str(&line);
+                // Default to space-separating comment fragments.
+                summary.push(' ');
+            }
+            None => unreachable!(),
+        }
+    }
+
+    // Trim the summary and description.
+    if let Some(s) = &mut summary {
+        while s.ends_with(' ') || s.ends_with('\n') {
+            s.pop().unwrap();
+        }
+
+        if s.is_empty() {
+            summary = None;
+        }
+    }
+
+    if let Some(d) = &mut description {
+        while d.ends_with(' ') || d.ends_with('\n') {
+            d.pop().unwrap();
+        }
+
+        if d.is_empty() {
+            description = None;
+        }
+    }
 
     DocInfo {
         summary,
@@ -664,37 +660,11 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> DocInfo {
 
 fn normalize_comment_string(s: String) -> Vec<String> {
     s.split('\n')
-        .enumerate()
-        .map(|(idx, s)| {
-            // Rust-style comments are intrinsically single-line. We don't want
-            // to trim away formatting such as an initial '*'.
-            // We also don't want to trim away a tab character, which is
-            // used to denote a code block. Code blocks can also be denoted
-            // by four spaces, but we don't want to trim those away either.
+        .map(|s| {
+            // Rust-style comments are intrinsically single-line.
             // We only want to trim a single space character from the start of
             // a line, and only if it's the first character.
-            let new = s
-                .chars()
-                .enumerate()
-                .flat_map(|(idx, c)| {
-                    if idx == 0 {
-                        if c == ' ' {
-                            return None;
-                        }
-                    }
-                    Some(c)
-                })
-                .collect::<String>()
-                .trim_end()
-                .to_string();
-            let s = new.as_str();
-
-            if idx == 0 {
-                s
-            } else {
-                s.strip_prefix("* ").unwrap_or_else(|| s.strip_prefix('*').unwrap_or(s))
-            }
-            .to_string()
+            s.strip_prefix(' ').unwrap_or(s).trim_end().to_owned()
         })
         .collect()
 }

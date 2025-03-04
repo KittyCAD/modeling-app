@@ -1,7 +1,6 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
@@ -19,8 +18,10 @@ snapshot_kind: text
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "arg"
+                "end": 25,
+                "name": "arg",
+                "start": 22,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 29,
@@ -33,8 +34,10 @@ snapshot_kind: text
             {
               "type": "LabeledArg",
               "label": {
-                "type": "Identifier",
-                "name": "bar"
+                "end": 72,
+                "name": "bar",
+                "start": 69,
+                "type": "Identifier"
               },
               "arg": {
                 "end": 76,

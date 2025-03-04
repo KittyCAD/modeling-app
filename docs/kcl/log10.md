@@ -9,7 +9,7 @@ Compute the base 10 logarithm of the number.
 
 
 ```js
-log10(num: number) -> number
+log10(num: number): number
 ```
 
 ### Tags

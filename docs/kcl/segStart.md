@@ -9,7 +9,7 @@ Compute the starting point of the provided line segment.
 
 
 ```js
-segStart(tag: TagIdentifier) -> [number]
+segStart(tag: TagIdentifier): [number]
 ```
 
 

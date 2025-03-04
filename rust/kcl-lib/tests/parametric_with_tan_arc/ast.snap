@@ -451,8 +451,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 301,
+                      "name": "end",
+                      "start": 298,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -567,8 +569,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 391,
+                      "name": "end",
+                      "start": 388,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -622,8 +626,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 426,
+                      "name": "end",
+                      "start": 423,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -677,8 +683,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 459,
+                      "name": "end",
+                      "start": 456,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -814,8 +822,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 582,
+                      "name": "end",
+                      "start": 579,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -889,8 +899,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 636,
+                      "name": "length",
+                      "start": 630,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 644,

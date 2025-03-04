@@ -1,19 +1,19 @@
 ---
 title: "assertGreaterThan"
-excerpt: "Check that a numerical value is greater than another at runtime,"
+excerpt: "Check that a numerical value is greater than another at runtime, otherwise raise an error."
 layout: manual
 ---
 
-Check that a numerical value is greater than another at runtime,
+Check that a numerical value is greater than another at runtime, otherwise raise an error.
 
-otherwise raise an error.
+
 
 ```js
 assertGreaterThan(
   left: number,
   right: number,
   message: string,
-) -> ()
+): ()
 ```
 
 

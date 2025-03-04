@@ -15,7 +15,7 @@ fillet(
   tags: [EdgeReference],
   tolerance?: number,
   tag?: TagDeclarator,
-) -> Solid
+): Solid
 ```
 
 

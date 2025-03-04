@@ -11,7 +11,7 @@ Return the value of Euler’s number `e`.
 **DEPRECATED** use the constant E
 
 ```js
-e() -> number
+e(): number
 ```
 
 ### Tags

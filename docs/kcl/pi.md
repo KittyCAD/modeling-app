@@ -11,7 +11,7 @@ Return the value of `pi`. Archimedes’ constant (π).
 **DEPRECATED** use the constant PI
 
 ```js
-pi() -> number
+pi(): number
 ```
 
 ### Tags

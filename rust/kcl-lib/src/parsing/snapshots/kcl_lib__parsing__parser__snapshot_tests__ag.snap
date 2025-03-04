@@ -91,8 +91,10 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "endAbsolute"
+                    "end": 76,
+                    "name": "endAbsolute",
+                    "start": 65,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [

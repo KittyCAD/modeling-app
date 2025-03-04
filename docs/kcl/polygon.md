@@ -13,7 +13,7 @@ polygon(
   data: PolygonData,
   sketchSurfaceOrGroup: SketchOrSurface,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

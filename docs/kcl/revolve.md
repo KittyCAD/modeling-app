@@ -14,7 +14,7 @@ Revolve occurs around a local sketch axis rather than a global axis.
 revolve(
   data: RevolveData,
   sketch: Sketch,
-) -> Solid
+): Solid
 ```
 
 

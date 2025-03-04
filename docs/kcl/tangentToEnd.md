@@ -9,7 +9,7 @@ Returns the angle coming out of the end of the segment in degrees.
 
 
 ```js
-tangentToEnd(tag: TagIdentifier) -> number
+tangentToEnd(tag: TagIdentifier): number
 ```
 
 

@@ -1,7 +1,7 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::{BoxNode, ConstraintLevel, Digest, Expr, Hover, Node, NodeList};
+use super::{BoxNode, ConstraintLevel, Digest, Expr, Node, NodeList};
 use crate::SourceRange;
 
 // TODO: This should be its own type, similar to Program,
@@ -58,18 +58,6 @@ impl Node<IfExpression> {
 }
 
 impl IfExpression {
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        self.cond
-            .get_hover_value_for_position(pos, code)
-            .or_else(|| self.then_val.get_hover_value_for_position(pos, code))
-            .or_else(|| {
-                self.else_ifs
-                    .iter()
-                    .find_map(|else_if| else_if.get_hover_value_for_position(pos, code))
-            })
-            .or_else(|| self.final_else.get_hover_value_for_position(pos, code))
-    }
-
     /// Rename all identifiers that have the old name to the new given name.
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.cond.rename_identifiers(old_name, new_name);
@@ -89,11 +77,6 @@ impl IfExpression {
 }
 
 impl ElseIf {
-    fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        self.cond
-            .get_hover_value_for_position(pos, code)
-            .or_else(|| self.then_val.get_hover_value_for_position(pos, code))
-    }
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.cond.rename_identifiers(old_name, new_name);

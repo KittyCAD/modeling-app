@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing pentagon_fillet_sugar.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -523,8 +522,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 393,
+                      "name": "length",
+                      "start": 387,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 410,
@@ -862,8 +863,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 626,
+                      "name": "length",
+                      "start": 620,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 639,
@@ -891,8 +894,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 667,
+                      "name": "radius",
+                      "start": 661,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 671,
@@ -909,8 +914,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 684,
+                      "name": "tags",
+                      "start": 680,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -1106,8 +1113,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 826,
+                      "name": "length",
+                      "start": 820,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 839,
@@ -1135,8 +1144,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "radius"
+                      "end": 867,
+                      "name": "radius",
+                      "start": 861,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 871,
@@ -1153,8 +1164,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tags"
+                      "end": 884,
+                      "name": "tags",
+                      "start": 880,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [

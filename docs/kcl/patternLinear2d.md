@@ -1,12 +1,12 @@
 ---
 title: "patternLinear2d"
-excerpt: "Repeat a 2-dimensional sketch along some dimension, with a dynamic amount"
+excerpt: "Repeat a 2-dimensional sketch along some dimension, with a dynamic amount of distance between each repetition, some specified number of times."
 layout: manual
 ---
 
-Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
+Repeat a 2-dimensional sketch along some dimension, with a dynamic amount of distance between each repetition, some specified number of times.
 
-of distance between each repetition, some specified number of times.
+
 
 ```js
 patternLinear2d(
@@ -15,7 +15,7 @@ patternLinear2d(
   distance: number,
   axis: [number],
   useOriginal?: bool,
-) -> [Sketch]
+): [Sketch]
 ```
 
 

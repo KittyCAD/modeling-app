@@ -18,7 +18,7 @@ Note: The import command currently only works when using the native Modeling App
 import(
   filePath: String,
   options?: ImportFormat,
-) -> ImportedGeometry
+): ImportedGeometry
 ```
 
 

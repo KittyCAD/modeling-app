@@ -11,7 +11,7 @@ Convert a number to an integer.
 DEPRECATED use floor(), ceil(), or round().
 
 ```js
-int(num: number) -> number
+int(num: number): number
 ```
 
 ### Tags
