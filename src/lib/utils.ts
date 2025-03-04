@@ -387,3 +387,22 @@ export function onMouseDragMakeANewNumber(
   if (!newVal) return
   setText(newVal)
 }
+
+export function isClockwise(points: [number, number][]): boolean {
+  // Need at least 3 points to determine orientation
+  if (points.length < 3) {
+    return false
+  }
+
+  // Calculate the sum of (x2 - x1) * (y2 + y1) for all edges
+  // This is the "shoelace formula" for calculating the signed area
+  let sum = 0
+  for (let i = 0; i < points.length; i++) {
+    const current = points[i]
+    const next = points[(i + 1) % points.length]
+    sum += (next[0] - current[0]) * (next[1] + current[1])
+  }
+
+  // If sum is positive, the points are in clockwise order
+  return sum > 0
+}

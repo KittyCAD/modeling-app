@@ -2449,6 +2449,25 @@ export class SceneEntities {
         }
         return input
       }
+      if (
+        subGroup?.name &&
+        [THREE_POINT_ARC_HANDLE2, THREE_POINT_ARC_HANDLE3].includes(
+          subGroup?.name
+        )
+      ) {
+        const input: SegmentInputs = {
+          type: 'circle-three-point-segment',
+          p1: group.userData.p1,
+          p2: group.userData.p2,
+          p3: group.userData.p3,
+        }
+        if (subGroup?.name === THREE_POINT_ARC_HANDLE2) {
+          input.p2 = dragTo
+        } else if (subGroup?.name === THREE_POINT_ARC_HANDLE3) {
+          input.p3 = dragTo
+        }
+        return input
+      }
 
       // straight segment is the default
       return {
@@ -2628,6 +2647,18 @@ export class SceneEntities {
         radius: segment.radius,
         ccw: segment.ccw,
       }
+    } else if (
+      type === THREE_POINT_ARC_SEGMENT &&
+      'type' in segment &&
+      segment.type === 'ArcThreePoint'
+    ) {
+      update = segmentUtils.threePointArc.update
+      input = {
+        type: 'circle-three-point-segment',
+        p1: segment.p1,
+        p2: segment.p2,
+        p3: segment.p3,
+      }
     }
     const callBack =
       update &&
@@ -2781,6 +2812,14 @@ export class SceneEntities {
               ccw:
                 parent.userData.ccw !== undefined ? parent.userData.ccw : true,
             }
+          } else if (parent.name === THREE_POINT_ARC_SEGMENT) {
+            update = segmentUtils.threePointArc.update
+            input = {
+              type: 'circle-three-point-segment',
+              p1: parent.userData.p1,
+              p2: parent.userData.p2,
+              p3: parent.userData.p3,
+            }
           }
 
           update &&
@@ -2849,6 +2888,14 @@ export class SceneEntities {
               center: parent.userData.center,
               ccw:
                 parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === THREE_POINT_ARC_SEGMENT) {
+            update = segmentUtils.threePointArc.update
+            input = {
+              type: 'circle-three-point-segment',
+              p1: parent.userData.p1,
+              p2: parent.userData.p2,
+              p3: parent.userData.p3,
             }
           }
 
