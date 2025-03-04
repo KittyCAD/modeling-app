@@ -88,7 +88,7 @@ jobs:
         shell: bash
         run: |
           pushd rust/
-          just overwrite-sim-test kcl_samples
+          just overwrite-sim-test kcl_samples || true
           popd
           git add rust/kcl-lib/tests
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
