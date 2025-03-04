@@ -1,0 +1,26 @@
+[package]
+name = "kcl-language-server-release"
+version = "0.1.0"
+edition = "2021"
+authors = ["KittyCAD Inc <kcl@kittycad.io>"]
+publish = false
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true, features = ["cargo", "derive", "env", "unicode"] }
+flate2 = "1.1.0"
+lazy_static = { workspace = true }
+log = { version = "0.4.26", features = ["serde"] }
+slog = "2.7.0"
+slog-async = "2.8.0"
+slog-json = "2.6.1"
+slog-term = "2.9.1"
+time = "0.3.37"
+tokio = { workspace = true, features = ["full"] }
+tracing-subscriber = { version = "0.3.19", features = ["registry", "std", "fmt", "smallvec", "ansi", "tracing-log", "json"] }
+xshell = "0.2.6"
+zip = "0.6.6"
+
+[lints]
+workspace = true

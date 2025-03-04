@@ -35,7 +35,7 @@ itertools = "0.13.0"
 kcl-derive-docs = { version = "0.1.44", path = "../kcl-derive-docs" }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
-lazy_static = "1.5.0"
+lazy_static = { workspace = true }
 measurements = "0.11.0"
 miette = { workspace = true }
 mime_guess = "2.0.5"

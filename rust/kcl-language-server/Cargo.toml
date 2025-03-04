@@ -21,7 +21,7 @@ kcl-lib = { path = "../kcl-lib", default-features = false, features = [
 	"disable-println",
 ] }
 kittycad = { workspace = true }
-lazy_static = "1.5.0"
+lazy_static = { workspace = true }
 log = { version = "0.4.26", features = ["serde"] }
 slog = "2.7.0"
 slog-async = "2.8.0"

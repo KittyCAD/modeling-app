@@ -21,7 +21,7 @@
     "Programming Languages"
   ],
   "repository": {
-    "url": "https://github.com/kittycad/kcl-lsp.git",
+    "url": "https://github.com/kittycad/modeling-app.git",
     "type": "git"
   },
   "engines": {
