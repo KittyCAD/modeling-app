@@ -413,10 +413,43 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
         },
         {
-          id: 'three-point-arc',
-          onClick: () => console.error('Three-point arc not yet implemented'),
+          id: 'arc',
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Arc tool' })
+                  ? 'arc'
+                  : 'none',
+              },
+            }),
           icon: 'arc',
-          status: 'unavailable',
+          status: 'available',
+          // disabled: (state) =>
+          //   (!isEditingExistingSketch(state.context) &&
+          //     !state.matches({ Sketch: 'Arc tool' })) ||
+          //   pipeHasCircle(state.context),
+          title: 'Arc',
+          // todo hotkey
+          // hotkey: (state) =>
+          //   state.matches({ Sketch: 'Tangential arc to' }) ? ['Esc', 'A'] : 'A',
+          description: 'Start drawing an arc',
+          links: [],
+          isActive: (state) => state.matches({ Sketch: 'Arc tool' }),
+        },
+        {
+          id: 'three-point-arc',
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Arc three point tool' })
+                  ? 'arcThreePoint'
+                  : 'none',
+              },
+            }),
+          icon: 'arc',
+          status: 'available',
           title: 'Three-point Arc',
           showTitle: false,
           description: 'Draw a circular arc defined by three points',
@@ -426,6 +459,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               url: 'https://github.com/KittyCAD/modeling-app/issues/1659',
             },
           ],
+          isActive: (state) =>
+            state.matches({ Sketch: 'Arc three point tool' }),
         },
       ],
       {
@@ -473,7 +508,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 tool: !modelingState.matches({
                   Sketch: 'Circle three point tool',
                 })
-                  ? 'circleThreePointNeo'
+                  ? 'circleThreePoint'
                   : 'none',
               },
             }),
