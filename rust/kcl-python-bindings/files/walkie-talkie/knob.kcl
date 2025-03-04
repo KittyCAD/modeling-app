@@ -32,7 +32,7 @@ startSketchOn(knobPlane)
        angleEnd = 90,
        radius = .05
      }, %)
-  |> xLineTo(0.0001, %)
+  |> xLine(endAbsolute = 0.0001)
   |> close()
   |> revolve({ axis = "Y" }, %)
   |> appearance(color = '#D0FF01', metalness = 90, roughness = 50)

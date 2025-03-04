@@ -1094,8 +1094,8 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
         lugSketch = startSketchOn(plane)
           |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
           |> angledLineOfYLength({ angle = 60, length = lugHeadLength }, %)
-          |> xLineTo(0 + .001, %)
-          |> yLineTo(0, %)
+          |> xLine(endAbsolute = 0 + .001)
+          |> yLine(endAbsolute = 0)
           |> close()
           |> revolve({ axis = "Y" }, %)
 

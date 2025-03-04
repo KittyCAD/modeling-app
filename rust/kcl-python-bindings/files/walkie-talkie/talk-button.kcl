@@ -27,9 +27,9 @@ talkButtonSketch = startSketchOn(talkButtonPlane)
        -talkButtonSideLength / 2,
        talkButtonSideLength / 2
      ], %)
-  |> xLine(talkButtonSideLength, %, $tag1)
-  |> yLine(-talkButtonSideLength, %, $tag2)
-  |> xLine(-talkButtonSideLength, %, $tag3)
+  |> xLine(length = talkButtonSideLength, tag = $tag1)
+  |> yLine(length = -talkButtonSideLength, tag = $tag2)
+  |> xLine(length = -talkButtonSideLength, tag = $tag3)
   |> close(tag = $tag4)
 
 // Create the talk button and apply fillets

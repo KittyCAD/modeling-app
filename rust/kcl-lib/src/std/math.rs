@@ -108,7 +108,7 @@ pub async fn sqrt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     angle = 50,
 ///     length = sqrt(2500),
 ///   }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
@@ -173,7 +173,7 @@ pub async fn round(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///    |> startProfileAt([0, 0], %)
 ///    |> line(endAbsolute = [12, 10])
 ///    |> line(end = [round(7.02986), 0])
-///    |> yLineTo(0, %)
+///    |> yLine(endAbsolute = 0)
 ///    |> close()
 ///
 /// extrude001 = extrude(sketch001, length = 5)
@@ -201,7 +201,7 @@ pub async fn floor(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///    |> startProfileAt([0, 0], %)
 ///    |> line(endAbsolute = [12, 10])
 ///    |> line(end = [floor(7.02986), 0])
-///    |> yLineTo(0, %)
+///    |> yLine(endAbsolute = 0)
 ///    |> close()
 ///
 /// extrude001 = extrude(sketch001, length = 5)
@@ -229,7 +229,7 @@ pub async fn ceil(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(endAbsolute = [12, 10])
 ///   |> line(end = [ceil(7.02986), 0])
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// extrude001 = extrude(sketch001, length = 5)
@@ -347,7 +347,7 @@ pub async fn pow(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     angle = 50,
 ///     length = pow(5, 2),
 ///   }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
@@ -408,7 +408,7 @@ pub async fn asin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     angle = toDegrees(asin(0.5)),
 ///     length = 20,
 ///   }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// extrude001 = extrude(sketch001, length = 5)
@@ -438,7 +438,7 @@ pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     angle = toDegrees(atan(1.25)),
 ///     length = 20,
 ///   }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// extrude001 = extrude(sketch001, length = 5)
@@ -468,7 +468,7 @@ pub async fn atan2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     angle = toDegrees(atan2(1.25, 2)),
 ///     length = 20,
 ///   }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// extrude001 = extrude(sketch001, length = 5)
@@ -632,7 +632,7 @@ pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 ///     angle = 30,
 ///     length = 2 * e() ^ 2,
 ///   }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///  
 /// example = extrude(exampleSketch, length = 10)
@@ -664,7 +664,7 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     angle = 50,
 ///     length = 10 * tau(),
 ///   }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
@@ -695,7 +695,7 @@ pub async fn to_radians(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///     angle = 50,
 ///     length = 70 * cos(toRadians(45)),
 ///   }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)
@@ -725,7 +725,7 @@ pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///     angle = 50,
 ///     length = 70 * cos(toDegrees(pi()/4)),
 ///   }, %)
-///   |> yLineTo(0, %)
+///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 5)

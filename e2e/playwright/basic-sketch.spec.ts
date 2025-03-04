@@ -146,7 +146,7 @@ async function doBasicSketch(
     .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
     commonPoints.startAt
   }, sketch001)
-  |> xLine(${commonPoints.num1}, %, $seg01)
+  |> xLine(length = ${commonPoints.num1}, tag = $seg01)
   |> yLine(${commonPoints.num1 + 0.01}, %)
   |> xLine(-segLen(seg01), %)`)
 }
