@@ -502,8 +502,10 @@ description: Result of parsing pipe_as_arg.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
+                              "end": 247,
+                              "name": "endAbsolute",
+                              "start": 236,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "end": 252,
@@ -531,8 +533,10 @@ description: Result of parsing pipe_as_arg.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
+                              "end": 277,
+                              "name": "endAbsolute",
+                              "start": 266,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "end": 282,
@@ -560,8 +564,10 @@ description: Result of parsing pipe_as_arg.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
+                              "end": 307,
+                              "name": "endAbsolute",
+                              "start": 296,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "end": 312,
@@ -589,8 +595,10 @@ description: Result of parsing pipe_as_arg.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "endAbsolute"
+                              "end": 337,
+                              "name": "endAbsolute",
+                              "start": 326,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "end": 342,
@@ -638,8 +646,10 @@ description: Result of parsing pipe_as_arg.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "length"
+                              "end": 381,
+                              "name": "length",
+                              "start": 375,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "end": 390,

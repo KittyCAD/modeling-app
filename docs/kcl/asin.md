@@ -9,7 +9,7 @@ Compute the arcsine of a number (in radians).
 
 
 ```js
-asin(num: number) -> number
+asin(num: number): number
 ```
 
 ### Tags

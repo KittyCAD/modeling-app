@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing import_whole.kcl
 ---
 {
@@ -47,8 +47,10 @@ description: Result of parsing import_whole.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "faces"
+                      "end": 94,
+                      "name": "faces",
+                      "start": 89,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -70,8 +72,10 @@ description: Result of parsing import_whole.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "thickness"
+                      "end": 115,
+                      "name": "thickness",
+                      "start": 106,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 122,

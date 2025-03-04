@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing artifact_graph_example_code_no_3d.kcl
 ---
 {
@@ -319,8 +319,10 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "endAbsolute"
+                      "end": 375,
+                      "name": "endAbsolute",
+                      "start": 364,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -500,8 +502,10 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 510,
+                      "name": "end",
+                      "start": 507,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [

@@ -1,19 +1,19 @@
 ---
 title: "yLine"
-excerpt: "Draw a line relative to the current origin to a specified distance away"
+excerpt: "Draw a line relative to the current origin to a specified distance away from the current position along the 'y' axis."
 layout: manual
 ---
 
-Draw a line relative to the current origin to a specified distance away
+Draw a line relative to the current origin to a specified distance away from the current position along the 'y' axis.
 
-from the current position along the 'y' axis.
+
 
 ```js
 yLine(
   length: number,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

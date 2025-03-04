@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing big_number_angle_to_match_length_x.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -94,8 +93,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 74,
+                      "name": "end",
+                      "start": 71,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -131,8 +132,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 91,
+                      "name": "tag",
+                      "start": 88,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 100,
@@ -264,8 +267,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 197,
+                      "name": "length",
+                      "start": 191,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 202,

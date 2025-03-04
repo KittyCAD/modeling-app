@@ -14,7 +14,7 @@ line(
   endAbsolute?: [number],
   end?: [number],
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

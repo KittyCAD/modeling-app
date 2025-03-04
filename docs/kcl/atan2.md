@@ -12,7 +12,7 @@ Compute the four quadrant arctangent of Y and X (in radians).
 atan2(
   y: number,
   x: number,
-) -> number
+): number
 ```
 
 ### Tags

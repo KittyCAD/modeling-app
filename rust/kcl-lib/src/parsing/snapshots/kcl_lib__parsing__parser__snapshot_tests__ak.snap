@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -11,8 +11,10 @@ expression: actual
           {
             "type": "LabeledArg",
             "label": {
-              "type": "Identifier",
-              "name": "endAbsolute"
+              "end": 16,
+              "name": "endAbsolute",
+              "start": 5,
+              "type": "Identifier"
             },
             "arg": {
               "elements": [

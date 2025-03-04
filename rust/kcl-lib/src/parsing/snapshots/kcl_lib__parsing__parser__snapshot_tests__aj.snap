@@ -68,8 +68,10 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "end"
+                    "end": 61,
+                    "name": "end",
+                    "start": 58,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "elements": [

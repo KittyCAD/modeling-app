@@ -12,7 +12,7 @@ Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 hole(
   holeSketch: SketchSet,
   sketch: Sketch,
-) -> Sketch
+): Sketch
 ```
 
 

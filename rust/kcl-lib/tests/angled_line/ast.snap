@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing angled_line.kcl
 ---
 {
@@ -93,8 +93,10 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 81,
+                      "name": "end",
+                      "start": 78,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -145,8 +147,10 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 111,
+                      "name": "end",
+                      "start": 108,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -189,8 +193,10 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "tag"
+                      "end": 132,
+                      "name": "tag",
+                      "start": 129,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 141,
@@ -218,8 +224,10 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 156,
+                      "name": "end",
+                      "start": 153,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -344,8 +352,10 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 231,
+                      "name": "end",
+                      "start": 228,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -423,8 +433,10 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 284,
+                      "name": "length",
+                      "start": 278,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 288,

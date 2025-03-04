@@ -2498,10 +2498,7 @@ fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
         terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
         expression,
     )
-    .map(|(label, arg)| LabeledArg {
-        label: label.inner,
-        arg,
-    })
+    .map(|(label, arg)| LabeledArg { label, arg })
     .parse_next(i)
 }
 

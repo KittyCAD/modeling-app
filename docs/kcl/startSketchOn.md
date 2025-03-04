@@ -20,7 +20,7 @@ The point is if you want to export the result of a sketch on a face, you only ne
 startSketchOn(
   data: SketchData,
   tag?: FaceTag,
-) -> SketchSurface
+): SketchSurface
 ```
 
 

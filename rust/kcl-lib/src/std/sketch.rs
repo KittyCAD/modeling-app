@@ -1569,6 +1569,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 }
 
 /// Draw a curved line segment along an imaginary circle.
+///
 /// The arc is constructed such that the current position of the sketch is
 /// placed along an imaginary circle of the specified radius, at angleStart
 /// degrees. The resulting arc is the segment of the imaginary circle from
@@ -1680,7 +1681,7 @@ pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     })
 }
 
-/// Draw a 3 point arc.
+/// Draw a three point arc.
 ///
 /// The arc is constructed such that the start point is the current position of the sketch and two more points defined as the end and interior point.
 /// The interior point is placed between the start point and end point. The radius of the arc will be controlled by how far the interior point is placed from

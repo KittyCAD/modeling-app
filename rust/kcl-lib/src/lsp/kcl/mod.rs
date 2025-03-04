@@ -8,15 +8,12 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use tokio::sync::RwLock;
-
-pub mod custom_notifications;
-
 use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
 use sha2::Digest;
+use tokio::sync::RwLock;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
@@ -28,7 +25,7 @@ use tower_lsp::{
         DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportResult,
         DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse,
         Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability, FullDocumentDiagnosticReport,
-        Hover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
+        Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
         InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
         Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken,
         SemanticTokenModifier, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend,
@@ -44,7 +41,13 @@ use tower_lsp::{
 use crate::{
     docs::kcl_doc::DocData,
     errors::Suggestion,
-    lsp::{backend::Backend as _, util::IntoDiagnostic},
+    exec::KclValue,
+    execution::{cache, kcl_value::FunctionSource},
+    lsp::{
+        backend::Backend as _,
+        kcl::hover::{Hover, HoverOpts},
+        util::IntoDiagnostic,
+    },
     parsing::{
         ast::types::{Expr, VariableKind},
         token::TokenStream,
@@ -52,6 +55,10 @@ use crate::{
     },
     ModuleId, Program, SourceRange,
 };
+
+pub mod custom_notifications;
+mod hover;
+
 const SEMANTIC_TOKEN_TYPES: [SemanticTokenType; 10] = [
     SemanticTokenType::NUMBER,
     SemanticTokenType::VARIABLE,
@@ -99,6 +106,8 @@ pub struct Backend {
     pub stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
+    /// For all KwArg functions in std, a map from their arg names to arg help snippets (markdown format).
+    pub stdlib_args: HashMap<String, HashMap<String, String>>,
     /// Token maps.
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
@@ -168,12 +177,14 @@ impl Backend {
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
         let stdlib_completions = get_completions_from_stdlib(&stdlib, &kcl_std).map_err(|e| e.to_string())?;
         let stdlib_signatures = get_signatures_from_stdlib(&stdlib, &kcl_std);
+        let stdlib_args = get_arg_maps_from_stdlib(&stdlib, &kcl_std);
 
         Ok(Self {
             client,
             fs: Arc::new(fs),
             stdlib_completions,
             stdlib_signatures,
+            stdlib_args,
             zoo_client,
             can_send_telemetry,
             can_execute: Arc::new(RwLock::new(executor_ctx.is_some())),
@@ -1010,7 +1021,7 @@ impl LanguageServer for Backend {
         }
     }
 
-    async fn hover(&self, params: HoverParams) -> RpcResult<Option<Hover>> {
+    async fn hover(&self, params: HoverParams) -> RpcResult<Option<LspHover>> {
         let filename = params.text_document_position_params.text_document.uri.to_string();
 
         let Some(current_code) = self.code_map.get(&filename) else {
@@ -1027,48 +1038,128 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = ast.ast.get_hover_value_for_position(pos, current_code) else {
+        let Some(hover) = ast
+            .ast
+            .get_hover_value_for_position(pos, current_code, &HoverOpts::default_for_hover())
+        else {
             return Ok(None);
         };
 
         match hover {
-            crate::parsing::ast::types::Hover::Function { name, range } => {
-                // Get the docs for this function.
-                let Some(completion) = self.stdlib_completions.get(&name) else {
-                    return Ok(None);
-                };
-                let Some(docs) = &completion.documentation else {
-                    return Ok(None);
+            Hover::Function { name, range } => {
+                let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
+                    match value {
+                        // User-defined or KCL std function
+                        KclValue::Function {
+                            value: FunctionSource::User { ast, .. },
+                            ..
+                        } => {
+                            // TODO get docs from comments
+                            Some((ast.signature(), ""))
+                        }
+                        _ => None,
+                    }
+                })
+                .await
+                {
+                    result
+                } else {
+                    // Get the docs for this function.
+                    let Some(completion) = self.stdlib_completions.get(&name) else {
+                        return Ok(None);
+                    };
+                    let Some(docs) = &completion.documentation else {
+                        return Ok(None);
+                    };
+
+                    let docs = match docs {
+                        Documentation::String(docs) => docs,
+                        Documentation::MarkupContent(MarkupContent { value, .. }) => value,
+                    };
+
+                    let docs = if docs.len() > 320 {
+                        let end = docs.find("\n\n").or_else(|| docs.find("\n\r\n")).unwrap_or(320);
+                        &docs[..end]
+                    } else {
+                        &**docs
+                    };
+
+                    let Some(label_details) = &completion.label_details else {
+                        return Ok(None);
+                    };
+
+                    let sig = if let Some(detail) = &label_details.detail {
+                        detail.clone()
+                    } else {
+                        String::new()
+                    };
+
+                    (sig, docs)
                 };
 
-                let docs = match docs {
-                    Documentation::String(docs) => docs,
-                    Documentation::MarkupContent(MarkupContent { value, .. }) => value,
-                };
-
-                let Some(label_details) = &completion.label_details else {
-                    return Ok(None);
-                };
-
-                Ok(Some(Hover {
+                Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: format!(
-                            "```\n{}{}\n```\n\n{}",
-                            name,
-                            if let Some(detail) = &label_details.detail {
-                                detail
-                            } else {
-                                ""
-                            },
-                            docs
-                        ),
+                        value: format!("```\n{}{}\n```\n\n{}", name, sig, docs),
                     }),
                     range: Some(range),
                 }))
             }
-            crate::parsing::ast::types::Hover::Signature { .. } => Ok(None),
-            crate::parsing::ast::types::Hover::Comment { value, range } => Ok(Some(Hover {
+            Hover::KwArg {
+                name,
+                callee_name,
+                range,
+            } => {
+                // TODO handle user-defined functions too
+
+                let Some(arg_map) = self.stdlib_args.get(&callee_name) else {
+                    return Ok(None);
+                };
+
+                let Some(tip) = arg_map.get(&name) else {
+                    return Ok(None);
+                };
+
+                Ok(Some(LspHover {
+                    contents: HoverContents::Markup(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: tip.clone(),
+                    }),
+                    range: Some(range),
+                }))
+            }
+            Hover::Variable {
+                name,
+                ty: Some(ty),
+                range,
+            } => Ok(Some(LspHover {
+                contents: HoverContents::Markup(MarkupContent {
+                    kind: MarkupKind::Markdown,
+                    value: format!("```\n{}: {}\n```", name, ty),
+                }),
+                range: Some(range),
+            })),
+            Hover::Variable { name, ty: None, range } => Ok(with_cached_var(&name, |value| {
+                let mut text: String = format!("```\n{}", name);
+                if let Some(ty) = value.principal_type() {
+                    text.push_str(&format!(": {}", ty));
+                }
+                if let Some(v) = value.value_str() {
+                    text.push_str(&format!(" = {}", v));
+                }
+                text.push_str("\n```");
+
+                LspHover {
+                    contents: HoverContents::Markup(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: text,
+                    }),
+                    range: Some(range),
+                }
+            })
+            .await),
+            Hover::Signature { .. } => Ok(None),
+            Hover::Comment { value, range } => Ok(Some(LspHover {
                 contents: HoverContents::Markup(MarkupContent {
                     kind: MarkupKind::Markdown,
                     value,
@@ -1221,12 +1312,14 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = value.get_hover_value_for_position(pos, current_code) else {
+        let Some(hover) =
+            value.get_hover_value_for_position(pos, current_code, &HoverOpts::default_for_signature_help())
+        else {
             return Ok(None);
         };
 
         match hover {
-            crate::parsing::ast::types::Hover::Function { name, range: _ } => {
+            Hover::Function { name, range: _ } => {
                 // Get the docs for this function.
                 let Some(signature) = self.stdlib_signatures.get(&name) else {
                     return Ok(None);
@@ -1234,7 +1327,7 @@ impl LanguageServer for Backend {
 
                 Ok(Some(signature.clone()))
             }
-            crate::parsing::ast::types::Hover::Signature {
+            Hover::Signature {
                 name,
                 parameter_index,
                 range: _,
@@ -1249,7 +1342,7 @@ impl LanguageServer for Backend {
 
                 Ok(Some(signature))
             }
-            crate::parsing::ast::types::Hover::Comment { value: _, range: _ } => {
+            _ => {
                 return Ok(None);
             }
         }
@@ -1452,6 +1545,50 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocDat
     signatures
 }
 
+/// Get signatures from our stdlib.
+pub fn get_arg_maps_from_stdlib(
+    stdlib: &crate::std::StdLib,
+    kcl_std: &[DocData],
+) -> HashMap<String, HashMap<String, String>> {
+    let mut result = HashMap::new();
+    let combined = stdlib.combined();
+
+    for internal_fn in combined.values() {
+        if internal_fn.keyword_arguments() {
+            let arg_map: HashMap<String, String> = internal_fn
+                .args(false)
+                .into_iter()
+                .map(|data| {
+                    let mut tip = "```\n".to_owned();
+                    tip.push_str(&data.name.clone());
+                    if !data.required {
+                        tip.push('?');
+                    }
+                    if !data.type_.is_empty() {
+                        tip.push_str(": ");
+                        tip.push_str(&data.type_);
+                    }
+                    tip.push_str("\n```");
+                    if !data.description.is_empty() {
+                        tip.push_str("\n\n");
+                        tip.push_str(&data.description);
+                    }
+                    (data.name, tip)
+                })
+                .collect();
+            if !arg_map.is_empty() {
+                result.insert(internal_fn.name(), arg_map);
+            }
+        }
+    }
+
+    for _d in kcl_std {
+        // TODO add KCL std fns
+    }
+
+    result
+}
+
 /// Convert a position to a character index from the start of the file.
 fn position_to_char_index(position: Position, code: &str) -> usize {
     // Get the character position from the start of the file.
@@ -1466,4 +1603,12 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
     }
 
     char_position
+}
+
+async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
+    let result_env = cache::read_old_ast().await?.result_env;
+    let mem = cache::read_old_memory().await?;
+    let value = mem.get_from(name, result_env, SourceRange::default()).ok()?;
+
+    Some(f(value))
 }

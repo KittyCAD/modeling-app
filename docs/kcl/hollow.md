@@ -12,7 +12,7 @@ Remove volume from a 3-dimensional shape such that a wall of the provided thickn
 hollow(
   thickness: number,
   solid: Solid,
-) -> Solid
+): Solid
 ```
 
 

@@ -1,18 +1,18 @@
 ---
 title: "rem"
-excerpt: "Compute the remainder after dividing `num` by `div`."
+excerpt: "Compute the remainder after dividing `num` by `div`. If `num` is negative, the result will be too."
 layout: manual
 ---
 
-Compute the remainder after dividing `num` by `div`.
+Compute the remainder after dividing `num` by `div`. If `num` is negative, the result will be too.
 
-If `num` is negative, the result will be too.
+
 
 ```js
 rem(
   num: number,
   divisor: number,
-) -> number
+): number
 ```
 
 ### Tags

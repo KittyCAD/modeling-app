@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing artifact_graph_example_code_offset_planes.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -20,8 +19,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "offset"
+                  "end": 41,
+                  "name": "offset",
+                  "start": 35,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 46,
@@ -78,8 +79,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "offset"
+                  "end": 89,
+                  "name": "offset",
+                  "start": 83,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "argument": {
@@ -143,8 +146,10 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "offset"
+                  "end": 138,
+                  "name": "offset",
+                  "start": 132,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 143,
@@ -274,8 +279,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 232,
+                      "name": "end",
+                      "start": 229,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [

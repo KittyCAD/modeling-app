@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing kw_fn.kcl
 ---
 {
@@ -213,8 +213,10 @@ description: Result of parsing kw_fn.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "delta"
+                  "end": 118,
+                  "name": "delta",
+                  "start": 113,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 122,

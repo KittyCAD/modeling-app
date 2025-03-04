@@ -14,7 +14,7 @@ chamfer(
   length: number,
   tags: [EdgeReference],
   tag?: TagDeclarator,
-) -> Solid
+): Solid
 ```
 
 

@@ -15,7 +15,7 @@ loft(
   bezApproximateRational: bool,
   baseCurveIndex?: integer,
   tolerance?: number,
-) -> Solid
+): Solid
 ```
 
 

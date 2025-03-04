@@ -9,7 +9,7 @@ Compute the arctangent of a number (in radians).
 
 
 ```js
-atan(num: number) -> number
+atan(num: number): number
 ```
 
 ### Tags

@@ -1,12 +1,10 @@
 ---
 title: "patternLinear3d"
-excerpt: "Repeat a 3-dimensional solid along a linear path, with a dynamic amount"
+excerpt: "Repeat a 3-dimensional solid along a linear path, with a dynamic amount of distance between each repetition, some specified number of times."
 layout: manual
 ---
 
-Repeat a 3-dimensional solid along a linear path, with a dynamic amount
-
-of distance between each repetition, some specified number of times.
+Repeat a 3-dimensional solid along a linear path, with a dynamic amount of distance between each repetition, some specified number of times.
 
 ///
 
@@ -17,7 +15,7 @@ patternLinear3d(
   distance: number,
   axis: [number],
   useOriginal?: bool,
-) -> [Solid]
+): [Solid]
 ```
 
 

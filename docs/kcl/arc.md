@@ -15,7 +15,7 @@ arc(
   data: ArcData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

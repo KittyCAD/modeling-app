@@ -9,7 +9,7 @@ Compute the largest integer less than or equal to a number.
 
 
 ```js
-floor(num: number) -> number
+floor(num: number): number
 ```
 
 ### Tags

@@ -457,7 +457,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             signature.push(')');
         }
         if let Some(return_value) = self.return_value(false) {
-            signature.push_str(&format!(" -> {}", return_value.type_));
+            signature.push_str(&format!(": {}", return_value.type_));
         }
 
         signature

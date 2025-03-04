@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing sketch_in_object.kcl
 ---
 {
@@ -97,8 +97,10 @@ description: Result of parsing sketch_in_object.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "end"
+                              "end": 89,
+                              "name": "end",
+                              "start": 86,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "elements": [
@@ -149,8 +151,10 @@ description: Result of parsing sketch_in_object.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "end"
+                              "end": 115,
+                              "name": "end",
+                              "start": 112,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "elements": [
@@ -201,8 +205,10 @@ description: Result of parsing sketch_in_object.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "type": "Identifier",
-                              "name": "end"
+                              "end": 141,
+                              "name": "end",
+                              "start": 138,
+                              "type": "Identifier"
                             },
                             "arg": {
                               "elements": [
@@ -423,8 +429,10 @@ description: Result of parsing sketch_in_object.kcl
                                       {
                                         "type": "LabeledArg",
                                         "label": {
-                                          "type": "Identifier",
-                                          "name": "end"
+                                          "end": 302,
+                                          "name": "end",
+                                          "start": 299,
+                                          "type": "Identifier"
                                         },
                                         "arg": {
                                           "elements": [
@@ -475,8 +483,10 @@ description: Result of parsing sketch_in_object.kcl
                                       {
                                         "type": "LabeledArg",
                                         "label": {
-                                          "type": "Identifier",
-                                          "name": "end"
+                                          "end": 332,
+                                          "name": "end",
+                                          "start": 329,
+                                          "type": "Identifier"
                                         },
                                         "arg": {
                                           "elements": [
@@ -527,8 +537,10 @@ description: Result of parsing sketch_in_object.kcl
                                       {
                                         "type": "LabeledArg",
                                         "label": {
-                                          "type": "Identifier",
-                                          "name": "end"
+                                          "end": 362,
+                                          "name": "end",
+                                          "start": 359,
+                                          "type": "Identifier"
                                         },
                                         "arg": {
                                           "elements": [
@@ -690,8 +702,10 @@ description: Result of parsing sketch_in_object.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "length"
+                    "end": 439,
+                    "name": "length",
+                    "start": 433,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "argument": {
@@ -810,8 +824,10 @@ description: Result of parsing sketch_in_object.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "length"
+                    "end": 497,
+                    "name": "length",
+                    "start": 491,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 502,

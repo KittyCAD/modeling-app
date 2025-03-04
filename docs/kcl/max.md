@@ -9,7 +9,7 @@ Compute the maximum of the given arguments.
 
 
 ```js
-max(args: [number]) -> number
+max(args: [number]): number
 ```
 
 ### Tags

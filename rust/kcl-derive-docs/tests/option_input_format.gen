@@ -62,13 +62,13 @@ mod test_examples_import {
 }
 
 #[allow(non_camel_case_types, missing_docs)]
-#[doc = "Std lib function: import\nThis is some function.\nIt does shit."]
+#[doc = "Std lib function: import\nThis is some function. It does shit."]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
 #[ts(export)]
 pub(crate) struct Import {}
 
 #[allow(non_upper_case_globals, missing_docs)]
-#[doc = "Std lib function: import\nThis is some function.\nIt does shit."]
+#[doc = "Std lib function: import\nThis is some function. It does shit."]
 pub(crate) const Import: Import = Import {};
 fn boxed_import(
     exec_state: &mut crate::execution::ExecState,
@@ -90,11 +90,11 @@ impl crate::docs::StdLibFn for Import {
     }
 
     fn summary(&self) -> String {
-        "This is some function.".to_string()
+        "This is some function. It does shit.".to_string()
     }
 
     fn description(&self) -> String {
-        "It does shit.".to_string()
+        "".to_string()
     }
 
     fn tags(&self) -> Vec<String> {
@@ -175,9 +175,11 @@ impl crate::docs::StdLibFn for Import {
 #[doc = r" This is some function."]
 #[doc = r" It does shit."]
 #[doc = r""]
-#[doc = r"     This is code."]
-#[doc = r"     It does other shit."]
-#[doc = r"     import"]
+#[doc = r" ```"]
+#[doc = r" This is code."]
+#[doc = r" It does other shit."]
+#[doc = r" import"]
+#[doc = r" ```"]
 fn inner_import(
     #[doc = r" The args to do shit to."] args: Option<kittycad::types::InputFormat>,
 ) -> Result<Box<f64>> {

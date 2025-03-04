@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
 ---
 {
@@ -92,8 +92,10 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "x"
+                  "end": 42,
+                  "name": "x",
+                  "start": 41,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 46,

@@ -13,7 +13,7 @@ tangentialArc(
   data: TangentialArcData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 
