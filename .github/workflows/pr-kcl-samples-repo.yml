@@ -61,5 +61,3 @@ jobs:
               --base next || true
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-
-
