@@ -62,6 +62,9 @@ jobs:
       - name: Run tests
         run: |
           cd rust/kcl-language-server
+          yarn build
+          yarn test-compile
+          ls -la dist
           xvfb-run -a yarn test
         if: runner.os == 'Linux'
       - name: Run tests
