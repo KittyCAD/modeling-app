@@ -43,6 +43,7 @@ jobs:
   test:
     name: vscode tests
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}

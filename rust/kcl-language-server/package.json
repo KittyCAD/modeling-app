@@ -125,8 +125,8 @@
     "compile": "cross-env NODE_ENV=production tsc -b",
     "build": "yarn run build-base -- --sourcemap",
     "watch": "yarn run build-base -- --sourcemap --watch",
-    "pretest": "yarn run build",
-    "test": "node ./client/src/test/runTest.js",
+    "pretest": "yarn run build && yarn test-compile",
+    "test": "node ./dist/client/src/test/runTest.js",
     "package": "vsce package -o kcl-language-server.vsix"
   },
   "devDependencies": {
