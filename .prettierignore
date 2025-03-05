@@ -13,3 +13,4 @@ e2e/playwright/snapshots/prompt-to-edit
 
 # XState generated files
 src/machines/**.typegen.ts
+.vscode-test
