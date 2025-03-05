@@ -36,7 +36,7 @@ impl Build {
 
         // Read the version from our root Cargo.toml.
         let version = sh.read_file("Cargo.toml")?;
-        let version = version
+        let mut version = version
             .lines()
             .find(|line| line.starts_with("version = "))
             .unwrap_or_default()
@@ -44,6 +44,10 @@ impl Build {
             .replace(['\"', '\''], "")
             .trim()
             .to_string();
+
+        if !stable {
+            version = format!("{}-nightly", version);
+        }
 
         let release_tag = if stable {
             // We already checked above if the env var contains "refs/tags/v".

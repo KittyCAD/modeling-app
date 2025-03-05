@@ -152,7 +152,7 @@ jobs:
           cd rust
           rustup target add ${{ matrix.target }}
           rustup component add rust-src
-          cargo kcl-language-server-release build
+          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
           ls build
 
       - name: Install dependencies
@@ -161,9 +161,16 @@ jobs:
           yarn install
 
       - name: Package Extension (release)
+        if: startsWith(github.event.ref, 'refs/tags/')
         run: |
           cd rust/kcl-language-server
           npx vsce package -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
+
+      - name: Package Extension (nightly)
+        if: !startsWith(github.event.ref, 'refs/tags/')
+        run: |
+          cd rust/kcl-language-server
+          npx vsce package -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }} --pre-release
 
       - name: remove server
         if: matrix.target == 'x86_64-unknown-linux-gnu'
@@ -171,11 +178,17 @@ jobs:
           cd rust/kcl-language-server
           rm -rf server
 
-      - name: Package Extension (no server)
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
+      - name: Package Extension (no server, release)
+        if: matrix.target == 'x86_64-unknown-linux-gnu' && startsWith(github.event.ref, 'refs/tags/')
         run: |
           cd rust/kcl-language-server
           npx vsce package -o ../build/kcl-language-server-no-server.vsix
+
+      - name: Package Extension (no server, nightly)
+        if: matrix.target == 'x86_64-unknown-linux-gnu' && !startsWith(github.event.ref, 'refs/tags/')
+        run: |
+          cd rust/kcl-language-server
+          npx vsce package -o ../build/kcl-language-server-no-server.vsix --pre-release
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -217,9 +230,17 @@ jobs:
           yarn install
 
       - name: Package Extension (release)
+        if: startsWith(github.event.ref, 'refs/tags/')
         run: |
           cd rust/kcl-language-server
           npx vsce package -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
+
+      - name: Package Extension (release)
+        if: !startsWith(github.event.ref, 'refs/tags/')
+        run: |
+          cd rust/kcl-language-server
+          npx vsce package -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
