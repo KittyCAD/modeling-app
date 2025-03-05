@@ -130,11 +130,6 @@
     "package": "vsce package -o kcl-language-server.vsix"
   },
   "devDependencies": {
-    "@tsconfig/strictest": "^2.0.5",
-    "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^22.13.9",
-    "@types/vscode": "^1.97.0",
     "@vscode/test-electron": "^2.4.1",
     "@vscode/vsce": "^2.30.0",
     "cross-env": "^7.0.3",
