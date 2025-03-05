@@ -146,7 +146,7 @@ jobs:
       - name: build
         run: |
           cd rust
-          rustup target add ${{ matrix.target }}
+          rustup target add 1.85-${{ matrix.target }}
           rustup component add rust-src
           cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
 
