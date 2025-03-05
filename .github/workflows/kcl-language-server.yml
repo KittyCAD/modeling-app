@@ -152,7 +152,7 @@ jobs:
           cd rust
           rustup target add ${{ matrix.target }}
           rustup component add rust-src
-          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+          cargo kcl-language-server-release build
           ls build
 
       - name: Install dependencies
