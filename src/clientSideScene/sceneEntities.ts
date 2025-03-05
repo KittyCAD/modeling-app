@@ -15,6 +15,9 @@ import {
   Scene,
   Vector2,
   Vector3,
+  Shape,
+  LineCurve3,
+  ExtrudeGeometry,
 } from 'three'
 import {
   ANGLE_SNAP_THRESHOLD_DEGREES,
@@ -65,6 +68,7 @@ import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { executeAst, ToolTip } from 'lang/langHelpers'
 import {
   createProfileStartHandle,
+  dashedStraight,
   SegmentUtils,
   segmentUtils,
 } from './segments'
@@ -74,6 +78,7 @@ import {
   addNewSketchLn,
   ARG_END_ABSOLUTE,
   changeSketchArguments,
+  Coords2d,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
 import { isArray, isOverlap, roundOff } from 'lib/utils'
@@ -125,6 +130,9 @@ type DraftSegment = 'line' | 'tangentialArcTo'
 export const EXTRA_SEGMENT_HANDLE = 'extraSegmentHandle'
 export const EXTRA_SEGMENT_OFFSET_PX = 8
 export const PROFILE_START = 'profile-start'
+
+export const DRAFT_DASHED_LINE = 'draft-dashed-line'
+
 export const STRAIGHT_SEGMENT = 'straight-segment'
 export const STRAIGHT_SEGMENT_BODY = 'straight-segment-body'
 export const STRAIGHT_SEGMENT_DASH = 'straight-segment-body-dashed'
@@ -3150,6 +3158,74 @@ export class SceneEntities {
       },
     })
   }
+
+  drawDashedLine({ from, to }: { from: Coords2d; to: Coords2d }) {
+    const baseColor = getThemeColorForThreeJs(sceneInfra._theme)
+    const color = baseColor
+    const meshType = STRAIGHT_SEGMENT_DASH
+
+    const segmentGroup = new Group()
+    const shape = new Shape()
+    shape.moveTo(0, -5) // The width of the line in px (2.4px in this case)
+    shape.lineTo(0, 5)
+    const line = new LineCurve3(
+      new Vector3(from[0], from[1], 0),
+      new Vector3(to[0], to[1], 0)
+    )
+    const geometry = new ExtrudeGeometry(shape, {
+      steps: 2,
+      bevelEnabled: false,
+      extrudePath: line,
+    })
+    const body = new MeshBasicMaterial({ color })
+    const mesh = new Mesh(geometry, body)
+
+    mesh.userData.type = meshType
+    mesh.name = meshType
+    segmentGroup.name = DRAFT_DASHED_LINE
+    segmentGroup.userData = {
+      type: DRAFT_DASHED_LINE,
+      from,
+      to,
+    }
+
+    segmentGroup.add(mesh)
+    segmentGroup.layers.set(SKETCH_LAYER)
+    segmentGroup.traverse((child) => {
+      child.layers.set(SKETCH_LAYER)
+    })
+    if (this.currentSketchQuaternion) {
+      segmentGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
+    }
+    return {
+      group: segmentGroup,
+      updater: (group: Group, to: Coords2d, orthoFactor: number) => {
+        const scale =
+          (sceneInfra.camControls.camera instanceof OrthographicCamera
+            ? orthoFactor
+            : perspScale(sceneInfra.camControls.camera, group)) /
+          sceneInfra._baseUnitMultiplier
+        const from = group.userData.from
+
+        const shape = new Shape()
+        shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
+        shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
+
+        const straightSegmentBodyDashed = group.children.find(
+          (child) => child.userData.type === STRAIGHT_SEGMENT_DASH
+        ) as Mesh
+        if (straightSegmentBodyDashed) {
+          straightSegmentBodyDashed.geometry = dashedStraight(
+            from,
+            to,
+            shape,
+            scale
+          )
+        }
+      },
+    }
+  }
+
 }
 
 // calculations/pure-functions/easy to test so no excuse not to

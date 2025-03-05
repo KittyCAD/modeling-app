@@ -62,6 +62,7 @@ import {
   THREE_POINT_ARC_SEGMENT_DASH,
   THREE_POINT_ARC_HANDLE2,
   THREE_POINT_ARC_HANDLE3,
+  DRAFT_DASHED_LINE,
 } from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
