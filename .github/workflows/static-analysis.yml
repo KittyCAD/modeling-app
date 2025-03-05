@@ -37,7 +37,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
-      - uses: taiki-e/install-action@a209ff0ce0349f9e7cadc4ba8f6a415c8d3b0813
+      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
         with:
           tool: wasm-pack
       - run: yarn build:wasm
@@ -52,11 +52,12 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - run: yarn --cwd ./rust/kcl-language-server --modules-folder node_modules install
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: './rust'
 
-      - uses: taiki-e/install-action@a209ff0ce0349f9e7cadc4ba8f6a415c8d3b0813
+      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
         with:
           tool: wasm-pack
       - run: yarn build:wasm
@@ -72,6 +73,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - run: yarn --cwd ./rust/kcl-language-server --modules-folder node_modules install
       - run: yarn lint
 
   python-codespell:
@@ -98,7 +100,7 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
-      - uses: taiki-e/install-action@a209ff0ce0349f9e7cadc4ba8f6a415c8d3b0813
+      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
         with:
           tool: wasm-pack
       - run: yarn build:wasm
@@ -127,7 +129,7 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
-      - uses: taiki-e/install-action@a209ff0ce0349f9e7cadc4ba8f6a415c8d3b0813
+      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
         with:
           tool: wasm-pack
       - run: yarn build:wasm
@@ -141,7 +143,7 @@ jobs:
 
       - name: run unit tests
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: yarn test:unit
+        run: xvfb-run -a yarn test:unit
         env:
           VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 

@@ -11,7 +11,7 @@ publish = false
 
 [dependencies]
 anyhow = { workspace = true }
-clap = { version = "4.5.31", features = ["derive"] }
+clap = { workspace = true, features = ["derive"] }
 semver = "1.0.25"
 serde = { workspace = true }
 toml_edit = "0.22.16"

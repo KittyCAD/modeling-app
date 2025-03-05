@@ -18,6 +18,7 @@ export const ProjectCardRenameForm = forwardRef(
         <input
           className="min-w-0 dark:bg-chalkboard-80 dark:border-chalkboard-40 focus:outline-none"
           type="text"
+          data-testid="project-rename-input"
           id="newProjectName"
           onClickCapture={(e) => e.preventDefault()}
           name="newProjectName"

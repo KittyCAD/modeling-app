@@ -1,0 +1,401 @@
+name: kcl-language-server
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - 'rust/kcl-language-server/**'
+      - '**.rs'
+      - .github/workflows/kcl-language-server.yml
+    tags:
+      - 'kcl-*'
+  pull_request:
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - 'rust/kcl-language-server/**'
+      - '**.rs'
+      - .github/workflows/kcl-language-server.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_RETRY: 10
+  RUSTFLAGS: ""
+  RUSTUP_MAX_RETRIES: 10
+  FETCH_DEPTH: 0 # pull in the tags for the version string
+  MACOSX_DEPLOYMENT_TARGET: 10.15
+  CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+  CARGO_TARGET_ARM_UNKNOWN_LINUX_GNUEABIHF_LINKER: arm-linux-gnueabihf-gcc
+
+jobs:
+  test:
+    name: vscode tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - name: Install dependencies
+        run: |
+          yarn install
+          cd rust/kcl-language-server
+          yarn install
+      - name: Run tests
+        run: |
+          cd rust/kcl-language-server
+          yarn build
+          yarn test-compile
+          ls -la dist
+          xvfb-run -a yarn test
+        if: runner.os == 'Linux'
+      - name: Run tests
+        run: |
+          cd rust/kcl-language-server
+          yarn test
+        if: runner.os != 'Linux'
+  build-release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            code-target:
+              win32-x64
+              #- os: windows-latest
+              #target: i686-pc-windows-msvc
+              #code-target:
+              #win32-ia32
+              #- os: windows-latest
+              #target: aarch64-pc-windows-msvc
+              #code-target: win32-arm64
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            code-target:
+              linux-x64
+              #- os: ubuntu-latest
+              #target: aarch64-unknown-linux-musl
+              #code-target: linux-arm64
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            code-target: linux-arm64
+          - os: ubuntu-latest
+            target: arm-unknown-linux-gnueabihf
+            code-target: linux-armhf
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            code-target: darwin-x64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            code-target: darwin-arm64
+
+    name: build-release (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    env:
+      RA_TARGET: ${{ matrix.target }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ env.FETCH_DEPTH }}
+
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          rm rust/rust-toolchain.toml
+
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: rust
+          components: rust-src
+          target: ${{ matrix.target }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Update apt repositories
+        if: matrix.target == 'aarch64-unknown-linux-gnu' || matrix.target == 'arm-unknown-linux-gnueabihf' || matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update
+
+      - if: ${{ matrix.os == 'ubuntu-latest' }}
+        name: Install deps
+        shell: bash
+        run: |
+          sudo apt install -y \
+            ca-certificates \
+            clang \
+            cmake \
+            curl \
+            g++ \
+            gcc \
+            gcc-mingw-w64-i686 \
+            gcc-mingw-w64 \
+            jq \
+            libmpc-dev \
+            libmpfr-dev \
+            libgmp-dev \
+            libssl-dev \
+            libxml2-dev \
+            mingw-w64 \
+            wget \
+            zlib1g-dev
+
+          cargo install cross
+
+      - name: Install AArch64 target toolchain
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: sudo apt-get install gcc-aarch64-linux-gnu
+
+      - name: Install ARM target toolchain
+        if: matrix.target == 'arm-unknown-linux-gnueabihf'
+        run: sudo apt-get install gcc-arm-linux-gnueabihf
+
+      - name: build
+        run: |
+          cd rust
+          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+
+      - name: Install dependencies
+        run: |
+          cd rust/kcl-language-server
+          yarn install
+
+      - name: Package Extension (release)
+        if: startsWith(github.event.ref, 'refs/tags/')
+        run: |
+          cd rust/kcl-language-server
+          npx vsce package -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
+
+      - name: Package Extension (nightly)
+        if: startsWith(github.event.ref, 'refs/tags/') == false
+        run: |
+          cd rust/kcl-language-server
+          npx vsce package -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }} --pre-release
+
+      - name: remove server
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        run: |
+          cd rust/kcl-language-server
+          rm -rf server
+
+      - name: Package Extension (no server, release)
+        if: matrix.target == 'x86_64-unknown-linux-gnu' && startsWith(github.event.ref, 'refs/tags/')
+        run: |
+          cd rust/kcl-language-server
+          npx vsce package -o ../build/kcl-language-server-no-server.vsix
+
+      - name: Package Extension (no server, nightly)
+        if: matrix.target == 'x86_64-unknown-linux-gnu' && startsWith(github.event.ref, 'refs/tags/') == false
+        run: |
+          cd rust/kcl-language-server
+          npx vsce package -o ../build/kcl-language-server-no-server.vsix --pre-release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.target }}
+          path: ./rust/build
+
+  build-release-x86_64-unknown-linux-musl:
+    name: build-release (x86_64-unknown-linux-musl)
+    runs-on: ubuntu-latest
+    env:
+      RA_TARGET: x86_64-unknown-linux-musl
+      # For some reason `-crt-static` is not working for clang without lld
+      RUSTFLAGS: "-C link-arg=-fuse-ld=lld -C target-feature=-crt-static"
+    container:
+      image: alpine:latest
+      volumes:
+        - /usr/local/cargo/registry:/usr/local/cargo/registry
+
+    steps:
+      - name: Install dependencies
+        run: |
+          apk add --no-cache \
+            bash \
+            curl \
+            git \
+            clang \
+            lld \
+            musl-dev \
+            nodejs \
+            yarn \
+            npm
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ env.FETCH_DEPTH }}
+
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          rm rust/rust-toolchain.toml
+
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: rust
+          components: rust-src
+          target: ${{ matrix.target }}
+
+      - name: build
+        run: |
+          cd rust
+          cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
+
+      - name: Install dependencies
+        run: |
+          cd rust/kcl-language-server
+          yarn install
+
+      - name: Package Extension (release)
+        if: startsWith(github.event.ref, 'refs/tags/')
+        run: |
+          cd rust/kcl-language-server
+          npx vsce package -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
+
+      - name: Package Extension (release)
+        if: startsWith(github.event.ref, 'refs/tags/') == false
+        run: |
+          cd rust/kcl-language-server
+          npx vsce package -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-x86_64-unknown-linux-musl
+          path: ./rust/build
+
+  publish:
+    name: publish
+    runs-on: ubuntu-latest
+    needs: ["build-release", "build-release-x86_64-unknown-linux-musl"]
+    if: startsWith(github.event.ref, 'refs/tags')
+    permissions:
+      contents: write
+    steps:
+      - run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - run: 'echo "TAG: $TAG"'
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ env.FETCH_DEPTH }}
+
+      - name: Install Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
+      - run: 'echo "HEAD_SHA: $HEAD_SHA"'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-aarch64-apple-darwin
+          path: rust/build
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-x86_64-apple-darwin
+          path: rust/build
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-x86_64-unknown-linux-gnu
+          path: rust/build
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-x86_64-unknown-linux-musl
+          path: rust/build
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-aarch64-unknown-linux-gnu
+          path: rust/build
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-arm-unknown-linux-gnueabihf
+          path: rust/build
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-x86_64-pc-windows-msvc
+          path:
+            rust/build
+            #- uses: actions/download-artifact@v4
+            #with:
+            #name: release-i686-pc-windows-msvc
+            #path:
+            #build
+            #- uses: actions/download-artifact@v4
+            #with:
+            #name: release-aarch64-pc-windows-msvc
+            #path: rust/build
+      - run: ls -al ./rust/build
+
+      - name: Publish Release
+        uses: ./.github/actions/github-release
+        with:
+          files: "rust/build/*"
+          name: ${{ env.TAG }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: move files to dir for upload
+        shell: bash
+        run: |
+          cd rust
+          mkdir -p releases/language-server/${{ env.TAG }}
+          cp -r build/* releases/language-server/${{ env.TAG }}
+
+      - name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2.1.8"
+        with:
+          credentials_json: "${{ secrets.GOOGLE_CLOUD_DL_SA }}"
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2.1.2
+        with:
+          project_id: kittycadapi
+      - name: "upload files to gcp"
+        id: upload-files
+        uses: google-github-actions/upload-cloud-storage@v2.2.2
+        with:
+          path: rust/releases
+          destination: dl.kittycad.io
+
+      - run: rm rust/build/kcl-language-server-no-server.vsix
+
+      - name: Publish Extension (Code Marketplace, release)
+        # token from https://dev.azure.com/kcl-language-server/
+        run: |
+          cd rust/kcl-language-server
+          npx vsce publish --pat ${{ secrets.VSCE_PAT }} --packagePath ../build/kcl-language-server-*.vsix
+
+      - name: Publish Extension (OpenVSX, release)
+        run: |
+          cd rust/kcl-language-server
+          npx ovsx publish --pat ${{ secrets.OPENVSX_TOKEN }} --packagePath ../build/kcl-language-server-*.vsix
+        timeout-minutes: 2
