@@ -1615,7 +1615,7 @@ const inInches = 2.0 * inch()"#;
             },
             context_type: ContextType::Mock,
         };
-        let mut exec_state = ExecState::new(ctx);
+        let mut exec_state = ExecState::new(&ctx);
         ctx.run(&program, &mut exec_state).await.unwrap();
         let errs = exec_state.errors();
         assert_eq!(errs.len(), 1, "{errs:?}");

@@ -9,9 +9,9 @@ use crate::{
     execution::{
         annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
         memory::EnvironmentRef,
-        types::{NumericType, RuntimeType, PrimitiveType, UnitLen},
-        ExecState, ExecutorContext, Face, Helix, ImportedGeometry, MetaSettings, Metadata, Plane, Sketch,
-        Solid, TagIdentifier,
+        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
+        ExecState, ExecutorContext, Face, Helix, ImportedGeometry, MetaSettings, Metadata, Plane, Sketch, Solid,
+        TagIdentifier,
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
@@ -315,7 +315,7 @@ impl KclValue {
             LiteralValue::Number { value, suffix } => {
                 let ty = NumericType::from_parsed(suffix, &exec_state.mod_local.settings);
                 if let NumericType::Default { len, .. } = &ty {
-                    if !exec_state.mod_local.settings.explicit_length_units && *len != UnitLen::Mm {
+                    if !exec_state.mod_local.explicit_length_units && *len != UnitLen::Mm {
                         exec_state.warn(
                             CompilationError::err(
                                 literal.as_source_range(),
@@ -328,7 +328,7 @@ impl KclValue {
                                 Some(SourceRange::new(0, 0, literal.module_id)),
                                 crate::errors::Tag::Deprecated,
                             ),
-                        )
+                        );
                     }
                 }
                 KclValue::Number { value, meta, ty }

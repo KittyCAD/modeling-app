@@ -58,7 +58,9 @@ impl ExecutorContext {
         for annotation in annotations {
             if annotation.name() == Some(annotations::SETTINGS) {
                 if matches!(body_type, BodyType::Root) {
-                    exec_state.mod_local.settings.update_from_annotation(annotation)?;
+                    if exec_state.mod_local.settings.update_from_annotation(annotation)? {
+                        exec_state.mod_local.explicit_length_units = true;
+                    }
                     let new_units = exec_state.length_unit();
                     if !self.engine.execution_kind().await.is_isolated() {
                         self.engine
@@ -298,7 +300,7 @@ impl ExecutorContext {
                     let impl_kind = annotations::get_impl(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
                     match impl_kind {
                         annotations::Impl::Rust => {
-                            let std_path = match &exec_state.mod_local.settings.std_path {
+                            let std_path = match &exec_state.mod_local.std_path {
                                 Some(p) => p,
                                 None => {
                                     return Err(KclError::Semantic(KclErrorDetails {
@@ -607,7 +609,7 @@ impl ExecutorContext {
                     .unwrap_or(false);
 
                 if rust_impl {
-                    if let Some(std_path) = &exec_state.mod_local.settings.std_path {
+                    if let Some(std_path) = &exec_state.mod_local.std_path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
                             value: FunctionSource::Std { func, props },
