@@ -89,21 +89,20 @@ jobs:
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
 
-      - name: Install toolchain dependencies
-        if: matrix.container == 'ubuntu:18.04'
+      - name: Use correct Rust toolchain
         shell: bash
         run: |
-          apt-get update && apt-get install -y build-essential curl
-          curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused -fsSL "https://sh.rustup.rs" | sh -s -- --profile minimal --default-toolchain none -y
-          echo "${CARGO_HOME:-$HOME/.cargo}/bin" >> $GITHUB_PATH
+          cp --update=none rust/rust-toolchain.toml ./ || true
+
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: rust
 
       - name: Install Rust toolchain
         run: |
-          # this sucks but maybe we can find a better solution for getting the
-          # right fucking toolchain
-          rm rust/rust-toolchain.toml
-          cd rust
-          rustup update --no-self-update stable
+          rustup target add ${{ matrix.target }}
+          rustup component add rust-src
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -150,10 +149,7 @@ jobs:
       - name: build
         run: |
           cd rust
-          rustup target add ${{ matrix.target }}
-          rustup component add rust-src
           cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
-          ls build
 
       - name: Install dependencies
         run: |
@@ -167,7 +163,7 @@ jobs:
           npx vsce package -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
 
       - name: Package Extension (nightly)
-        if: !startsWith(github.event.ref, 'refs/tags/')
+        if: startsWith(github.event.ref, 'refs/tags/') === false
         run: |
           cd rust/kcl-language-server
           npx vsce package -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }} --pre-release
@@ -185,7 +181,7 @@ jobs:
           npx vsce package -o ../build/kcl-language-server-no-server.vsix
 
       - name: Package Extension (no server, nightly)
-        if: matrix.target == 'x86_64-unknown-linux-gnu' && !startsWith(github.event.ref, 'refs/tags/')
+        if: matrix.target == 'x86_64-unknown-linux-gnu' && startsWith(github.event.ref, 'refs/tags/') === false
         run: |
           cd rust/kcl-language-server
           npx vsce package -o ../build/kcl-language-server-no-server.vsix --pre-release
@@ -204,13 +200,28 @@ jobs:
       # For some reason `-crt-static` is not working for clang without lld
       RUSTFLAGS: "-C link-arg=-fuse-ld=lld -C target-feature=-crt-static"
     container:
-      image: rust:alpine
+      image: alpine:latest
       volumes:
         - /usr/local/cargo/registry:/usr/local/cargo/registry
 
     steps:
       - name: Install dependencies
         run: apk add --no-cache git clang lld musl-dev nodejs yarn npm
+
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          cp --update=none rust/rust-toolchain.toml ./ || true
+
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: rust
+
+      - name: Install Rust toolchain
+        run: |
+          rustup target add ${{ matrix.target }}
+          rustup component add rust-src
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -220,8 +231,6 @@ jobs:
       - name: build
         run: |
           cd rust
-          # right fucking toolchain
-          rm rust-toolchain.toml
           cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
 
       - name: Install dependencies
@@ -236,7 +245,7 @@ jobs:
           npx vsce package -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
 
       - name: Package Extension (release)
-        if: !startsWith(github.event.ref, 'refs/tags/')
+        if: startsWith(github.event.ref, 'refs/tags/') === false
         run: |
           cd rust/kcl-language-server
           npx vsce package -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
