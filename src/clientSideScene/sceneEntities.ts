@@ -3223,7 +3223,6 @@ export class SceneEntities {
       },
     }
   }
-
 }
 
 // calculations/pure-functions/easy to test so no excuse not to
