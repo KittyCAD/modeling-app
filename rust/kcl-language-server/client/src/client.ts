@@ -18,7 +18,7 @@ export async function createClient(
         // HACK: This is a workaround, when the client has been disposed, VSCode
         // continues to emit events to the client and the default one for this event
         // attempt to restart the client for no reason
-        async didChangeWatchedFile(event, next) {
+        async didChangeWatchedFile(event: any, next: any) {
           if (client.isRunning()) {
             await next(event)
           }

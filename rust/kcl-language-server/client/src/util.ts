@@ -20,7 +20,7 @@ export function assert(
   }
 }
 
-export const log = new (class {
+class Logger {
   private enabled = true
   private readonly output = vscode.window.createOutputChannel(
     'KittyCAD Language Client'
@@ -64,7 +64,9 @@ export const log = new (class {
       depth: 6, // heuristic
     })
   }
-})()
+}
+
+export const log = new Logger()
 
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
