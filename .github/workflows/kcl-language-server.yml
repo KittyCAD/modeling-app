@@ -99,6 +99,7 @@ jobs:
 
       - name: Install Rust toolchain
         run: |
+          rm rust/rust-toolchain.toml
           rustup update --no-self-update stable
 
       - name: Install Node.js
@@ -146,7 +147,7 @@ jobs:
       - name: build
         run: |
           cd rust
-          rustup target add 1.85-${{ matrix.target }}
+          rustup target add ${{ matrix.target }}
           rustup component add rust-src
           cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
 
