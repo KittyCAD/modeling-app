@@ -5,11 +5,11 @@ use kcl_derive_docs::stdlib;
 use kcmc::{
     each_cmd as mcmd,
     length_unit::LengthUnit,
-    shared::{Angle, Point2d as KPoint2d},
+    shared::{Angle, PathSegment, Point2d as KPoint2d},
+    websocket::ModelingCmdReq,
     ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::shared::PathSegment;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -105,20 +105,42 @@ async fn inner_circle(
     let angle_end = Angle::turn();
 
     let id = exec_state.next_uuid();
-
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Arc {
-                start: angle_start,
-                end: angle_end,
-                center: KPoint2d::from(center).map(LengthUnit),
-                radius: radius.into(),
-                relative: false,
-            },
-        }),
-    )
+    args.batch_modeling_cmds(&[
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Arc {
+                    start: angle_start,
+                    end: angle_end,
+                    center: KPoint2d::from(center).map(LengthUnit),
+                    radius: radius.into(),
+                    relative: false,
+                },
+            }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
     .await?;
 
     let current_path = Path::Circle {
