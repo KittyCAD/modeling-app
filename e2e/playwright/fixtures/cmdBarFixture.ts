@@ -27,13 +27,17 @@ type CmdBarSerialised =
 
 export class CmdBarFixture {
   public page: Page
-  cmdBarOpenBtn!: Locator
-  cmdBarElement!: Locator
+
+  get cmdBarOpenBtn() {
+    return this.page.getByTestId('command-bar-open-button')
+  }
+
+  get cmdBarElement() {
+    return this.page.getByTestId('command-bar')
+  }
 
   constructor(page: Page) {
     this.page = page
-    this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
-    this.cmdBarElement = this.page.getByTestId('command-bar')
   }
 
   get currentArgumentInput() {
@@ -43,8 +47,6 @@ export class CmdBarFixture {
   // Put all selectors here because this method is re-run on fixture creation.
   reConstruct = (page: Page) => {
     this.page = page
-    this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
-    this.cmdBarElement = this.page.getByTestId('command-bar')
   }
 
   private _serialiseCmdBar = async (): Promise<CmdBarSerialised> => {
