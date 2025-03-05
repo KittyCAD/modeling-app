@@ -99,6 +99,9 @@ export const NetworkHealthIndicator = () => {
       >
         <ActionIcon
           icon={overallConnectionStateIcon[overallState]}
+          data-testid={`network-toggle-${
+            overallState == NetworkHealthState.Ok ? 'ok' : 'other'
+          }`}
           className="p-1"
           iconClassName={overallConnectionStateColor[overallState].icon}
           bgClassName={

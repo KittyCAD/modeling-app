@@ -10,6 +10,7 @@ updates:
       - '/'
       - '/packages/codemirror-lang-kcl/'
       - '/packages/codemirror-lsp-client/'
+      - '/rust/kcl-language-server/'
     schedule:
       interval: weekly
       day: monday

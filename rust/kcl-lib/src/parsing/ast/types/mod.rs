@@ -190,7 +190,7 @@ pub struct Program {
 
 impl Node<Program> {
     /// Walk the ast and get all the variables and tags as completion items.
-    pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
+    pub fn completion_items<'a>(&'a self, position: usize) -> Result<Vec<CompletionItem>> {
         let completions = Rc::new(RefCell::new(vec![]));
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             let mut findings = completions.borrow_mut();
@@ -208,8 +208,20 @@ impl Node<Program> {
             }
             Ok::<bool, anyhow::Error>(true)
         })?;
-        let x = completions.take();
-        Ok(x.clone())
+        let mut completions = completions.take();
+
+        if self.body.is_empty() || position <= self.body[0].start() {
+            // The cursor is before any items in the body, we can suggest the settings annotation as a completion.
+            completions.push(CompletionItem {
+                label: "@settings".to_owned(),
+                kind: Some(CompletionItemKind::STRUCT),
+                detail: Some("Settings attribute".to_owned()),
+                insert_text: Some(crate::execution::annotations::settings_completion_text()),
+                insert_text_format: Some(tower_lsp::lsp_types::InsertTextFormat::SNIPPET),
+                ..CompletionItem::default()
+            });
+        }
+        Ok(completions)
     }
 
     /// Returns all the lsp symbols in the program.
@@ -347,32 +359,34 @@ impl Program {
         }
     }
 
-    /// Returns a non code meta that includes the given character position.
-    pub fn get_non_code_meta_for_position(&self, pos: usize) -> Option<&NonCodeMeta> {
+    pub fn in_comment(&self, pos: usize) -> bool {
         // Check if its in the body.
-        if self.non_code_meta.contains(pos) {
-            return Some(&self.non_code_meta);
+        if self.non_code_meta.in_comment(pos) {
+            return true;
         }
-        let item = self.get_body_item_for_position(pos)?;
+        let item = self.get_body_item_for_position(pos);
 
         // Recurse over the item.
         let expr = match item {
-            BodyItem::ImportStatement(_) => None,
-            BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
-            BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
+            Some(BodyItem::ImportStatement(_)) => None,
+            Some(BodyItem::ExpressionStatement(expression_statement)) => Some(&expression_statement.expression),
+            Some(BodyItem::VariableDeclaration(variable_declaration)) => {
+                variable_declaration.get_expr_for_position(pos)
+            }
+            Some(BodyItem::ReturnStatement(return_statement)) => Some(&return_statement.argument),
+            None => return false,
         };
 
         // Check if the expr's non code meta contains the position.
         if let Some(expr) = expr {
             if let Some(non_code_meta) = expr.get_non_code_meta() {
-                if non_code_meta.contains(pos) {
-                    return Some(non_code_meta);
+                if non_code_meta.in_comment(pos) {
+                    return true;
                 }
             }
         }
 
-        None
+        false
     }
 
     // Return all the lsp folding ranges in the program.
@@ -1112,6 +1126,15 @@ impl NonCodeNode {
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
+
+    fn is_comment(&self) -> bool {
+        matches!(
+            self.value,
+            NonCodeValue::InlineComment { .. }
+                | NonCodeValue::BlockComment { .. }
+                | NonCodeValue::NewLineBlockComment { .. }
+        )
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1189,14 +1212,22 @@ impl NonCodeMeta {
         self.non_code_nodes.entry(i).or_default().push(new);
     }
 
-    pub fn contains(&self, pos: usize) -> bool {
-        if self.start_nodes.iter().any(|node| node.contains(pos)) {
+    pub fn in_comment(&self, pos: usize) -> bool {
+        if self
+            .start_nodes
+            .iter()
+            .filter(|node| node.is_comment())
+            .any(|node| node.contains(pos))
+        {
             return true;
         }
 
-        self.non_code_nodes
-            .iter()
-            .any(|(_, nodes)| nodes.iter().any(|node| node.contains(pos)))
+        self.non_code_nodes.iter().any(|(_, nodes)| {
+            nodes
+                .iter()
+                .filter(|node| node.is_comment())
+                .any(|node| node.contains(pos))
+        })
     }
 
     /// Get the non-code meta immediately before the ith node in the AST that self is attached to.
@@ -3381,7 +3412,7 @@ fn ghi = (x) => {
     }
 
     #[test]
-    fn test_ast_get_non_code_node() {
+    fn test_ast_in_comment() {
         let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
 const h = 30
 
@@ -3397,13 +3428,11 @@ const cylinder = startSketchOn('-XZ')
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        let value = program.get_non_code_meta_for_position(50);
-
-        assert!(value.is_some());
+        assert!(program.in_comment(50));
     }
 
     #[test]
-    fn test_ast_get_non_code_node_pipe() {
+    fn test_ast_in_comment_pipe() {
         let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
 const h = 30
 
@@ -3420,22 +3449,18 @@ const cylinder = startSketchOn('-XZ')
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        let value = program.get_non_code_meta_for_position(124);
-
-        assert!(value.is_some());
+        assert!(program.in_comment(124));
     }
 
     #[test]
-    fn test_ast_get_non_code_node_inline_comment() {
+    fn test_ast_in_comment_inline() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0,0], %)
   |> xLine(5, %) // lin
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        let value = program.get_non_code_meta_for_position(86);
-
-        assert!(value.is_some());
+        assert!(program.in_comment(86));
     }
 
     #[tokio::test(flavor = "multi_thread")]

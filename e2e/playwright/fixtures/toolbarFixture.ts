@@ -76,7 +76,9 @@ export class ToolbarFixture {
   }
 
   get exeIndicator() {
-    return this.page.getByTestId('model-state-indicator-receive-reliable')
+    return this.page
+      .getByTestId('model-state-indicator-receive-reliable')
+      .or(this.page.getByTestId('model-state-indicator-execution-done'))
   }
 
   startSketchPlaneSelection = async () =>

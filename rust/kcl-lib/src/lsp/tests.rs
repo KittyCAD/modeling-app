@@ -644,7 +644,10 @@ async fn test_kcl_lsp_completions() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"thing= 1
+                // Blank lines to check that we get completions even in an AST newline thing.
+                text: r#"
+                
+thing= 1
 st"#
                 .to_string(),
             },
@@ -658,7 +661,7 @@ st"#
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
                     uri: "file:///test.kcl".try_into().unwrap(),
                 },
-                position: tower_lsp::lsp_types::Position { line: 0, character: 16 },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 0 },
             },
             context: None,
             partial_result_params: Default::default(),
@@ -671,6 +674,7 @@ st"#
     // Check the completions.
     if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
         assert!(completions.len() > 10);
+        assert!(completions.iter().any(|c| c.label == "@settings"));
     } else {
         panic!("Expected array of completions");
     }
