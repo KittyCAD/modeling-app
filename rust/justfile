@@ -38,9 +38,9 @@ run-sim-test test_name:
 
 overwrite-sim-test test_name:
     env
-    EXPECTORATE=overwrite {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::parse
-    EXPECTORATE=overwrite {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::unparse
-    TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
+    EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-capture -- simulation_tests::{{test_name}}::parse
+    EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-capture -- simulation_tests::{{test_name}}::unparse
+    TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-capture -- tests::{{test_name}}::kcl_test_execute
 
 test:
     export RUST_BRACKTRACE="full" && cargo nextest run --workspace --no-fail-fast
