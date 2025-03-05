@@ -1218,5 +1218,5 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
 }
 
 export function settingsToToml(settings: DeepPartial<Configuration>) {
-  return TOML.stringify(settings)
+  return TOML.stringify(settings as any)
 }
