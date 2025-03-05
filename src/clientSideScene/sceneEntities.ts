@@ -496,6 +496,7 @@ export class SceneEntities {
         const arrowHead = getParentGroup(args.intersects[0].object, [
           ARROWHEAD,
           ARC_ANGLE_END,
+          THREE_POINT_ARC_HANDLE3,
         ])
         const parent = getParentGroup(
           args.intersects[0].object,
