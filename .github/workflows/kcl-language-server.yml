@@ -247,6 +247,11 @@ jobs:
             yarn \
             npm
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ env.FETCH_DEPTH }}
+
       - name: Use correct Rust toolchain
         shell: bash
         run: |
@@ -258,11 +263,6 @@ jobs:
           cache: rust
           components: rust-src
           target: ${{ matrix.target }}
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: ${{ env.FETCH_DEPTH }}
 
       - name: build
         run: |

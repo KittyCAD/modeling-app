@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
     "esModuleInterop": false,
     "module": "node16",
@@ -10,6 +10,7 @@
     "sourceMap": true,
     "rootDir": ".",
     "newLine": "LF",
+    "allowSyntheticDefaultImports": true,
 
     // FIXME: https://github.com/rust-lang/rust-analyzer/issues/15253
     "exactOptionalPropertyTypes": false
