@@ -381,7 +381,7 @@ jobs:
           project_id: kittycadapi
       - name: "upload files to gcp"
         id: upload-files
-        uses: google-github-actions/upload-cloud-storage@v2.2.1
+        uses: google-github-actions/upload-cloud-storage@v2.2.2
         with:
           path: rust/releases
           destination: dl.kittycad.io
