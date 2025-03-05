@@ -37,6 +37,9 @@ fn parse() {
     eprintln!("Inside simulation_test env...");
     eprintln!("EXPECTORATE={:?}", std::env::var("EXPECTORATE").as_deref());
     eprintln!("TWENTY_TWENTY={:?}", std::env::var("TWENTY_TWENTY").as_deref());
+    for (key, value) in std::env::vars() {
+        eprintln!("  {key}={value}");
+    }
 
     let input_names = FnvHashSet::from_iter(tests.iter().map(|t| t.name.clone()));
 
