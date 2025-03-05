@@ -32,6 +32,8 @@ export class CmdBarFixture {
 
   constructor(page: Page) {
     this.page = page
+    this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
+    this.cmdBarElement = this.page.getByTestId('command-bar')
   }
 
   get currentArgumentInput() {
