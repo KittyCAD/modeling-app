@@ -162,20 +162,20 @@ jobs:
 
       - name: Package Extension (release)
         run: |
-          cd rust
-          npx vsce package -o "./build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
+          cd rust/kcl-language-server
+          npx vsce package -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
 
       - name: remove server
         if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
-          cd rust
+          cd rust/kcl-language-server
           rm -rf server
 
       - name: Package Extension (no server)
         if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
-          cd rust
-          npx vsce package -o ./build/kcl-language-server-no-server.vsix
+          cd rust/kcl-language-server
+          npx vsce package -o ../build/kcl-language-server-no-server.vsix
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -218,8 +218,8 @@ jobs:
 
       - name: Package Extension (release)
         run: |
-          cd rust
-          npx vsce package -o "./build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
+          cd rust/kcl-language-server
+          npx vsce package -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
