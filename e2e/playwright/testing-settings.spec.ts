@@ -42,7 +42,7 @@ test.describe('Testing settings', () => {
 
       // Check that the invalid settings were changed to good defaults
       expect(storedSettings.settings?.modeling?.base_unit).toBe('in')
-      expect(storedSettings.settings?.modeling?.mouse_controls).toBe('Zoo')
+      expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
       expect(storedSettings.settings?.app?.project_directory).toBe('')
       expect(storedSettings.settings?.project?.default_project_name).toBe(
         'project-$nnn'
