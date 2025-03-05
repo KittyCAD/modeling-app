@@ -35,7 +35,7 @@ impl Build {
         sh.create_dir(&build)?;
 
         // Read the version from our root Cargo.toml.
-        let version = sh.read_file("Cargo.toml")?;
+        let version = sh.read_file("kcl-language-server/Cargo.toml")?;
         let mut version = version
             .lines()
             .find(|line| line.starts_with("version = "))
