@@ -52,6 +52,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - run: yarn --cwd ./rust/kcl-language-server --modules-folder node_modules install
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: './rust'
@@ -72,6 +73,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - run: yarn --cwd ./rust/kcl-language-server --modules-folder node_modules install
       - run: yarn lint
 
   python-codespell:
@@ -141,7 +143,7 @@ jobs:
 
       - name: run unit tests
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: yarn test:unit
+        run: xvfb-run -a yarn test:unit
         env:
           VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 

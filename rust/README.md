@@ -20,4 +20,5 @@
     - This will publish the relevant crates and push a new tag with the prefix
     `kcl-`. DO NOT SET THE PREFIX TO `kcl-` when you run the command. The `just`
     command will do that for you.
-    - The tag will then trigger the release of kcl-python-bindings.
+    - The tag will then trigger the release of `kcl-python-bindings` and
+        `kcl-language-server`.

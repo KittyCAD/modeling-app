@@ -23,6 +23,4 @@ We've built a lot of tooling to make contributing to KCL easier. If you are inte
 
 If you bump the version of kcl-lib and push it to crates, be sure to update the repos we own that use it as well. These are:
 
-- [kcl.py](https://github.com/kittycad/kcl.py)
-- [kcl-lsp](https://github.com/kittycad/kcl-lsp)
 - [cli](https://github.com/kittycad/cli)
