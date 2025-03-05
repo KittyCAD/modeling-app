@@ -81,7 +81,7 @@ jobs:
       continue-on-error: true
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
-    - uses: taiki-e/install-action@a209ff0ce0349f9e7cadc4ba8f6a415c8d3b0813
+    - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
       with:
         tool: wasm-pack
     - name: Cache Wasm (because rust diff)
