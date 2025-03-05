@@ -40,7 +40,7 @@ env:
   CARGO_TARGET_ARM_UNKNOWN_LINUX_GNUEABIHF_LINKER: arm-linux-gnueabihf-gcc
 
 jobs:
-  release:
+  build-release:
     strategy:
       fail-fast: false
       matrix:
@@ -76,7 +76,7 @@ jobs:
             target: aarch64-apple-darwin
             code-target: darwin-arm64
 
-    name: release (${{ matrix.target }})
+    name: build-release (${{ matrix.target }})
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
 
@@ -177,8 +177,8 @@ jobs:
           name: release-${{ matrix.target }}
           path: ./rust/build
 
-  release-x86_64-unknown-linux-musl:
-    name: release (x86_64-unknown-linux-musl)
+  build-release-x86_64-unknown-linux-musl:
+    name: build-release (x86_64-unknown-linux-musl)
     runs-on: ubuntu-latest
     env:
       RA_TARGET: x86_64-unknown-linux-musl
@@ -227,7 +227,7 @@ jobs:
   publish:
     name: publish
     runs-on: ubuntu-latest
-    needs: ["release", "release-x86_64-unknown-linux-musl"]
+    needs: ["build-release", "build-release-x86_64-unknown-linux-musl"]
     if: startsWith(github.event.ref, 'refs/tags')
     permissions:
       contents: write
