@@ -391,11 +391,11 @@ jobs:
       - name: Publish Extension (Code Marketplace, release)
         # token from https://dev.azure.com/kcl-language-server/
         run: |
-          cd rust
-          npx vsce publish --pat ${{ secrets.VSCE_PAT }} --packagePath ./build/kcl-language-server-*.vsix
+          cd rust/kcl-language-server
+          npx vsce publish --pat ${{ secrets.VSCE_PAT }} --packagePath ../build/kcl-language-server-*.vsix
 
       - name: Publish Extension (OpenVSX, release)
         run: |
-          cd rust
-          npx ovsx publish --pat ${{ secrets.OPENVSX_TOKEN }} --packagePath ./build/kcl-language-server-*.vsix
+          cd rust/kcl-language-server
+          npx ovsx publish --pat ${{ secrets.OPENVSX_TOKEN }} --packagePath ../build/kcl-language-server-*.vsix
         timeout-minutes: 2
