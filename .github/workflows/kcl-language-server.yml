@@ -161,7 +161,9 @@ jobs:
           yarn install
 
       - name: Package Extension (release)
-        run: npx vsce package -o "./build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
+        run: |
+          cd rust
+          npx vsce package -o "./build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
 
       - name: remove server
         if: matrix.target == 'x86_64-unknown-linux-gnu'
