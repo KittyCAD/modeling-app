@@ -692,7 +692,7 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
 
     await test.step(`Open the code pane, don't crash`, async () => {
       await editor.openPane()
-      expect(page.getByText('unexpected error')).not.toBeVisible()
+      await expect(page.getByText('unexpected error')).not.toBeVisible()
       await editor.expectEditor.toContain(`x = 5`)
       await editor.expectEditor.toContain(`plane001`)
       await editor.expectEditor.not.toContain(`plane002`)
