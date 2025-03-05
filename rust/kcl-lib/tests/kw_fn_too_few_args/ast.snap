@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing kw_fn_too_few_args.kcl
 ---
 {
@@ -96,8 +96,10 @@ description: Result of parsing kw_fn_too_few_args.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "x"
+                  "end": 46,
+                  "name": "x",
+                  "start": 45,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 50,

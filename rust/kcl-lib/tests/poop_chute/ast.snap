@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing poop_chute.kcl
 ---
 {
@@ -2050,8 +2050,10 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 1607,
+                      "name": "length",
+                      "start": 1601,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 1630,

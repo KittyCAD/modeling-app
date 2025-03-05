@@ -430,6 +430,9 @@ app.on('ready', () => {
   ipcMain.handle('app.restart', () => {
     autoUpdater.quitAndInstall()
   })
+  ipcMain.handle('app.checkForUpdates', () => {
+    return autoUpdater.checkForUpdates()
+  })
 })
 
 const getProjectPathAtStartup = async (

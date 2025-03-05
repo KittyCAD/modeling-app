@@ -9,7 +9,7 @@ Compute the length of the provided line segment.
 
 
 ```js
-segLen(tag: TagIdentifier) -> number
+segLen(tag: TagIdentifier): number
 ```
 
 

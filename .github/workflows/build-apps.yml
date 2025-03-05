@@ -41,7 +41,7 @@ jobs:
           workspaces: './rust'
 
       # TODO: see if we can fetch from main instead if no diff at rust
-      - uses: taiki-e/install-action@2dbeb927f58939d3aa13bf06ba0c0a34b76b9bfb
+      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
         with:
           tool: wasm-pack
 
@@ -134,6 +134,7 @@ jobs:
         # Windows is picky sometimes and fails on fetch. Step takes about ~30s
         uses: nick-fields/retry@v3.0.2
         with:
+          shell: bash
           timeout_minutes: 2
           max_attempts: 3
           command: yarn install
@@ -185,6 +186,7 @@ jobs:
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.2
         with:
+          shell: bash
           timeout_minutes: 10
           max_attempts: 3
           command: yarn tronb:package:prod
@@ -246,6 +248,7 @@ jobs:
         # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.2
         with:
+          shell: bash
           timeout_minutes: 10
           max_attempts: 3
           command: yarn tronb:package:prod

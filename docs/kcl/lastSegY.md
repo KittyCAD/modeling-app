@@ -1,15 +1,15 @@
 ---
 title: "lastSegY"
-excerpt: "Extract the 'y' axis value of the last line segment in the provided 2-d"
+excerpt: "Extract the 'y' axis value of the last line segment in the provided 2-d sketch."
 layout: manual
 ---
 
-Extract the 'y' axis value of the last line segment in the provided 2-d
+Extract the 'y' axis value of the last line segment in the provided 2-d sketch.
 
-sketch.
+
 
 ```js
-lastSegY(sketch: Sketch) -> number
+lastSegY(sketch: Sketch): number
 ```
 
 

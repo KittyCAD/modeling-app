@@ -1,19 +1,19 @@
 ---
 title: "tangentialArcToRelative"
-excerpt: "Starting at the current sketch's origin, draw a curved line segment along"
+excerpt: "Starting at the current sketch's origin, draw a curved line segment along some part of an imaginary circle until it reaches a point the given (x, y) distance away."
 layout: manual
 ---
 
-Starting at the current sketch's origin, draw a curved line segment along
+Starting at the current sketch's origin, draw a curved line segment along some part of an imaginary circle until it reaches a point the given (x, y) distance away.
 
-some part of an imaginary circle until it reaches a point the given (x, y) distance away.
+
 
 ```js
 tangentialArcToRelative(
   delta: [number],
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

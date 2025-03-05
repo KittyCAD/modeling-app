@@ -9,7 +9,7 @@ Round a number to the nearest integer.
 
 
 ```js
-round(num: number) -> number
+round(num: number): number
 ```
 
 ### Tags

@@ -13,7 +13,7 @@ angleToMatchLengthX(
   tag: TagIdentifier,
   to: number,
   sketch: Sketch,
-) -> number
+): number
 ```
 
 

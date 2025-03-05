@@ -12,7 +12,7 @@ Create a helix on a cylinder.
 helixRevolutions(
   data: HelixRevolutionsData,
   solid: Solid,
-) -> Solid
+): Solid
 ```
 
 

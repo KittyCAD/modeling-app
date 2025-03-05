@@ -16,7 +16,7 @@ helix(
   radius: number,
   axis: Axis3dOrEdgeReference,
   length?: number,
-) -> HelixValue
+): HelixValue
 ```
 
 

@@ -509,7 +509,7 @@ impl ExecutorContext {
         self.eval_prelude(exec_state, SourceRange::synthetic())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
-        exec_state.mut_memory().push_new_root_env(true);
+        exec_state.mut_stack().push_new_root_env(true);
         Ok(())
     }
 
@@ -524,7 +524,7 @@ impl ExecutorContext {
         let mut exec_state = ExecState::new(&self.settings);
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => *exec_state.mut_memory() = mem,
+                Some(mem) => *exec_state.mut_stack() = mem,
                 None => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -533,7 +533,7 @@ impl ExecutorContext {
 
         let mut to_restore = Vec::new();
         {
-            let mem = exec_state.mut_memory();
+            let mem = exec_state.mut_stack();
 
             // Push a scope so that old variables can be overwritten (since we might be re-executing some
             // part of the scene).
@@ -553,7 +553,9 @@ impl ExecutorContext {
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
         // memory, not to the exec_state which is not cached for mock execution.
-        let mut mem = exec_state.memory().clone();
+
+        let mut mem = exec_state.stack().clone();
+        let outcome = exec_state.to_mock_wasm_outcome(result.0);
 
         mem.squash_env(result.0);
         for (k, v) in to_restore {
@@ -564,7 +566,6 @@ impl ExecutorContext {
         }
         cache::write_old_memory(mem).await;
 
-        let outcome = exec_state.to_mock_wasm_outcome(result.0);
         Ok(outcome)
     }
 
@@ -628,11 +629,15 @@ impl ExecutorContext {
                         })
                         .await;
 
-                        return Ok(old_state.to_wasm_outcome(result_env));
+                        let outcome = old_state.to_wasm_outcome(result_env);
+                        return Ok(outcome);
                     }
                     (true, program)
                 }
-                CacheResult::NoAction(false) => return Ok(old_state.to_wasm_outcome(result_env)),
+                CacheResult::NoAction(false) => {
+                    let outcome = old_state.to_wasm_outcome(result_env);
+                    return Ok(outcome);
+                }
             };
 
             let (exec_state, preserve_mem) = if clear_scene {
@@ -650,7 +655,7 @@ impl ExecutorContext {
 
                 (exec_state, false)
             } else {
-                old_state.mut_memory().restore_env(result_env);
+                old_state.mut_stack().restore_env(result_env);
                 old_state.add_root_module_contents(&program);
 
                 (old_state, true)
@@ -684,7 +689,8 @@ impl ExecutorContext {
         })
         .await;
 
-        Ok(exec_state.to_wasm_outcome(result.0))
+        let outcome = exec_state.to_wasm_outcome(result.0);
+        Ok(outcome)
     }
 
     /// Perform the execution of a program.
@@ -759,16 +765,16 @@ impl ExecutorContext {
                 )
             })?;
 
+        crate::log::log(format!(
+            "Post interpretation KCL memory stats: {:#?}",
+            exec_state.stack().memory.stats
+        ));
+
         if !self.is_mock() {
-            let mut mem = exec_state.memory().clone();
+            let mut mem = exec_state.stack().deep_clone();
             mem.restore_env(env_ref);
             cache::write_old_memory(mem).await;
         }
-
-        crate::log::log(format!(
-            "Post interpretation KCL memory stats: {:#?}",
-            exec_state.memory().stats
-        ));
         let session_data = self.engine.get_session_data().await;
         Ok((env_ref, session_data))
     }
@@ -826,8 +832,10 @@ impl ExecutorContext {
     }
 
     /// 'Import' std::prelude as the outermost scope.
+    ///
+    /// SAFETY: the current thread must have sole access to the memory referenced in exec_state.
     async fn eval_prelude(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Result<(), KclError> {
-        if exec_state.memory().requires_std() {
+        if exec_state.stack().memory.requires_std() {
             let id = self
                 .open_module(
                     &ImportPath::Std {
@@ -843,7 +851,7 @@ impl ExecutorContext {
                 .await
                 .unwrap();
 
-            exec_state.mut_memory().set_std(module_memory);
+            exec_state.mut_stack().memory.set_std(module_memory);
         }
 
         Ok(())
@@ -930,12 +938,16 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{errors::KclErrorDetails, execution::memory::ProgramMemory, ModuleId};
+    use crate::{errors::KclErrorDetails, execution::memory::Stack, ModuleId};
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
-    fn mem_get_json(memory: &ProgramMemory, env: EnvironmentRef, name: &str) -> KclValue {
-        memory.get_from(name, env, SourceRange::default()).unwrap().to_owned()
+    fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {
+        memory
+            .memory
+            .get_from_unchecked(name, env, SourceRange::default())
+            .unwrap()
+            .to_owned()
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1400,21 +1412,21 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
         let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(5.0, mem_get_json(exec_state.memory(), env, "myVar").as_f64().unwrap());
+        assert_eq!(5.0, mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute() {
         let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
         let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(exec_state.memory(), env, "myVar").as_f64().unwrap());
+        assert_eq!(7.4, mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"const myVar = -5 + 6"#;
         let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(1.0, mem_get_json(exec_state.memory(), env, "myVar").as_f64().unwrap());
+        assert_eq!(1.0, mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1423,7 +1435,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
         let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(
             std::f64::consts::TAU,
-            mem_get_json(exec_state.memory(), env, "myVar").as_f64().unwrap()
+            mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap()
         );
     }
 
@@ -1431,7 +1443,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
         let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(exec_state.memory(), env, "thing").as_f64().unwrap());
+        assert_eq!(7.4, mem_get_json(exec_state.stack(), env, "thing").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1439,10 +1451,10 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
         let ast = r#"const inMm = 25.4 * mm()
 const inInches = 1.0 * inch()"#;
         let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(25.4, mem_get_json(exec_state.memory(), env, "inMm").as_f64().unwrap());
+        assert_eq!(25.4, mem_get_json(exec_state.stack(), env, "inMm").as_f64().unwrap());
         assert_eq!(
             25.4,
-            mem_get_json(exec_state.memory(), env, "inInches").as_f64().unwrap()
+            mem_get_json(exec_state.stack(), env, "inInches").as_f64().unwrap()
         );
     }
 
@@ -1454,12 +1466,9 @@ const inInches = 1.0 * inch()"#;
         let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
-            mem_get_json(exec_state.memory(), env, "inMm").as_f64().unwrap().round()
+            mem_get_json(exec_state.stack(), env, "inMm").as_f64().unwrap().round()
         );
-        assert_eq!(
-            1.0,
-            mem_get_json(exec_state.memory(), env, "inInches").as_f64().unwrap()
-        );
+        assert_eq!(1.0, mem_get_json(exec_state.stack(), env, "inInches").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1470,12 +1479,9 @@ const inInches = 2.0 * inch()"#;
         let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
-            mem_get_json(exec_state.memory(), env, "inMm").as_f64().unwrap().round()
+            mem_get_json(exec_state.stack(), env, "inMm").as_f64().unwrap().round()
         );
-        assert_eq!(
-            2.0,
-            mem_get_json(exec_state.memory(), env, "inInches").as_f64().unwrap()
-        );
+        assert_eq!(2.0, mem_get_json(exec_state.stack(), env, "inInches").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1517,14 +1523,14 @@ check(false)
         let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(
             false,
-            mem_get_json(exec_state.memory(), env, "notTrue").as_bool().unwrap()
+            mem_get_json(exec_state.stack(), env, "notTrue").as_bool().unwrap()
         );
         assert_eq!(
             true,
-            mem_get_json(exec_state.memory(), env, "notFalse").as_bool().unwrap()
+            mem_get_json(exec_state.stack(), env, "notFalse").as_bool().unwrap()
         );
-        assert_eq!(true, mem_get_json(exec_state.memory(), env, "c").as_bool().unwrap());
-        assert_eq!(false, mem_get_json(exec_state.memory(), env, "d").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(exec_state.stack(), env, "c").as_bool().unwrap());
+        assert_eq!(false, mem_get_json(exec_state.stack(), env, "d").as_bool().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]

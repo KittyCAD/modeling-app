@@ -60,76 +60,16 @@ mod test_examples_line_to {
         );
         Ok(())
     }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_mock_example_line_to1() -> miette::Result<()> {
-        let program =
-            crate::Program::parse_no_errs("This is code.\nIt does other shit.\nlineTo").unwrap();
-        let ctx = crate::ExecutorContext {
-            engine: std::sync::Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new()
-                    .await
-                    .unwrap(),
-            )),
-            fs: std::sync::Arc::new(crate::fs::FileManager::new()),
-            stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
-            settings: Default::default(),
-            context_type: crate::execution::ContextType::Mock,
-        };
-        if let Err(e) = ctx
-            .run(
-                &program,
-                &mut crate::execution::ExecState::new(&ctx.settings),
-            )
-            .await
-        {
-            return Err(miette::Report::new(crate::errors::Report {
-                error: e,
-                filename: format!("{}{}", "line_to", 1usize),
-                kcl_source: "This is code.\nIt does other shit.\nlineTo".to_string(),
-            }));
-        }
-
-        Ok(())
-    }
-
-    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn kcl_test_example_line_to1() -> miette::Result<()> {
-        let code = "This is code.\nIt does other shit.\nlineTo";
-        let result = match crate::test_server::execute_and_snapshot(
-            code,
-            crate::settings::types::UnitLength::Mm,
-            None,
-        )
-        .await
-        {
-            Err(crate::errors::ExecError::Kcl(e)) => {
-                return Err(miette::Report::new(crate::errors::Report {
-                    error: e.error,
-                    filename: format!("{}{}", "line_to", 1usize),
-                    kcl_source: "This is code.\nIt does other shit.\nlineTo".to_string(),
-                }));
-            }
-            Err(other_err) => panic!("{}", other_err),
-            Ok(img) => img,
-        };
-        twenty_twenty::assert_image(
-            &format!("tests/outputs/{}.png", "serial_test_example_line_to1"),
-            &result,
-            0.99,
-        );
-        Ok(())
-    }
 }
 
 #[allow(non_camel_case_types, missing_docs)]
-#[doc = "Std lib function: lineTo\nThis is some function.\nIt does shit."]
+#[doc = "Std lib function: lineTo\nThis is some function. It does shit."]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
 #[ts(export)]
 pub(crate) struct LineTo {}
 
 #[allow(non_upper_case_globals, missing_docs)]
-#[doc = "Std lib function: lineTo\nThis is some function.\nIt does shit."]
+#[doc = "Std lib function: lineTo\nThis is some function. It does shit."]
 pub(crate) const LineTo: LineTo = LineTo {};
 fn boxed_line_to(
     exec_state: &mut crate::execution::ExecState,
@@ -151,11 +91,11 @@ impl crate::docs::StdLibFn for LineTo {
     }
 
     fn summary(&self) -> String {
-        "This is some function.".to_string()
+        "This is some function. It does shit.".to_string()
     }
 
     fn description(&self) -> String {
-        "It does shit.".to_string()
+        "".to_string()
     }
 
     fn tags(&self) -> Vec<String> {
@@ -225,10 +165,7 @@ impl crate::docs::StdLibFn for LineTo {
     }
 
     fn examples(&self) -> Vec<String> {
-        let code_blocks = vec![
-            "This is another code block.\nyes sirrr.\nlineTo",
-            "This is code.\nIt does other shit.\nlineTo",
-        ];
+        let code_blocks = vec!["This is another code block.\nyes sirrr.\nlineTo"];
         code_blocks
             .iter()
             .map(|cb| {
@@ -251,10 +188,6 @@ impl crate::docs::StdLibFn for LineTo {
 
 #[doc = r" This is some function."]
 #[doc = r" It does shit."]
-#[doc = r""]
-#[doc = r"     This is code."]
-#[doc = r"     It does other shit."]
-#[doc = r"     lineTo"]
 #[doc = r""]
 #[doc = r" ```"]
 #[doc = r" This is another code block."]

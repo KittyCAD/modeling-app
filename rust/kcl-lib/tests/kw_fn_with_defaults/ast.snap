@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing kw_fn_with_defaults.kcl
 ---
 {
@@ -151,8 +151,10 @@ description: Result of parsing kw_fn_with_defaults.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "type": "Identifier",
-                  "name": "by"
+                  "end": 93,
+                  "name": "by",
+                  "start": 91,
+                  "type": "Identifier"
                 },
                 "arg": {
                   "end": 98,

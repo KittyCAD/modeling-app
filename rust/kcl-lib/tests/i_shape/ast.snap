@@ -384,8 +384,10 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "end"
+                      "end": 473,
+                      "name": "end",
+                      "start": 470,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
@@ -2476,8 +2478,10 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 2434,
+                      "name": "length",
+                      "start": 2428,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 2440,

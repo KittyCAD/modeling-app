@@ -255,8 +255,10 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "length"
+                    "end": 166,
+                    "name": "length",
+                    "start": 160,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 169,

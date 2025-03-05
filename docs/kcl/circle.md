@@ -1,12 +1,12 @@
 ---
 title: "circle"
-excerpt: "Construct a 2-dimensional circle, of the specified radius, centered at"
+excerpt: "Construct a 2-dimensional circle, of the specified radius, centered at the provided (x, y) origin point."
 layout: manual
 ---
 
-Construct a 2-dimensional circle, of the specified radius, centered at
+Construct a 2-dimensional circle, of the specified radius, centered at the provided (x, y) origin point.
 
-the provided (x, y) origin point.
+
 
 ```js
 circle(
@@ -14,7 +14,7 @@ circle(
   center: [number],
   radius: number,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

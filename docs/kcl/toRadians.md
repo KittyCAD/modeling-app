@@ -9,7 +9,7 @@ Converts a number from degrees to radians.
 
 
 ```js
-toRadians(num: number) -> number
+toRadians(num: number): number
 ```
 
 ### Tags

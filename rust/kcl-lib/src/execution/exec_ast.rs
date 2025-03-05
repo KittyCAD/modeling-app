@@ -96,19 +96,22 @@ impl ExecutorContext {
         preserve_mem: bool,
         path: &ModulePath,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
-        crate::log::log(format!("enter module {path}"));
+        crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
         let old_units = exec_state.length_unit();
         let original_execution = self.engine.replace_execution_kind(exec_kind).await;
-        let mut local_state = ModuleState::new(&self.settings, path.std_path());
-        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+
+        let mut local_state = ModuleState::new(&self.settings, path.std_path(), exec_state.stack().memory.clone());
+        if !preserve_mem {
+            std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        }
 
         let no_prelude = self
             .handle_annotations(program.inner_attrs.iter(), crate::execution::BodyType::Root, exec_state)
             .await?;
 
         if !preserve_mem {
-            exec_state.mut_memory().push_new_root_env(!no_prelude);
+            exec_state.mut_stack().push_new_root_env(!no_prelude);
         }
 
         let result = self
@@ -117,11 +120,13 @@ impl ExecutorContext {
 
         let new_units = exec_state.length_unit();
         let env_ref = if preserve_mem {
-            exec_state.mut_memory().pop_and_preserve_env()
+            exec_state.mut_stack().pop_and_preserve_env()
         } else {
-            exec_state.mut_memory().pop_env()
+            exec_state.mut_stack().pop_env()
         };
-        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        if !preserve_mem {
+            std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        }
 
         // We only need to reset the units if we are not on the Main path.
         // If we reset at the end of the main path, then we just add on an extra
@@ -171,8 +176,9 @@ impl ExecutorContext {
                             for import_item in items {
                                 // Extract the item from the module.
                                 let item = exec_state
-                                    .memory()
-                                    .get_from(&import_item.name.name, env_ref, import_item.into())
+                                    .stack()
+                                    .memory
+                                    .get_from(&import_item.name.name, env_ref, import_item.into(), 0)
                                     .map_err(|_err| {
                                         KclError::UndefinedValue(KclErrorDetails {
                                             message: format!("{} is not defined in module", import_item.name.name),
@@ -192,7 +198,7 @@ impl ExecutorContext {
                                 }
 
                                 // Add the item to the current module.
-                                exec_state.mut_memory().add(
+                                exec_state.mut_stack().add(
                                     import_item.identifier().to_owned(),
                                     item,
                                     SourceRange::from(&import_item.name),
@@ -212,8 +218,9 @@ impl ExecutorContext {
                                 .await?;
                             for name in module_exports.iter() {
                                 let item = exec_state
-                                    .memory()
-                                    .get_from(name, env_ref, source_range)
+                                    .stack()
+                                    .memory
+                                    .get_from(name, env_ref, source_range, 0)
                                     .map_err(|_err| {
                                         KclError::Internal(KclErrorDetails {
                                             message: format!("{} is not defined in module (but was exported?)", name),
@@ -221,7 +228,7 @@ impl ExecutorContext {
                                         })
                                     })?
                                     .clone();
-                                exec_state.mut_memory().add(name.to_owned(), item, source_range)?;
+                                exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
                                     exec_state.mod_local.module_exports.push(name.clone());
@@ -234,7 +241,7 @@ impl ExecutorContext {
                                 value: module_id,
                                 meta: vec![source_range.into()],
                             };
-                            exec_state.mut_memory().add(name, item, source_range)?;
+                            exec_state.mut_stack().add(name, item, source_range)?;
                         }
                     }
                     last_expr = None;
@@ -269,7 +276,7 @@ impl ExecutorContext {
                         )
                         .await?;
                     exec_state
-                        .mut_memory()
+                        .mut_stack()
                         .add(var_name.clone(), memory_item, source_range)?;
 
                     // Track exports.
@@ -298,7 +305,7 @@ impl ExecutorContext {
                         )
                         .await?;
                     exec_state
-                        .mut_memory()
+                        .mut_stack()
                         .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
                         .map_err(|_| {
                             KclError::Semantic(KclErrorDetails {
@@ -488,7 +495,7 @@ impl ExecutorContext {
             Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), &exec_state.mod_local.settings),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
             Expr::Identifier(identifier) => {
-                let value = exec_state.memory().get(&identifier.name, identifier.into())?.clone();
+                let value = exec_state.stack().get(&identifier.name, identifier.into())?.clone();
                 if let KclValue::Module { value: module_id, meta } = value {
                     self.exec_module_for_result(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
                         .await?
@@ -549,7 +556,7 @@ impl ExecutorContext {
                     KclValue::Function {
                         value: FunctionSource::User {
                             ast: function_expression.clone(),
-                            memory: exec_state.mut_memory().snapshot(),
+                            memory: exec_state.mut_stack().snapshot(),
                         },
                         meta: vec![metadata.to_owned()],
                     }
@@ -590,7 +597,7 @@ impl ExecutorContext {
                     .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
                 exec_state
-                    .mut_memory()
+                    .mut_stack()
                     .add(expr.label.name.clone(), result.clone(), init.into())?;
                 // TODO this lets us use the label as a variable name, but not as a tag in most cases
                 result
@@ -687,7 +694,7 @@ impl BinaryPart {
                 &exec_state.mod_local.settings,
             )),
             BinaryPart::Identifier(identifier) => {
-                let value = exec_state.memory().get(&identifier.name, identifier.into())?;
+                let value = exec_state.stack().get(&identifier.name, identifier.into())?;
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
@@ -705,7 +712,7 @@ impl Node<MemberExpression> {
         let array = match &self.object {
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
             MemberObject::Identifier(identifier) => {
-                let value = exec_state.memory().get(&identifier.name, identifier.into())?;
+                let value = exec_state.stack().get(&identifier.name, identifier.into())?;
                 value.clone()
             }
         };
@@ -733,7 +740,7 @@ impl Node<MemberExpression> {
             // TODO: Don't use recursion here, use a loop.
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
             MemberObject::Identifier(identifier) => {
-                let value = exec_state.memory().get(&identifier.name, identifier.into())?;
+                let value = exec_state.stack().get(&identifier.name, identifier.into())?;
                 value.clone()
             }
         };
@@ -1145,7 +1152,7 @@ impl Node<CallExpressionKw> {
                 let source_range = SourceRange::from(self);
                 // Clone the function so that we can use a mutable reference to
                 // exec_state.
-                let func = exec_state.memory().get(fn_name, source_range)?.clone();
+                let func = exec_state.stack().get(fn_name, source_range)?.clone();
 
                 // Track call operation.
                 let op_labeled_args = args
@@ -1256,9 +1263,9 @@ impl Node<CallExpression> {
                 );
                 let mut return_value = {
                     // Don't early-return in this block.
-                    exec_state.mut_memory().push_new_env_for_rust_call();
+                    exec_state.mut_stack().push_new_env_for_rust_call();
                     let result = func.std_lib_fn()(exec_state, args).await;
-                    exec_state.mut_memory().pop_env();
+                    exec_state.mut_stack().pop_env();
 
                     if let Some(mut op) = op {
                         op.set_std_lib_call_is_error(result.is_err());
@@ -1280,7 +1287,7 @@ impl Node<CallExpression> {
                 let source_range = SourceRange::from(self);
                 // Clone the function so that we can use a mutable reference to
                 // exec_state.
-                let func = exec_state.memory().get(fn_name, source_range)?.clone();
+                let func = exec_state.stack().get(fn_name, source_range)?.clone();
 
                 // Track call operation.
                 exec_state.global.operations.push(Operation::UserDefinedFunctionCall {
@@ -1331,7 +1338,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
         KclValue::Sketch { value: ref mut sketch } => {
             for (_, tag) in sketch.tags.iter() {
                 exec_state
-                    .mut_memory()
+                    .mut_stack()
                     .insert_or_update(tag.value.clone(), KclValue::TagIdentifier(Box::new(tag.clone())));
             }
         }
@@ -1371,7 +1378,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     };
 
                     exec_state
-                        .mut_memory()
+                        .mut_stack()
                         .insert_or_update(tag.name.clone(), KclValue::TagIdentifier(Box::new(tag_id.clone())));
 
                     // update the sketch tags.
@@ -1382,7 +1389,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             // Find the stale sketch in memory and update it.
             if !value.sketch.tags.is_empty() {
                 let updates: Vec<_> = exec_state
-                    .memory()
+                    .stack()
                     .find_all_in_current_env(|v| match v {
                         KclValue::Sketch { value: sk } => sk.artifact_id == value.sketch.artifact_id,
                         _ => false,
@@ -1403,7 +1410,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
 
                 updates
                     .into_iter()
-                    .for_each(|(k, v)| exec_state.mut_memory().insert_or_update(k, v))
+                    .for_each(|(k, v)| exec_state.mut_stack().insert_or_update(k, v))
             }
         }
         _ => {}
@@ -1422,7 +1429,7 @@ impl Node<TagDeclarator> {
         }));
 
         exec_state
-            .mut_memory()
+            .mut_stack()
             .add(self.name.clone(), memory_item.clone(), self.into())?;
 
         Ok(self.into())
@@ -1628,7 +1635,7 @@ impl Property {
                     Ok(Property::String(name.to_string()))
                 } else {
                     // Actually evaluate memory to compute the property.
-                    let prop = exec_state.memory().get(name, property_src)?;
+                    let prop = exec_state.stack().get(name, property_src)?;
                     jvalue_to_prop(prop, property_sr, name)
                 }
             }
@@ -1725,7 +1732,7 @@ fn assign_args_to_params(
         return Err(err_wrong_number_args);
     }
 
-    let mem = &mut exec_state.global.memory;
+    let mem = &mut exec_state.mod_local.stack;
     let settings = &exec_state.mod_local.settings;
 
     // Add the arguments to the memory.  A new call frame should have already
@@ -1766,7 +1773,7 @@ fn assign_args_to_params_kw(
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
     let source_ranges = vec![function_expression.into()];
-    let mem = &mut exec_state.global.memory;
+    let mem = &mut exec_state.mod_local.stack;
     let settings = &exec_state.mod_local.settings;
 
     for param in function_expression.params.iter() {
@@ -1824,9 +1831,9 @@ pub(crate) async fn call_user_defined_function(
     // Create a new environment to execute the function body in so that local
     // variables shadow variables in the parent scope.  The new environment's
     // parent should be the environment of the closure.
-    exec_state.mut_memory().push_new_env_for_call(memory);
+    exec_state.mut_stack().push_new_env_for_call(memory);
     if let Err(e) = assign_args_to_params(function_expression, args, exec_state) {
-        exec_state.mut_memory().pop_env();
+        exec_state.mut_stack().pop_env();
         return Err(e);
     }
 
@@ -1836,13 +1843,13 @@ pub(crate) async fn call_user_defined_function(
         .await;
     let result = result.map(|_| {
         exec_state
-            .memory()
+            .stack()
             .get(memory::RETURN_NAME, function_expression.as_source_range())
             .ok()
             .cloned()
     });
     // Restore the previous memory.
-    exec_state.mut_memory().pop_env();
+    exec_state.mut_stack().pop_env();
 
     result
 }
@@ -1857,9 +1864,9 @@ pub(crate) async fn call_user_defined_function_kw(
     // Create a new environment to execute the function body in so that local
     // variables shadow variables in the parent scope.  The new environment's
     // parent should be the environment of the closure.
-    exec_state.mut_memory().push_new_env_for_call(memory);
+    exec_state.mut_stack().push_new_env_for_call(memory);
     if let Err(e) = assign_args_to_params_kw(function_expression, args, exec_state) {
-        exec_state.mut_memory().pop_env();
+        exec_state.mut_stack().pop_env();
         return Err(e);
     }
 
@@ -1869,13 +1876,13 @@ pub(crate) async fn call_user_defined_function_kw(
         .await;
     let result = result.map(|_| {
         exec_state
-            .memory()
+            .stack()
             .get(memory::RETURN_NAME, function_expression.as_source_range())
             .ok()
             .cloned()
     });
     // Restore the previous memory.
-    exec_state.mut_memory().pop_env();
+    exec_state.mut_stack().pop_env();
 
     result
 }
@@ -1920,7 +1927,7 @@ impl FunctionSource {
 mod test {
     use super::*;
     use crate::{
-        execution::{memory::ProgramMemory, parse_execute},
+        execution::{memory::Stack, parse_execute},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
 
@@ -1958,9 +1965,8 @@ mod test {
                 digest: None,
             }
         }
-        fn additional_program_memory(items: &[(String, KclValue)]) -> ProgramMemory {
-            let mut program_memory = ProgramMemory::new();
-            program_memory.init_for_tests();
+        fn additional_program_memory(items: &[(String, KclValue)]) -> Stack {
+            let mut program_memory = Stack::new_for_tests();
             for (name, item) in items {
                 program_memory
                     .add(name.clone(), item.clone(), SourceRange::default())
@@ -2038,8 +2044,8 @@ mod test {
             });
             let args = args.into_iter().map(Arg::synthetic).collect();
             let mut exec_state = ExecState::new(&Default::default());
-            exec_state.mut_memory().init_for_tests();
-            let actual = assign_args_to_params(func_expr, args, &mut exec_state).map(|_| exec_state.global.memory);
+            exec_state.mod_local.stack = Stack::new_for_tests();
+            let actual = assign_args_to_params(func_expr, args, &mut exec_state).map(|_| exec_state.mod_local.stack);
             assert_eq!(
                 actual, expected,
                 "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"
@@ -2061,9 +2067,9 @@ p = {
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        let mem = result.3.memory();
+        let mem = result.3.stack();
         assert!(matches!(
-            mem.get_from("p", result.1, SourceRange::default()).unwrap(),
+            mem.memory.get_from("p", result.1, SourceRange::default(), 0).unwrap(),
             KclValue::Plane { .. }
         ));
 
@@ -2099,8 +2105,8 @@ p2 = -p
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        let mem = result.3.memory();
-        match mem.get_from("p2", result.1, SourceRange::default()).unwrap() {
+        let mem = result.3.stack();
+        match mem.memory.get_from("p2", result.1, SourceRange::default(), 0).unwrap() {
             KclValue::Plane { value } => assert_eq!(value.z_axis.z, -1.0),
             _ => unreachable!(),
         }

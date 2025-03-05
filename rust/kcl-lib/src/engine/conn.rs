@@ -205,8 +205,8 @@ impl EngineConnection {
     pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
         let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig {
             // 4294967296 bytes, which is around 4.2 GB.
-            max_message_size: Some(0x100000000),
-            max_frame_size: Some(0x100000000),
+            max_message_size: Some(usize::MAX),
+            max_frame_size: Some(usize::MAX),
             ..Default::default()
         };
 

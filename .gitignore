@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
 
@@ -9,7 +9,7 @@
 /coverage
 
 # production
-/build
+build
 
 # misc
 .DS_Store
@@ -35,6 +35,10 @@ rust/lcov.info
 rust/kcl-wasm-lib/pkg
 *.snap.new
 rust/kcl-lib/fuzz/Cargo.lock
+rust/kcl-language-server-release/Cargo.lock
+
+# kcl language server package
+rust/kcl-language-server/dist/
 
 e2e/playwright/playwright-secrets.env
 e2e/playwright/temp1.png
@@ -71,5 +75,7 @@ out/
 # python
 __pycache__/
 uv.lock
-rust/kcl-python-bindings/dist
+dist
 venv
+
+.vscode-test

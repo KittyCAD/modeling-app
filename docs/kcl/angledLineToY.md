@@ -1,19 +1,19 @@
 ---
 title: "angledLineToY"
-excerpt: "Create a line segment from the current 2-dimensional sketch origin"
+excerpt: "Create a line segment from the current 2-dimensional sketch origin along some angle (in degrees) for some length, ending at the provided value in the 'y' dimension."
 layout: manual
 ---
 
-Create a line segment from the current 2-dimensional sketch origin
+Create a line segment from the current 2-dimensional sketch origin along some angle (in degrees) for some length, ending at the provided value in the 'y' dimension.
 
-along some angle (in degrees) for some length, ending at the provided value in the 'y' dimension.
+
 
 ```js
 angledLineToY(
   data: AngledLineToData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 

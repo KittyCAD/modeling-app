@@ -12,7 +12,7 @@ Compute the number to a power.
 pow(
   num: number,
   pow: number,
-) -> number
+): number
 ```
 
 ### Tags

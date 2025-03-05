@@ -15,7 +15,7 @@ For example, if the current project uses inches, this function will return `12`.
 We merely provide these functions for convenience and readability, as `10 * ft()` is more readable that your intent is "I want 10 feet" than `10 * 304.8`, if the project settings are in millimeters.
 
 ```js
-ft() -> number
+ft(): number
 ```
 
 ### Tags

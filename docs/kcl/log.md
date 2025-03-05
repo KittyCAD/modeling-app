@@ -12,7 +12,7 @@ The result might not be correctly rounded owing to implementation details; `log2
 log(
   num: number,
   base: number,
-) -> number
+): number
 ```
 
 ### Tags

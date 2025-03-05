@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::websocket::WebSocketResponse;
@@ -5,12 +7,11 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::EnvironmentRef;
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
-        annotations, kcl_value, memory::ProgramMemory, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId,
-        ExecOutcome, ExecutorSettings, KclValue, Operation, UnitAngle, UnitLen,
+        annotations, kcl_value, memory::ProgramMemory, memory::Stack, Artifact, ArtifactCommand, ArtifactGraph,
+        ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, Operation, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::Annotation,
@@ -27,8 +28,6 @@ pub struct ExecState {
 
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
-    /// Program variable bindings.
-    pub memory: ProgramMemory,
     /// The stable artifact ID generator.
     pub id_generator: IdGenerator,
     /// Map from source file absolute path to module ID.
@@ -61,6 +60,7 @@ pub(super) struct GlobalState {
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
+    pub stack: Stack,
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
@@ -74,7 +74,7 @@ impl ExecState {
     pub fn new(exec_settings: &ExecutorSettings) -> Self {
         ExecState {
             global: GlobalState::new(exec_settings),
-            mod_local: ModuleState::new(exec_settings, None),
+            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new()),
         }
     }
 
@@ -89,7 +89,7 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(exec_settings, None),
+            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new()),
         };
     }
 
@@ -116,7 +116,7 @@ impl ExecState {
         // state when we add more to ExecState.
         ExecOutcome {
             variables: self
-                .memory()
+                .stack()
                 .find_all_in_env(main_ref, |_| true)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
@@ -139,7 +139,7 @@ impl ExecState {
         // state when we add more to ExecState.
         ExecOutcome {
             variables: self
-                .memory()
+                .stack()
                 .find_all_in_env(main_ref, |_| true)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
@@ -152,12 +152,12 @@ impl ExecState {
         }
     }
 
-    pub(crate) fn memory(&self) -> &ProgramMemory {
-        &self.global.memory
+    pub(crate) fn stack(&self) -> &Stack {
+        &self.mod_local.stack
     }
 
-    pub(crate) fn mut_memory(&mut self) -> &mut ProgramMemory {
-        &mut self.global.memory
+    pub(crate) fn mut_stack(&mut self) -> &mut Stack {
+        &mut self.mod_local.stack
     }
 
     pub(crate) fn next_uuid(&mut self) -> Uuid {
@@ -241,7 +241,6 @@ impl ExecState {
 impl GlobalState {
     fn new(settings: &ExecutorSettings) -> Self {
         let mut global = GlobalState {
-            memory: ProgramMemory::new(),
             id_generator: Default::default(),
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
@@ -275,8 +274,9 @@ impl GlobalState {
 }
 
 impl ModuleState {
-    pub(super) fn new(exec_settings: &ExecutorSettings, std_path: Option<String>) -> Self {
+    pub(super) fn new(exec_settings: &ExecutorSettings, std_path: Option<String>, memory: Arc<ProgramMemory>) -> Self {
         ModuleState {
+            stack: memory.new_stack(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
             settings: MetaSettings {
