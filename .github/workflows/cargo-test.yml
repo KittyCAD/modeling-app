@@ -106,6 +106,7 @@ jobs:
           git push origin ${{ github.head_ref }}
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
+          NEXTEST_PROFILE: ci
           RUST_BACKTRACE: full
           RUST_MIN_STACK: 10485760000
       - name: cargo test
