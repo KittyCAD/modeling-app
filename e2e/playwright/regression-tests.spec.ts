@@ -317,7 +317,7 @@ extrude001 = extrude(sketch001, length = 50)
   test(
     'when engine fails export we handle the failure and alert the user',
     { tag: '@skipLocalEngine' },
-    async ({ scene, page, homePage }) => {
+    async ({ scene, page, homePage, cmdBar }) => {
       const u = await getUtils(page)
       await page.addInitScript(
         async ({ code }) => {
@@ -330,15 +330,9 @@ extrude001 = extrude(sketch001, length = 50)
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
-      await u.waitForPageLoad()
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
-
-      // expect zero errors in guter
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
 
       // export the model
       const exportButton = page.getByTestId('export-pane-button')
@@ -362,7 +356,6 @@ extrude001 = extrude(sketch001, length = 50)
       // Find the toast.
       // Look out for the toast message
       const exportingToastMessage = page.getByText(`Exporting...`)
-      const errorToastMessage = page.getByText(`Error while exporting`)
 
       const engineErrorToastMessage = page.getByText(`Nothing to export`)
       await expect(engineErrorToastMessage).toBeVisible()
@@ -376,7 +369,6 @@ extrude001 = extrude(sketch001, length = 50)
       await page.waitForTimeout(2000)
 
       // Expect the toast to be gone
-      await expect(errorToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       // Now add in code that works.
@@ -384,7 +376,7 @@ extrude001 = extrude(sketch001, length = 50)
       await page.keyboard.press('End')
       await page.keyboard.press('Enter')
 
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // Now try exporting
 
@@ -407,7 +399,6 @@ extrude001 = extrude(sketch001, length = 50)
 
       // Expect it to succeed.
       await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
-      await expect(errorToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)

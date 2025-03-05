@@ -134,7 +134,7 @@ jobs:
       # TODO: break this in its own job, for now it's not slowing down the overall execution as ubuntu is the quickest,
       # but we could do better. This forces a large 1/1 shard of all 20 snapshot tests that runs in about 3 minutes.
       run: |
-        PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot --trace=on --shard=1/1
+        yarn test:snapshots
       env:
         CI: true
         NODE_ENV: development
