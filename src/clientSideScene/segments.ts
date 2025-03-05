@@ -1482,16 +1482,42 @@ class ThreePointArcSegment implements SegmentUtils {
       p3Handle.visible = true
     }
 
-    return () =>
-      sceneInfra.updateOverlayDetails({
-        handle: p3Handle,
-        group,
-        isHandlesVisible: true,
-        from: p1,
-        to: p3,
-        angle: endAngle + Math.PI / 2,
-        hasThreeDotMenu: true,
+    return () => {
+      const overlays: SegmentOverlays = {}
+      const overlayDetails = [p2Handle, p3Handle].map((handle, index) =>
+        sceneInfra.updateOverlayDetails({
+          handle: handle,
+          group,
+          isHandlesVisible: true,
+          from: p1,
+          to: p3,
+          angle: endAngle + Math.PI / 2,
+          hasThreeDotMenu: true,
+        })
+      )
+      const segmentOverlays: SegmentOverlay[] = []
+
+      overlayDetails.forEach((payload, index) => {
+        if (payload?.type === 'set-one') {
+          overlays[payload.pathToNodeString] = payload.seg
+          // Add filterValue: 'interior' for p2 and 'end' for p3
+          segmentOverlays.push({
+            ...payload.seg[0],
+            filterValue: index === 0 ? 'interior' : 'end',
+          })
+        }
       })
+
+      const segmentOverlayPayload: SegmentOverlayPayload = {
+        type: 'set-one',
+        pathToNodeString:
+          overlayDetails[0]?.type === 'set-one'
+            ? overlayDetails[0].pathToNodeString
+            : '',
+        seg: segmentOverlays,
+      }
+      return segmentOverlayPayload
+    }
   }
 }
 

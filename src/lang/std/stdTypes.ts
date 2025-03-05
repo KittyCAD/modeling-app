@@ -109,6 +109,8 @@ export type InputArgKeys =
   | 'p1'
   | 'p2'
   | 'p3'
+  | 'end'
+  | 'interior'
 export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType

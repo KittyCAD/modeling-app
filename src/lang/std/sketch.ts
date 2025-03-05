@@ -1583,7 +1583,7 @@ export const arcTo: SketchLineHelper = {
   },
   getTag: getTag(),
   addTag: addTag(),
-  getConstraintInfo: (callExp, code, pathToNode) => {
+  getConstraintInfo: (callExp, code, pathToNode, filterValue) => {
     if (callExp.type !== 'CallExpression') return []
     const args = callExp.arguments
     if (args.length < 1) return []
@@ -1670,50 +1670,89 @@ export const arcTo: SketchLineHelper = {
       [1, 'index'],
     ]
 
-    return [
-      constrainInfo(
-        'xAbsolute',
-        isNotLiteralArrayOrStatic(interiorArr.elements[0]),
-        code.slice(interiorArr.elements[0].start, interiorArr.elements[0].end),
-        'arcTo' as ToolTip,
-        0 as AbbreviatedInput,
-        topLevelRange(
+    const constraints: (ConstrainInfo & { filterValue: string })[] = [
+      {
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(interiorArr.elements[0]),
+        value: code.slice(
           interiorArr.elements[0].start,
           interiorArr.elements[0].end
         ),
-        pathToInteriorX
-      ),
-      constrainInfo(
-        'yAbsolute',
-        isNotLiteralArrayOrStatic(interiorArr.elements[1]),
-        code.slice(interiorArr.elements[1].start, interiorArr.elements[1].end),
-        'arcTo' as ToolTip,
-        1 as AbbreviatedInput,
-        topLevelRange(
+        stdLibFnName: 'arcTo',
+        argPosition: {
+          type: 'objectProperty',
+          key: 'interior',
+        },
+        sourceRange: topLevelRange(
+          interiorArr.elements[0].start,
+          interiorArr.elements[0].end
+        ),
+        pathToNode: pathToInteriorX,
+        filterValue: 'interior',
+      },
+      {
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(interiorArr.elements[1]),
+        value: code.slice(
           interiorArr.elements[1].start,
           interiorArr.elements[1].end
         ),
-        pathToInteriorY
-      ),
-      constrainInfo(
-        'xAbsolute',
-        isNotLiteralArrayOrStatic(endArr.elements[0]),
-        code.slice(endArr.elements[0].start, endArr.elements[0].end),
-        'arcTo' as ToolTip,
-        2 as AbbreviatedInput,
-        topLevelRange(endArr.elements[0].start, endArr.elements[0].end),
-        pathToEndX
-      ),
-      constrainInfo(
-        'yAbsolute',
-        isNotLiteralArrayOrStatic(endArr.elements[1]),
-        code.slice(endArr.elements[1].start, endArr.elements[1].end),
-        'arcTo' as ToolTip,
-        3 as AbbreviatedInput,
-        topLevelRange(endArr.elements[1].start, endArr.elements[1].end),
-        pathToEndY
-      ),
+        stdLibFnName: 'arcTo',
+        argPosition: {
+          type: 'objectProperty',
+          key: 'interior',
+        },
+        sourceRange: topLevelRange(
+          interiorArr.elements[1].start,
+          interiorArr.elements[1].end
+        ),
+        pathToNode: pathToInteriorY,
+        filterValue: 'interior',
+      },
+      {
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(endArr.elements[0]),
+        value: code.slice(endArr.elements[0].start, endArr.elements[0].end),
+        stdLibFnName: 'arcTo',
+        argPosition: {
+          type: 'objectProperty',
+          key: 'end',
+        },
+        sourceRange: topLevelRange(
+          endArr.elements[0].start,
+          endArr.elements[0].end
+        ),
+        pathToNode: pathToEndX,
+        filterValue: 'end',
+      },
+      {
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(endArr.elements[1]),
+        value: code.slice(endArr.elements[1].start, endArr.elements[1].end),
+        stdLibFnName: 'arcTo',
+        argPosition: {
+          type: 'objectProperty',
+          key: 'end',
+        },
+        sourceRange: topLevelRange(
+          endArr.elements[1].start,
+          endArr.elements[1].end
+        ),
+        pathToNode: pathToEndY,
+        filterValue: 'end',
+      },
     ]
+
+    const finalConstraints: ConstrainInfo[] = []
+    constraints.forEach((constraint) => {
+      if (!filterValue) {
+        finalConstraints.push(constraint)
+      }
+      if (filterValue && constraint.filterValue === filterValue) {
+        finalConstraints.push(constraint)
+      }
+    })
+    return finalConstraints
   },
 }
 
