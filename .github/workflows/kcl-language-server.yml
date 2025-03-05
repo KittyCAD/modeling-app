@@ -127,12 +127,8 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: rust
-
-      - name: Install Rust toolchain
-        run: |
-          rustup target add ${{ matrix.target }}
-          rustup default ${{ matrix.target }}
-          rustup component add rust-src
+          components: rust-src
+          target: ${{ matrix.target }}
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -257,11 +253,8 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: rust
-
-      - name: Install Rust toolchain
-        run: |
-          rustup target add ${{ matrix.target }}
-          rustup component add rust-src
+          components: rust-src
+          target: ${{ matrix.target }}
 
       - name: Checkout repository
         uses: actions/checkout@v4
