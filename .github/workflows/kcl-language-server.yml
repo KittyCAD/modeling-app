@@ -131,6 +131,7 @@ jobs:
       - name: Install Rust toolchain
         run: |
           rustup target add ${{ matrix.target }}
+          rustup default ${{ matrix.target }}
           rustup component add rust-src
 
       - name: Install Node.js
