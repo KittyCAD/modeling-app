@@ -32,16 +32,17 @@ export class CmdBarFixture {
 
   constructor(page: Page) {
     this.page = page
-    this.cmdBarOpenBtn = page.getByTestId('command-bar-open-button')
-    this.cmdBarElement = page.getByTestId('command-bar')
   }
 
   get currentArgumentInput() {
     return this.page.getByTestId('cmd-bar-arg-value')
   }
 
+  // Put all selectors here because this method is re-run on fixture creation.
   reConstruct = (page: Page) => {
     this.page = page
+    this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
+    this.cmdBarElement = this.page.getByTestId('command-bar')
   }
 
   private _serialiseCmdBar = async (): Promise<CmdBarSerialised> => {
@@ -153,11 +154,7 @@ export class CmdBarFixture {
   }
 
   openCmdBar = async (selectCmd?: 'promptToEdit') => {
-    // TODO why does this button not work in electron tests?
-    // await this.cmdBarOpenBtn.click()
-    await this.page.keyboard.down('ControlOrMeta')
-    await this.page.keyboard.press('KeyK')
-    await this.page.keyboard.up('ControlOrMeta')
+    await this.cmdBarOpenBtn.click()
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
     if (selectCmd === 'promptToEdit') {
       const promptEditCommand = this.page.getByText(
