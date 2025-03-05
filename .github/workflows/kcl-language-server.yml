@@ -234,9 +234,10 @@ jobs:
 
     steps:
       - name: Install dependencies
-        run: apk add --no-cache git clang lld musl-dev nodejs yarn npm
+        run: apk add --no-cache bash git clang lld musl-dev nodejs yarn npm
 
       - name: Use correct Rust toolchain
+        shell: bash
         run: |
           cp --update=none rust/rust-toolchain.toml ./ || true
 
