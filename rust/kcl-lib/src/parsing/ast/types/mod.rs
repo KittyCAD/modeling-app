@@ -55,18 +55,6 @@ pub struct Node<T> {
     pub outer_attrs: NodeList<Annotation>,
 }
 
-impl<T> Node<T> {
-    pub fn metadata(&self) -> Metadata {
-        Metadata {
-            source_range: SourceRange::new(self.start, self.end, self.module_id),
-        }
-    }
-
-    pub fn contains(&self, pos: usize) -> bool {
-        self.start <= pos && pos <= self.end
-    }
-}
-
 impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
     fn schema_name() -> String {
         T::schema_name()
@@ -126,6 +114,26 @@ impl<T> Node<T> {
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
         vec![self.as_source_range()]
+    }
+
+    pub fn metadata(&self) -> Metadata {
+        Metadata {
+            source_range: SourceRange::new(self.start, self.end, self.module_id),
+        }
+    }
+
+    pub fn contains(&self, pos: usize) -> bool {
+        self.start <= pos && pos <= self.end
+    }
+
+    pub fn map<U>(self, f: fn(T) -> U) -> Node<U> {
+        Node {
+            inner: f(self.inner),
+            start: self.start,
+            end: self.end,
+            module_id: self.module_id,
+            outer_attrs: self.outer_attrs,
+        }
     }
 }
 
@@ -2862,7 +2870,8 @@ impl PipeExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum PrimitiveType {
@@ -2875,39 +2884,16 @@ pub enum PrimitiveType {
     Boolean,
     /// A tag.
     Tag,
-    /// A sketch type.
-    Sketch,
-    /// A sketch surface type.
-    SketchSurface,
-    /// An solid type.
-    Solid,
-    /// A plane.
-    Plane,
+    /// An identifier used as a type (not really a primitive type, but whatever).
+    Named(Node<Identifier>),
 }
 
 impl PrimitiveType {
-    pub fn digestable_id(&self) -> &[u8] {
-        match self {
-            PrimitiveType::String => b"string",
-            PrimitiveType::Number(suffix) => suffix.digestable_id(),
-            PrimitiveType::Boolean => b"bool",
-            PrimitiveType::Tag => b"tag",
-            PrimitiveType::Sketch => b"Sketch",
-            PrimitiveType::SketchSurface => b"SketchSurface",
-            PrimitiveType::Solid => b"Solid",
-            PrimitiveType::Plane => b"Plane",
-        }
-    }
-
-    pub fn from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
+    pub fn primitive_from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
             ("tag", None) => Some(PrimitiveType::Tag),
-            ("Sketch", None) => Some(PrimitiveType::Sketch),
-            ("SketchSurface", None) => Some(PrimitiveType::SketchSurface),
-            ("Solid", None) => Some(PrimitiveType::Solid),
-            ("Plane", None) => Some(PrimitiveType::Plane),
             ("number", None) => Some(PrimitiveType::Number(NumericSuffix::None)),
             ("number", Some(s)) => Some(PrimitiveType::Number(s)),
             _ => None,
@@ -2928,10 +2914,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
             PrimitiveType::Tag => write!(f, "tag"),
-            PrimitiveType::Sketch => write!(f, "Sketch"),
-            PrimitiveType::SketchSurface => write!(f, "SketchSurface"),
-            PrimitiveType::Solid => write!(f, "Solid"),
-            PrimitiveType::Plane => write!(f, "Plane"),
+            PrimitiveType::Named(n) => write!(f, "{}", n.name),
         }
     }
 }

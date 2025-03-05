@@ -327,6 +327,22 @@ Data for an imported geometry.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
+| `type` |enum: `Type`|  | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
 | `type` |enum: [`KclNone`](/docs/kcl/types/KclNone)|  | No |
 | `value` |[`KclNone`](/docs/kcl/types/KclNone)| KCL value for an optional parameter which was not given an argument. (remember, parameters are in the function declaration, arguments are in the function call/application). | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |

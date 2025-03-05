@@ -1176,11 +1176,10 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
 /// E.g. `person.name`
 fn member_expression_dot(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     period.parse_next(i)?;
-    let property = alt((
-        sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
-        nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
-    ))
-    .parse_next(i)?;
+    let property = nameable_identifier
+        .map(Box::new)
+        .map(LiteralIdentifier::Identifier)
+        .parse_next(i)?;
     let end = property.end();
     Ok((property, end, false))
 }
@@ -1189,7 +1188,6 @@ fn member_expression_dot(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usiz
 fn member_expression_subscript(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
     let property = alt((
-        sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
         literal.map(LiteralIdentifier::Literal),
         nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
     ))
@@ -2125,7 +2123,7 @@ impl TryFrom<Token> for Node<Identifier> {
             Err(CompilationError::fatal(
                 token.as_source_range(),
                 format!(
-                    "Cannot assign a variable to a reserved keyword: `{}`",
+                    "Cannot assign a variable to a reserved keyword: {}",
                     token.value.as_str()
                 ),
             ))
@@ -2156,29 +2154,6 @@ fn nameable_identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
     }
 
     Ok(result)
-}
-
-fn sketch_keyword(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
-    any.try_map(|token: Token| {
-        if token.token_type == TokenType::Type && token.value == "sketch" {
-            Ok(Node::new(
-                Identifier {
-                    name: token.value,
-                    digest: None,
-                },
-                token.start,
-                token.end,
-                token.module_id,
-            ))
-        } else {
-            Err(CompilationError::fatal(
-                token.as_source_range(),
-                format!("Expected 'sketch' keyword, but found {}", token.value.as_str()),
-            ))
-        }
-    })
-    .context(expected("the 'sketch' keyword"))
-    .parse_next(i)
 }
 
 impl TryFrom<Token> for Node<TagDeclarator> {
@@ -2577,41 +2552,31 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
             ))
         }),
         // Array types
-        (
-            one_of(TokenType::Type),
-            opt(delimited(open_paren, uom_for_type, close_paren)),
-            open_bracket,
-            close_bracket,
-        )
-            .map(|(token, uom, _, _)| {
-                PrimitiveType::from_str(&token.value, uom)
-                    .map(|t| Node::new(Type::Array(t), token.start, token.end, token.module_id))
-                    .ok_or_else(|| {
-                        CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", token.value))
-                    })
-            }),
+        (primitive_type, open_bracket, close_bracket).map(|(t, _, _)| Ok(t.map(Type::Array))),
         // Primitive types
-        (
-            one_of(TokenType::Type),
-            opt(delimited(open_paren, uom_for_type, close_paren)),
-        )
-            .map(|(token, suffix)| {
-                if suffix.is_some() {
-                    ParseContext::warn(CompilationError::err(
-                        (&token).into(),
-                        "Unit of Measure types are experimental and currently do nothing.",
-                    ));
-                }
-                PrimitiveType::from_str(&token.value, suffix)
-                    .map(|t| Node::new(Type::Primitive(t), token.start, token.end, token.module_id))
-                    .ok_or_else(|| {
-                        CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", token.value))
-                    })
-            }),
+        primitive_type.map(|t| Ok(t.map(Type::Primitive))),
     ))
     .parse_next(i)?
     .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
     Ok(type_)
+}
+
+fn primitive_type(i: &mut TokenSlice) -> PResult<Node<PrimitiveType>> {
+    let ident = identifier(i)?;
+
+    let suffix = opt(delimited(open_paren, uom_for_type, close_paren)).parse_next(i)?;
+
+    let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
+    result.inner = PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
+
+    if suffix.is_some() {
+        ParseContext::warn(CompilationError::err(
+            result.as_source_range(),
+            "Unit of Measure types are experimental and currently do nothing.",
+        ));
+    }
+
+    Ok(result)
 }
 
 fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
@@ -4585,18 +4550,6 @@ let myBox = box([0,0], -3, -16, -10)
         );
     }
 
-    #[test]
-    fn test_parse_tag_starting_with_reserved_type() {
-        let some_program_string = r#"
-    startSketchOn('XY')
-    |> line(%, $Sketch)
-    "#;
-        assert_err(
-            some_program_string,
-            "Cannot assign a tag to a reserved keyword: Sketch",
-            [41, 47],
-        );
-    }
     #[test]
     fn test_parse_tag_with_reserved_in_middle_works() {
         let some_program_string = r#"

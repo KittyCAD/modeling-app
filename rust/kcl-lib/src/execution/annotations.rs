@@ -64,6 +64,34 @@ pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
     }
 }
 
+pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRange) -> Result<Option<&str>, KclError> {
+    for attr in annotations {
+        if attr.name.is_some() || attr.properties.is_none() {
+            continue;
+        }
+        for p in attr.properties.as_ref().unwrap() {
+            if &*p.key.name == IMPL {
+                if let Some(s) = p.value.ident_name() {
+                    if IMPL_VALUES.contains(&s) {
+                        return Ok(Some(s));
+                    } else {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: format!(
+                                "Invalid value for {} attribute, expected one of: {}",
+                                IMPL,
+                                IMPL_VALUES.join(", ")
+                            ),
+                            source_ranges: vec![source_range],
+                        }));
+                    }
+                }
+            }
+        }
+    }
+
+    Ok(None)
+}
+
 impl UnitLen {
     pub(super) fn from_str(s: &str, source_range: SourceRange) -> Result<Self, KclError> {
         match s {

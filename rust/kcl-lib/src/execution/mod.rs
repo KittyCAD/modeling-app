@@ -14,7 +14,7 @@ pub(crate) use import::{
     import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
 };
 use indexmap::IndexMap;
-pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
+pub use kcl_value::{KclObjectFields, KclValue, PrimitiveType, UnitAngle, UnitLen};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},

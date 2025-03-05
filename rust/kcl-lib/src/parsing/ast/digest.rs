@@ -5,8 +5,8 @@ use crate::parsing::ast::types::{
     CallExpression, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression,
     Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
     Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, ObjectExpression, ObjectProperty,
-    Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration,
-    UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
+    Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type,
+    TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -192,11 +192,11 @@ impl Type {
         match self {
             Type::Primitive(prim) => {
                 hasher.update(b"FnArgType::Primitive");
-                hasher.update(prim.digestable_id())
+                hasher.update(prim.compute_digest())
             }
             Type::Array(prim) => {
                 hasher.update(b"FnArgType::Array");
-                hasher.update(prim.digestable_id())
+                hasher.update(prim.compute_digest())
             }
             Type::Object { properties } => {
                 hasher.update(b"FnArgType::Object");
@@ -205,6 +205,21 @@ impl Type {
                     hasher.update(prop.compute_digest());
                 }
             }
+        }
+
+        hasher.finalize().into()
+    }
+}
+
+impl PrimitiveType {
+    pub fn compute_digest(&mut self) -> Digest {
+        let mut hasher = Sha256::new();
+        match self {
+            PrimitiveType::Named(id) => hasher.update(id.compute_digest()),
+            PrimitiveType::String => hasher.update(b"string"),
+            PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),
+            PrimitiveType::Boolean => hasher.update(b"bool"),
+            PrimitiveType::Tag => hasher.update(b"tag"),
         }
 
         hasher.finalize().into()
