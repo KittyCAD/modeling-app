@@ -126,7 +126,7 @@
     "build": "yarn run build-base -- --sourcemap",
     "watch": "yarn run build-base -- --sourcemap --watch",
     "pretest": "yarn run build",
-    "test": "node ./dist/client/src/test/runTest.js",
+    "test": "node ./client/src/test/runTest.js",
     "package": "vsce package -o kcl-language-server.vsix"
   },
   "devDependencies": {
