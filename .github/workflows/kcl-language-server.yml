@@ -102,6 +102,7 @@ jobs:
           # this sucks but maybe we can find a better solution for getting the
           # right fucking toolchain
           rm rust/rust-toolchain.toml
+          cd rust
           rustup update --no-self-update stable
 
       - name: Install Node.js
