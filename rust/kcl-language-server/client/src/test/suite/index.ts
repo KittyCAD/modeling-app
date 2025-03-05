@@ -1,5 +1,5 @@
 import * as path from 'path'
-import Mocha from 'mocha'
+const Mocha = require('mocha')
 const { glob } = require('glob')
 
 export function run(): Promise<void> {
