@@ -5,8 +5,13 @@ use std::collections::HashMap;
 use anyhow::Result;
 use kcl_derive_docs::stdlib;
 use kcmc::{
-    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, output::ExtrusionFaceInfo,
-    shared::ExtrusionFaceCapType, websocket::OkWebSocketResponseData, ModelingCmd,
+    each_cmd as mcmd,
+    length_unit::LengthUnit,
+    ok_response::OkModelingCmdResponse,
+    output::ExtrusionFaceInfo,
+    shared::ExtrusionFaceCapType,
+    websocket::{ModelingCmdReq, OkWebSocketResponseData},
+    ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 use uuid::Uuid;
@@ -98,44 +103,43 @@ async fn inner_extrude(
     let sketches: Vec<Sketch> = sketch_set.into();
     let mut solids = Vec::new();
     for sketch in &sketches {
-        // Before we extrude, we need to enable the sketch mode.
-        // We do this here in case extrude is called out of order.
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::from(mcmd::EnableSketchMode {
-                animated: false,
-                ortho: false,
-                entity_id: sketch.on.id(),
-                adjust_camera: false,
-                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
-                    // We pass in the normal for the plane here.
-                    Some(plane.z_axis.into())
-                } else {
-                    None
-                },
-            }),
-        )
+        args.batch_modeling_cmds(&[
+            // Before we extrude, we need to enable the sketch mode.
+            // We do this here in case extrude is called out of order.
+            ModelingCmdReq {
+                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                    animated: false,
+                    ortho: false,
+                    entity_id: sketch.on.id(),
+                    adjust_camera: false,
+                    planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                        // We pass in the normal for the plane here.
+                        Some(plane.z_axis.into())
+                    } else {
+                        None
+                    },
+                }),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+            // TODO: We're reusing the same UUID for multiple commands.  This seems
+            // like the artifact graph would never be able to find all the
+            // responses.
+            ModelingCmdReq {
+                cmd_id: id.into(),
+                cmd: ModelingCmd::from(mcmd::Extrude {
+                    target: sketch.id.into(),
+                    distance: LengthUnit(length),
+                    faces: Default::default(),
+                }),
+            },
+            // Disable the sketch mode.
+            ModelingCmdReq {
+                cmd_id: exec_state.next_uuid().into(),
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            },
+        ])
         .await?;
 
-        // TODO: We're reusing the same UUID for multiple commands.  This seems
-        // like the artifact graph would never be able to find all the
-        // responses.
-        args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::Extrude {
-                target: sketch.id.into(),
-                distance: LengthUnit(length),
-                faces: Default::default(),
-            }),
-        )
-        .await?;
-
-        // Disable the sketch mode.
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-        )
-        .await?;
         solids.push(do_post_extrude(sketch.clone(), id.into(), length, exec_state, args.clone()).await?);
     }
 
