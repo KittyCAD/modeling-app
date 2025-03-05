@@ -16,7 +16,7 @@ import {
 } from '../wasm'
 import { err } from 'lib/trap'
 import { findKwArgAny } from 'lang/util'
-import { ARG_END, ARG_END_ABSOLUTE } from './sketch'
+import { ARG_END, ARG_END_ABSOLUTE, DETERMINING_ARGS } from './sketch'
 
 export function getSketchSegmentFromPathToNode(
   sketch: Sketch,
@@ -135,7 +135,7 @@ export function isSketchVariablesLinked(
       case 'CallExpression':
         return firstCallExp?.arguments[1]
       case 'CallExpressionKw':
-        return findKwArgAny([ARG_END, ARG_END_ABSOLUTE], firstCallExp)
+        return findKwArgAny(DETERMINING_ARGS, firstCallExp)
     }
   })()
   if (!secondArg || secondArg?.type !== 'Identifier') return false

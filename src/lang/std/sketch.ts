@@ -82,6 +82,7 @@ export const ARG_LENGTH = 'length'
 export const ARG_END_ABSOLUTE = 'endAbsolute'
 export const ARG_CIRCLE_CENTER = 'center'
 export const ARG_CIRCLE_RADIUS = 'radius'
+export const DETERMINING_ARGS = [ARG_LENGTH, ARG_END, ARG_END_ABSOLUTE]
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -190,7 +191,7 @@ const commonConstraintInfoHelper = (
       case 'CallExpression':
         return callExp.arguments[0]
       case 'CallExpressionKw':
-        return findKwArgAny([ARG_END, ARG_END_ABSOLUTE], callExp)
+        return findKwArgAny(DETERMINING_ARGS, callExp)
     }
   })()
   if (firstArg === undefined) {
@@ -207,7 +208,7 @@ const commonConstraintInfoHelper = (
       case 'CallExpression':
         return 0
       case 'CallExpressionKw':
-        return findKwArgAnyIndex([ARG_END, ARG_END_ABSOLUTE], callExp)
+        return findKwArgAnyIndex(DETERMINING_ARGS, callExp)
     }
   })()
   if (argIndex === undefined) {
@@ -309,7 +310,7 @@ const horzVertConstraintInfoHelper = (
   filterValue?: string
 ) => {
   if (callExp.type !== 'CallExpressionKw') return []
-  const argIndex = findKwArgAnyIndex([ARG_LENGTH, ARG_END_ABSOLUTE], callExp)
+  const argIndex = findKwArgAnyIndex(DETERMINING_ARGS, callExp)
   if (argIndex === undefined) {
     return []
   }
@@ -2371,6 +2372,31 @@ export function fnNameToTooltip(
   }
 }
 
+/**
+ * Function names no longer cleanly correspond to tooltips.
+ * A tooltip is a user action, like a line to a given point, or in a given direction.
+ * These are two separate tooltips (line and lineTo) but are made by the same stdlib function,
+ * 'line'. It just uses different parameters.
+ *
+ * To put it another way, function names don't map cleanly to tooltips, but function names + arguments do.
+ */
+export function tooltipToFnName(tooltip: ToolTip): string | Error {
+  switch (tooltip) {
+    case 'xLine':
+    case 'yLine':
+    case 'line':
+      return tooltip
+    case 'lineTo':
+      return 'line'
+    case 'xLineTo':
+      return 'xLine'
+    case 'yLineTo':
+      return 'yLine'
+    default:
+      return new Error(`Unknown tooltip function ${tooltip}`)
+  }
+}
+
 export function getConstraintInfo(
   callExpression: Node<CallExpression>,
   code: string,
@@ -3077,7 +3103,7 @@ export function getArgForEnd(lineCall: CallExpressionKw):
     case 'circle':
       return getCircle(lineCall)
     case 'line': {
-      const arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], lineCall)
+      const arg = findKwArgAny(DETERMINING_ARGS, lineCall)
       if (arg === undefined) {
         return new Error("no end of the line was found in fn '" + name + "'")
       }
@@ -3085,7 +3111,7 @@ export function getArgForEnd(lineCall: CallExpressionKw):
     }
     case 'yLine':
     case 'xLine':
-      const arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], lineCall)
+      const arg = findKwArgAny(DETERMINING_ARGS, lineCall)
       const tag = findKwArg(ARG_TAG, lineCall)
       if (arg === undefined) {
         return new Error("no end of the line was found in fn '" + name + "'")
@@ -3131,5 +3157,5 @@ export function getFirstArg(callExp: CallExpression):
 /** A determining arg is one that determines the line, e.g. for xLine it's either 'length' or 'endAbsolute'
  */
 function removeDeterminingArgs(callExp: CallExpressionKw) {
-  removeKwArgs([ARG_LENGTH, ARG_END, ARG_END_ABSOLUTE], callExp)
+  removeKwArgs(DETERMINING_ARGS, callExp)
 }

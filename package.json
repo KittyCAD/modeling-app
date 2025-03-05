@@ -91,7 +91,7 @@
     "fmt-check": "prettier --check ./src *.ts *.json *.js ./e2e ./packages ./rust/kcl-language-server",
     "fetch:wasm": "./scripts/get-latest-wasm-bundle.sh",
     "fetch:wasm:windows": "./scripts/get-latest-wasm-bundle.ps1",
-    "fetch:samples": "rm -rf public/kcl-samples* && curl -L -o public/kcl-samples.zip https://github.com/KittyCAD/kcl-samples/archive/refs/heads/next.zip && unzip -o public/kcl-samples.zip -d public && mv public/kcl-samples-* public/kcl-samples",
+    "fetch:samples": "rm -rf public/kcl-samples* && curl -L -o public/kcl-samples.zip https://github.com/KittyCAD/kcl-samples/archive/refs/heads/achalmers/kw-args-xylineto.zip && unzip -o public/kcl-samples.zip -d public && mv public/kcl-samples-* public/kcl-samples",
     "build:wasm-dev": "yarn wasm-prep && (cd rust && wasm-pack build kcl-wasm-lib --dev --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && yarn isomorphic-copy-wasm && yarn fmt",
     "build:wasm:nocopy": "yarn wasm-prep && cd rust && wasm-pack build kcl-wasm-lib --release  --target web --out-dir pkg && cargo test -p kcl-lib export_bindings",
     "build:wasm": "yarn build:wasm:nocopy && cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public && yarn fmt",
