@@ -83,7 +83,7 @@ fn build_client(sh: &Shell, version: &str, release_tag: &str, target: &Target) -
         sh.copy_file(symbols_path, bundle_path)?;
     }
 
-    let mut patch = Patch::new(sh, "./kcl_language_server/package.json")?;
+    let mut patch = Patch::new(sh, "./kcl-language-server/package.json")?;
     patch
         .replace(r#""version": "0.0.0""#, &format!(r#""version": "{version}""#))
         .replace(r#""releaseTag": null"#, &format!(r#""releaseTag": "{release_tag}""#))
