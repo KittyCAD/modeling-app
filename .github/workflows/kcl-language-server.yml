@@ -155,19 +155,22 @@ jobs:
           cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
           ls build
 
-      - run: |
+      - name: Install dependencies
+        run: |
           cd rust/kcl-language-server
           yarn install
 
       - name: Package Extension (release)
         run: npx vsce package -o "./build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
 
-      - if: matrix.target == 'x86_64-unknown-linux-gnu'
+      - name: remove server
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
           cd rust
           rm -rf server
 
-      - if: matrix.target == 'x86_64-unknown-linux-gnu'
+      - name: Package Extension (no server)
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
           cd rust
           npx vsce package -o ./build/kcl-language-server-no-server.vsix
@@ -206,7 +209,8 @@ jobs:
           rm rust-toolchain.toml
           cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
 
-      - run: |
+      - name: Install dependencies
+        run: |
           cd rust/kcl-language-server
           yarn install
 
@@ -214,11 +218,6 @@ jobs:
         run: |
           cd rust
           npx vsce package -o "./build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
-
-      - run: |
-          cd rust
-          rm -rf server
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
