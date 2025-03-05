@@ -66,6 +66,11 @@ async fn kcl_test_execute() {
 
     assert!(!tests.is_empty(), "No KCL samples found");
 
+    // Print out the environment variables.
+    eprintln!("Inside simulation_test env...");
+    eprintln!("EXPECTORATE={:?}", std::env::var("EXPECTORATE").as_deref());
+    eprintln!("TWENTY_TWENTY={:?}", std::env::var("TWENTY_TWENTY").as_deref());
+
     // Note: This is unordered.
     let mut tasks = JoinSet::new();
     // Mapping from task ID to test index.
