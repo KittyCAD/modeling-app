@@ -109,7 +109,7 @@ fn build_server(sh: &Shell, release: &str, target: &Target) -> anyhow::Result<()
     let target_name = &target.name;
     cmd!(
         sh,
-        "cargo build --manifest-path ./Cargo.toml --bin kcl-language-server --target {target_name} --release"
+        "cargo build --manifest-path ./kcl-language-server/Cargo.toml --bin kcl-language-server --target {target_name} --release"
     )
     .run()?;
 
