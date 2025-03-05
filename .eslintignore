@@ -3,3 +3,4 @@ rust/**/*.ts
 *.typegen.ts
 packages/codemirror-lsp-client/dist/*
 e2e/playwright/snapshots/prompt-to-edit/*
+.vscode-test
