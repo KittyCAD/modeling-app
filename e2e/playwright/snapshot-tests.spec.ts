@@ -322,16 +322,24 @@ const extrudeDefaultPlane = async (
   await page.addInitScript(async () => {
     localStorage.setItem(
       'SETTINGS_PERSIST_KEY',
-      JSON.stringify({
-        baseUnit: 'in',
-        cameraControls: 'KittyCAD',
-        defaultDirectory: '',
-        defaultProjectName: 'project-$nnn',
-        onboardingStatus: 'dismissed',
-        showDebugPanel: true,
-        textWrapping: 'On',
-        theme: 'dark',
-        unitSystem: 'imperial',
+      settingsToToml({
+        settings: {
+          modeling: {
+            base_unit: 'in',
+            mouse_controls: 'zoo',
+          },
+          app: {
+            onboarding_status: 'dismissed',
+            show_debug_panel: true,
+            theme: 'dark',
+          },
+          project: {
+            default_project_name: 'project-$nnn',
+          },
+          text_editor: {
+            text_wrapping: true,
+          },
+        },
       })
     )
   })
