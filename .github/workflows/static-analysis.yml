@@ -52,6 +52,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - run: yarn --cwd ./rust/kcl-language-server --modules-folder node_modules install
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: './rust'
@@ -72,6 +73,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - run: yarn --cwd ./rust/kcl-language-server --modules-folder node_modules install
       - run: yarn lint
 
   python-codespell:
@@ -127,8 +129,6 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
-      # yarn install rust/kcl-language-server for the unit tests!
-      - run: yarn --cwd ./rust/kcl-language-server install
       - uses: taiki-e/install-action@a209ff0ce0349f9e7cadc4ba8f6a415c8d3b0813
         with:
           tool: wasm-pack
