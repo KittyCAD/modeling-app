@@ -1,7 +1,12 @@
 import { test, expect } from './zoo-test'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
-import { getUtils, executorInputPath, createProject } from './test-utils'
+import {
+  getUtils,
+  executorInputPath,
+  createProject,
+  tomlToSettings,
+} from './test-utils'
 import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
 import {
@@ -26,20 +31,20 @@ test.describe('Testing settings', () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       // Check the settings were reset
-      const storedSettings = TOML.parse(
+      const storedSettings = tomlToSettings(
         await page.evaluate(
           ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
           { settingsKey: TEST_SETTINGS_KEY }
         )
-      ) as { settings: SaveSettingsPayload }
+      )
 
       expect(storedSettings.settings?.app?.theme).toBe('dark')
 
       // Check that the invalid settings were changed to good defaults
-      expect(storedSettings.settings?.modeling?.defaultUnit).toBe('in')
-      expect(storedSettings.settings?.modeling?.mouseControls).toBe('Zoo')
-      expect(storedSettings.settings?.app?.projectDirectory).toBe('')
-      expect(storedSettings.settings?.projects?.defaultProjectName).toBe(
+      expect(storedSettings.settings?.modeling?.base_unit).toBe('in')
+      expect(storedSettings.settings?.modeling?.mouse_controls).toBe('Zoo')
+      expect(storedSettings.settings?.app?.project_directory).toBe('')
+      expect(storedSettings.settings?.project?.default_project_name).toBe(
         'project-$nnn'
       )
     }
