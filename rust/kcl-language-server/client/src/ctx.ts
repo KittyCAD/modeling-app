@@ -1,3 +1,4 @@
+/* eslint suggest-no-throw/suggest-no-throw: 0 */
 import * as vscode from 'vscode'
 import type * as lc from 'vscode-languageclient/node'
 

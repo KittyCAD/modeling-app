@@ -1,3 +1,4 @@
+/* eslint suggest-no-throw/suggest-no-throw: 0 */
 import * as vscode from 'vscode'
 import * as os from 'os'
 import type { Config } from './config'

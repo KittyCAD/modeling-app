@@ -1,3 +1,4 @@
+/* eslint suggest-no-throw/suggest-no-throw: 0 */
 import * as Is from 'vscode-languageclient/lib/common/utils/is'
 import * as os from 'os'
 import * as path from 'path'

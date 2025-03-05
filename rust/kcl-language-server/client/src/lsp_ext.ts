@@ -1,3 +1,4 @@
+/* eslint suggest-no-throw/suggest-no-throw: 0 */
 import * as lc from 'vscode-languageclient'
 
 export type CommandLink = {

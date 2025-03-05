@@ -1,3 +1,4 @@
+/* eslint suggest-no-throw/suggest-no-throw: 0 */
 export type NotUndefined<T> = T extends undefined ? never : T
 
 export type Undefinable<T> = T | undefined
