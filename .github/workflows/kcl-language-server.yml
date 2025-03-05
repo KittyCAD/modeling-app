@@ -201,9 +201,8 @@ jobs:
       - name: build
         run: |
           cd rust
-          # this sucks but maybe we can find a better solution for getting the
           # right fucking toolchain
-          rm rust/rust-toolchain.toml
+          rm rust-toolchain.toml
           cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
 
       - run: |
