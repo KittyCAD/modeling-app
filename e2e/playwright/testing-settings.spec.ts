@@ -11,6 +11,8 @@ import {
   TEST_SETTINGS_DEFAULT_THEME,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
+import { DeepPartial } from 'lib/types'
+import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 test.describe('Testing settings', () => {
   test(
@@ -18,7 +20,7 @@ test.describe('Testing settings', () => {
     // Override beforeEach test setup
     // with corrupted settings
     {
-      appSettings: TEST_SETTINGS_CORRUPTED,
+      appSettings: TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>,
     },
     async ({ page, homePage }) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -374,7 +376,7 @@ test.describe('Testing settings', () => {
       tag: '@electron',
       appSettings: {
         app: {
-          themeColor: '259',
+          theme_color: '259',
         },
       },
     },
@@ -402,7 +404,7 @@ test.describe('Testing settings', () => {
         app: {
           // Doesn't matter what you set it to. It will
           // default to 264.5
-          themeColor: '0',
+          theme_color: '0',
         },
       },
     },
@@ -833,7 +835,7 @@ test.describe('Testing settings', () => {
       // but "show debug panel" set to false
       appSettings: {
         ...TEST_SETTINGS,
-        app: { ...TEST_SETTINGS.app, showDebugPanel: false },
+        app: { ...TEST_SETTINGS.app, show_debug_panel: false },
         modeling: { ...TEST_SETTINGS.modeling },
       },
     },
