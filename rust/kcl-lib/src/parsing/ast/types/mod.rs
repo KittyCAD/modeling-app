@@ -38,6 +38,7 @@ mod none;
 pub enum Definition<'a> {
     Variable(&'a VariableDeclarator),
     Import(NodeRef<'a, ImportStatement>),
+    Type(NodeRef<'a, TypeDeclaration>),
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -352,7 +353,7 @@ impl Program {
 
         // Recurse over the item.
         match item {
-            BodyItem::ImportStatement(_) => None,
+            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => None,
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
@@ -373,6 +374,7 @@ impl Program {
             Some(BodyItem::VariableDeclaration(variable_declaration)) => {
                 variable_declaration.get_expr_for_position(pos)
             }
+            Some(BodyItem::TypeDeclaration(_)) => None,
             Some(BodyItem::ReturnStatement(return_statement)) => Some(&return_statement.argument),
             None => return false,
         };
@@ -395,7 +397,7 @@ impl Program {
         // We only care about the top level things in the program.
         for item in &self.body {
             match item {
-                BodyItem::ImportStatement(_) => continue,
+                BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => continue,
                 BodyItem::ExpressionStatement(expression_statement) => {
                     if let Some(folding_range) = expression_statement.expression.get_lsp_folding_range() {
                         ranges.push(folding_range)
@@ -425,16 +427,13 @@ impl Program {
                         break;
                     }
                 }
-                BodyItem::ExpressionStatement(_expression_statement) => {
-                    continue;
-                }
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
                     if let Some(var_old_name) = variable_declaration.rename_symbol(new_name, pos) {
                         old_name = Some(var_old_name);
                         break;
                     }
                 }
-                BodyItem::ReturnStatement(_return_statement) => continue,
+                _ => {}
             }
         }
 
@@ -458,6 +457,7 @@ impl Program {
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
                     variable_declaration.get_mut_expr_for_position(pos)
                 }
+                BodyItem::TypeDeclaration(_) => None,
                 BodyItem::ReturnStatement(ref mut return_statement) => Some(&mut return_statement.argument),
             };
 
@@ -483,16 +483,17 @@ impl Program {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for item in &mut self.body {
             match item {
-                BodyItem::ImportStatement(ref mut stmt) => {
+                BodyItem::ImportStatement(stmt) => {
                     stmt.rename_identifiers(old_name, new_name);
                 }
-                BodyItem::ExpressionStatement(ref mut expression_statement) => {
+                BodyItem::ExpressionStatement(expression_statement) => {
                     expression_statement.expression.rename_identifiers(old_name, new_name);
                 }
-                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                BodyItem::VariableDeclaration(variable_declaration) => {
                     variable_declaration.rename_identifiers(old_name, new_name);
                 }
-                BodyItem::ReturnStatement(ref mut return_statement) => {
+                BodyItem::TypeDeclaration(_) => {}
+                BodyItem::ReturnStatement(return_statement) => {
                     return_statement.argument.rename_identifiers(old_name, new_name);
                 }
             }
@@ -506,7 +507,7 @@ impl Program {
                 BodyItem::ImportStatement(_) => {
                     continue;
                 }
-                BodyItem::ExpressionStatement(_expression_statement) => {
+                BodyItem::ExpressionStatement(_) => {
                     continue;
                 }
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
@@ -515,7 +516,10 @@ impl Program {
                         return;
                     }
                 }
-                BodyItem::ReturnStatement(_return_statement) => continue,
+                BodyItem::TypeDeclaration(_) => {
+                    continue;
+                }
+                BodyItem::ReturnStatement(_) => continue,
             }
         }
     }
@@ -531,6 +535,7 @@ impl Program {
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
                     variable_declaration.replace_value(source_range, new_value.clone())
                 }
+                BodyItem::TypeDeclaration(_) => {}
                 BodyItem::ReturnStatement(ref mut return_statement) => {
                     return_statement.argument.replace_value(source_range, new_value.clone())
                 }
@@ -553,6 +558,11 @@ impl Program {
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     if variable_declaration.declaration.id.name == name {
                         return Some(Definition::Variable(&variable_declaration.declaration));
+                    }
+                }
+                BodyItem::TypeDeclaration(ty_declaration) => {
+                    if ty_declaration.name.name == name {
+                        return Some(Definition::Type(ty_declaration));
                     }
                 }
                 BodyItem::ReturnStatement(_return_statement) => continue,
@@ -588,6 +598,7 @@ pub enum BodyItem {
     ImportStatement(BoxNode<ImportStatement>),
     ExpressionStatement(Node<ExpressionStatement>),
     VariableDeclaration(BoxNode<VariableDeclaration>),
+    TypeDeclaration(BoxNode<TypeDeclaration>),
     ReturnStatement(Node<ReturnStatement>),
 }
 
@@ -597,6 +608,7 @@ impl BodyItem {
             BodyItem::ImportStatement(stmt) => stmt.start,
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.start,
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.start,
+            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.start,
             BodyItem::ReturnStatement(return_statement) => return_statement.start,
         }
     }
@@ -606,6 +618,7 @@ impl BodyItem {
             BodyItem::ImportStatement(stmt) => stmt.end,
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.end,
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.end,
+            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.end,
             BodyItem::ReturnStatement(return_statement) => return_statement.end,
         }
     }
@@ -615,6 +628,7 @@ impl BodyItem {
             BodyItem::ImportStatement(node) => node.outer_attrs = attr,
             BodyItem::ExpressionStatement(node) => node.outer_attrs = attr,
             BodyItem::VariableDeclaration(node) => node.outer_attrs = attr,
+            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.outer_attrs = attr,
             BodyItem::ReturnStatement(node) => node.outer_attrs = attr,
         }
     }
@@ -624,6 +638,7 @@ impl BodyItem {
             BodyItem::ImportStatement(node) => &node.outer_attrs,
             BodyItem::ExpressionStatement(node) => &node.outer_attrs,
             BodyItem::VariableDeclaration(node) => &node.outer_attrs,
+            BodyItem::TypeDeclaration(ty_declaration) => &ty_declaration.outer_attrs,
             BodyItem::ReturnStatement(node) => &node.outer_attrs,
         }
     }
@@ -633,6 +648,7 @@ impl BodyItem {
             BodyItem::ImportStatement(node) => &mut node.outer_attrs,
             BodyItem::ExpressionStatement(node) => &mut node.outer_attrs,
             BodyItem::VariableDeclaration(node) => &mut node.outer_attrs,
+            BodyItem::TypeDeclaration(ty_declaration) => &mut ty_declaration.outer_attrs,
             BodyItem::ReturnStatement(node) => &mut node.outer_attrs,
         }
     }
@@ -1763,6 +1779,20 @@ impl ItemVisibility {
     pub fn is_default(&self) -> bool {
         matches!(self, Self::Default)
     }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct TypeDeclaration {
+    pub name: Node<Identifier>,
+    pub args: Option<NodeList<Identifier>>,
+    #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
+    pub visibility: ItemVisibility,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

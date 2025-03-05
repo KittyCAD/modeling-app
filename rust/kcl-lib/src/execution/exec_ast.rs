@@ -285,6 +285,7 @@ impl ExecutorContext {
                     }
                     last_expr = None;
                 }
+                BodyItem::TypeDeclaration(_) => {}
                 BodyItem::ReturnStatement(return_statement) => {
                     let metadata = Metadata::from(return_statement);
 
@@ -525,12 +526,21 @@ impl ExecutorContext {
                         continue;
                     }
                     for p in attr.properties.as_ref().unwrap() {
-                        if &*p.key.name == "impl" {
+                        if &*p.key.name == annotations::IMPL {
                             if let Some(s) = p.value.ident_name() {
-                                if s == "std_rust" {
+                                if s == annotations::IMPL_RUST {
                                     rust_impl = true;
                                 }
                             }
+                        } else if !annotations::IMPL_VALUES.contains(&&*p.key.name) {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                message: format!(
+                                    "Invalid value for {} attribute, expected one of: {}",
+                                    annotations::IMPL,
+                                    annotations::IMPL_VALUES.join(", ")
+                                ),
+                                source_ranges: vec![metadata.source_range],
+                            }));
                         }
                     }
                 }

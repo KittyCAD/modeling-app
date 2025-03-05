@@ -24,6 +24,12 @@ pub(super) const IMPORT_COORDS_VALUES: [(&str, &System); 3] =
     [("zoo", KITTYCAD), ("opengl", OPENGL), ("vulkan", VULKAN)];
 pub(super) const IMPORT_LENGTH_UNIT: &str = "lengthUnit";
 
+pub(crate) const IMPL: &str = "impl";
+pub(crate) const IMPL_RUST: &str = "std_rust";
+pub(crate) const IMPL_KCL: &str = "kcl";
+pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
+pub(super) const IMPL_VALUES: [&str; 3] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE];
+
 pub(crate) fn settings_completion_text() -> String {
     format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_UNIT_ANGLE} = deg)")
 }

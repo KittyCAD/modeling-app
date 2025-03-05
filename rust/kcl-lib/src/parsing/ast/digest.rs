@@ -5,8 +5,8 @@ use crate::parsing::ast::types::{
     CallExpression, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression,
     Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
     Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, ObjectExpression, ObjectProperty,
-    Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator, Type, UnaryExpression,
-    VariableDeclaration, VariableDeclarator, VariableKind,
+    Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration,
+    UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -113,6 +113,7 @@ impl BodyItem {
             BodyItem::ImportStatement(s) => s.compute_digest(),
             BodyItem::ExpressionStatement(es) => es.compute_digest(),
             BodyItem::VariableDeclaration(vs) => vs.compute_digest(),
+            BodyItem::TypeDeclaration(t) => t.compute_digest(),
             BodyItem::ReturnStatement(rs) => rs.compute_digest(),
         });
 
@@ -272,6 +273,18 @@ impl VariableDeclaration {
         hasher.update(slf.declaration.compute_digest());
         hasher.update(slf.visibility.digestable_id());
         hasher.update(slf.kind.digestable_id());
+    });
+}
+
+impl TypeDeclaration {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.name.compute_digest());
+        if let Some(args) = &mut slf.args {
+            hasher.update([1]);
+            for a in args {
+                hasher.update(a.compute_digest());
+            }
+        }
     });
 }
 

@@ -27,7 +27,8 @@ use crate::{
             ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
             MemberObject, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
             Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang,
-            TagDeclarator, Type, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+            TagDeclarator, Type, TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration,
+            VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -1330,7 +1331,9 @@ fn body_items_within_function(i: &mut TokenSlice) -> PResult<WithinFunction> {
     // Any of the body item variants, each of which can optionally be followed by a comment.
     // If there is a comment, it may be preceded by whitespace.
     let item = dispatch! {peek(any);
-        token if token.visibility_keyword().is_some() => (alt((declaration.map(BodyItem::VariableDeclaration), import_stmt.map(BodyItem::ImportStatement))), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
+        token if token.visibility_keyword().is_some() => (alt((import_stmt.map(BodyItem::ImportStatement), ty_decl.map(BodyItem::TypeDeclaration), declaration.map(BodyItem::VariableDeclaration))), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
+        token if token.value == "type" && matches!(token.token_type, TokenType::Keyword) =>
+            (ty_decl.map(BodyItem::TypeDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         token if token.declaration_keyword().is_some() =>
             (declaration.map(BodyItem::VariableDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         token if token.value == "import" && matches!(token.token_type, TokenType::Keyword) =>
@@ -2058,6 +2061,52 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     }))
 }
 
+fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
+    let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
+        .parse_next(i)?
+        .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
+
+    let decl_token = ty(i)?;
+    let start = visibility_token.map(|t| t.start).unwrap_or_else(|| decl_token.start);
+    whitespace(i)?;
+
+    let name = identifier(i)?;
+    let mut end = name.end;
+
+    let args = if peek(open_paren).parse_next(i).is_ok() {
+        ignore_whitespace(i);
+        open_paren(i)?;
+        ignore_whitespace(i);
+        let args: Vec<_> = separated(0.., identifier, comma_sep).parse_next(i)?;
+        ignore_trailing_comma(i);
+        ignore_whitespace(i);
+        end = close_paren(i)?.end;
+        Some(args)
+    } else {
+        None
+    };
+
+    let result = Box::new(Node {
+        start,
+        end,
+        module_id: name.module_id,
+        outer_attrs: Vec::new(),
+        inner: TypeDeclaration {
+            name,
+            args,
+            visibility,
+            digest: None,
+        },
+    });
+
+    ParseContext::warn(CompilationError::err(
+        result.as_source_range(),
+        "Type declarations are experimental, likely to change, and may or may not do anything useful.",
+    ));
+
+    Ok(result)
+}
+
 impl TryFrom<Token> for Node<Identifier> {
     type Error = CompilationError;
 
@@ -2076,7 +2125,7 @@ impl TryFrom<Token> for Node<Identifier> {
             Err(CompilationError::fatal(
                 token.as_source_range(),
                 format!(
-                    "Cannot assign a variable to a reserved keyword: {}",
+                    "Cannot assign a variable to a reserved keyword: `{}`",
                     token.value.as_str()
                 ),
             ))
@@ -2467,11 +2516,19 @@ fn at_sign(i: &mut TokenSlice) -> PResult<Token> {
 }
 
 fn fun(i: &mut TokenSlice) -> PResult<Token> {
+    keyword(i, "fn")
+}
+
+fn ty(i: &mut TokenSlice) -> PResult<Token> {
+    keyword(i, "type")
+}
+
+fn keyword(i: &mut TokenSlice, expected: &str) -> PResult<Token> {
     any.try_map(|token: Token| match token.token_type {
-        TokenType::Keyword if token.value == "fn" => Ok(token),
+        TokenType::Keyword if token.value == expected => Ok(token),
         _ => Err(CompilationError::fatal(
             token.as_source_range(),
-            format!("expected 'fn', found {}", token.value.as_str(),),
+            format!("expected '{expected}', found {}", token.value.as_str(),),
         )),
     })
     .parse_next(i)

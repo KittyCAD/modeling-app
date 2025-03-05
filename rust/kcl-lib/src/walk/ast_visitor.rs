@@ -109,6 +109,7 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
                 children
             }
             Node::VariableDeclaration(n) => vec![(&n.declaration).into()],
+            Node::TypeDeclaration(n) => vec![(&n.name).into()],
             Node::ReturnStatement(n) => {
                 vec![(&n.argument).into()]
             }

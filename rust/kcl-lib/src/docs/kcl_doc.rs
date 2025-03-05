@@ -4,6 +4,7 @@ use tower_lsp::lsp_types::{
 };
 
 use crate::{
+    execution::annotations,
     parsing::{
         ast::types::{Annotation, Node, NonCodeNode, NonCodeValue, VariableKind},
         token::NumericSuffix,
@@ -417,6 +418,7 @@ pub struct Properties {
 pub enum ImplKind {
     Kcl,
     Rust,
+    Primitive,
 }
 
 #[derive(Debug, Clone)]
@@ -518,11 +520,12 @@ trait ApplyMeta {
             {
                 for p in props {
                     match &*p.key.name {
-                        "impl" => {
+                        annotations::IMPL => {
                             if let Some(s) = p.value.ident_name() {
                                 self.impl_kind(match s {
-                                    "kcl" => ImplKind::Kcl,
-                                    "std_rust" => ImplKind::Rust,
+                                    annotations::IMPL_KCL => ImplKind::Kcl,
+                                    annotations::IMPL_RUST => ImplKind::Rust,
+                                    annotations::IMPL_PRIMITIVE => ImplKind::Primitive,
                                     _ => unreachable!(),
                                 });
                             }
