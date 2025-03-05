@@ -99,6 +99,8 @@ jobs:
 
       - name: Install Rust toolchain
         run: |
+          # this sucks but maybe we can find a better solution for getting the
+          # right fucking toolchain
           rm rust/rust-toolchain.toml
           rustup update --no-self-update stable
 
