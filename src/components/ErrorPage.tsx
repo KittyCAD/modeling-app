@@ -14,7 +14,7 @@ function errorMessage(error: unknown): string {
     return `${error.status} ${error.statusText}`
   } else if (error != undefined && error instanceof Error) {
     return error.message
-  } else if (error instanceof Object) {
+  } else if (error && typeof error === 'object') {
     return JSON.stringify(error)
   } else if (typeof error === 'string') {
     return error
