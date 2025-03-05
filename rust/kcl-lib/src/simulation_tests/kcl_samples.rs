@@ -33,6 +33,11 @@ fn parse() {
 
     assert!(!tests.is_empty(), "No KCL samples found");
 
+    // Print out the environment variables.
+    eprintln!("Inside simulation_test env...");
+    eprintln!("EXPECTORATE={:?}", std::env::var("EXPECTORATE").as_deref());
+    eprintln!("TWENTY_TWENTY={:?}", std::env::var("TWENTY_TWENTY").as_deref());
+
     let input_names = FnvHashSet::from_iter(tests.iter().map(|t| t.name.clone()));
 
     for test in tests {
