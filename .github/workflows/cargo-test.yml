@@ -81,7 +81,7 @@ jobs:
         run: |
           set -euo pipefail
           cd rust
-          cargo nextest run --workspace --retries=2 --no-fail-fast -P ci simulation_tests::kcl_samples 2>&1 | tee /tmp/github-actions.log
+          cargo nextest run --workspace --retries=2 --no-fail-fast --profile ci simulation_tests::kcl_samples 2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           RUST_BACKTRACE: full
