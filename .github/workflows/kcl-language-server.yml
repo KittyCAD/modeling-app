@@ -270,7 +270,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: release-aarch64-unknown-linux-gnu
-          path: build
+          path: rust/build
       - uses: actions/download-artifact@v4
         with:
           name: release-arm-unknown-linux-gnueabihf
@@ -288,7 +288,7 @@ jobs:
             #- uses: actions/download-artifact@v4
             #with:
             #name: release-aarch64-pc-windows-msvc
-            #path: build
+            #path: rust/build
       - run: ls -al ./rust/build
 
       - name: Publish Release
