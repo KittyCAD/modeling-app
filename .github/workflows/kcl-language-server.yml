@@ -100,8 +100,6 @@ jobs:
       - name: Install Rust toolchain
         run: |
           rustup update --no-self-update stable
-          rustup target add ${{ matrix.target }}
-          rustup component add rust-src
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -148,6 +146,8 @@ jobs:
       - name: build
         run: |
           cd rust
+          rustup target add ${{ matrix.target }}
+          rustup component add rust-src
           cargo kcl-language-server-release build --client-patch-version ${{ github.run_number }}
 
       - run: |
