@@ -111,6 +111,7 @@ export type InputArgKeys =
   | 'p3'
   | 'end'
   | 'interior'
+  | `angle${'Start' | 'End'}`
 export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType
