@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing revolve_about_edge.kcl
+snapshot_kind: text
 ---
 {
   "rectangleSegmentB001": {
@@ -16,7 +17,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
           "id": "[uuid]",
           "sourceRange": [
             71,
-            107,
+            119,
             0
           ]
         },
@@ -25,8 +26,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
           25.0
         ],
         "tag": {
-          "end": 106,
-          "start": 85,
+          "end": 118,
+          "start": 97,
           "type": "TagDeclarator",
           "value": "rectangleSegmentB001"
         },
@@ -44,8 +45,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
     "__meta": [
       {
         "sourceRange": [
-          85,
-          106,
+          97,
+          118,
           0
         ]
       }
@@ -62,7 +63,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
             "id": "[uuid]",
             "sourceRange": [
               71,
-              107,
+              119,
               0
             ]
           },
@@ -71,8 +72,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
             25.0
           ],
           "tag": {
-            "end": 106,
-            "start": 85,
+            "end": 118,
+            "start": 97,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -151,7 +152,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   71,
-                  107,
+                  119,
                   0
                 ]
               },
@@ -160,8 +161,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
                 25.0
               ],
               "tag": {
-                "end": 106,
-                "start": 85,
+                "end": 118,
+                "start": 97,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB001"
               },
@@ -179,8 +180,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
           "__meta": [
             {
               "sourceRange": [
-                85,
-                106,
+                97,
+                118,
                 0
               ]
             }
@@ -214,8 +215,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            145,
-            183,
+            157,
+            195,
             0
           ],
           "tag": null,
@@ -230,8 +231,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                145,
-                183,
+                157,
+                195,
                 0
               ]
             },
@@ -302,8 +303,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              145,
-              183,
+              157,
+              195,
               0
             ]
           }
@@ -316,8 +317,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
         "__meta": [
           {
             "sourceRange": [
-              145,
-              183,
+              157,
+              195,
               0
             ]
           }
@@ -332,8 +333,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
       "__meta": [
         {
           "sourceRange": [
-            145,
-            183,
+            157,
+            195,
             0
           ]
         }

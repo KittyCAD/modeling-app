@@ -1,6 +1,7 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed i_shape.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -34,16 +35,16 @@ description: Operations executed i_shape.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          1940,
-          1942,
+          2006,
+          2008,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1926,
-      1943,
+      1992,
+      2009,
       0
     ],
     "type": "StdLibCall",
@@ -59,8 +60,8 @@ description: Operations executed i_shape.kcl
           }
         },
         "sourceRange": [
-          2405,
-          2410,
+          2495,
+          2500,
           0
         ]
       },
@@ -72,16 +73,16 @@ description: Operations executed i_shape.kcl
           }
         },
         "sourceRange": [
-          2412,
-          2413,
+          2502,
+          2503,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2400,
-      2414,
+      2490,
+      2504,
       0
     ],
     "type": "StdLibCall",
@@ -104,16 +105,16 @@ description: Operations executed i_shape.kcl
           }
         },
         "sourceRange": [
-          2437,
-          2440,
+          2527,
+          2530,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "type": "StdLibCall",

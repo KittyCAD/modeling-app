@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands poop_chute.kcl
 snapshot_kind: text
 ---
@@ -363,7 +363,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       258,
-      286,
+      292,
       0
     ],
     "command": {
@@ -383,8 +383,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      292,
-      355,
+      298,
+      361,
       0
     ],
     "command": {
@@ -404,8 +404,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      361,
-      379,
+      367,
+      394,
       0
     ],
     "command": {
@@ -425,8 +425,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      385,
-      410,
+      400,
+      431,
       0
     ],
     "command": {
@@ -446,8 +446,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      416,
-      442,
+      437,
+      472,
       0
     ],
     "command": {
@@ -467,8 +467,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      448,
-      547,
+      478,
+      577,
       0
     ],
     "command": {
@@ -488,8 +488,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      553,
-      578,
+      583,
+      614,
       0
     ],
     "command": {
@@ -509,8 +509,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      584,
-      662,
+      620,
+      698,
       0
     ],
     "command": {
@@ -530,8 +530,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      668,
-      686,
+      704,
+      731,
       0
     ],
     "command": {
@@ -551,29 +551,29 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      692,
-      705,
-      0
-    ],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": 5.5,
-          "z": 0.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      711,
       737,
+      759,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 5.5,
+          "z": 0.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      765,
+      800,
       0
     ],
     "command": {
@@ -593,8 +593,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      743,
-      789,
+      806,
+      852,
       0
     ],
     "command": {
@@ -614,8 +614,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      795,
-      803,
+      858,
+      866,
       0
     ],
     "command": {
@@ -626,8 +626,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      795,
-      803,
+      858,
+      866,
       0
     ],
     "command": {
@@ -637,8 +637,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -665,8 +665,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -677,8 +677,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -690,8 +690,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -704,8 +704,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -718,8 +718,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -732,8 +732,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -746,8 +746,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -760,8 +760,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -774,8 +774,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -788,8 +788,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -802,8 +802,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -816,8 +816,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -830,8 +830,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -844,8 +844,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -858,8 +858,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -872,8 +872,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -886,8 +886,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -900,8 +900,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -914,8 +914,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -928,8 +928,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -942,8 +942,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -956,8 +956,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -970,8 +970,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -984,8 +984,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -998,8 +998,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -1012,8 +1012,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -1026,8 +1026,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -1040,8 +1040,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      814,
-      952,
+      877,
+      1015,
       0
     ],
     "command": {
@@ -1054,8 +1054,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      966,
-      986,
+      1029,
+      1049,
       0
     ],
     "command": {
@@ -1083,8 +1083,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      992,
-      1036,
+      1055,
+      1099,
       0
     ],
     "command": {
@@ -1103,8 +1103,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      992,
-      1036,
+      1055,
+      1099,
       0
     ],
     "command": {
@@ -1114,8 +1114,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      992,
-      1036,
+      1055,
+      1099,
       0
     ],
     "command": {
@@ -1131,8 +1131,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1042,
-      1070,
+      1105,
+      1139,
       0
     ],
     "command": {
@@ -1152,8 +1152,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1076,
-      1139,
+      1145,
+      1208,
       0
     ],
     "command": {
@@ -1173,8 +1173,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1145,
-      1163,
+      1214,
+      1241,
       0
     ],
     "command": {
@@ -1194,8 +1194,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1169,
-      1194,
+      1247,
+      1278,
       0
     ],
     "command": {
@@ -1215,8 +1215,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1200,
-      1226,
+      1284,
+      1319,
       0
     ],
     "command": {
@@ -1236,8 +1236,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1232,
-      1331,
+      1325,
+      1424,
       0
     ],
     "command": {
@@ -1257,8 +1257,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
+      1430,
+      1461,
       0
     ],
     "command": {
@@ -1278,8 +1278,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1368,
-      1446,
+      1467,
+      1545,
       0
     ],
     "command": {
@@ -1299,8 +1299,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1452,
-      1470,
+      1551,
+      1578,
       0
     ],
     "command": {
@@ -1320,8 +1320,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1476,
-      1489,
+      1584,
+      1606,
       0
     ],
     "command": {
@@ -1341,8 +1341,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1495,
-      1521,
+      1612,
+      1647,
       0
     ],
     "command": {
@@ -1362,8 +1362,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1527,
-      1573,
+      1653,
+      1699,
       0
     ],
     "command": {
@@ -1383,8 +1383,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1579,
-      1587,
+      1705,
+      1713,
       0
     ],
     "command": {
@@ -1395,8 +1395,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1579,
-      1587,
+      1705,
+      1713,
       0
     ],
     "command": {
@@ -1406,8 +1406,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1426,8 +1426,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1440,8 +1440,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1451,8 +1451,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1463,8 +1463,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1476,8 +1476,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1490,8 +1490,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1504,8 +1504,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1518,8 +1518,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1532,8 +1532,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1546,8 +1546,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1560,8 +1560,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1574,8 +1574,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1588,8 +1588,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1602,8 +1602,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1616,8 +1616,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1630,8 +1630,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1644,8 +1644,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1658,8 +1658,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1672,8 +1672,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1686,8 +1686,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1700,8 +1700,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1714,8 +1714,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1728,8 +1728,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1742,8 +1742,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1756,8 +1756,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1770,8 +1770,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1784,8 +1784,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1798,8 +1798,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1812,8 +1812,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {
@@ -1826,8 +1826,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      1593,
-      1631,
+      1719,
+      1757,
       0
     ],
     "command": {

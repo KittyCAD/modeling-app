@@ -3473,7 +3473,7 @@ const cylinder = startSketchOn('-XZ')
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        assert!(program.in_comment(86));
+        assert!(program.in_comment(92));
     }
 
     #[tokio::test(flavor = "multi_thread")]

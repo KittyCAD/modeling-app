@@ -1,13 +1,14 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing ssi_pattern.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
         "declaration": {
-          "end": 272,
+          "end": 284,
           "id": {
             "end": 9,
             "name": "sketch001",
@@ -105,21 +106,22 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "arguments": [
                   {
-                    "end": 87,
-                    "raw": "10.2",
-                    "start": 83,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 10.2,
-                      "suffix": "None"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "length"
+                    },
+                    "arg": {
+                      "end": 96,
+                      "raw": "10.2",
+                      "start": 92,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 10.2,
+                        "suffix": "None"
+                      }
                     }
-                  },
-                  {
-                    "end": 90,
-                    "start": 89,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
@@ -128,10 +130,11 @@ description: Result of parsing ssi_pattern.kcl
                   "start": 77,
                   "type": "Identifier"
                 },
-                "end": 91,
+                "end": 97,
                 "start": 77,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -146,9 +149,9 @@ description: Result of parsing ssi_pattern.kcl
                     "arg": {
                       "elements": [
                         {
-                          "end": 113,
+                          "end": 119,
                           "raw": "0.54",
-                          "start": 109,
+                          "start": 115,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -158,9 +161,9 @@ description: Result of parsing ssi_pattern.kcl
                         },
                         {
                           "argument": {
-                            "end": 120,
+                            "end": 126,
                             "raw": "0.03",
-                            "start": 116,
+                            "start": 122,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -168,28 +171,28 @@ description: Result of parsing ssi_pattern.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 120,
+                          "end": 126,
                           "operator": "-",
-                          "start": 115,
+                          "start": 121,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 121,
-                      "start": 108,
+                      "end": 127,
+                      "start": 114,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 101,
+                  "end": 107,
                   "name": "line",
-                  "start": 97,
+                  "start": 103,
                   "type": "Identifier"
                 },
-                "end": 122,
-                "start": 97,
+                "end": 128,
+                "start": 103,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -199,9 +202,9 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "elements": [
                       {
-                        "end": 149,
+                        "end": 155,
                         "raw": "20.4",
-                        "start": 145,
+                        "start": 151,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -210,9 +213,9 @@ description: Result of parsing ssi_pattern.kcl
                         }
                       },
                       {
-                        "end": 156,
+                        "end": 162,
                         "raw": "14.61",
-                        "start": 151,
+                        "start": 157,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -221,66 +224,68 @@ description: Result of parsing ssi_pattern.kcl
                         }
                       }
                     ],
-                    "end": 157,
-                    "start": 144,
+                    "end": 163,
+                    "start": 150,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 160,
-                    "start": 159,
+                    "end": 166,
+                    "start": 165,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 143,
+                  "end": 149,
                   "name": "tangentialArcTo",
-                  "start": 128,
+                  "start": 134,
                   "type": "Identifier"
                 },
-                "end": 161,
-                "start": 128,
+                "end": 167,
+                "start": 134,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "argument": {
-                      "end": 179,
-                      "raw": "26.76",
-                      "start": 174,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 26.76,
-                        "suffix": "None"
-                      }
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "length"
                     },
-                    "end": 179,
-                    "operator": "-",
-                    "start": 173,
-                    "type": "UnaryExpression",
-                    "type": "UnaryExpression"
-                  },
-                  {
-                    "end": 182,
-                    "start": 181,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "arg": {
+                      "argument": {
+                        "end": 194,
+                        "raw": "26.76",
+                        "start": 189,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 26.76,
+                          "suffix": "None"
+                        }
+                      },
+                      "end": 194,
+                      "operator": "-",
+                      "start": 188,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 172,
+                  "end": 178,
                   "name": "yLine",
-                  "start": 167,
+                  "start": 173,
                   "type": "Identifier"
                 },
-                "end": 183,
-                "start": 167,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 195,
+                "start": 173,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -297,46 +302,46 @@ description: Result of parsing ssi_pattern.kcl
                         {
                           "arguments": [
                             {
-                              "end": 224,
-                              "start": 223,
+                              "end": 236,
+                              "start": 235,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 222,
+                            "end": 234,
                             "name": "profileStartX",
-                            "start": 209,
+                            "start": 221,
                             "type": "Identifier"
                           },
-                          "end": 225,
-                          "start": 209,
+                          "end": 237,
+                          "start": 221,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 242,
-                              "start": 241,
+                              "end": 254,
+                              "start": 253,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 240,
+                            "end": 252,
                             "name": "profileStartY",
-                            "start": 227,
+                            "start": 239,
                             "type": "Identifier"
                           },
-                          "end": 243,
-                          "start": 227,
+                          "end": 255,
+                          "start": 239,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 244,
-                      "start": 208,
+                      "end": 256,
+                      "start": 220,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -350,8 +355,8 @@ description: Result of parsing ssi_pattern.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 258,
-                      "start": 252,
+                      "end": 270,
+                      "start": 264,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -359,13 +364,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
-                  "end": 193,
+                  "end": 205,
                   "name": "line",
-                  "start": 189,
+                  "start": 201,
                   "type": "Identifier"
                 },
-                "end": 259,
-                "start": 189,
+                "end": 271,
+                "start": 201,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -373,18 +378,18 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 270,
+                  "end": 282,
                   "name": "close",
-                  "start": 265,
+                  "start": 277,
                   "type": "Identifier"
                 },
-                "end": 272,
-                "start": 265,
+                "end": 284,
+                "start": 277,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 272,
+            "end": 284,
             "start": 12,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -392,7 +397,7 @@ description: Result of parsing ssi_pattern.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 272,
+        "end": 284,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -400,11 +405,11 @@ description: Result of parsing ssi_pattern.kcl
       },
       {
         "declaration": {
-          "end": 318,
+          "end": 330,
           "id": {
-            "end": 284,
+            "end": 296,
             "name": "extrude001",
-            "start": 274,
+            "start": 286,
             "type": "Identifier"
           },
           "init": {
@@ -418,9 +423,9 @@ description: Result of parsing ssi_pattern.kcl
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 317,
+                  "end": 329,
                   "raw": "50",
-                  "start": 315,
+                  "start": 327,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -431,39 +436,39 @@ description: Result of parsing ssi_pattern.kcl
               }
             ],
             "callee": {
-              "end": 294,
+              "end": 306,
               "name": "extrude",
-              "start": 287,
+              "start": 299,
               "type": "Identifier"
             },
-            "end": 318,
-            "start": 287,
+            "end": 330,
+            "start": 299,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 304,
+              "end": 316,
               "name": "sketch001",
-              "start": 295,
+              "start": 307,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 274,
+          "start": 286,
           "type": "VariableDeclarator"
         },
-        "end": 318,
+        "end": 330,
         "kind": "const",
-        "start": 274,
+        "start": 286,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 625,
+          "end": 637,
           "id": {
-            "end": 329,
+            "end": 341,
             "name": "sketch002",
-            "start": 320,
+            "start": 332,
             "type": "Identifier"
           },
           "init": {
@@ -471,28 +476,28 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "arguments": [
                   {
-                    "end": 356,
+                    "end": 368,
                     "name": "extrude001",
-                    "start": 346,
+                    "start": 358,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 363,
+                    "end": 375,
                     "name": "seg01",
-                    "start": 358,
+                    "start": 370,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 345,
+                  "end": 357,
                   "name": "startSketchOn",
-                  "start": 332,
+                  "start": 344,
                   "type": "Identifier"
                 },
-                "end": 364,
-                "start": 332,
+                "end": 376,
+                "start": 344,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -510,9 +515,9 @@ description: Result of parsing ssi_pattern.kcl
                       "elements": [
                         {
                           "argument": {
-                            "end": 392,
+                            "end": 404,
                             "raw": "2.08",
-                            "start": 388,
+                            "start": 400,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -520,16 +525,16 @@ description: Result of parsing ssi_pattern.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 392,
+                          "end": 404,
                           "operator": "-",
-                          "start": 387,
+                          "start": 399,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
-                          "end": 398,
+                          "end": 410,
                           "raw": "47.7",
-                          "start": 394,
+                          "start": 406,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -538,8 +543,8 @@ description: Result of parsing ssi_pattern.kcl
                           }
                         }
                       ],
-                      "end": 399,
-                      "start": 386,
+                      "end": 411,
+                      "start": 398,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -553,9 +558,9 @@ description: Result of parsing ssi_pattern.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 413,
+                      "end": 425,
                       "raw": "1.4",
-                      "start": 410,
+                      "start": 422,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -566,13 +571,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
-                  "end": 376,
+                  "end": 388,
                   "name": "circle",
-                  "start": 370,
+                  "start": 382,
                   "type": "Identifier"
                 },
-                "end": 414,
-                "start": 370,
+                "end": 426,
+                "start": 382,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -588,9 +593,9 @@ description: Result of parsing ssi_pattern.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 449,
+                      "end": 461,
                       "raw": "5",
-                      "start": 448,
+                      "start": 460,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -608,9 +613,9 @@ description: Result of parsing ssi_pattern.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 463,
+                      "end": 475,
                       "raw": "5",
-                      "start": 462,
+                      "start": 474,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -630,9 +635,9 @@ description: Result of parsing ssi_pattern.kcl
                     "arg": {
                       "elements": [
                         {
-                          "end": 474,
+                          "end": 486,
                           "raw": "1",
-                          "start": 473,
+                          "start": 485,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -641,9 +646,9 @@ description: Result of parsing ssi_pattern.kcl
                           }
                         },
                         {
-                          "end": 477,
+                          "end": 489,
                           "raw": "0",
-                          "start": 476,
+                          "start": 488,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -652,21 +657,21 @@ description: Result of parsing ssi_pattern.kcl
                           }
                         }
                       ],
-                      "end": 478,
-                      "start": 472,
+                      "end": 490,
+                      "start": 484,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 435,
+                  "end": 447,
                   "name": "patternLinear2d",
-                  "start": 420,
+                  "start": 432,
                   "type": "Identifier"
                 },
-                "end": 479,
-                "start": 420,
+                "end": 491,
+                "start": 432,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -682,9 +687,9 @@ description: Result of parsing ssi_pattern.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 567,
+                      "end": 579,
                       "raw": "6",
-                      "start": 566,
+                      "start": 578,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -702,9 +707,9 @@ description: Result of parsing ssi_pattern.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 581,
+                      "end": 593,
                       "raw": "4",
-                      "start": 580,
+                      "start": 592,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -724,9 +729,9 @@ description: Result of parsing ssi_pattern.kcl
                     "arg": {
                       "elements": [
                         {
-                          "end": 592,
+                          "end": 604,
                           "raw": "0",
-                          "start": 591,
+                          "start": 603,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -736,9 +741,9 @@ description: Result of parsing ssi_pattern.kcl
                         },
                         {
                           "argument": {
-                            "end": 596,
+                            "end": 608,
                             "raw": "1",
-                            "start": 595,
+                            "start": 607,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -746,28 +751,28 @@ description: Result of parsing ssi_pattern.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 596,
+                          "end": 608,
                           "operator": "-",
-                          "start": 594,
+                          "start": 606,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 597,
-                      "start": 590,
+                      "end": 609,
+                      "start": 602,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 553,
+                  "end": 565,
                   "name": "patternLinear2d",
-                  "start": 538,
+                  "start": 550,
                   "type": "Identifier"
                 },
-                "end": 598,
-                "start": 538,
+                "end": 610,
+                "start": 550,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -784,9 +789,9 @@ description: Result of parsing ssi_pattern.kcl
                     },
                     "arg": {
                       "argument": {
-                        "end": 624,
+                        "end": 636,
                         "raw": "40",
-                        "start": 622,
+                        "start": 634,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -794,34 +799,34 @@ description: Result of parsing ssi_pattern.kcl
                           "suffix": "None"
                         }
                       },
-                      "end": 624,
+                      "end": 636,
                       "operator": "-",
-                      "start": 621,
+                      "start": 633,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 611,
+                  "end": 623,
                   "name": "extrude",
-                  "start": 604,
+                  "start": 616,
                   "type": "Identifier"
                 },
-                "end": 625,
-                "start": 604,
+                "end": 637,
+                "start": 616,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 625,
+            "end": 637,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
-                    "end": 532,
-                    "start": 481,
+                    "end": 544,
+                    "start": 493,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
@@ -833,27 +838,27 @@ description: Result of parsing ssi_pattern.kcl
               },
               "startNodes": []
             },
-            "start": 332,
+            "start": 344,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 320,
+          "start": 332,
           "type": "VariableDeclarator"
         },
-        "end": 625,
+        "end": 637,
         "kind": "const",
-        "start": 320,
+        "start": 332,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 626,
+    "end": 638,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 274,
-            "start": 272,
+            "end": 286,
+            "start": 284,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -862,8 +867,8 @@ description: Result of parsing ssi_pattern.kcl
         ],
         "1": [
           {
-            "end": 320,
-            "start": 318,
+            "end": 332,
+            "start": 330,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

@@ -1,13 +1,14 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing revolve_about_edge.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
         "declaration": {
-          "end": 107,
+          "end": 119,
           "id": {
             "end": 9,
             "name": "sketch001",
@@ -98,35 +99,43 @@ description: Result of parsing revolve_about_edge.kcl
               {
                 "arguments": [
                   {
-                    "argument": {
-                      "end": 80,
-                      "raw": "50",
-                      "start": 78,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 50.0,
-                        "suffix": "None"
-                      }
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "length"
                     },
-                    "end": 80,
-                    "operator": "-",
-                    "start": 77,
-                    "type": "UnaryExpression",
-                    "type": "UnaryExpression"
+                    "arg": {
+                      "argument": {
+                        "end": 89,
+                        "raw": "50",
+                        "start": 87,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 50.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "end": 89,
+                      "operator": "-",
+                      "start": 86,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
                   },
                   {
-                    "end": 83,
-                    "start": 82,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 106,
-                    "start": 85,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentB001"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "tag"
+                    },
+                    "arg": {
+                      "end": 118,
+                      "start": 97,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentB001"
+                    }
                   }
                 ],
                 "callee": {
@@ -135,13 +144,14 @@ description: Result of parsing revolve_about_edge.kcl
                   "start": 71,
                   "type": "Identifier"
                 },
-                "end": 107,
+                "end": 119,
                 "start": 71,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 107,
+            "end": 119,
             "start": 12,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -149,7 +159,7 @@ description: Result of parsing revolve_about_edge.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 107,
+        "end": 119,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -157,11 +167,11 @@ description: Result of parsing revolve_about_edge.kcl
       },
       {
         "declaration": {
-          "end": 263,
+          "end": 275,
           "id": {
-            "end": 117,
+            "end": 129,
             "name": "sketch002",
-            "start": 108,
+            "start": 120,
             "type": "Identifier"
           },
           "init": {
@@ -169,22 +179,22 @@ description: Result of parsing revolve_about_edge.kcl
               {
                 "arguments": [
                   {
-                    "end": 138,
+                    "end": 150,
                     "raw": "'XY'",
-                    "start": 134,
+                    "start": 146,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 133,
+                  "end": 145,
                   "name": "startSketchOn",
-                  "start": 120,
+                  "start": 132,
                   "type": "Identifier"
                 },
-                "end": 139,
-                "start": 120,
+                "end": 151,
+                "start": 132,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -202,9 +212,9 @@ description: Result of parsing revolve_about_edge.kcl
                       "elements": [
                         {
                           "argument": {
-                            "end": 165,
+                            "end": 177,
                             "raw": "50",
-                            "start": 163,
+                            "start": 175,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -212,16 +222,16 @@ description: Result of parsing revolve_about_edge.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 165,
+                          "end": 177,
                           "operator": "-",
-                          "start": 162,
+                          "start": 174,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
-                          "end": 168,
+                          "end": 180,
                           "raw": "0",
-                          "start": 167,
+                          "start": 179,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -230,8 +240,8 @@ description: Result of parsing revolve_about_edge.kcl
                           }
                         }
                       ],
-                      "end": 169,
-                      "start": 161,
+                      "end": 181,
+                      "start": 173,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -245,9 +255,9 @@ description: Result of parsing revolve_about_edge.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 182,
+                      "end": 194,
                       "raw": "10",
-                      "start": 180,
+                      "start": 192,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -258,13 +268,13 @@ description: Result of parsing revolve_about_edge.kcl
                   }
                 ],
                 "callee": {
-                  "end": 151,
+                  "end": 163,
                   "name": "circle",
-                  "start": 145,
+                  "start": 157,
                   "type": "Identifier"
                 },
-                "end": 183,
-                "start": 145,
+                "end": 195,
+                "start": 157,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -272,22 +282,22 @@ description: Result of parsing revolve_about_edge.kcl
               {
                 "arguments": [
                   {
-                    "end": 259,
+                    "end": 271,
                     "properties": [
                       {
-                        "end": 216,
+                        "end": 228,
                         "key": {
-                          "end": 211,
+                          "end": 223,
                           "name": "angle",
-                          "start": 206,
+                          "start": 218,
                           "type": "Identifier"
                         },
-                        "start": 206,
+                        "start": 218,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 216,
+                          "end": 228,
                           "raw": "90",
-                          "start": 214,
+                          "start": 226,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -297,63 +307,63 @@ description: Result of parsing revolve_about_edge.kcl
                         }
                       },
                       {
-                        "end": 252,
+                        "end": 264,
                         "key": {
-                          "end": 229,
+                          "end": 241,
                           "name": "axis",
-                          "start": 225,
+                          "start": 237,
                           "type": "Identifier"
                         },
-                        "start": 225,
+                        "start": 237,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 252,
+                          "end": 264,
                           "name": "rectangleSegmentB001",
-                          "start": 232,
+                          "start": 244,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
-                    "start": 197,
+                    "start": 209,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 262,
-                    "start": 261,
+                    "end": 274,
+                    "start": 273,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 196,
+                  "end": 208,
                   "name": "revolve",
-                  "start": 189,
+                  "start": 201,
                   "type": "Identifier"
                 },
-                "end": 263,
-                "start": 189,
+                "end": 275,
+                "start": 201,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 263,
-            "start": 120,
+            "end": 275,
+            "start": 132,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 108,
+          "start": 120,
           "type": "VariableDeclarator"
         },
-        "end": 263,
+        "end": 275,
         "kind": "const",
-        "start": 108,
+        "start": 120,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 264,
+    "end": 276,
     "start": 0
   }
 }
