@@ -1,5 +1,7 @@
 //! Data on available annotations.
 
+use std::str::FromStr;
+
 use kittycad_modeling_cmds::coord::{System, KITTYCAD, OPENGL, VULKAN};
 
 use crate::{
@@ -29,6 +31,27 @@ pub(crate) const IMPL_RUST: &str = "std_rust";
 pub(crate) const IMPL_KCL: &str = "kcl";
 pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
 pub(super) const IMPL_VALUES: [&str; 3] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE];
+
+#[derive(Clone, Copy, Eq, PartialEq, Debug, Default)]
+pub enum Impl {
+    #[default]
+    Kcl,
+    Rust,
+    Primitive,
+}
+
+impl FromStr for Impl {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            IMPL_RUST => Ok(Self::Rust),
+            IMPL_KCL => Ok(Self::Kcl),
+            IMPL_PRIMITIVE => Ok(Self::Primitive),
+            _ => Err(()),
+        }
+    }
+}
 
 pub(crate) fn settings_completion_text() -> String {
     format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_UNIT_ANGLE} = deg)")
@@ -64,7 +87,7 @@ pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
     }
 }
 
-pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRange) -> Result<Option<&str>, KclError> {
+pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRange) -> Result<Option<Impl>, KclError> {
     for attr in annotations {
         if attr.name.is_some() || attr.properties.is_none() {
             continue;
@@ -72,18 +95,16 @@ pub(super) fn get_impl(annotations: &[Node<Annotation>], source_range: SourceRan
         for p in attr.properties.as_ref().unwrap() {
             if &*p.key.name == IMPL {
                 if let Some(s) = p.value.ident_name() {
-                    if IMPL_VALUES.contains(&s) {
-                        return Ok(Some(s));
-                    } else {
-                        return Err(KclError::Semantic(KclErrorDetails {
+                    return Impl::from_str(s).map(Some).map_err(|_| {
+                        KclError::Semantic(KclErrorDetails {
                             message: format!(
                                 "Invalid value for {} attribute, expected one of: {}",
                                 IMPL,
                                 IMPL_VALUES.join(", ")
                             ),
                             source_ranges: vec![source_range],
-                        }));
-                    }
+                        })
+                    });
                 }
             }
         }

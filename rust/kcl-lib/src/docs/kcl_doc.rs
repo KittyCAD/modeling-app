@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
@@ -128,7 +130,7 @@ impl DocData {
             DocData::Fn(f) => &f.qual_name,
             DocData::Const(c) => &c.qual_name,
             DocData::Ty(t) => {
-                if t.properties.impl_kind == ImplKind::Primitive {
+                if t.properties.impl_kind == annotations::Impl::Primitive {
                     return "Primitive types".to_owned();
                 }
                 &t.qual_name
@@ -177,7 +179,7 @@ impl DocData {
             DocData::Const(c) => c.examples.iter(),
             DocData::Ty(t) => t.examples.iter(),
         }
-        .map(|(s, _)| s)
+        .filter_map(|(s, p)| (!p.norun).then_some(s))
     }
 }
 
@@ -233,7 +235,7 @@ impl ConstData {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
                 doc_hidden: false,
-                impl_kind: ImplKind::Kcl,
+                impl_kind: annotations::Impl::Kcl,
             },
             summary: None,
             description: None,
@@ -324,7 +326,7 @@ impl FnData {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
                 doc_hidden: false,
-                impl_kind: ImplKind::Kcl,
+                impl_kind: annotations::Impl::Kcl,
             },
             summary: None,
             description: None,
@@ -444,14 +446,7 @@ pub struct Properties {
     pub doc_hidden: bool,
     #[allow(dead_code)]
     pub exported: bool,
-    pub impl_kind: ImplKind,
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub enum ImplKind {
-    Kcl,
-    Rust,
-    Primitive,
+    pub impl_kind: annotations::Impl,
 }
 
 #[allow(dead_code)]
@@ -572,7 +567,7 @@ impl TyData {
                 exported: !ty.visibility.is_default(),
                 deprecated: false,
                 doc_hidden: false,
-                impl_kind: ImplKind::Kcl,
+                impl_kind: annotations::Impl::Kcl,
             },
             summary: None,
             description: None,
@@ -582,7 +577,7 @@ impl TyData {
 
     #[allow(dead_code)]
     pub fn qual_name(&self) -> &str {
-        if self.properties.impl_kind == ImplKind::Primitive {
+        if self.properties.impl_kind == annotations::Impl::Primitive {
             &self.name
         } else {
             &self.qual_name
@@ -635,7 +630,7 @@ trait ApplyMeta {
     );
     fn deprecated(&mut self, deprecated: bool);
     fn doc_hidden(&mut self, doc_hidden: bool);
-    fn impl_kind(&mut self, impl_kind: ImplKind);
+    fn impl_kind(&mut self, impl_kind: annotations::Impl);
 
     fn with_meta(&mut self, meta: &[Node<NonCodeNode>], attrs: &[Node<Annotation>]) {
         for attr in attrs {
@@ -649,12 +644,7 @@ trait ApplyMeta {
                     match &*p.key.name {
                         annotations::IMPL => {
                             if let Some(s) = p.value.ident_name() {
-                                self.impl_kind(match s {
-                                    annotations::IMPL_KCL => ImplKind::Kcl,
-                                    annotations::IMPL_RUST => ImplKind::Rust,
-                                    annotations::IMPL_PRIMITIVE => ImplKind::Primitive,
-                                    _ => unreachable!(),
-                                });
+                                self.impl_kind(annotations::Impl::from_str(s).unwrap());
                             }
                         }
                         "deprecated" => {
@@ -787,7 +777,7 @@ impl ApplyMeta for ConstData {
         self.properties.doc_hidden = doc_hidden;
     }
 
-    fn impl_kind(&mut self, _impl_kind: ImplKind) {}
+    fn impl_kind(&mut self, _impl_kind: annotations::Impl) {}
 }
 
 impl ApplyMeta for FnData {
@@ -810,7 +800,7 @@ impl ApplyMeta for FnData {
         self.properties.doc_hidden = doc_hidden;
     }
 
-    fn impl_kind(&mut self, impl_kind: ImplKind) {
+    fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
     }
 }
@@ -835,7 +825,7 @@ impl ApplyMeta for TyData {
         self.properties.doc_hidden = doc_hidden;
     }
 
-    fn impl_kind(&mut self, impl_kind: ImplKind) {
+    fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
     }
 }

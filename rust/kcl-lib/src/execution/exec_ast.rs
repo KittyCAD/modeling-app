@@ -287,10 +287,9 @@ impl ExecutorContext {
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
-                    let impl_kind =
-                        annotations::get_impl(&ty.outer_attrs, metadata.source_range)?.unwrap_or(annotations::IMPL_KCL);
+                    let impl_kind = annotations::get_impl(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
                     match impl_kind {
-                        annotations::IMPL_RUST => {
+                        annotations::Impl::Rust => {
                             let std_path = match &exec_state.mod_local.settings.std_path {
                                 Some(p) => p,
                                 None => {
@@ -319,14 +318,13 @@ impl ExecutorContext {
                                 })?;
                         }
                         // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
-                        annotations::IMPL_PRIMITIVE => {}
-                        annotations::IMPL_KCL => {
+                        annotations::Impl::Primitive => {}
+                        annotations::Impl::Kcl => {
                             return Err(KclError::Semantic(KclErrorDetails {
                                 message: "User-defined types are not yet supported.".to_owned(),
                                 source_ranges: vec![metadata.source_range],
                             }));
                         }
-                        _ => unreachable!(),
                     }
 
                     last_expr = None;
@@ -566,7 +564,7 @@ impl ExecutorContext {
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
                 let rust_impl = annotations::get_impl(annotations, metadata.source_range)?
-                    .map(|s| s == annotations::IMPL_RUST)
+                    .map(|s| s == annotations::Impl::Rust)
                     .unwrap_or(false);
 
                 if rust_impl {

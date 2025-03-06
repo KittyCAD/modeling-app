@@ -17,17 +17,17 @@ macro_rules! println {
     }
 }
 
-// #[allow(unused_macros)]
-// macro_rules! eprintln {
-//     ($($rest:tt)*) => {
-//         #[cfg(feature = "disable-println")]
-//         {
-//             let _ = format!($($rest)*);
-//         }
-//         #[cfg(not(feature = "disable-println"))]
-//         std::eprintln!($($rest)*)
-//     }
-// }
+#[allow(unused_macros)]
+macro_rules! eprintln {
+    ($($rest:tt)*) => {
+        #[cfg(feature = "disable-println")]
+        {
+            let _ = format!($($rest)*);
+        }
+        #[cfg(not(feature = "disable-println"))]
+        std::eprintln!($($rest)*)
+    }
+}
 
 #[allow(unused_macros)]
 macro_rules! print {
@@ -41,17 +41,17 @@ macro_rules! print {
     }
 }
 
-// #[allow(unused_macros)]
-// macro_rules! eprint {
-//     ($($rest:tt)*) => {
-//         #[cfg(feature = "disable-println")]
-//         {
-//             let _ = format!($($rest)*);
-//         }
-//         #[cfg(not(feature = "disable-println"))]
-//         std::eprint!($($rest)*)
-//     }
-// }
+#[allow(unused_macros)]
+macro_rules! eprint {
+    ($($rest:tt)*) => {
+        #[cfg(feature = "disable-println")]
+        {
+            let _ = format!($($rest)*);
+        }
+        #[cfg(not(feature = "disable-println"))]
+        std::eprint!($($rest)*)
+    }
+}
 #[cfg(feature = "dhat-heap")]
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;
