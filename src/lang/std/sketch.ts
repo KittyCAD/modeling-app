@@ -1420,8 +1420,111 @@ export const arc: SketchLineHelper = {
   },
   getTag: getTag(),
   addTag: addTag(),
-  getConstraintInfo: (callExp, code, pathToNode) => {
-    return []
+  getConstraintInfo: (callExp, code, pathToNode, filterValue) => {
+    // TODO this isn't quiet right, the filter value needs to be added to group the radius and start angle together
+    // with the end angle by itself,
+    // also both angles are just called angle, which is not correct
+    if (callExp.type !== 'CallExpression') return []
+    const args = callExp.arguments
+    if (args.length < 1) return []
+
+    const firstArg = args[0]
+    if (firstArg.type !== 'ObjectExpression') return []
+
+    // Find radius, angleStart, and angleEnd properties
+    const radiusProp = firstArg.properties.find(
+      (prop) =>
+        prop.type === 'ObjectProperty' &&
+        prop.key.type === 'Identifier' &&
+        prop.key.name === 'radius'
+    )
+
+    const angleStartProp = firstArg.properties.find(
+      (prop) =>
+        prop.type === 'ObjectProperty' &&
+        prop.key.type === 'Identifier' &&
+        prop.key.name === 'angleStart'
+    )
+
+    const angleEndProp = firstArg.properties.find(
+      (prop) =>
+        prop.type === 'ObjectProperty' &&
+        prop.key.type === 'Identifier' &&
+        prop.key.name === 'angleEnd'
+    )
+
+    if (!radiusProp || !angleStartProp || !angleEndProp) return []
+
+    const pathToFirstArg: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+    ]
+
+    const pathToRadiusProp: PathToNode = [
+      ...pathToFirstArg,
+      ['properties', 'ObjectExpression'],
+      [firstArg.properties.indexOf(radiusProp), 'index'],
+    ]
+
+    const pathToAngleStartProp: PathToNode = [
+      ...pathToFirstArg,
+      ['properties', 'ObjectExpression'],
+      [firstArg.properties.indexOf(angleStartProp), 'index'],
+    ]
+
+    const pathToAngleEndProp: PathToNode = [
+      ...pathToFirstArg,
+      ['properties', 'ObjectExpression'],
+      [firstArg.properties.indexOf(angleEndProp), 'index'],
+    ]
+
+    const pathToRadiusValue: PathToNode = [
+      ...pathToRadiusProp,
+      ['value', 'ObjectProperty'],
+    ]
+
+    const pathToAngleStartValue: PathToNode = [
+      ...pathToAngleStartProp,
+      ['value', 'ObjectProperty'],
+    ]
+
+    const pathToAngleEndValue: PathToNode = [
+      ...pathToAngleEndProp,
+      ['value', 'ObjectProperty'],
+    ]
+
+    const constraints: ConstrainInfo[] = [
+      constrainInfo(
+        'radius',
+        isNotLiteralArrayOrStatic(radiusProp.value),
+        code.slice(radiusProp.value.start, radiusProp.value.end),
+        'arc',
+        'radius',
+        topLevelRange(radiusProp.value.start, radiusProp.value.end),
+        pathToRadiusValue
+      ),
+      constrainInfo(
+        'angle',
+        isNotLiteralArrayOrStatic(angleStartProp.value),
+        code.slice(angleStartProp.value.start, angleStartProp.value.end),
+        'arc',
+        'angleStart',
+        topLevelRange(angleStartProp.value.start, angleStartProp.value.end),
+        pathToAngleStartValue
+      ),
+      constrainInfo(
+        'angle',
+        isNotLiteralArrayOrStatic(angleEndProp.value),
+        code.slice(angleEndProp.value.start, angleEndProp.value.end),
+        'arc',
+        'angleEnd',
+        topLevelRange(angleEndProp.value.start, angleEndProp.value.end),
+        pathToAngleEndValue
+      ),
+    ]
+
+    return constraints
   },
 }
 export const arcTo: SketchLineHelper = {

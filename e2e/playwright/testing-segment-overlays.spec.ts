@@ -927,36 +927,55 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           shouldNormalise: true,
         })
 
-        await page.locator(`[data-stdlib-fn-name="${stdLibFnName}"]`).click()
+        await page
+          .locator(`[data-stdlib-fn-name="${stdLibFnName}"]`)
+          .first()
+          .click()
         await page.getByText('Delete Segment').click()
 
         await editor.expectEditor.not.toContain(codeToBeDeleted, {
           shouldNormalise: true,
         })
       }
-    test('all segment types', async ({ page, editor, homePage }) => {
+    test('all segment types', async ({
+      page,
+      editor,
+      homePage,
+      scene,
+      cmdBar,
+    }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
           `part001 = startSketchOn('XZ')
-      |> startProfileAt([0, 0], %)
-      |> line(end = [0.5, -14 + 0])
-      |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
-      |> line(endAbsolute = [33, 11.5 + 0])
-      |> xLine(endAbsolute = 9 - 5)
-      |> yLine(endAbsolute = -10.77, tag = $a)
-      |> xLine(length = 26.04)
-      |> yLine(length = 21.14 + 0)
-      |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
-      |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
-      |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
-      |> angledLineToY({ angle = 89, to = 9.14 + 0 }, %)
-      |> angledLineThatIntersects({
-     angle = 4.14,
-     intersectTag = a,
-     offset = 9
-         }, %)
-      |> tangentialArcTo([3.14 + 13, 1.14], %)
+  |>startProfileAt([0, 0], %)
+  |> line(end = [0.5, -14 + 0])
+  |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
+  |> line(endAbsolute = [33, 11.5 + 0])
+  |> xLineTo(endAbsolute = 9 - 5)
+  |> yLineTo(endAbsolute = -10.77, tag = $a)
+  |> xLine(length = 26.04)
+  |> yLine(length = 21.14 + 0)
+  |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
+  |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
+  |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
+  |> angledLineToY({ angle = 89, to = 9.14 + 0 }, %)
+  |> angledLineThatIntersects({
+       angle = 4.14,
+       intersectTag = a,
+       offset = 9
+     }, %)
+  |> tangentialArcTo([3.14 + 13, 1.14], %)
+  |> arcTo({
+       interior = [16.25, 5.12],
+       end = [21.61, 4.15]
+     }, %)
+  |> arc({
+       radius = 9.03,
+       angleStart = 40.27,
+       angleEnd = -38.05
+     }, %)
+
       `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -965,27 +984,55 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
       await u.waitForPageLoad()
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
-
-      await page.getByText('xLine(endAbsolute = 9 - 5)').click()
+      await page.getByText('xLineTo(endAbsolute = 9 - 5)').click()
       await page.waitForTimeout(100)
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
       await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(16)
       const deleteSegmentSequence = _deleteSegmentSequence(page, editor)
 
       let segmentToDelete
 
       const getOverlayByIndex = (index: number) =>
         u.getBoundingBox(`[data-overlay-index="${index}"]`)
+
+      segmentToDelete = await getOverlayByIndex(14)
+      let ang = await u.getAngle(`[data-overlay-index="${14}"]`)
+
+      await editor.scrollToText('angleEnd')
+
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
+        codeToBeDeleted: `arc({
+       radius = 9.03,
+       angleStart = 40.27,
+       angleEnd = -38.05
+     }, %)`,
+        stdLibFnName: 'arc',
+        ang: ang + 180,
+        steps: 6,
+        locator: '[data-overlay-toolbar-index="14"]',
+      })
+      segmentToDelete = await getOverlayByIndex(13)
+      ang = await u.getAngle(`[data-overlay-index="${13}"]`)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
+        codeToBeDeleted: `arcTo({
+       interior = [16.25, 5.12],
+       end = [21.61, 4.15]
+     }, %)`,
+        stdLibFnName: 'arcTo',
+        ang: ang,
+        steps: 6,
+        locator: '[data-overlay-toolbar-index="13"]',
+      })
       segmentToDelete = await getOverlayByIndex(12)
-      let ang = await u.getAngle(`[data-overlay-index="${12}"]`)
+      ang = await u.getAngle(`[data-overlay-index="${12}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'tangentialArcTo([3.14 + 13, 1.14], %)',
