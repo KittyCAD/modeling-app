@@ -225,7 +225,32 @@ const Home = () => {
             </Link>
             .
           </p>
-          { !readWriteProjectDir.value && <p className="bg-destroy-80 text-destory-10 p-1 my-4 rounded-b-sm">{readWriteProjectDir.error.message}</p>}
+          { !readWriteProjectDir.value &&
+
+            <section>
+              <div className="flex justify-between items-center select-none">
+                <div className="flex gap-8 items-center grow">
+                  <p className="bg-destroy-80 text-destory-10 p-1 my-2 rounded-b-sm grow">{readWriteProjectDir.error.message}</p>
+                  <ActionButton
+                    Element="button"
+                    iconStart={{
+                      icon: 'settings',
+                      size: 'sm',
+                      className:'group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15',
+                    }}
+                  >
+                    <Link
+              data-testid="project-directory-settings-link"
+              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+              className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+            >
+                    Change Project Directory
+            </Link>
+              </ActionButton>
+            </div>
+          </div>
+        </section>
+          }
         </section>
         <section
           data-testid="home-section"
