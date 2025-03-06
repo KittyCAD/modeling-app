@@ -291,7 +291,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
     // Review step and argument hotkeys
     await expect(submitButton).toBeEnabled()
     await expect(submitButton).toBeFocused()
-    await submitButton.press('Backspace')
+    await submitButton.press('Shift+Backspace')
 
     // Assert we're back on the distance step
     await expect(
