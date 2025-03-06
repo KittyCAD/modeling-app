@@ -30,8 +30,6 @@ jobs:
         name: Check for significant, non-kcl-samples changes
         uses: dorny/paths-filter@v3
         with:
-          # Don't combine this with other path checks since this requires
-          # everything to match.
           predicate-quantifier: every
           filters: |
             significant:
