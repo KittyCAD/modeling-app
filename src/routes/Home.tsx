@@ -25,6 +25,7 @@ import { useProjectsContext } from 'hooks/useProjectsContext'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 import { useSettings } from 'machines/appMachine'
+import { reportRejection } from 'lib/trap'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -32,6 +33,7 @@ const Home = () => {
   const { state, send } = useProjectsContext()
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
+  const [readWriteProjectDir, setReadWriteProjectDir] = useState({value: true, error: undefined})
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery((argDefaultValues) => {
@@ -91,6 +93,10 @@ const Home = () => {
         defaultDirectory: settings.app.projectDirectory.current,
       },
     })
+
+    window.electron.canReadWriteDirectory(settings.app.projectDirectory.current).then((res)=>{
+      setReadWriteProjectDir(res)
+    }).catch(reportRejection)
   }, [
     settings.app.projectDirectory.current,
     settings.projects.defaultProjectName.current,
@@ -219,6 +225,7 @@ const Home = () => {
             </Link>
             .
           </p>
+          { !readWriteProjectDir.value && <p className="bg-destroy-80 text-destory-10 p-1 my-4 rounded-b-sm">{readWriteProjectDir.error.message}</p>}
         </section>
         <section
           data-testid="home-section"

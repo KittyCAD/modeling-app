@@ -106,6 +106,24 @@ const statIsDirectory = (path: string) =>
   stat(path).then((res) => res.isDirectory())
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
+const canReadWriteDirectory = async (path: string) : Promise<{value: boolean, error: unknown }> => {
+  const isDirectory = await statIsDirectory(path)
+  if (!isDirectory) {
+    throw new Error('path is not a directory. Do not send a file path.')
+  }
+
+  // bitwise OR to check read and write permissions
+  try {
+    const canReadWrite = await fs.access(path, fs.constants.R_OK | fs.constants.W_OK)
+    // This function returns undefined. If it cannot access the path it will throw an error
+    return canReadWrite === undefined ? { value: true, error: undefined} : {value: false, error: undefined}
+  } catch (e) {
+    console.error(e)
+    return {value: false, error: e}
+  }
+
+}
+
 const exposeProcessEnvs = (varNames: Array<string>) => {
   const envs: Record<string, string> = {}
   varNames.forEach((varName) => {
@@ -211,4 +229,5 @@ contextBridge.exposeInMainWorld('electron', {
   appCheckForUpdates,
   getArgvParsed,
   resizeWindow,
+  canReadWriteDirectory
 })
