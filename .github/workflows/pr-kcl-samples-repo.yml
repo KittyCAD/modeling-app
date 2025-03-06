@@ -46,6 +46,7 @@ jobs:
       - name: Commit the changes in the repo
         shell: bash
         run: |
+          set -euo pipefail
           cd kcl-samples-repo
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
