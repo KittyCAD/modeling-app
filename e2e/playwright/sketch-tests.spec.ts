@@ -2088,7 +2088,7 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
   test(
     'can enter sketch when there is an extrude',
     { tag: ['@skipWin'] },
-    async ({ homePage, scene, toolbar, page }) => {
+    async ({ homePage, scene, toolbar, page, cmdBar }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -2125,6 +2125,8 @@ extrude001 = extrude(profile003, length = 5)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -2137,9 +2139,11 @@ extrude001 = extrude(profile003, length = 5)
       await page.waitForTimeout(600)
 
       await test.step('check the sketch is still drawn properly', async () => {
-        await scene.expectPixelColor([255, 255, 255], { x: 596, y: 165 }, 15)
-        await scene.expectPixelColor([255, 255, 255], { x: 641, y: 220 }, 15)
-        await scene.expectPixelColor([255, 255, 255], { x: 763, y: 214 }, 15)
+        await Promise.all([
+          scene.expectPixelColor([255, 255, 255], { x: 596, y: 165 }, 15),
+          scene.expectPixelColor([255, 255, 255], { x: 641, y: 220 }, 15),
+          scene.expectPixelColor([255, 255, 255], { x: 763, y: 214 }, 15),
+        ])
       })
     }
   )
@@ -2292,7 +2296,7 @@ extrude001 = extrude(thePart, length = 75)
   test(
     'Can enter sketch on sketch of wall and cap for segment, solid2d, extrude-wall, extrude-cap selections',
     { tag: ['@skipWin'] },
-    async ({ homePage, scene, toolbar, editor, page }) => {
+    async ({ homePage, scene, toolbar, editor, page, cmdBar }) => {
       // TODO this test should include a test for selecting revolve walls and caps
 
       await page.addInitScript(async () => {
@@ -2377,6 +2381,8 @@ extrude003 = extrude(profile011, length = 2.5)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -2439,39 +2445,22 @@ extrude003 = extrude(profile011, length = 2.5)
 
       const verifyWallProfilesAreDrawn = async () =>
         test.step('verify wall profiles are drawn', async () => {
-          // open polygon
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 599, y: 168 },
-            15
-          )
-          // closed polygon
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 656, y: 171 },
-            15
-          )
-          // revolved profile
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 655, y: 264 },
-            15
-          )
-          // extruded profile
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 808, y: 396 },
-            15
-          )
-          // circle
-          await scene.expectPixelColor(
-            [
-              TEST_COLORS.WHITE,
-              TEST_COLORS.BLUE, // When entering via the circle, it's selected and therefore blue
-            ],
-            { x: 742, y: 386 },
-            15
-          )
+          await Promise.all([
+            // open polygon
+            scene.expectPixelColor(TEST_COLORS.WHITE, { x: 599, y: 168 }, 15),
+            // closed polygon
+            scene.expectPixelColor(TEST_COLORS.WHITE, { x: 656, y: 171 }, 15),
+            // revolved profile
+            scene.expectPixelColor(TEST_COLORS.WHITE, { x: 655, y: 264 }, 15),
+            // extruded profile
+            scene.expectPixelColor(TEST_COLORS.WHITE, { x: 808, y: 396 }, 15),
+            // circle (When entering via the circle, it's selected and therefore blue)
+            scene.expectPixelColor(
+              [TEST_COLORS.WHITE, TEST_COLORS.BLUE],
+              { x: 742, y: 386 },
+              15
+            ),
+          ])
         })
 
       const verifyCapProfilesAreDrawn = async () =>
