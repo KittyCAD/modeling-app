@@ -142,7 +142,7 @@ async fn execute_test(test: &Test, render_to_png: bool) {
         Ok((exec_state, env_ref, png)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
-                panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl/{}", fail_path.to_string_lossy())
+                panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl-lib/{}", fail_path.to_string_lossy())
             }
             if render_to_png {
                 twenty_twenty::assert_image(test.output_dir.join("rendered_model.png"), &png, 0.99);
@@ -182,7 +182,7 @@ async fn execute_test(test: &Test, render_to_png: bool) {
                     let report = error.clone().into_miette_report_with_outputs().unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
-                        eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl/{} and other associated passing artifacts", ok_path.to_string_lossy());
+                        eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl-lib/{} and other associated passing artifacts", ok_path.to_string_lossy());
                         panic!("{report:?}");
                     }
                     let report = format!("{:?}", report);
