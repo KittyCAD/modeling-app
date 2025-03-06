@@ -1,0 +1,1039 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing walkie-talkie.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "end": 432,
+        "path": {
+          "type": "Kcl",
+          "filename": "body.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 415,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 453,
+        "path": {
+          "type": "Kcl",
+          "filename": "antenna.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 433,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 471,
+        "path": {
+          "type": "Kcl",
+          "filename": "case.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 454,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 510,
+        "path": {
+          "type": "Kcl",
+          "filename": "talk-button.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "end": 510,
+            "name": "talkButton",
+            "start": 500,
+            "type": "Identifier"
+          }
+        },
+        "start": 472,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 528,
+        "path": {
+          "type": "Kcl",
+          "filename": "knob.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": null
+        },
+        "start": 511,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 560,
+        "path": {
+          "type": "Kcl",
+          "filename": "button.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 542,
+              "name": {
+                "end": 542,
+                "name": "button",
+                "start": 536,
+                "type": "Identifier"
+              },
+              "start": 536,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 529,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 666,
+        "path": {
+          "type": "Kcl",
+          "filename": "globals.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 573,
+              "name": {
+                "end": 573,
+                "name": "width",
+                "start": 568,
+                "type": "Identifier"
+              },
+              "start": 568,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 581,
+              "name": {
+                "end": 581,
+                "name": "height",
+                "start": 575,
+                "type": "Identifier"
+              },
+              "start": 575,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 592,
+              "name": {
+                "end": 592,
+                "name": "thickness",
+                "start": 583,
+                "type": "Identifier"
+              },
+              "start": 583,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 605,
+              "name": {
+                "end": 605,
+                "name": "screenWidth",
+                "start": 594,
+                "type": "Identifier"
+              },
+              "start": 594,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 619,
+              "name": {
+                "end": 619,
+                "name": "screenHeight",
+                "start": 607,
+                "type": "Identifier"
+              },
+              "start": 607,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 636,
+              "name": {
+                "end": 636,
+                "name": "screenYPosition",
+                "start": 621,
+                "type": "Identifier"
+              },
+              "start": 621,
+              "type": "ImportItem"
+            },
+            {
+              "alias": null,
+              "end": 647,
+              "name": {
+                "end": 647,
+                "name": "tolerance",
+                "start": 638,
+                "type": "Identifier"
+              },
+              "start": 638,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 561,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 691,
+        "expression": {
+          "end": 691,
+          "name": "body",
+          "start": 687,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 687,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 716,
+        "expression": {
+          "end": 716,
+          "name": "case",
+          "start": 712,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 712,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 747,
+        "expression": {
+          "end": 747,
+          "name": "antenna",
+          "start": 740,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 740,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 876,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "argument": {
+                    "end": 811,
+                    "left": {
+                      "end": 799,
+                      "left": {
+                        "end": 795,
+                        "name": "screenWidth",
+                        "start": 784,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 799,
+                        "raw": "2",
+                        "start": 798,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 784,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 811,
+                      "name": "tolerance",
+                      "start": 802,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 784,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 811,
+                  "operator": "-",
+                  "start": 782,
+                  "type": "UnaryExpression",
+                  "type": "UnaryExpression"
+                },
+                {
+                  "end": 831,
+                  "name": "screenYPosition",
+                  "start": 816,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "end": 833,
+              "start": 778,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            },
+            {
+              "end": 836,
+              "raw": "0",
+              "start": 835,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 862,
+                    "name": "offset",
+                    "start": 856,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 874,
+                    "name": "thickness",
+                    "start": 865,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 849,
+                "name": "offsetPlane",
+                "start": 838,
+                "type": "Identifier"
+              },
+              "end": 875,
+              "start": 838,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 854,
+                "raw": "\"XZ\"",
+                "start": 850,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "XZ"
+              }
+            }
+          ],
+          "callee": {
+            "end": 777,
+            "name": "button",
+            "start": 771,
+            "type": "Identifier"
+          },
+          "end": 876,
+          "start": 771,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 771,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1003,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "argument": {
+                    "end": 917,
+                    "left": {
+                      "end": 905,
+                      "left": {
+                        "end": 901,
+                        "name": "screenWidth",
+                        "start": 890,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 905,
+                        "raw": "2",
+                        "start": 904,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 890,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 917,
+                      "name": "tolerance",
+                      "start": 908,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 890,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 917,
+                  "operator": "-",
+                  "start": 888,
+                  "type": "UnaryExpression",
+                  "type": "UnaryExpression"
+                },
+                {
+                  "end": 957,
+                  "left": {
+                    "end": 937,
+                    "name": "screenYPosition",
+                    "start": 922,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "-",
+                  "right": {
+                    "end": 957,
+                    "left": {
+                      "end": 953,
+                      "name": "screenHeight",
+                      "start": 941,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "end": 957,
+                      "raw": "2",
+                      "start": 956,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 941,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "start": 922,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              ],
+              "end": 960,
+              "start": 884,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            },
+            {
+              "end": 963,
+              "raw": "0",
+              "start": 962,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 989,
+                    "name": "offset",
+                    "start": 983,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 1001,
+                    "name": "thickness",
+                    "start": 992,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 976,
+                "name": "offsetPlane",
+                "start": 965,
+                "type": "Identifier"
+              },
+              "end": 1002,
+              "start": 965,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 981,
+                "raw": "\"XZ\"",
+                "start": 977,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "XZ"
+              }
+            }
+          ],
+          "callee": {
+            "end": 883,
+            "name": "button",
+            "start": 877,
+            "type": "Identifier"
+          },
+          "end": 1003,
+          "start": 877,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 877,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1123,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "end": 1042,
+                  "left": {
+                    "end": 1030,
+                    "left": {
+                      "end": 1026,
+                      "name": "screenWidth",
+                      "start": 1015,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "end": 1030,
+                      "raw": "2",
+                      "start": 1029,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 1015,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 1042,
+                    "name": "tolerance",
+                    "start": 1033,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1015,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                {
+                  "end": 1076,
+                  "left": {
+                    "end": 1061,
+                    "name": "screenYPosition",
+                    "start": 1046,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "-",
+                  "right": {
+                    "end": 1076,
+                    "name": "screenHeight",
+                    "start": 1064,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1046,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              ],
+              "end": 1078,
+              "start": 1011,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            },
+            {
+              "end": 1083,
+              "raw": "180",
+              "start": 1080,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 180.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 1109,
+                    "name": "offset",
+                    "start": 1103,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 1121,
+                    "name": "thickness",
+                    "start": 1112,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 1096,
+                "name": "offsetPlane",
+                "start": 1085,
+                "type": "Identifier"
+              },
+              "end": 1122,
+              "start": 1085,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 1101,
+                "raw": "\"XZ\"",
+                "start": 1097,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "XZ"
+              }
+            }
+          ],
+          "callee": {
+            "end": 1010,
+            "name": "button",
+            "start": 1004,
+            "type": "Identifier"
+          },
+          "end": 1123,
+          "start": 1004,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1004,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1249,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "end": 1162,
+                  "left": {
+                    "end": 1150,
+                    "left": {
+                      "end": 1146,
+                      "name": "screenWidth",
+                      "start": 1135,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "end": 1150,
+                      "raw": "2",
+                      "start": 1149,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 1135,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 1162,
+                    "name": "tolerance",
+                    "start": 1153,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1135,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                {
+                  "end": 1201,
+                  "left": {
+                    "end": 1181,
+                    "name": "screenYPosition",
+                    "start": 1166,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "-",
+                  "right": {
+                    "end": 1201,
+                    "left": {
+                      "end": 1197,
+                      "name": "screenHeight",
+                      "start": 1185,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "end": 1201,
+                      "raw": "2",
+                      "start": 1200,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 1185,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "start": 1166,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              ],
+              "end": 1204,
+              "start": 1131,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            },
+            {
+              "end": 1209,
+              "raw": "180",
+              "start": 1206,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 180.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 1235,
+                    "name": "offset",
+                    "start": 1229,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 1247,
+                    "name": "thickness",
+                    "start": 1238,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 1222,
+                "name": "offsetPlane",
+                "start": 1211,
+                "type": "Identifier"
+              },
+              "end": 1248,
+              "start": 1211,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 1227,
+                "raw": "\"XZ\"",
+                "start": 1223,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "XZ"
+              }
+            }
+          ],
+          "callee": {
+            "end": 1130,
+            "name": "button",
+            "start": 1124,
+            "type": "Identifier"
+          },
+          "end": 1249,
+          "start": 1124,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1124,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1287,
+        "expression": {
+          "end": 1287,
+          "name": "talkButton",
+          "start": 1277,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 1277,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1324,
+        "expression": {
+          "end": 1324,
+          "name": "knob",
+          "start": 1320,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 1320,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 1330,
+    "innerAttrs": [
+      {
+        "end": 383,
+        "name": {
+          "end": 359,
+          "name": "settings",
+          "start": 351,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 382,
+            "key": {
+              "end": 377,
+              "name": "defaultLengthUnit",
+              "start": 360,
+              "type": "Identifier"
+            },
+            "start": 360,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 382,
+              "name": "in",
+              "start": 380,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 350,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "6": [
+          {
+            "end": 686,
+            "start": 666,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Import the body",
+              "style": "line"
+            }
+          }
+        ],
+        "7": [
+          {
+            "end": 711,
+            "start": 691,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Import the case",
+              "style": "line"
+            }
+          }
+        ],
+        "8": [
+          {
+            "end": 739,
+            "start": 716,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Import the antenna",
+              "style": "line"
+            }
+          }
+        ],
+        "9": [
+          {
+            "end": 770,
+            "start": 747,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Import the buttons",
+              "style": "line"
+            }
+          }
+        ],
+        "13": [
+          {
+            "end": 1276,
+            "start": 1249,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Import the talk button",
+              "style": "line"
+            }
+          }
+        ],
+        "14": [
+          {
+            "end": 1319,
+            "start": 1289,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Import the frequency knob",
+              "style": "line"
+            }
+          }
+        ],
+        "15": [
+          {
+            "end": 1330,
+            "start": 1324,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 16,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Walkie Talkie",
+            "style": "line"
+          }
+        },
+        {
+          "end": 335,
+          "start": 17,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.",
+            "style": "line"
+          }
+        },
+        {
+          "end": 337,
+          "start": 335,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 349,
+          "start": 337,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Set units",
+            "style": "line"
+          }
+        },
+        {
+          "end": 385,
+          "start": 383,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 414,
+          "start": 385,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Import parts and constants",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

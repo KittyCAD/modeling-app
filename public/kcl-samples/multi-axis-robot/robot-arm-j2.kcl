@@ -1,0 +1,99 @@
+// J2 Axis for Robot Arm
+
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+
+import axisJ1, axisJ2, axisJ2ArmWidth, axisJ2ArmLength, axisJ2ArmThickness, plane003 from "globals.kcl"
+
+// Create Body of J2 Robot Arm
+sketch011 = startSketchOn(plane003)
+  |> startProfileAt([
+       1.75 - (axisJ2ArmWidth / 2 * sin(toRadians(axisJ2))),
+       8 + axisJ2ArmWidth / 2 * cos(toRadians(axisJ2))
+     ], %)
+  |> arc({
+       angleStart = 90 + axisJ2,
+       angleEnd = 270 + axisJ2,
+       radius = axisJ2ArmWidth / 2
+     }, %)
+  |> angledLine({
+       angle = axisJ2,
+       length = axisJ2ArmLength
+     }, %)
+  |> arc({
+       angleStart = -90 + axisJ2,
+       angleEnd = 90 + axisJ2,
+       radius = axisJ2ArmWidth / 2
+     }, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude011 = extrude(sketch011, length = -axisJ2ArmThickness)
+
+sketch012 = startSketchOn(extrude011, 'START')
+  |> circle(center = [-1.75, 8], radius = 1.9, tag = $referenceEdge4)
+
+extrude012 = extrude(sketch012, length = 0.15)
+  |> fillet(
+       radius = 0.1,
+       tags = [getOppositeEdge(referenceEdge4)]
+     )
+sketch013 = startSketchOn(extrude011, 'START')
+  |> circle(
+     center = [
+         -1.75 - (axisJ2ArmLength * cos(toRadians(axisJ2))),
+         8 + axisJ2ArmLength * sin(toRadians(axisJ2))
+       ],
+     radius = 1.9,
+     tag = $referenceEdge5)
+
+extrude013 = extrude(sketch013, length = 1)
+  |> fillet(
+       radius = 0.1,
+       tags = [getOppositeEdge(referenceEdge5)]
+     )
+
+// Draw Bolt Patterns on J2 Robot Arm
+sketch014 = startSketchOn(extrude012, 'END')
+  |> circle(center = [-1.75, 6.75], radius = 0.2)
+  |> patternCircular2d(
+       center = [-1.75, 8],
+       instances = 8,
+       arcDegrees = 360,
+       rotateDuplicates = true
+     )
+
+extrude014 = extrude(sketch014, length = 0.15)
+
+sketch015 = startSketchOn(extrude013, 'END')
+  |> circle(
+       center = [
+         -1.75 - ((axisJ2ArmLength - 1) * cos(toRadians(axisJ2))),
+         8 + (axisJ2ArmLength - 1.5) * sin(toRadians(axisJ2))
+       ],
+       radius = 0.2
+     )
+  |> patternCircular2d(
+       center = [
+         -1.75 - (axisJ2ArmLength * cos(toRadians(axisJ2))),
+         8 + axisJ2ArmLength * sin(toRadians(axisJ2))
+       ],
+       instances = 4,
+       arcDegrees = 360,
+       rotateDuplicates = true
+     )
+
+extrude015 = extrude(sketch015, length = 0.15)
+
+sketch016 = startSketchOn(extrude011, 'END')
+  |> circle(
+       center = [
+         1.75 + axisJ2ArmLength * cos(toRadians(axisJ2)),
+         8 + axisJ2ArmLength * sin(toRadians(axisJ2))
+       ],
+       radius = 0.3
+     )
+
+extrude(sketch016, length = 1)
+  |> appearance(color = "#454545", metalness = 90, roughness = 90)

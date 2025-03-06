@@ -1,0 +1,124 @@
+// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define constants like ball diameter, inside diamter, overhange length, and thickness
+outsideDiameter = 1.625
+sphereDia = 0.25
+shaftDia = 0.75
+overallThickness = 0.313
+wallThickness = 0.100
+overHangLength = .3
+nBalls = 10
+chainWidth = sphereDia / 2
+chainThickness = sphereDia / 8
+linkDiameter = sphereDia / 4
+
+customPlane = {
+  plane = {
+    origin = {
+      x = 0,
+      y = 0,
+      z = -overallThickness / 2
+    },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 1, z = 0 },
+    zAxis = { x = 0, y = 0, z = 1 }
+  }
+}
+
+// Sketch the inside bearing piece
+insideWallSketch = startSketchOn(customPlane)
+  |> circle(
+       center = [0, 0],
+       radius = shaftDia / 2 + wallThickness
+     )
+  |> hole(circle(
+       center = [0, 0],
+       radius = shaftDia / 2
+     ), %)
+
+// Extrude the inside bearing piece
+insideWall = extrude(insideWallSketch, length = overallThickness)
+
+// Create the sketch of one of the balls
+ballsSketch = startSketchOn("XY")
+  |> startProfileAt([shaftDia / 2 + wallThickness, 0.001], %)
+  |> arc({
+       angleEnd = 0,
+       angleStart = 180,
+       radius = sphereDia / 2
+     }, %)
+  |> close()
+
+// Revolve the ball to make a sphere and pattern around the inside wall
+balls = revolve({ axis = "X" }, ballsSketch)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = nBalls,
+       rotateDuplicates = true
+     )
+
+// Create the sketch for the chain around the balls
+chainSketch = startSketchOn("XY")
+  |> startProfileAt([
+       shaftDia / 2 + wallThickness + sphereDia / 2 - (chainWidth / 2),
+       0.125 * sin(toRadians(60))
+     ], %)
+  |> arc({
+       angleEnd = 60,
+       angleStart = 120,
+       radius = sphereDia / 2
+     }, %)
+  |> line(end = [0, chainThickness])
+  |> line(end = [-chainWidth, 0])
+  |> close()
+
+// Revolve the chain sketch
+chainHead = revolve({ axis = "X" }, chainSketch)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = nBalls,
+       rotateDuplicates = true
+     )
+
+// Create the sketch for the links in between the chains
+linkSketch = startSketchOn("XZ")
+  |> circle(
+       center = [
+         shaftDia / 2 + wallThickness + sphereDia / 2,
+         0
+       ],
+       radius = linkDiameter / 2
+     )
+
+// Revolve the link sketch
+linkRevolve = revolve({ axis = 'Y', angle = 360 / nBalls }, linkSketch)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = nBalls,
+       rotateDuplicates = true
+     )
+
+// Create the sketch for the outside walls
+outsideWallSketch = startSketchOn(customPlane)
+  |> circle(
+       center = [0, 0],
+       radius = outsideDiameter / 2
+     )
+  |> hole(circle(
+       center = [0, 0],
+       radius = shaftDia / 2 + wallThickness + sphereDia
+     ), %)
+
+outsideWall = extrude(outsideWallSketch, length = overallThickness)
+
+// https://www.mcmaster.com/60355K185/

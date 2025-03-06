@@ -1,0 +1,304 @@
+// Pipe and Flange Assembly
+// A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.
+
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+
+// Define constants
+flangeThickness = .125
+flangeBaseDia = 2
+boreHeight = 1
+flangePipeDia = 1
+mountingHoleDia = 0.425
+screwDia = 0.375
+tol = 0.010
+hexNutScale = 0.90
+wallThickness = 0.5
+screwLength = 1.125
+washerThickness = 0.0625
+screwStart = [
+  0,
+  flangeThickness + washerThickness,
+  1.375
+]
+capRatio = .190 / .313 // Ratio grabbed from another screw
+hexRatio = 5 / 32 / .190 // Ratio grabbed from another screw
+hexStartingAngle = 210 // first angle of hex pattern (degrees)
+hexInteriorAngle = 120 // degrees
+hexChangeAngle = 180 - hexInteriorAngle // degrees
+
+
+screwPlane = {
+  plane = {
+    origin = {
+      x = screwStart[0],
+      y = screwStart[1],
+      z = screwStart[2]
+    },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+    zAxis = { x = 0, y = 1, z = 0 }
+  }
+}
+
+fn capScrew(start, length, dia) {
+  headLength = dia // inch
+  wallToWallLength = hexRatio * dia
+  headDia = dia / capRatio
+  hexWallLength = wallToWallLength / 2 * 1 / cos(toRadians(30)) // inch
+
+
+  // Length of Cap Head is always equal to diameter
+  capHeadLength = dia
+
+  // Create the head of the cap screw
+  screwHeadSketch = startSketchOn(screwPlane)
+    |> circle(
+         center = [0, 0],
+         radius = headDia / 2
+       )
+
+  // Extrude the screw head sketch
+  screwHead = extrude(screwHeadSketch, length = dia)
+
+  // Define the sketch of the hex pattern on the screw head
+  hexPatternSketch = startSketchOn(screwHead, 'end')
+    |> startProfileAt([
+         -start[0] + wallToWallLength / 2,
+         start[2]
+       ], %)
+    |> yLine(-hexWallLength / 2, %)
+    |> angledLine({
+         angle = hexStartingAngle,
+         length = hexWallLength
+       }, %)
+    |> angledLine({
+         angle = hexStartingAngle - hexChangeAngle,
+         length = hexWallLength
+       }, %)
+    |> angledLine({
+         angle = hexStartingAngle - (2 * hexChangeAngle),
+         length = hexWallLength
+       }, %)
+    |> angledLine({
+         angle = hexStartingAngle - (3 * hexChangeAngle),
+         length = hexWallLength
+       }, %)
+    |> angledLine({
+         angle = hexStartingAngle - (4 * hexChangeAngle),
+         length = hexWallLength
+       }, %)
+    |> close()
+  hexPattern = extrude(hexPatternSketch, length = -headLength * 0.75)
+
+  return hexPattern
+}
+
+workingPlane = {
+  plane = {
+    origin = { x = 0, y = flangeThickness, z = 0 },
+    xAxis = { x = 0, y = 0, z = 1 },
+    yAxis = { x = 1, y = 0, z = 0 },
+    zAxis = { x = 0, y = 1, z = 0 }
+  }
+}
+
+// Washer function
+fn washer(plane, start, thk, innerDia, outerDia) {
+  washerSketch = startSketchOn(plane)
+    |> circle(
+         center = [start[0], start[1]],
+         radius = outerDia / 2
+       )
+    |> hole(circle(
+         center = [start[0], start[1]],
+         radius = innerDia / 2
+       ), %)
+    |> extrude(length = thk)
+  return washerSketch
+}
+
+// Hex nut function
+fn hexNut(start, thk, innerDia) {
+  hexNutSketch = startSketchOn({
+         plane = {
+           origin = {
+             x = start[0],
+             y = -wallThickness - washerThickness,
+             z = start[2]
+           },
+           xAxis = { x = 1, y = 0, z = 0 },
+           yAxis = { x = 0, y = 0, z = 1 },
+           zAxis = { x = 0, y = 1, z = 0 }
+         }
+       })
+    |> startProfileAt([0 + innerDia * hexNutScale, 0], %)
+    |> angledLine({
+         angle = 240,
+         length = innerDia * hexNutScale
+       }, %)
+    |> angledLine({
+         angle = 180,
+         length = innerDia * hexNutScale
+       }, %)
+    |> angledLine({
+         angle = 120,
+         length = innerDia * hexNutScale
+       }, %)
+    |> angledLine({
+         angle = 60,
+         length = innerDia * hexNutScale
+       }, %)
+    |> angledLine({ angle = 0, length = innerDia * .90 }, %)
+    |> close()
+    |> hole(circle(
+         center = [0, 0],
+         radius = innerDia / 2
+       ), %)
+    |> extrude(length = -thk)
+  return hexNutSketch
+}
+
+// Mounting holes pattern
+mountingHolePattern = startSketchOn('XZ')
+  |> circle(
+       center = [screwStart[0], screwStart[2]],
+       radius = screwDia / 2 + tol
+     )
+  |> patternCircular2d(
+       arcDegrees = 360,
+       center = [0, 0],
+       instances = 7,
+       rotateDuplicates = true
+     )
+
+// Sketch and revolve the pipe
+pipe = startSketchOn('XY')
+  |> startProfileAt([flangePipeDia / 2 - tol, 0], %)
+  |> line(end = [0, -2])
+  |> angledLine({ angle = -60, length = .5 }, %)
+  |> line(end = [0, -1])
+  |> line(end = [-flangeThickness, 0])
+  |> line(end = [0, 1])
+  |> angledLine({ angle = -240, length = .5 }, %)
+  |> line(end = [0, 5])
+  |> angledLine({ angle = 60, length = .5 }, %)
+  |> line(end = [0, 1])
+  |> line(end = [flangeThickness, 0])
+  |> line(end = [0, -1])
+  |> angledLine({ angle = 240, length = .5 }, %)
+  |> close()
+  |> revolve({ axis = 'y' }, %)
+  |> appearance(color = "#7b79d7")
+
+// Sketch and extrude the wall
+wall = startSketchOn('XZ')
+  |> startProfileAt([-4, -4], %)
+  |> line(end = [0, 8])
+  |> line(end = [8, 0])
+  |> line(end = [0, -8])
+  |> close()
+  |> hole(mountingHolePattern, %)
+  |> hole(circle(
+       center = [0, 0],
+       radius = flangePipeDia / 2
+     ), %)
+  |> extrude(length = wallThickness)
+  |> appearance(color = "#c7aa8f")
+
+// Sketch and revolve the flange
+flangeBase = startSketchOn('XZ')
+  |> circle(
+       center = [0, 0],
+       radius = flangeBaseDia
+     )
+  |> hole(mountingHolePattern, %)
+  |> hole(circle(
+       center = [0, 0],
+       radius = flangePipeDia / 2
+     ), %)
+  |> extrude(length = -flangeThickness)
+  |> appearance(color = "#9b9797")
+
+// Create the washer and pattern around the flange
+washer(workingPlane, [screwStart[2], screwStart[0]], 0.0625, screwDia + tol, 0.625)
+  |> patternCircular3d(
+       axis = [0, 1, 0],
+       center = [0, 0, 0],
+       instances = 7,
+       arcDegrees = 360,
+       rotateDuplicates = true
+     )
+  |> appearance(color = "#d8da5d")
+
+// Create the cap screw and pattern around the flange
+capScrew([
+       0,
+       flangeThickness + washerThickness,
+       1.375
+     ], screwLength, screwDia)
+  |> patternCircular3d(
+       axis = [0, 1, 0],
+       center = [0, 0, 0],
+       instances = 7,
+       arcDegrees = 360,
+       rotateDuplicates = true
+     )
+  |> appearance(color = "#4cd411")
+
+screwBodySketch = startSketchOn(screwPlane)
+  |> circle(
+       center = [0, 0],
+       radius = screwDia / 2
+     )
+screwBody = extrude(screwBodySketch, length = -screwLength)
+  |> patternCircular3d(
+       axis = [0, 1, 0],
+       center = [0, 0, 0],
+       instances = 7,
+       arcDegrees = 360,
+       rotateDuplicates = true
+     )
+  |> appearance(color = "#4cd411")
+
+// Create a plane for the washers on the back side of the wall
+backSideWasherPlane = {
+  plane = {
+    origin = {
+      x = 0,
+      y = -wallThickness - washerThickness,
+      z = 0
+    },
+    xAxis = { x = 0, y = 0, z = 1 },
+    yAxis = { x = 1, y = 0, z = 0 },
+    zAxis = { x = 0, y = 1, z = 0 }
+  }
+}
+
+// Create the washers on the backside of the wall
+washer(backSideWasherPlane, [screwStart[2], screwStart[0]], 0.0625, screwDia + tol, 0.625)
+  |> patternCircular3d(
+       axis = [0, 1, 0],
+       center = [0, 0, 0],
+       instances = 7,
+       arcDegrees = 360,
+       rotateDuplicates = true
+     )
+  |> appearance(color = "#e8ec09")
+
+// Create the hex nut and pattern around the flange
+hexNut([
+       screwStart[0],
+       screwStart[1],
+       screwStart[2]
+     ], .25, screwDia + tol)
+  |> patternCircular3d(
+       axis = [0, 1, 0],
+       center = [0, 0, 0],
+       instances = 7,
+       arcDegrees = 360,
+       rotateDuplicates = true
+     )
+  |> appearance(color = "#bc3434")
