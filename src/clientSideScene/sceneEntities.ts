@@ -2829,7 +2829,7 @@ export class SceneEntities {
       'type' in segment &&
       segment.type === 'Circle'
     ) {
-      update = segmentUtils.arc.update
+      update = segmentUtils.circle.update
       input = {
         type: 'arc-segment',
         from: segment.from,
