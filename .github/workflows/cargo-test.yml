@@ -108,7 +108,11 @@ jobs:
           git fetch origin
           echo ${{ github.head_ref }}
           git checkout ${{ github.head_ref }}
-          git commit -m "Update kcl-samples simulation test output" || true
+          if ! git commit -m "Update kcl-samples simulation test output" ; then
+            echo "No changes to commit"
+            # This only runs if tests failed, so we should fail the step.
+            exit 1
+          fi
           git push origin ${{ github.head_ref }}
         env:
           # The default is auto, and insta behaves differently in CI vs. not.
