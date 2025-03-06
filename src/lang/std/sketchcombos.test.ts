@@ -21,7 +21,12 @@ import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { codeRefFromRange } from './artifactGraph'
 import { findKwArg } from 'lang/util'
-import { ARG_END, ARG_END_ABSOLUTE } from './sketch'
+import {
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  getArgForEnd,
+  isAbsoluteLine,
+} from './sketch'
 
 beforeAll(async () => {
   await initPromise
@@ -124,9 +129,36 @@ function getConstraintTypeFromSourceHelper2(
 ): ReturnType<typeof getConstraintType> | Error {
   const ast = assertParse(code)
 
-  const arg = (ast.body[0] as any).expression.arguments[0] as Expr
-  const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
-  return getConstraintType(arg, fnName, false)
+  const bodyItem = ast.body[0]
+  if (bodyItem.type !== 'ExpressionStatement') {
+    return new Error('was not a call expression')
+  }
+  const callExpr = bodyItem.expression
+  let arg
+  let isAbsolute = false
+  switch (callExpr.type) {
+    case 'CallExpression':
+      arg = callExpr.arguments[0]
+      break
+    case 'CallExpressionKw':
+      const argEnd = getArgForEnd(callExpr)
+      if (err(argEnd)) {
+        return argEnd
+      }
+      const maybeAbsolute = isAbsoluteLine(callExpr)
+      if (err(maybeAbsolute)) {
+        return maybeAbsolute
+      } else {
+        isAbsolute = maybeAbsolute
+      }
+      arg = argEnd.val
+      break
+    default:
+      return new Error('was not a call expression')
+  }
+  const fnName = callExpr.callee.name as ToolTip
+  const constraintType = getConstraintType(arg, fnName, isAbsolute)
+  return constraintType
 }
 
 function makeSelections(

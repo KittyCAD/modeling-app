@@ -1756,8 +1756,8 @@ export function getConstraintType(
   // completely locked down or not locked down at all does not depend on the fnName so we can check that first
   const isArr = isArray(val)
   if (!isArr) {
-    if (fnName === 'xLine') return 'yRelative'
-    if (fnName === 'yLine') return 'xRelative'
+    if (fnName === 'xLine') return isAbsolute ? 'yAbsolute' : 'yRelative'
+    if (fnName === 'yLine') return isAbsolute ? 'xAbsolute' : 'xRelative'
     if (fnName === 'xLineTo') return 'yAbsolute'
     if (fnName === 'yLineTo') return 'xAbsolute'
   } else {

@@ -3090,6 +3090,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
 
 /**
 Get the argument corresponding to 'end' or 'endAbsolute' or wherever the line actually ends.
+Also known as the 'determining' arg.
 */
 export function getArgForEnd(lineCall: CallExpressionKw):
   | {
