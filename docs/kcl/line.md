@@ -23,13 +23,13 @@ line(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
-| `endAbsolute` | `[number]` | Which absolute point should this line go to? Incompatible with `end`. | No |
-| `end` | `[number]` | How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`. | No |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `endAbsolute` | [`[number]`](/docs/kcl/types/number) | Which absolute point should this line go to? Incompatible with `end`. | No |
+| `end` | [`[number]`](/docs/kcl/types/number) | How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`. | No |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples

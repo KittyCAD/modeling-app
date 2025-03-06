@@ -22,7 +22,7 @@ shell(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | Which solid (or solids) to shell out | Yes |
-| `thickness` | `number` | The thickness of the shell | Yes |
+| `thickness` | [`number`](/docs/kcl/types/number) | The thickness of the shell | Yes |
 | `faces` | [`[FaceTag]`](/docs/kcl/types/FaceTag) | The faces you want removed | Yes |
 
 ### Returns

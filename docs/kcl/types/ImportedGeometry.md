@@ -16,8 +16,8 @@ Data for an imported geometry.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `id` |`string`| The ID of the imported geometry. | No |
-| `value` |`[` `string` `]`| The original file paths. | No |
+| `id` |[`string`](/docs/kcl/types/string)| The ID of the imported geometry. | No |
+| `value` |`[` [`string`](/docs/kcl/types/string) `]`| The original file paths. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 

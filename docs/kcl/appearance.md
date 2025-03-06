@@ -24,8 +24,8 @@ appearance(
 |----------|------|-------------|----------|
 | `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) whose appearance is being set | Yes |
 | `color` | `String` | Color of the new material, a hex string like '#ff0000' | Yes |
-| `metalness` | `number` | Metalness of the new material, a percentage like 95.7. | No |
-| `roughness` | `number` | Roughness of the new material, a percentage like 95.7. | No |
+| `metalness` | [`number`](/docs/kcl/types/number) | Metalness of the new material, a percentage like 95.7. | No |
+| `roughness` | [`number`](/docs/kcl/types/number) | Roughness of the new material, a percentage like 95.7. | No |
 
 ### Returns
 

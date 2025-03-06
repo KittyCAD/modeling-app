@@ -21,9 +21,9 @@ assertLessThanOrEq(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `left` | `number` |  | Yes |
-| `right` | `number` |  | Yes |
-| `message` | `string` |  | Yes |
+| `left` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `right` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `message` | [`string`](/docs/kcl/types/string) |  | Yes |
 
 ### Returns
 

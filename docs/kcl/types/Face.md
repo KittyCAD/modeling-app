@@ -16,9 +16,9 @@ A face.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `id` |`string`| The id of the face. | No |
+| `id` |[`string`](/docs/kcl/types/string)| The id of the face. | No |
 | `artifactId` |[`ArtifactId`](/docs/kcl/types/ArtifactId)| The artifact ID. | No |
-| `value` |`string`| The tag of the face. | No |
+| `value` |[`string`](/docs/kcl/types/string)| The tag of the face. | No |
 | `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the face's X axis be? | No |
 | `yAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the face's Y axis be? | No |
 | `zAxis` |[`Point3d`](/docs/kcl/types/Point3d)| The z-axis (normal). | No |

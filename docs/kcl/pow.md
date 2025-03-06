@@ -24,12 +24,12 @@ pow(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number` |  | Yes |
-| `pow` | `number` |  | Yes |
+| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `pow` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples
