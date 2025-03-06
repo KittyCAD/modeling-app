@@ -254,7 +254,7 @@ const newVar = myVar + 1`
       ],
     })
     expect(mem['yo']).toEqual({
-      type: 'Array',
+      type: 'MixedArray',
       value: [
         {
           type: 'Number',
@@ -520,9 +520,9 @@ const theExtrude = startSketchOn('XY')
 
 // helpers
 
-async function exe(code: string, variables: VariableMap = {}) {
+async function exe(code: string) {
   const ast = assertParse(code)
 
-  const execState = await enginelessExecutor(ast, true, undefined, variables)
+  const execState = await enginelessExecutor(ast, true, undefined)
   return execState.variables
 }

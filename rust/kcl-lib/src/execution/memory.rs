@@ -685,14 +685,6 @@ impl Stack {
             .insert_or_update(key, value, self.id);
     }
 
-    /// Delete an item from memory.
-    ///
-    /// Item will be preserved in any snapshots.
-    pub fn clear(&mut self, key: String) {
-        self.memory.stats.mutation_count.fetch_add(1, Ordering::Relaxed);
-        self.memory.get_env(self.current_env.index()).clear(key, self.id);
-    }
-
     /// Get a value from the program memory.
     /// Return Err if not found.
     pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
@@ -1165,19 +1157,6 @@ mod env {
             self.get_mut_bindings(owner).insert(key, value);
         }
 
-        /// Delete a key/value.
-        ///
-        /// We want to preserve the snapshot, so we can't just remove the element. We copy the deleted
-        /// value to the snapshot and replace the current value with a tombstone.
-        pub(super) fn clear(&self, key: String, owner: usize) {
-            if self.get_bindings().contains_key(&key) {
-                let old = self.get_mut_bindings(owner).insert(key.clone(), tombstone()).unwrap();
-                if let Some(s) = self.cur_snapshot(owner) {
-                    s.data.insert(key, old);
-                }
-            }
-        }
-
         /// Was the key contained in this environment at the specified point in time.
         fn snapshot_contains_key(&self, key: &str, snapshot: SnapshotRef) -> bool {
             for i in snapshot.index()..self.snapshots_len() {
@@ -1569,61 +1548,6 @@ mod test {
             sp,
             vec![(SnapshotRef(1), SnapshotRef(2)), (SnapshotRef(2), SnapshotRef(2))]
         );
-    }
-
-    #[test]
-    fn snap_env_clear() {
-        let mem = &mut Stack::new_for_tests();
-        mem.add("a".to_owned(), val(1), sr()).unwrap();
-
-        mem.add("b".to_owned(), val(3), sr()).unwrap();
-        let sn = mem.snapshot();
-
-        mem.push_new_env_for_call(sn);
-        mem.snapshot();
-        mem.add("b".to_owned(), val(4), sr()).unwrap();
-        mem.snapshot();
-        mem.clear("b".to_owned());
-        mem.clear("a".to_owned());
-
-        assert_get(mem, "b", 3);
-        assert_get(mem, "a", 1);
-
-        mem.pop_env();
-        assert_get(mem, "b", 3);
-        assert_get(mem, "a", 1);
-    }
-
-    #[test]
-    fn snap_env_clear2() {
-        let mem = &mut Stack::new_for_tests();
-        mem.add("a".to_owned(), val(1), sr()).unwrap();
-        mem.add("b".to_owned(), val(3), sr()).unwrap();
-        let sn1 = mem.snapshot();
-        mem.clear("b".to_owned());
-        mem.clear("a".to_owned());
-        mem.get("b", SourceRange::default()).unwrap_err();
-        mem.get("a", SourceRange::default()).unwrap_err();
-
-        let sn = mem.snapshot();
-        mem.push_new_env_for_call(sn);
-        mem.add("b".to_owned(), val(4), sr()).unwrap();
-        let sn2 = mem.snapshot();
-        mem.clear("b".to_owned());
-        mem.clear("a".to_owned());
-        mem.get("b", SourceRange::default()).unwrap_err();
-        mem.get("a", SourceRange::default()).unwrap_err();
-
-        mem.pop_env();
-        mem.get("b", SourceRange::default()).unwrap_err();
-        mem.get("a", SourceRange::default()).unwrap_err();
-
-        assert_get_from(mem, "a", 1, sn1);
-        assert_get_from(mem, "b", 3, sn1);
-        mem.memory
-            .get_from_unchecked("a", sn2, SourceRange::default())
-            .unwrap_err();
-        assert_get_from(mem, "b", 4, sn2);
     }
 
     #[test]

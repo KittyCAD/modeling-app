@@ -25,7 +25,7 @@ use crate::{
 pub type KclObjectFields = HashMap<String, KclValue>;
 
 /// Any KCL value.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {
