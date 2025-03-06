@@ -1,7 +1,12 @@
 import { test, expect } from './zoo-test'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
-import { getUtils, executorInputPath, createProject } from './test-utils'
+import {
+  getUtils,
+  executorInputPath,
+  createProject,
+  tomlToSettings,
+} from './test-utils'
 import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
 import {
@@ -11,6 +16,8 @@ import {
   TEST_SETTINGS_DEFAULT_THEME,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
+import { DeepPartial } from 'lib/types'
+import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 test.describe('Testing settings', () => {
   test(
@@ -18,26 +25,26 @@ test.describe('Testing settings', () => {
     // Override beforeEach test setup
     // with corrupted settings
     {
-      appSettings: TEST_SETTINGS_CORRUPTED,
+      appSettings: TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>,
     },
     async ({ page, homePage }) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       // Check the settings were reset
-      const storedSettings = TOML.parse(
+      const storedSettings = tomlToSettings(
         await page.evaluate(
           ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
           { settingsKey: TEST_SETTINGS_KEY }
         )
-      ) as { settings: SaveSettingsPayload }
+      )
 
       expect(storedSettings.settings?.app?.theme).toBe('dark')
 
       // Check that the invalid settings were changed to good defaults
-      expect(storedSettings.settings?.modeling?.defaultUnit).toBe('in')
-      expect(storedSettings.settings?.modeling?.mouseControls).toBe('Zoo')
-      expect(storedSettings.settings?.app?.projectDirectory).toBe('')
-      expect(storedSettings.settings?.projects?.defaultProjectName).toBe(
+      expect(storedSettings.settings?.modeling?.base_unit).toBe('in')
+      expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
+      expect(storedSettings.settings?.app?.project_directory).toBe('')
+      expect(storedSettings.settings?.project?.default_project_name).toBe(
         'project-$nnn'
       )
     }
@@ -374,7 +381,7 @@ test.describe('Testing settings', () => {
       tag: '@electron',
       appSettings: {
         app: {
-          themeColor: '259',
+          theme_color: '259',
         },
       },
     },
@@ -402,7 +409,7 @@ test.describe('Testing settings', () => {
         app: {
           // Doesn't matter what you set it to. It will
           // default to 264.5
-          themeColor: '0',
+          theme_color: '0',
         },
       },
     },
@@ -833,7 +840,7 @@ test.describe('Testing settings', () => {
       // but "show debug panel" set to false
       appSettings: {
         ...TEST_SETTINGS,
-        app: { ...TEST_SETTINGS.app, showDebugPanel: false },
+        app: { ...TEST_SETTINGS.app, show_debug_panel: false },
         modeling: { ...TEST_SETTINGS.modeling },
       },
     },

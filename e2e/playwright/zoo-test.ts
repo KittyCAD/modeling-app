@@ -18,7 +18,8 @@ import {
   AuthenticatedApp,
 } from './fixtures/fixtureSetup'
 
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import { Settings } from '@rust/kcl-lib/bindings/Settings'
+import { DeepPartial } from 'lib/types'
 export { expect } from '@playwright/test'
 
 declare module '@playwright/test' {
@@ -45,7 +46,7 @@ export type BrowserContext = BrowserContextPlaywright
 export type Page = PagePlaywright
 export type TestDetails = TestDetailsPlaywright & {
   cleanProjectDir?: boolean
-  appSettings?: Partial<SaveSettingsPayload>
+  appSettings?: DeepPartial<Settings>
 }
 
 // Our custom decorated Zoo test object. Makes it easier to add fixtures, and
