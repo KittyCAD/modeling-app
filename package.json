@@ -60,7 +60,7 @@
     "sketch-helpers": "^0.0.4",
     "three": "^0.172.0",
     "ua-parser-js": "^1.0.37",
-    "uuid": "^11.0.2",
+    "uuid": "^11.1.0",
     "vscode-jsonrpc": "^8.2.1",
     "vscode-languageserver-protocol": "^3.17.5",
     "vscode-uri": "^3.0.8",
