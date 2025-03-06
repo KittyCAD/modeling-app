@@ -361,6 +361,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     page,
     editor,
     homePage,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -372,6 +374,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     })
 
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
