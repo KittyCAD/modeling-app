@@ -92,7 +92,7 @@ Any KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `Array`|  | No |
+| `type` |enum: `MixedArray`|  | No |
 | `value` |`[` [`KclValue`](/docs/kcl/types/KclValue) `]`|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 

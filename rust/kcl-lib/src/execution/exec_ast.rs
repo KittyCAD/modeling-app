@@ -717,7 +717,7 @@ impl Node<MemberExpression> {
             }
         };
 
-        let KclValue::Array { value: array, meta: _ } = array else {
+        let KclValue::MixedArray { value: array, meta: _ } = array else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!("MemberExpression array is not an array: {:?}", array),
                 source_ranges: vec![self.clone().into()],
@@ -767,7 +767,7 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (KclValue::Array { value: arr, meta: _ }, Property::UInt(index)) => {
+            (KclValue::MixedArray { value: arr, meta: _ }, Property::UInt(index)) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -778,7 +778,7 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::Array { .. }, p) => {
+            (KclValue::MixedArray { .. }, p) => {
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -1452,7 +1452,7 @@ impl Node<ArrayExpression> {
             results.push(value);
         }
 
-        Ok(KclValue::Array {
+        Ok(KclValue::MixedArray {
             value: results,
             meta: vec![self.into()],
         })
@@ -1501,7 +1501,7 @@ impl Node<ArrayRangeExpression> {
         let meta = vec![Metadata {
             source_range: self.into(),
         }];
-        Ok(KclValue::Array {
+        Ok(KclValue::MixedArray {
             value: range
                 .into_iter()
                 .map(|num| KclValue::Number {
