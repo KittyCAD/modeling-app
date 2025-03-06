@@ -105,6 +105,7 @@ jobs:
           git commit -m "Update kcl-samples simulation test output" || true
           git push origin ${{ github.head_ref }}
         env:
+          INSTA_UPDATE: always
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           NEXTEST_PROFILE: ci
           RUST_BACKTRACE: full
