@@ -92,8 +92,6 @@ jobs:
         run: |
           set -euo pipefail
           cd rust
-          env
-          echo "Running just overwrite-sim-test..."
           just overwrite-sim-test kcl_samples
           git add kcl-lib/tests
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
