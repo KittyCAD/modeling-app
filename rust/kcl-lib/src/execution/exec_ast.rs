@@ -556,6 +556,7 @@ impl ExecutorContext {
                     KclValue::Function {
                         value: FunctionSource::User {
                             ast: function_expression.clone(),
+                            settings: exec_state.mod_local.settings.clone(),
                             memory: exec_state.mut_stack().snapshot(),
                         },
                         meta: vec![metadata.to_owned()],
@@ -1915,7 +1916,7 @@ impl FunctionSource {
 
                 func(exec_state, args).await.map(Some)
             }
-            FunctionSource::User { ast, memory } => {
+            FunctionSource::User { ast, memory, .. } => {
                 call_user_defined_function(args, *memory, ast, exec_state, ctx).await
             }
             FunctionSource::None => unreachable!(),

@@ -119,6 +119,7 @@ pub enum FunctionSource {
     },
     User {
         ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+        settings: MetaSettings,
         memory: EnvironmentRef,
     },
 }
@@ -643,7 +644,7 @@ impl KclValue {
                 result
             }
             KclValue::Function {
-                value: FunctionSource::User { ast, memory },
+                value: FunctionSource::User { ast, memory, .. },
                 ..
             } => crate::execution::exec_ast::call_user_defined_function(args, *memory, ast, exec_state, &ctx).await,
             _ => Err(KclError::Semantic(KclErrorDetails {
@@ -679,7 +680,7 @@ impl KclValue {
                 todo!("Implement KCL stdlib fns with keyword args");
             }
             KclValue::Function {
-                value: FunctionSource::User { ast, memory },
+                value: FunctionSource::User { ast, memory, .. },
                 ..
             } => {
                 crate::execution::exec_ast::call_user_defined_function_kw(args.kw_args, *memory, ast, exec_state, &ctx)

@@ -1639,6 +1639,7 @@ mod test {
             KclValue::Function {
                 value: FunctionSource::User {
                     ast: crate::parsing::ast::types::FunctionExpression::dummy(),
+                    settings: crate::MetaSettings::default(),
                     memory: sn2,
                 },
                 meta: Vec::new(),
