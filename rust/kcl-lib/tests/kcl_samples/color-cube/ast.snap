@@ -1100,182 +1100,77 @@ description: Result of parsing color-cube.kcl
         "type": "ExpressionStatement"
       },
       {
-        "end": 1418,
+        "end": 1535,
         "expression": {
           "arguments": [
             {
-              "end": 1407,
-              "name": "yellowPlane",
-              "start": 1396,
-              "type": "Identifier",
-              "type": "Identifier"
-            },
-            {
-              "end": 1417,
-              "raw": "'#FFFF00'",
-              "start": 1408,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "#FFFF00"
-            }
-          ],
-          "callee": {
-            "end": 1395,
-            "name": "sketchRectangle",
-            "start": 1380,
-            "type": "Identifier"
-          },
-          "end": 1418,
-          "start": 1380,
-          "type": "CallExpression",
-          "type": "CallExpression"
-        },
-        "start": 1380,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "end": 1456,
-        "expression": {
-          "arguments": [
-            {
-              "end": 1445,
-              "name": "greenPlane",
-              "start": 1435,
-              "type": "Identifier",
-              "type": "Identifier"
-            },
-            {
-              "end": 1455,
-              "raw": "'#00FF00'",
-              "start": 1446,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "#00FF00"
-            }
-          ],
-          "callee": {
-            "end": 1434,
-            "name": "sketchRectangle",
-            "start": 1419,
-            "type": "Identifier"
-          },
-          "end": 1456,
-          "start": 1419,
-          "type": "CallExpression",
-          "type": "CallExpression"
-        },
-        "start": 1419,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "end": 1492,
-        "expression": {
-          "arguments": [
-            {
-              "end": 1481,
-              "name": "redPlane",
-              "start": 1473,
-              "type": "Identifier",
-              "type": "Identifier"
-            },
-            {
-              "end": 1491,
-              "raw": "'#FF0000'",
-              "start": 1482,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "#FF0000"
-            }
-          ],
-          "callee": {
-            "end": 1472,
-            "name": "sketchRectangle",
-            "start": 1457,
-            "type": "Identifier"
-          },
-          "end": 1492,
-          "start": 1457,
-          "type": "CallExpression",
-          "type": "CallExpression"
-        },
-        "start": 1457,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "end": 1529,
-        "expression": {
-          "arguments": [
-            {
-              "end": 1518,
+              "end": 1524,
               "name": "tealPlane",
-              "start": 1509,
+              "start": 1515,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1528,
+              "end": 1534,
               "raw": "'#00FFFF'",
-              "start": 1519,
+              "start": 1525,
               "type": "Literal",
               "type": "Literal",
               "value": "#00FFFF"
             }
           ],
           "callee": {
-            "end": 1508,
+            "end": 1514,
             "name": "sketchRectangle",
-            "start": 1493,
+            "start": 1499,
             "type": "Identifier"
           },
-          "end": 1529,
-          "start": 1493,
+          "end": 1535,
+          "start": 1499,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1493,
+        "start": 1499,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1568,
+        "end": 1574,
         "expression": {
           "arguments": [
             {
-              "end": 1557,
+              "end": 1563,
               "name": "purplePlane",
-              "start": 1546,
+              "start": 1552,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1567,
+              "end": 1573,
               "raw": "'#FF00FF'",
-              "start": 1558,
+              "start": 1564,
               "type": "Literal",
               "type": "Literal",
               "value": "#FF00FF"
             }
           ],
           "callee": {
-            "end": 1545,
+            "end": 1551,
             "name": "sketchRectangle",
-            "start": 1530,
+            "start": 1536,
             "type": "Identifier"
           },
-          "end": 1568,
-          "start": 1530,
+          "end": 1574,
+          "start": 1536,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1530,
+        "start": 1536,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 1569,
+    "end": 1575,
     "innerAttrs": [
       {
         "end": 166,
@@ -1343,6 +1238,38 @@ description: Result of parsing color-cube.kcl
             "value": {
               "type": "newLineBlockComment",
               "value": "Sketch each side of the cube",
+              "style": "line"
+            }
+          }
+        ],
+        "12": [
+          {
+            "end": 1420,
+            "start": 1379,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "sketchRectangle(yellowPlane,'#FFFF00')",
+              "style": "line"
+            }
+          },
+          {
+            "end": 1460,
+            "start": 1421,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "sketchRectangle(greenPlane,'#00FF00')",
+              "style": "line"
+            }
+          },
+          {
+            "end": 1498,
+            "start": 1461,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "sketchRectangle(redPlane,'#FF0000')",
               "style": "line"
             }
           }
