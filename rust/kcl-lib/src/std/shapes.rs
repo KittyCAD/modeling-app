@@ -5,11 +5,11 @@ use kcl_derive_docs::stdlib;
 use kcmc::{
     each_cmd as mcmd,
     length_unit::LengthUnit,
-    shared::{Angle, Point2d as KPoint2d},
+    shared::{Angle, PathSegment, Point2d as KPoint2d},
+    websocket::ModelingCmdReq,
     ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::shared::PathSegment;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -105,20 +105,42 @@ async fn inner_circle(
     let angle_end = Angle::turn();
 
     let id = exec_state.next_uuid();
-
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Arc {
-                start: angle_start,
-                end: angle_end,
-                center: KPoint2d::from(center).map(LengthUnit),
-                radius: radius.into(),
-                relative: false,
-            },
-        }),
-    )
+    args.batch_modeling_cmds(&[
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Arc {
+                    start: angle_start,
+                    end: angle_end,
+                    center: KPoint2d::from(center).map(LengthUnit),
+                    radius: radius.into(),
+                    relative: false,
+                },
+            }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
     .await?;
 
     let current_path = Path::Circle {
@@ -217,20 +239,42 @@ async fn inner_circle_three_point(
     let angle_end = Angle::turn();
 
     let id = exec_state.next_uuid();
-
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Arc {
-                start: angle_start,
-                end: angle_end,
-                center: KPoint2d::from(center).map(LengthUnit),
-                radius: radius.into(),
-                relative: false,
-            },
-        }),
-    )
+    args.batch_modeling_cmds(&[
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Arc {
+                    start: angle_start,
+                    end: angle_end,
+                    center: KPoint2d::from(center).map(LengthUnit),
+                    radius: radius.into(),
+                    relative: false,
+                },
+            }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
     .await?;
 
     let current_path = Path::CircleThreePoint {
@@ -382,23 +426,40 @@ async fn inner_polygon(
 
     let mut sketch =
         crate::std::sketch::inner_start_profile_at(vertices[0], sketch_surface, None, exec_state, args.clone()).await?;
+    let mut cmds = vec![
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ];
 
     // Draw all the lines with unique IDs and modified tags
     for vertex in vertices.iter().skip(1) {
         let from = sketch.current_pen_position()?;
         let id = exec_state.next_uuid();
-
-        args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::ExtendPath {
+        cmds.push(ModelingCmdReq {
+            cmd_id: id.into(),
+            cmd: ModelingCmd::from(mcmd::ExtendPath {
                 path: sketch.id.into(),
                 segment: PathSegment::Line {
                     end: KPoint2d::from(*vertex).with_z(0.0).map(LengthUnit),
                     relative: false,
                 },
             }),
-        )
-        .await?;
+        });
 
         let current_path = Path::ToPoint {
             base: BasePath {
@@ -424,17 +485,16 @@ async fn inner_polygon(
     let from = sketch.current_pen_position()?;
     let close_id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
-        close_id,
-        ModelingCmd::from(mcmd::ExtendPath {
+    cmds.push(ModelingCmdReq {
+        cmd: ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::Line {
                 end: KPoint2d::from(vertices[0]).with_z(0.0).map(LengthUnit),
                 relative: false,
             },
         }),
-    )
-    .await?;
+        cmd_id: close_id.into(),
+    });
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -455,11 +515,12 @@ async fn inner_polygon(
 
     sketch.paths.push(current_path);
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
-    )
-    .await?;
+    cmds.push(ModelingCmdReq {
+        cmd: ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+        cmd_id: exec_state.next_uuid().into(),
+    });
+
+    args.batch_modeling_cmds(&cmds).await?;
 
     Ok(sketch)
 }

@@ -4,9 +4,14 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_derive_docs::stdlib;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
+use kcmc::{
+    each_cmd as mcmd,
+    length_unit::LengthUnit,
+    shared::{Angle, PathSegment},
+    websocket::ModelingCmdReq,
+    ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -219,17 +224,41 @@ async fn straight_line(
     };
 
     let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Line {
-                end: KPoint2d::from(point).with_z(0.0).map(LengthUnit),
-                relative: !is_absolute,
-            },
-        }),
-    )
+    args.batch_modeling_cmds(&[
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Line {
+                    end: KPoint2d::from(point).with_z(0.0).map(LengthUnit),
+                    relative: !is_absolute,
+                },
+            }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
     .await?;
+
     let end = if is_absolute {
         point
     } else {
@@ -526,17 +555,39 @@ async fn inner_angled_line(
     let to: [f64; 2] = [from.x + delta[0], from.y + delta[1]];
 
     let id = exec_state.next_uuid();
-
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Line {
-                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
-                relative,
-            },
-        }),
-    )
+    args.batch_modeling_cmds(&[
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Line {
+                    end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
+                    relative,
+                },
+            }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
     .await?;
 
     let current_path = Path::ToPoint {
@@ -1283,38 +1334,43 @@ pub(crate) async fn inner_start_profile_at(
         _ => {}
     }
 
-    // Enter sketch mode on the surface.
-    // We call this here so you can reuse the sketch surface for multiple sketches.
-    let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::EnableSketchMode {
-            animated: false,
-            ortho: false,
-            entity_id: sketch_surface.id(),
-            adjust_camera: false,
-            planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
-                // We pass in the normal for the plane here.
-                Some(plane.z_axis.into())
-            } else {
-                None
-            },
-        }),
-    )
-    .await?;
-
-    let id = exec_state.next_uuid();
+    let enable_sketch_id = exec_state.next_uuid();
     let path_id = exec_state.next_uuid();
-
-    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath::default()))
-        .await?;
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::MovePathPen {
-            path: path_id.into(),
-            to: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
-        }),
-    )
+    let move_pen_id = exec_state.next_uuid();
+    args.batch_modeling_cmds(&[
+        // Enter sketch mode on the surface.
+        // We call this here so you can reuse the sketch surface for multiple sketches.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch_surface.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: enable_sketch_id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::StartPath::default()),
+            cmd_id: path_id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::MovePathPen {
+                path: path_id.into(),
+                to: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
+            }),
+            cmd_id: move_pen_id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
     .await?;
 
     let current_path = BasePath {
@@ -1323,7 +1379,7 @@ pub(crate) async fn inner_start_profile_at(
         tag: tag.clone(),
         units: sketch_surface.units(),
         geo_meta: GeoMeta {
-            id,
+            id: move_pen_id,
             metadata: args.source_range.into(),
         },
     };
@@ -1481,19 +1537,34 @@ pub(crate) async fn inner_close(
     let to: Point2d = sketch.start.from.into();
 
     let id = exec_state.next_uuid();
-
-    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }))
-        .await?;
-
-    // If we are sketching on a plane we can close the sketch now.
-    if let SketchSurface::Plane(_) = sketch.on {
-        // We were on a plane, disable the sketch mode.
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-        )
-        .await?;
-    }
+    args.batch_modeling_cmds(&[
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
+    .await?;
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -1629,20 +1700,42 @@ pub(crate) async fn inner_arc(
     let ccw = angle_start < angle_end;
 
     let id = exec_state.next_uuid();
-
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Arc {
-                start: angle_start,
-                end: angle_end,
-                center: KPoint2d::from(center).map(LengthUnit),
-                radius: LengthUnit(radius),
-                relative: false,
-            },
-        }),
-    )
+    args.batch_modeling_cmds(&[
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Arc {
+                    start: angle_start,
+                    end: angle_end,
+                    center: KPoint2d::from(center).map(LengthUnit),
+                    radius: LengthUnit(radius),
+                    relative: false,
+                },
+            }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
     .await?;
 
     let current_path = Path::Arc {
@@ -1708,28 +1801,51 @@ pub(crate) async fn inner_arc_to(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
-    let id = exec_state.next_uuid();
 
-    // The start point is taken from the path you are extending.
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::ArcTo {
-                end: kcmc::shared::Point3d {
-                    x: LengthUnit(data.end[0]),
-                    y: LengthUnit(data.end[1]),
-                    z: LengthUnit(0.0),
+    let id = exec_state.next_uuid();
+    args.batch_modeling_cmds(&[
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
                 },
-                interior: kcmc::shared::Point3d {
-                    x: LengthUnit(data.interior[0]),
-                    y: LengthUnit(data.interior[1]),
-                    z: LengthUnit(0.0),
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+        // The start point is taken from the path you are extending.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::ArcTo {
+                    end: kcmc::shared::Point3d {
+                        x: LengthUnit(data.end[0]),
+                        y: LengthUnit(data.end[1]),
+                        z: LengthUnit(0.0),
+                    },
+                    interior: kcmc::shared::Point3d {
+                        x: LengthUnit(data.interior[0]),
+                        y: LengthUnit(data.interior[1]),
+                        z: LengthUnit(0.0),
+                    },
+                    relative: false,
                 },
-                relative: false,
-            },
-        }),
-    )
+            }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
     .await?;
 
     let start = [from.x, from.y];
@@ -1884,17 +2000,41 @@ async fn inner_tangential_arc(
             let end_angle = start_angle + offset;
             let (center, to) = arc_center_and_end(from, start_angle, end_angle, radius);
 
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::ExtendPath {
-                    path: sketch.id.into(),
-                    segment: PathSegment::TangentialArc {
-                        radius: LengthUnit(radius),
-                        offset,
-                    },
-                }),
-            )
+            args.batch_modeling_cmds(&[
+                // We enter sketch mode here so that we can run stuff in parallel and it does not break
+                // modeling.
+                ModelingCmdReq {
+                    cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                        animated: false,
+                        ortho: false,
+                        entity_id: sketch.on.id(),
+                        adjust_camera: false,
+                        planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                            // We pass in the normal for the plane here.
+                            Some(plane.z_axis.into())
+                        } else {
+                            None
+                        },
+                    }),
+                    cmd_id: exec_state.next_uuid().into(),
+                },
+                ModelingCmdReq {
+                    cmd: ModelingCmd::from(mcmd::ExtendPath {
+                        path: sketch.id.into(),
+                        segment: PathSegment::TangentialArc {
+                            radius: LengthUnit(radius),
+                            offset,
+                        },
+                    }),
+                    cmd_id: id.into(),
+                },
+                ModelingCmdReq {
+                    cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                    cmd_id: exec_state.next_uuid().into(),
+                },
+            ])
             .await?;
+
             (center, to.into(), ccw)
         }
     };
@@ -1924,14 +2064,40 @@ async fn inner_tangential_arc(
     Ok(new_sketch)
 }
 
-fn tan_arc_to(sketch: &Sketch, to: &[f64; 2]) -> ModelingCmd {
-    ModelingCmd::from(mcmd::ExtendPath {
-        path: sketch.id.into(),
-        segment: PathSegment::TangentialArcTo {
-            angle_snap_increment: None,
-            to: KPoint2d::from(*to).with_z(0.0).map(LengthUnit),
+fn tan_arc_to(exec_state: &mut ExecState, sketch: &Sketch, to: &[f64; 2], id: uuid::Uuid) -> Vec<ModelingCmdReq> {
+    vec![
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
         },
-    })
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::TangentialArcTo {
+                    angle_snap_increment: None,
+                    to: KPoint2d::from(*to).with_z(0.0).map(LengthUnit),
+                },
+            }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ]
 }
 
 /// Draw a tangential arc to a specific point.
@@ -1994,7 +2160,8 @@ async fn inner_tangential_arc_to(
 
     let delta = [to_x - from.x, to_y - from.y];
     let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
+    args.batch_modeling_cmds(&tan_arc_to(exec_state, &sketch, &delta, id))
+        .await?;
 
     let current_path = Path::TangentialArcTo {
         base: BasePath {
@@ -2078,7 +2245,8 @@ async fn inner_tangential_arc_to_relative(
     }
 
     let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
+    args.batch_modeling_cmds(&tan_arc_to(exec_state, &sketch, &delta, id))
+        .await?;
 
     let current_path = Path::TangentialArcTo {
         base: BasePath {
@@ -2163,19 +2331,41 @@ async fn inner_bezier_curve(
     let to = [from.x + data.to[0], from.y + data.to[1]];
 
     let id = exec_state.next_uuid();
-
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch.id.into(),
-            segment: PathSegment::Bezier {
-                control1: KPoint2d::from(data.control1).with_z(0.0).map(LengthUnit),
-                control2: KPoint2d::from(data.control2).with_z(0.0).map(LengthUnit),
-                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
-                relative,
-            },
-        }),
-    )
+    args.batch_modeling_cmds(&[
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ExtendPath {
+                path: sketch.id.into(),
+                segment: PathSegment::Bezier {
+                    control1: KPoint2d::from(data.control1).with_z(0.0).map(LengthUnit),
+                    control2: KPoint2d::from(data.control2).with_z(0.0).map(LengthUnit),
+                    end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
+                    relative,
+                },
+            }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
     .await?;
 
     let current_path = Path::ToPoint {
