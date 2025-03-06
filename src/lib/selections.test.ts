@@ -16,9 +16,9 @@ beforeAll(async () => {
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn('XZ')
 profile001 = startProfileAt([105.55, 105.55], sketch001)
-  |> xLine(length = 332.55, tag = $seg01)
-  |> yLine(length = -310.12, tag = $seg02)
-  |> xLine(length = -373.65)
+  |> xLine(332.55, %, $seg01)
+  |> yLine(-310.12, %, $seg02)
+  |> xLine(-373.65, %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 500)
@@ -1126,7 +1126,7 @@ profile004 = circle(sketch003,
     [
       'segment 2',
       {
-        snippet: 'yLine(length = -310.12, tag = $seg02)',
+        snippet: 'yLine(-310.12, %, $seg02)',
         artifactDetails: {
           type: 'segment',
           range: [149, 149, 0],
@@ -1195,15 +1195,13 @@ profile004 = circle(sketch003,
     async (_name, { snippet, artifactDetails }) => {
       const ast = assertParse(MY_CODE)
       const lineIndex = MY_CODE.indexOf(snippet)
-      const path = getNodePathFromSourceRange(ast, [
-        lineIndex,
-        lineIndex + snippet.length,
-        0,
-      ])
+      expect(lineIndex).toBeGreaterThanOrEqual(0)
+      const end = lineIndex + snippet.length
+      const path = getNodePathFromSourceRange(ast, [lineIndex, end, 0])
       const selections: Selection[] = [
         {
           codeRef: {
-            range: [lineIndex + snippet.length, lineIndex + snippet.length, 0],
+            range: [end, end, 0],
             pathToNode: path,
           },
         },
