@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
 import { Annotation, Transaction } from '@codemirror/state'
 import { EditorView, KeyBinding } from '@codemirror/view'
-import { recast, Program } from 'lang/wasm'
+import { recast, Program, parse } from 'lang/wasm'
 import { err, reportRejection } from 'lib/trap'
 import { Compartment } from '@codemirror/state'
 import { history } from '@codemirror/commands'
@@ -165,8 +165,20 @@ export default class CodeManager {
   }
 
   async updateEditorWithAstAndWriteToFile(ast: Program) {
+    // We clear the AST when there it cannot be parsed, so if we are trying to write an empty AST, its
+    // probably because of an earlier error. That's a bad state to be in and it's not going to be
+    // pretty, but at the least, lets not permanently delete the user's code.
+    // If you want to clear the scene, call updateCodeStateEditor directly.
+    if (ast.body.length === 0) return
     const newCode = recast(ast)
     if (err(newCode)) return
+    // Test to see if we can parse the recast code, and never update the editor with bad code.
+    // This should never happen ideally and should mean there is a bug in recast.
+    const result = await parse(newCode)
+    if (err(result)) {
+      console.log('Recast code could not be parsed:', result, ast)
+      return
+    }
     this.updateCodeStateEditor(newCode)
     this.writeToFile().catch(reportRejection)
   }
