@@ -33,14 +33,6 @@ fn parse() {
 
     assert!(!tests.is_empty(), "No KCL samples found");
 
-    // Print out the environment variables.
-    eprintln!("Inside simulation_test env...");
-    eprintln!("EXPECTORATE={:?}", std::env::var("EXPECTORATE").as_deref());
-    eprintln!("TWENTY_TWENTY={:?}", std::env::var("TWENTY_TWENTY").as_deref());
-    for (key, value) in std::env::vars() {
-        eprintln!("  {key}={value}");
-    }
-
     let input_names = FnvHashSet::from_iter(tests.iter().map(|t| t.name.clone()));
 
     for test in tests {
@@ -73,11 +65,6 @@ async fn kcl_test_execute() {
     let expected_outputs = kcl_samples_outputs(filter.as_deref());
 
     assert!(!tests.is_empty(), "No KCL samples found");
-
-    // Print out the environment variables.
-    eprintln!("Inside simulation_test env...");
-    eprintln!("EXPECTORATE={:?}", std::env::var("EXPECTORATE").as_deref());
-    eprintln!("TWENTY_TWENTY={:?}", std::env::var("TWENTY_TWENTY").as_deref());
 
     // Note: This is unordered.
     let mut tasks = JoinSet::new();
