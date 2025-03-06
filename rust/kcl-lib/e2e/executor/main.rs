@@ -2057,6 +2057,8 @@ sketch000 = startSketchOn('XY')
     // Ensure nothing is left in the batch
     assert!(ctx.engine.batch().read().await.is_empty());
     assert!(ctx.engine.batch_end().read().await.is_empty());
+
+    ctx.close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2080,6 +2082,8 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     // Ensure nothing is left in the batch
     assert!(ctx.engine.batch().read().await.is_empty());
     assert!(ctx.engine.batch_end().read().await.is_empty());
+
+    ctx.close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
