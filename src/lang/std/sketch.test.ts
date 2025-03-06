@@ -436,7 +436,7 @@ describe('testing getConstraintInfo', () => {
           {
             type: 'horizontal',
             isConstrained: true,
-            value: 'xLineTo',
+            value: 'xLine',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
@@ -459,7 +459,7 @@ describe('testing getConstraintInfo', () => {
           {
             type: 'vertical',
             isConstrained: true,
-            value: 'yLineTo',
+            value: 'yLine',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
@@ -683,10 +683,9 @@ describe('testing getConstraintInfo', () => {
       ],
     ])('testing %s when inputs are unconstrained', (functionName, expected) => {
       const ast = assertParse(code)
-      const sourceRange = topLevelRange(
-        code.indexOf(functionName),
-        code.indexOf(functionName) + functionName.length
-      )
+      const start = code.indexOf(functionName)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const sourceRange = topLevelRange(start, start + functionName.length)
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
@@ -955,7 +954,7 @@ describe('testing getConstraintInfo', () => {
           {
             type: 'horizontal',
             isConstrained: true,
-            value: 'xLineTo',
+            value: 'xLine',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
@@ -978,7 +977,7 @@ describe('testing getConstraintInfo', () => {
           {
             type: 'vertical',
             isConstrained: true,
-            value: 'yLineTo',
+            value: 'yLine',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),

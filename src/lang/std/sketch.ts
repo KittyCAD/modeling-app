@@ -2420,9 +2420,14 @@ export function getConstraintInfoKw(
   filterValue?: string
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name || ''
-  const isAbsolute =
-    fnName === 'circleThreePoint' ||
-    findKwArg(ARG_END_ABSOLUTE, callExpression) !== undefined
+  const isAbsolute = isAbsoluteLine(callExpression)
+  if (err(isAbsolute)) {
+    console.error(
+      `Could not tell if this call to ${fnName} was absolute`,
+      isAbsolute
+    )
+    return []
+  }
   if (!(fnName in sketchLineHelperMapKw)) return []
   const correctFnName = fnNameToTooltip(isAbsolute, fnName)
   if (err(correctFnName)) {
