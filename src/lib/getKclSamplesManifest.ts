@@ -1,4 +1,5 @@
 import { KCL_SAMPLES_MANIFEST_URL } from './constants'
+import { isDesktop } from './isDesktop'
 
 export type KclSamplesManifestItem = {
   file: string
@@ -9,7 +10,9 @@ export type KclSamplesManifestItem = {
 }
 
 export async function getKclSamplesManifest() {
-  const response = await fetch(KCL_SAMPLES_MANIFEST_URL)
+  const response = await fetch(
+    (isDesktop() ? '.' : '') + KCL_SAMPLES_MANIFEST_URL
+  )
   if (!response.ok) {
     console.error(
       'Failed to fetch bundled KCL samples manifest:',
