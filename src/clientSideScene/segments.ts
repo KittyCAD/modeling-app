@@ -675,8 +675,11 @@ class CircleSegment implements SegmentUtils {
       label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
 
       // Calculate the angle for the label
-      const labelAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
-      label.style.setProperty('--degree', `${labelAngle}rad`)
+      const isPlaneBackFace = center[0] > indicatorPoint.x
+      label.style.setProperty(
+        '--degree',
+        `${isPlaneBackFace ? '45' : '-45'}deg`
+      )
       label.style.setProperty('--x', `0px`)
       label.style.setProperty('--y', `0px`)
       labelWrapper.position.set(indicatorPoint.x, indicatorPoint.y, 0)
