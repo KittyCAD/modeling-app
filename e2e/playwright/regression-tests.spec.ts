@@ -654,6 +654,50 @@ extrude001 = extrude(sketch001, length = 50)
       await expect.poll(toolBarMode).toEqual('sketching')
     })
   })
+
+  test(`Delete via feature tree then open code pane, never crash`, async ({
+    homePage,
+    toolbar,
+    editor,
+    context,
+    page,
+    scene,
+    cmdBar,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'test-sample')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        `x = 5
+plane001 = offsetPlane(XZ, offset = x)
+plane002 = offsetPlane(XZ, offset = -2 * x)`
+      )
+    })
+    await homePage.openProject('test-sample')
+    await scene.waitForExecutionDone()
+    await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
+    const operationButton = await toolbar.getFeatureTreeOperation(
+      'Offset Plane',
+      1
+    )
+
+    await test.step('Delete offset plane via feature tree selection', async () => {
+      await expect(operationButton.last()).toBeVisible({ timeout: 10_000 })
+      await editor.closePane()
+      await operationButton.first().click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+    })
+
+    await test.step(`Open the code pane, don't crash`, async () => {
+      await editor.openPane()
+      await expect(page.getByText('unexpected error')).not.toBeVisible()
+      await editor.expectEditor.toContain(`x = 5`)
+      await editor.expectEditor.toContain(`plane001`)
+      await editor.expectEditor.not.toContain(`plane002`)
+    })
+  })
 })
 
 async function clickExportButton(page: Page) {

@@ -1,6 +1,6 @@
 import { test, expect } from './zoo-test'
 import { secrets } from './secrets'
-import { Paths, doExport, getUtils } from './test-utils'
+import { Paths, doExport, getUtils, settingsToToml } from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
@@ -322,16 +322,24 @@ const extrudeDefaultPlane = async (
   await page.addInitScript(async () => {
     localStorage.setItem(
       'SETTINGS_PERSIST_KEY',
-      JSON.stringify({
-        baseUnit: 'in',
-        cameraControls: 'KittyCAD',
-        defaultDirectory: '',
-        defaultProjectName: 'project-$nnn',
-        onboardingStatus: 'dismissed',
-        showDebugPanel: true,
-        textWrapping: 'On',
-        theme: 'dark',
-        unitSystem: 'imperial',
+      settingsToToml({
+        settings: {
+          modeling: {
+            base_unit: 'in',
+            mouse_controls: 'zoo',
+          },
+          app: {
+            onboarding_status: 'dismissed',
+            show_debug_panel: true,
+            theme: 'dark',
+          },
+          project: {
+            default_project_name: 'project-$nnn',
+          },
+          text_editor: {
+            text_wrapping: true,
+          },
+        },
       })
     )
   })
@@ -652,12 +660,12 @@ test.describe(
         },
         {
           settingsKey: TEST_SETTINGS_KEY,
-          settings: TOML.stringify({
+          settings: settingsToToml({
             settings: {
               ...TEST_SETTINGS,
               modeling: {
                 ...TEST_SETTINGS.modeling,
-                defaultUnit: 'mm',
+                base_unit: 'mm',
               },
             },
           }),
@@ -987,12 +995,12 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
       },
       {
         settingsKey: TEST_SETTINGS_KEY,
-        settings: TOML.stringify({
+        settings: settingsToToml({
           settings: {
             ...TEST_SETTINGS,
             modeling: {
               ...TEST_SETTINGS.modeling,
-              showScaleGrid: true,
+              show_scale_grid: true,
             },
           },
         }),
