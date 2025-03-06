@@ -159,10 +159,6 @@ function createCallWrapper(
     }
   } else {
     // In this branch, `val` is an expression.
-    let labeledArgs = []
-    if (tag) {
-      labeledArgs.push(createLabeledArg(ARG_TAG, tag))
-    }
     const arg = (() => {
       switch (tooltip) {
         case 'xLine':
@@ -174,7 +170,11 @@ function createCallWrapper(
       }
     })()
     if (arg !== undefined) {
+      const labeledArgs = []
       labeledArgs.push(arg)
+      if (tag) {
+        labeledArgs.push(createLabeledArg(ARG_TAG, tag))
+      }
       const fnName = tooltipToFnName(tooltip)
       if (err(fnName)) {
         console.error(fnName)
