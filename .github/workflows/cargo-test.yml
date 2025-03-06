@@ -28,7 +28,7 @@ jobs:
           predicate-quantifier: every
           filters: |
             outside-kcl-samples:
-              - '!(public/kcl-samples/**)'
+              - '!(public/kcl-samples/**|rust/kcl-lib/tests/kcl_samples/**)'
       - name: Display path changes
         run: |
           echo "Outside kcl-samples changes: ${{ steps.filter.outputs.outside-kcl-samples }}"
