@@ -13,19 +13,23 @@ updates:
     timezone: America/Los_Angeles
   open-pull-requests-limit: 5
   groups:
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
     security:
       applies-to: security-updates
       update-types:
       - major
+      - minor
+      - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    minor:
+      applies-to: version-updates
+      update-types:
       - minor
       - patch
 - package-ecosystem: cargo
@@ -42,19 +46,23 @@ updates:
   - irev-dev
   - jessfraz
   groups:
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
     security:
       applies-to: security-updates
       update-types:
       - major
+      - minor
+      - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    minor:
+      applies-to: version-updates
+      update-types:
       - minor
       - patch
 - package-ecosystem: npm
@@ -71,19 +79,23 @@ updates:
   - irev-dev
   - jessfraz
   groups:
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
     security:
       applies-to: security-updates
       update-types:
       - major
+      - minor
+      - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    minor:
+      applies-to: version-updates
+      update-types:
       - minor
       - patch
 - package-ecosystem: npm
@@ -100,19 +112,23 @@ updates:
   - irev-dev
   - jessfraz
   groups:
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
     security:
       applies-to: security-updates
       update-types:
       - major
+      - minor
+      - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    minor:
+      applies-to: version-updates
+      update-types:
       - minor
       - patch
 - package-ecosystem: npm
@@ -129,19 +145,23 @@ updates:
   - irev-dev
   - jessfraz
   groups:
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
     security:
       applies-to: security-updates
       update-types:
       - major
+      - minor
+      - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    minor:
+      applies-to: version-updates
+      update-types:
       - minor
       - patch
 - package-ecosystem: pip
@@ -158,18 +178,22 @@ updates:
   - irev-dev
   - jessfraz
   groups:
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      update-types:
-      - minor
-      - patch
     security:
       applies-to: security-updates
       update-types:
       - major
+      - minor
+      - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    minor:
+      applies-to: version-updates
+      update-types:
       - minor
       - patch
