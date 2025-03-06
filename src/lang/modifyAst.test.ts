@@ -658,10 +658,10 @@ describe('Testing removeSingleConstraintInfo', () => {
   |> line(end = [3 + 0, 4 + 0])
   |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
   |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
-  |> xLine(endAbsolute = 8 + 0)
-  |> yLine(endAbsolute = 5 + 0)
-  |> yLine(length = 3.14 + 0, tag = $a)
-  |> xLine(length = 3.14 + 0)
+  |> xLine(/*xAbs*/ endAbsolute = 8 + 0)
+  |> yLine(/*yAbs*/ endAbsolute = 5 + 0)
+  |> yLine(/*yRel*/ length = 3.14 + 0, tag = $a)
+  |> xLine(/*xRel*/ length = 3.14 + 0)
   |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 + 0 }, %)
   |> angledLineOfYLength({ angle = 30 + 0, length = 3 + 0 }, %)
   |> angledLineToX({ angle = 12.14 + 0, to = 12 + 0 }, %)
@@ -673,36 +673,41 @@ describe('Testing removeSingleConstraintInfo', () => {
       }, %)
   |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
     test.each([
-      [' line(end = [3 + 0, 4])', 'arrayIndex', 1],
+      [' line(end = [3 + 0, 4])', 'arrayIndex', 1, ''],
       [
         'angledLine({ angle = 3, length = 3.14 + 0 }, %)',
         'objectProperty',
         'angle',
+        '',
       ],
-      ['line(endAbsolute = [6.14 + 0, 3.14 + 0])', 'arrayIndex', 0],
-      ['xLine(endAbsolute = 8)', '', ''],
-      ['yLine(endAbsolute = 5)', '', ''],
-      ['yLine(length = 3.14, tag = $a)', '', ''],
-      ['xLine(length = 3.14)', '', ''],
+      ['line(endAbsolute = [6.14 + 0, 3.14 + 0])', 'arrayIndex', 0, ''],
+      ['xLine(endAbsolute = 8)', '', '', '/*xAbs*/'],
+      ['yLine(endAbsolute = 5)', '', '', '/*yAbs*/'],
+      ['yLine(length = 3.14, tag = $a)', '', '', '/*yRel*/'],
+      ['xLine(length = 3.14)', '', '', '/*xRel*/'],
       [
         'angledLineOfXLength({ angle = 3, length = 3.14 + 0 }, %)',
         'objectProperty',
         'angle',
+        '',
       ],
       [
         'angledLineOfYLength({ angle = 30 + 0, length = 3 }, %)',
         'objectProperty',
         'length',
+        '',
       ],
       [
         'angledLineToX({ angle = 12.14 + 0, to = 12 }, %)',
         'objectProperty',
         'to',
+        '',
       ],
       [
         'angledLineToY({ angle = 30, to = 10.14 + 0 }, %)',
         'objectProperty',
         'angle',
+        '',
       ],
       [
         `angledLineThatIntersects({
@@ -712,46 +717,51 @@ describe('Testing removeSingleConstraintInfo', () => {
      }, %)`,
         'objectProperty',
         'offset',
+        '',
       ],
-      ['tangentialArcTo([3.14 + 0, 13.14], %)', 'arrayIndex', 1],
-    ] as const)('stdlib fn: %s', async (expectedFinish, key, value) => {
-      const ast = assertParse(code)
+      ['tangentialArcTo([3.14 + 0, 13.14], %)', 'arrayIndex', 1, ''],
+    ] as const)(
+      'stdlib fn: %s',
+      async (expectedFinish, key, value, commentLabel) => {
+        const ast = assertParse(code)
 
-      const execState = await enginelessExecutor(ast)
-      const lineOfInterest = expectedFinish.split('(')[0] + '('
-      const range = topLevelRange(
-        code.indexOf(lineOfInterest) + 1,
-        code.indexOf(lineOfInterest) + lineOfInterest.length
-      )
-      const pathToNode = getNodePathFromSourceRange(ast, range)
-      let argPosition: SimplifiedArgDetails
-      if (key === 'arrayIndex' && typeof value === 'number') {
-        argPosition = {
-          type: 'arrayItem',
-          index: value === 0 ? 0 : 1,
+        const execState = await enginelessExecutor(ast)
+        const lineOfInterest =
+          commentLabel.length > 0
+            ? expectedFinish.split(commentLabel)[0]
+            : expectedFinish.split('(')[0] + '('
+        const start = code.indexOf(lineOfInterest)
+        const range = topLevelRange(start + 1, start + lineOfInterest.length)
+        const pathToNode = getNodePathFromSourceRange(ast, range)
+        let argPosition: SimplifiedArgDetails
+        if (key === 'arrayIndex' && typeof value === 'number') {
+          argPosition = {
+            type: 'arrayItem',
+            index: value === 0 ? 0 : 1,
+          }
+        } else if (key === 'objectProperty' && typeof value === 'string') {
+          argPosition = {
+            type: 'objectProperty',
+            key: value,
+          }
+        } else if (key === '') {
+          argPosition = {
+            type: 'singleValue',
+          }
+        } else {
+          throw new Error('argPosition is undefined')
         }
-      } else if (key === 'objectProperty' && typeof value === 'string') {
-        argPosition = {
-          type: 'objectProperty',
-          key: value,
-        }
-      } else if (key === '') {
-        argPosition = {
-          type: 'singleValue',
-        }
-      } else {
-        throw new Error('argPosition is undefined')
+        const mod = removeSingleConstraintInfo(
+          pathToNode,
+          argPosition,
+          ast,
+          execState.variables
+        )
+        if (!mod) return new Error('mod is undefined')
+        const recastCode = recast(mod.modifiedAst)
+        expect(recastCode).toContain(expectedFinish)
       }
-      const mod = removeSingleConstraintInfo(
-        pathToNode,
-        argPosition,
-        ast,
-        execState.variables
-      )
-      if (!mod) return new Error('mod is undefined')
-      const recastCode = recast(mod.modifiedAst)
-      expect(recastCode).toContain(expectedFinish)
-    })
+    )
   })
   describe('with array notation', () => {
     const code = `part001 = startSketchOn('-XZ')
