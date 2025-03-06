@@ -21,22 +21,36 @@ jobs:
   path-changes:
     runs-on: ubuntu-latest
     outputs:
-      significant: ${{ steps.filter.outputs.significant }}
+      significant: ${{ steps.path-changes.outputs.significant }}
 
     steps:
       - uses: actions/checkout@v4
+      - name: Fetch the base branch
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch origin ${{ github.base_ref }} --depth=1
+      - name: Check for path changes
+        id: path-changes
+        shell: bash
+        run: |
+          set -euo pipefail
 
-      - id: filter
-        name: Check for significant, non-kcl-samples changes
-        uses: dorny/paths-filter@v3
-        with:
-          predicate-quantifier: every
-          filters: |
-            significant:
-              - '!(public/kcl-samples/**|README.md)'
+          # Manual runs or push should run all tests.
+          if [[ ${{ github.event_name }} != 'pull_request' ]]; then
+            echo "significant=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          changed_files=$(git diff --name-only origin/${{ github.base_ref }})
+          echo "$changed_files"
+          if grep -Evq '^README.md|^public/kcl-samples/|^rust/kcl-lib/tests/kcl_samples/' <<< "$changed_files" ; then
+            echo "significant=true" >> $GITHUB_OUTPUT
+          else
+            echo "significant=false" >> $GITHUB_OUTPUT
+          fi
       - name: Display path changes
         run: |
-          echo "Significant changes: ${{ steps.filter.outputs.significant }}"
+          # For debugging purposes.
+          echo "significant: ${{ steps.path-changes.outputs.significant }}"
 
   electron:
     timeout-minutes: 60
