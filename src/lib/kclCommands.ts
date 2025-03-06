@@ -64,9 +64,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         const projectPathPart = pathParts[0]
         const primaryKclFile = pathParts[1]
         // local only
-        const sampleCodeUrl = `/kcl-samples/${encodeURIComponent(
-          projectPathPart
-        )}/${encodeURIComponent(primaryKclFile)}`
+        const sampleCodeUrl =
+          (isDesktop() ? '.' : '') +
+          `/kcl-samples/${encodeURIComponent(
+            projectPathPart
+          )}/${encodeURIComponent(primaryKclFile)}`
 
         fetch(sampleCodeUrl)
           .then(async (codeResponse): Promise<OnSubmitProps> => {
