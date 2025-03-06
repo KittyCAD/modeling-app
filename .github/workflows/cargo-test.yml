@@ -111,8 +111,10 @@ jobs:
           git commit -m "Update kcl-samples simulation test output" || true
           git push origin ${{ github.head_ref }}
         env:
+          # The default is auto, and insta behaves differently in CI vs. not.
           INSTA_UPDATE: always
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
+          # Configure nextest when it's run by insta (via just).
           NEXTEST_PROFILE: ci
           RUST_BACKTRACE: full
           RUST_MIN_STACK: 10485760000
