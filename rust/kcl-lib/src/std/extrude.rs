@@ -97,12 +97,11 @@ async fn inner_extrude(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidSet, KclError> {
-    let id = exec_state.next_uuid();
-
     // Extrude the element(s).
     let sketches: Vec<Sketch> = sketch_set.into();
     let mut solids = Vec::new();
     for sketch in &sketches {
+        let id = exec_state.next_uuid();
         args.batch_modeling_cmds(&[
             // Before we extrude, we need to enable the sketch mode.
             // We do this here in case extrude is called out of order.
@@ -121,9 +120,6 @@ async fn inner_extrude(
                 }),
                 cmd_id: exec_state.next_uuid().into(),
             },
-            // TODO: We're reusing the same UUID for multiple commands.  This seems
-            // like the artifact graph would never be able to find all the
-            // responses.
             ModelingCmdReq {
                 cmd_id: id.into(),
                 cmd: ModelingCmd::from(mcmd::Extrude {
@@ -155,11 +151,13 @@ pub(crate) async fn do_post_extrude(
 ) -> Result<Box<Solid>, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
-    args.batch_modeling_cmd(
+    /*args.batch_modeling_cmd(
         exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
+        ModelingCmd::from(mcmd::ObjectBringToFront {
+            object_id: sketch.id.into(),
+        }),
     )
-    .await?;
+    .await?;*/
 
     // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
     // So, let's just use the first one.

@@ -1537,19 +1537,34 @@ pub(crate) async fn inner_close(
     let to: Point2d = sketch.start.from.into();
 
     let id = exec_state.next_uuid();
-
-    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }))
-        .await?;
-
-    // If we are sketching on a plane we can close the sketch now.
-    if let SketchSurface::Plane(_) = sketch.on {
-        // We were on a plane, disable the sketch mode.
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-        )
-        .await?;
-    }
+    args.batch_modeling_cmds(&[
+        // We enter sketch mode here so that we can run stuff in parallel and it does not break
+        // modeling.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+            cmd_id: id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
+    .await?;
 
     let current_path = Path::ToPoint {
         base: BasePath {

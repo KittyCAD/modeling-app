@@ -43,6 +43,7 @@ description: Operations executed cube_with_error.kcl
     "unlabeledArg": null
   },
   {
+    "isError": true,
     "labeledArgs": {
       "length": {
         "value": {
@@ -85,8 +86,5 @@ description: Operations executed cube_with_error.kcl
         0
       ]
     }
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
   }
 ]
