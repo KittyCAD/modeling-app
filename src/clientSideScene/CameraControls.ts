@@ -869,24 +869,36 @@ export class CameraControls {
     axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
   ): Promise<void> {
     const distance = this.camera.position.distanceTo(this.target)
-
     const vantage = this.target.clone()
-    let up = { x: 0, y: 0, z: 1 }
 
-    if (axis === 'x') {
-      vantage.x += distance
-    } else if (axis === 'y') {
-      vantage.y += distance
-    } else if (axis === 'z') {
-      vantage.z += distance
-      up = { x: -1, y: 0, z: 0 }
-    } else if (axis === '-x') {
-      vantage.x -= distance
-    } else if (axis === '-y') {
-      vantage.y -= distance
-    } else if (axis === '-z') {
-      vantage.z -= distance
-      up = { x: -1, y: 0, z: 0 }
+    // Default to Z-up.
+    const unitZ = { x: 0, y: 0, z: 1 }
+    const unitY = { x: 0, y: 1, z: 0 }
+    let up = unitZ
+
+    switch (axis) {
+      case 'x':
+        vantage.x += distance
+        break
+      case '-x':
+        vantage.x -= distance
+        break
+      case 'y':
+        vantage.y += distance
+        break
+      case '-y':
+        vantage.y -= distance
+        break
+      case 'z':
+        // Looking from top-down, so X positive to the right, Y positive up.
+        vantage.z += distance
+        up = unitY
+        break
+      case '-z':
+        // Looking from bottom-up, so X positive to the left, Y positive up.
+        vantage.z -= distance
+        up = unitY
+        break
     }
 
     await this.engineCommandManager.sendSceneCommand({
