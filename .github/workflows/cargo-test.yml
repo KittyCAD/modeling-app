@@ -13,30 +13,9 @@ concurrency:
   cancel-in-progress: true
 name: cargo test
 jobs:
-  path-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      outside-kcl-samples: ${{ steps.filter.outputs.outside-kcl-samples }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - id: filter
-        name: Check for path changes
-        uses: dorny/paths-filter@v3
-        with:
-          predicate-quantifier: every
-          filters: |
-            outside-kcl-samples:
-              - '!(public/kcl-samples/**|rust/kcl-lib/tests/kcl_samples/**)'
-      - name: Display path changes
-        run: |
-          echo "Outside kcl-samples changes: ${{ steps.filter.outputs.outside-kcl-samples }}"
-
   cargotest:
     name: cargo test
     runs-on: ubuntu-latest-8-cores
-    needs: path-changes
     steps:
       - uses: actions/create-github-app-token@v1
         id: app-token
@@ -81,9 +60,31 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust
+      - name: Fetch the base branch
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch origin ${{ github.base_ref }} --depth=1
+      - name: Check for path changes
+        id: path-changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Manual runs or push should run all tests.
+          if [[ ${{ github.event_name }} != 'pull_request' ]]; then
+            echo "outside-kcl-samples=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          changed_files=$(git diff --name-only origin/${{ github.base_ref }})
+          echo "$changed_files"
+          if grep -Evq '^public/kcl-samples/|^rust/kcl-lib/tests/kcl_samples/' <<< "$changed_files" ; then
+            echo "outside-kcl-samples=true" >> $GITHUB_OUTPUT
+          else
+            echo "outside-kcl-samples=false" >> $GITHUB_OUTPUT
+          fi
       - name: cargo test only kcl-samples
         id: cargo-test-kcl-samples
-        if: needs.path-changes.outputs.outside-kcl-samples == 'false'
+        if: steps.path-changes.outputs.outside-kcl-samples == 'false'
         continue-on-error: true
         shell: bash
         run: |
@@ -95,7 +96,7 @@ jobs:
           RUST_BACKTRACE: full
           RUST_MIN_STACK: 10485760000
       - name: Commit differences
-        if: needs.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
+        if: steps.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
@@ -123,7 +124,7 @@ jobs:
           RUST_BACKTRACE: full
           RUST_MIN_STACK: 10485760000
       - name: cargo test
-        if: needs.path-changes.outputs.outside-kcl-samples == 'true'
+        if: steps.path-changes.outputs.outside-kcl-samples == 'true'
         shell: bash
         run: |-
           cd rust
@@ -132,7 +133,7 @@ jobs:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           RUST_MIN_STACK: 10485760000
       - name: Upload to codecov.io
-        if: needs.path-changes.outputs.outside-kcl-samples == 'true'
+        if: steps.path-changes.outputs.outside-kcl-samples == 'true'
         uses: codecov/codecov-action@v5
         with:
           token: ${{secrets.CODECOV_TOKEN}}
