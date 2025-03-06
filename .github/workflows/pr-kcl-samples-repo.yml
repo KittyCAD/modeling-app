@@ -56,9 +56,9 @@ jobs:
           git commit -m "Updates from modeling-app repo" || exit 0
           git push -f origin "$NEW_BRANCH"
           gh pr create --title "Update from modeling-app" \
-              --body "Updating files from the modeling-app repo" \
-              --head "$NEW_BRANCH" \
-              --reviewer jtran \
-              --base next || true
+            --body "Updating files from the modeling-app repo" \
+            --head "$NEW_BRANCH" \
+            --reviewer jtran \
+            --base next || true
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
