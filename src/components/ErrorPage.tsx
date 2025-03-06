@@ -42,7 +42,7 @@ export const ErrorPage = () => {
         <h1 className="text-4xl mb-8 font-bold" data-testid="unexpected-error">
           An unexpected error occurred
         </h1>
-        <p className="mb-8">
+        <p className="mb-8 w-full overflow-aut">
           <>{errorMessage(error)}</>
         </p>
         <div className="flex justify-between gap-2 mt-6">
