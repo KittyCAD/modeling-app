@@ -357,8 +357,6 @@ test.describe('Testing settings', () => {
     `Load desktop app with no settings file`,
     {
       tag: '@electron',
-      // This is what makes no settings file get created
-      cleanProjectDir: false,
     },
     async ({ page }, testInfo) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -785,11 +783,12 @@ test.describe('Testing settings', () => {
 
   test(
     `Changing system theme preferences (via media query) should update UI and stream`,
-    {
-      // Override the settings so that the theme is set to `system`
-      appSettings: TEST_SETTINGS_DEFAULT_THEME,
-    },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, tronApp }) => {
+      await tronApp.cleanProjectDir({
+        // Override the settings so that the theme is set to `system`
+        appSettings: TEST_SETTINGS_DEFAULT_THEME,
+      })
+
       const u = await getUtils(page)
 
       // Selectors and constants
@@ -834,17 +833,18 @@ test.describe('Testing settings', () => {
 
   test(
     `Turning off "Show debug panel" with debug panel open leaves no phantom panel`,
-    {
-      // Override beforeEach test setup
-      // with debug panel open
-      // but "show debug panel" set to false
-      appSettings: {
-        ...TEST_SETTINGS,
-        app: { ...TEST_SETTINGS.app, show_debug_panel: false },
-        modeling: { ...TEST_SETTINGS.modeling },
-      },
-    },
-    async ({ context, page, homePage }) => {
+    async ({ context, page, homePage, tronApp }) => {
+      await tronApp.cleanProjectDir({
+        // Override beforeEach test setup
+        // with debug panel open
+        // but "show debug panel" set to false
+        appSettings: {
+          ...TEST_SETTINGS,
+          app: { ...TEST_SETTINGS.app, show_debug_panel: false },
+          modeling: { ...TEST_SETTINGS.modeling },
+        },
+      })
+
       const u = await getUtils(page)
 
       await context.addInitScript(async () => {

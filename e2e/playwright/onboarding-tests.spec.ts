@@ -23,15 +23,15 @@ import { expectPixelColor } from './fixtures/sceneFixture'
 test.describe('Onboarding tests', () => {
   test(
     'Onboarding code is shown in the editor',
-    {
-      appSettings: {
-        app: {
-          onboarding_status: '',
-        },
-      },
-      cleanProjectDir: true,
-    },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, tronApp }) => {
+      await tronApp.cleanProjectDir({
+        appSettings: {
+          app: {
+            onboarding_status: '',
+          },
+        }
+      })
+
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
@@ -65,14 +65,15 @@ test.describe('Onboarding tests', () => {
     'Desktop: fresh onboarding executes and loads',
     {
       tag: '@electron',
-      appSettings: {
-        app: {
-          onboarding_status: '',
-        },
-      },
-      cleanProjectDir: true,
     },
-    async ({ page }) => {
+    async ({ page, tronApp }) => {
+      await tronApp.cleanProjectDir({
+        appSettings: {
+          app: {
+            onboarding_status: '',
+          },
+        }
+      })
       const u = await getUtils(page)
 
       const viewportSize = { width: 1200, height: 500 }
@@ -109,10 +110,9 @@ test.describe('Onboarding tests', () => {
 
   test(
     'Code resets after confirmation',
-    {
-      cleanProjectDir: true,
-    },
-    async ({ context, page, homePage }) => {
+    async ({ context, page, homePage, tronApp }) => {
+      await tronApp.cleanProjectDir()
+
       const initialCode = `sketch001 = startSketchOn('XZ')`
 
       // Load the page up with some code so we see the confirmation warning
@@ -210,15 +210,15 @@ test.describe('Onboarding tests', () => {
 
   test(
     'Onboarding redirects and code updating',
-    {
-      appSettings: {
-        app: {
-          onboarding_status: '/export',
+    async ({ context, page, homePage, tronApp }) => {
+      await tronApp.cleanProjectDir({
+        appSettings: {
+          app: {
+            onboarding_status: '/export',
+          },
         },
-      },
-      cleanProjectDir: true,
-    },
-    async ({ context, page, homePage }) => {
+      })
+
       const originalCode = 'sigmaAllow = 15000'
 
       // Override beforeEach test setup
@@ -265,16 +265,15 @@ test.describe('Onboarding tests', () => {
 
   test(
     'Onboarding code gets reset to demo on Interactive Numbers step',
-    {
-      appSettings: {
-        app: {
-          onboarding_status: '/parametric-modeling',
+    async ({ page, homePage, tronApp }) => {
+      await tronApp.cleanProjectDir({
+        appSettings: {
+          app: {
+            onboarding_status: '/parametric-modeling',
+          },
         },
-      },
-      cleanProjectDir: true,
-    },
+      })
 
-    async ({ page, homePage }) => {
       const u = await getUtils(page)
       const badCode = `// This is bad code we shouldn't see`
 
@@ -315,15 +314,15 @@ test.describe('Onboarding tests', () => {
   // low impact of an avatar not showing I'm changing this to fixme.
   test.fixme(
     'Avatar text updates depending on image load success',
-    {
-      appSettings: {
-        app: {
-          onboarding_status: '',
+    async ({ context, page, homePage, tronApp }) => {
+      await tronApp.cleanProjectDir({
+        appSettings: {
+          app: {
+            onboarding_status: '',
+          },
         },
-      },
-      cleanProjectDir: true,
-    },
-    async ({ context, page, homePage }) => {
+      })
+
       // Override beforeEach test setup
       await context.addInitScript(
         async ({ settingsKey, settings }) => {
@@ -388,15 +387,14 @@ test.describe('Onboarding tests', () => {
 
   test.fixme(
     "Avatar text doesn't mention avatar when no avatar",
-    {
-      appSettings: {
-        app: {
-          onboarding_status: '',
+    async ({ context, page, homePage, tronApp }) => {
+      await tronApp.cleanProjectDir({
+        appSettings: {
+          app: {
+            onboarding_status: '',
+          },
         },
-      },
-      cleanProjectDir: true,
-    },
-    async ({ context, page, homePage }) => {
+      })
       // Override beforeEach test setup
       await context.addInitScript(
         async ({ settingsKey, settings }) => {
@@ -444,15 +442,15 @@ test.describe('Onboarding tests', () => {
 
 test.fixme(
   'Restarting onboarding on desktop takes one attempt',
-  {
-    appSettings: {
-      app: {
-        onboarding_status: 'dismissed',
-      },
-    },
-    cleanProjectDir: true,
-  },
-  async ({ context, page }) => {
+  async ({ context, page, tronApp }) => {
+    await tronApp.cleanProjectDir({
+      appSettings: {
+        app: {
+          onboarding_status: 'dismissed',
+        },
+      }
+    })
+
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = join(dir, 'router-template-slate')
       await fsp.mkdir(routerTemplateDir, { recursive: true })

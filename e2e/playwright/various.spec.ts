@@ -35,7 +35,7 @@ test.fixme('Units menu', async ({ page, homePage }) => {
 test(
   'Successful export shows a success toast',
   { tag: '@skipLocalEngine' },
-  async ({ page, homePage }) => {
+  async ({ page, homePage, tronApp }) => {
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -98,6 +98,7 @@ part001 = startSketchOn('-XZ')
         storage: 'embedded',
         presentation: 'pretty',
       },
+      tronApp.projectDirName,
       page
     )
   }
@@ -491,18 +492,12 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
   await page.setBodyDimensions({ width: 1200, height: 500 })
 
   await homePage.goToModelingScene()
-  await scene.waitForExecutionDone()
-
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(300)
+  await scene.connectionEstablished()
+  await scene.settled(cmdBar)
 
   let previousCodeContent = await page.locator('.cm-content').innerText()
 
-  await u.openAndClearDebugPanel()
+  await u.openDebugPanel()
   await u.doAndWaitForCmd(
     () => page.mouse.click(625, 165),
     'default_camera_get_settings',

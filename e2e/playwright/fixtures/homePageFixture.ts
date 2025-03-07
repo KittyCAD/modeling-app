@@ -27,10 +27,6 @@ export class HomePageFixture {
 
   constructor(page: Page) {
     this.page = page
-    this.reConstruct(page)
-  }
-  reConstruct = (page: Page) => {
-    this.page = page
 
     this.projectSection = this.page.getByTestId('home-section')
 
@@ -96,8 +92,12 @@ export class HomePageFixture {
     }
   }
 
-  createAndGoToProject = async (projectTitle = 'project-$nnn') => {
+  projectsLoaded = async () => {
     await expect(this.projectSection).not.toHaveText('Loading your Projects...')
+  }
+
+  createAndGoToProject = async (projectTitle = 'project-$nnn') => {
+    await this.projectsLoaded()
     await this.projectButtonNew.click()
     await this.projectTextName.click()
     await this.projectTextName.fill(projectTitle)

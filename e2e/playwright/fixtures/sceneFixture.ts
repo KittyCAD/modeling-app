@@ -53,7 +53,12 @@ export class SceneFixture {
 
   constructor(page: Page) {
     this.page = page
-    this.reConstruct(page)
+    this.streamWrapper = page.getByTestId('stream')
+    this.networkToggleConnected = page.getByTestId('network-toggle-ok')
+    this.loadingIndicator = this.streamWrapper.getByTestId('loading')
+    this.startEditSketchBtn = page
+      .getByRole('button', { name: 'Start Sketch' })
+      .or(page.getByRole('button', { name: 'Edit Sketch' }))
   }
   private _serialiseScene = async (): Promise<SceneSerialised> => {
     const camera = await this.getCameraInfo()
@@ -70,17 +75,6 @@ export class SceneFixture {
         timeout: 60000,
       })
       .toEqual(expected)
-  }
-
-  reConstruct = (page: Page) => {
-    this.page = page
-
-    this.streamWrapper = page.getByTestId('stream')
-    this.networkToggleConnected = page.getByTestId('network-toggle-ok')
-    this.loadingIndicator = this.streamWrapper.getByTestId('loading')
-    this.startEditSketchBtn = page
-      .getByRole('button', { name: 'Start Sketch' })
-      .or(page.getByRole('button', { name: 'Edit Sketch' }))
   }
 
   makeMouseHelpers = (
@@ -253,7 +247,7 @@ export class SceneFixture {
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.clearAndCloseDebugPanel()
+    await u.closeDebugPanel()
 
     await this.waitForExecutionDone()
     await expect(this.startEditSketchBtn).not.toBeDisabled()
