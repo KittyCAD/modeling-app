@@ -188,14 +188,18 @@ const ProjectsContextDesktop = ({
     projectsLoaderTrigger,
   ])
 
+  // KEVIN: LIST PROJECTS INVOKED
   // Re-read projects listing if the projectDir has any updates.
   // Kevin: we already watch projectsDir
-  useFileSystemWatcher(
-    async () => {
-      return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
-    },
-    projectsDir ? [projectsDir] : []
-  )
+  /* useFileSystemWatcher(
+   *   async (eventType, path) => {
+   *     console.log("[kevin] INVOKE LISTPROJECTS(callback);", eventType, path)
+   *     // KEVIN: invocation
+   *     // return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
+   *   },
+   *   projectsDir ? [projectsDir] : [],
+   *   'nice'
+   * ) */
 
   const [state, send, actor] = useMachine(
     projectsMachine.provide({
@@ -314,7 +318,12 @@ const ProjectsContextDesktop = ({
           ),
       },
       actors: {
-        readProjects: fromPromise(() => listProjects()),
+        readProjects: fromPromise(() => {
+          var a = new Error()
+          console.log("[kevin] readProjects(callback)")
+          console.log("[kevin] readProjects(callback) error", a.stack)
+          return listProjects()
+        }),
         createProject: fromPromise(async ({ input }) => {
           let name = (
             input && 'name' in input && input.name

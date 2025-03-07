@@ -184,8 +184,8 @@ export async function listProjects(
     projects.push(project)
   }
 
-  console.log('[kevin] listProjects return value', JSON.parse(JSON.stringify(projects)))
-  console.count('[kevin] listProjects return value')
+  console.log('[kevin][return value] listProjects(callback);', JSON.parse(JSON.stringify(projects)))
+  console.count('[kevin][counter] listProjects(callback);')
   return projects
 }
 

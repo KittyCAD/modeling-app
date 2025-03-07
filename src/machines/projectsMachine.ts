@@ -109,6 +109,7 @@ export const projectsMachine = setup({
   },
   guards: {
     'Has at least 1 project': ({ event }) => {
+      console.log("[kevin][has at least 1 project] listProjects(callback);")
       if (event.type !== 'xstate.done.actor.read-projects') return false
       return event.output.length ? event.output.length >= 1 : false
     },
@@ -117,6 +118,8 @@ export const projectsMachine = setup({
   /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAMS6yzFSkDaADALqKgAOqtALsaqXYgAHogAsAJgA0IAJ6IAjAHYAbADoArBJVMFTCQA4mTAMwmxAXwsy0mHARLkKASXRcATjywAzYgBtsb3cMLABVACUAGWY2JBAuXn5BONEESRl5BAUFFQM1HQUxJSYATmyFAyUTKxsMbDwiMjA1ZGosUlQsDmCAKzB8HlgKcLBcCC7e-sGYoQTiPgEhVIUy9SKSiQ0NEwkclRyMxGKJNRKlMRVDU23zpRqQW3qHJpa2jonUPoGhgGF3UZ42G6nymMzicwWyVAyzKJzECg0OiYGjERhK+kOWUMSlOGiUlTEJlMxRKBnuj3sjXIr1gHy+g2Go3GwPpsDBnG48ySS0QGj0+Q0JTOGkqBg2JhKmNRJy2OyUEn0Kml5LqlMczVatJZUyGI1IuDs2oG7PinMhPIQfKYAqFShF+PFkrkRwkYjU8OUShKKhMKg0pUs1geqoa6ppdJ1FD+AKBk2NrFmZu5KV5-L9tvtYokEsxelRagUCoMiMumyUdpVdlDL01Ee+FAAImAAoC6zwTRDk9DU9b08LRY7MWd1AZcoS-aoLiYFJWnlSNW0jQyAPIcMCkNsdpOLFOWtOC-sO7NOzLbGWFbY6acmFESWdql7R3B8UhQNsUCACZpkABuqAA1s0+D-M+YAALRLluiQ7t2WRMGIbryjeBgGBIEglNsCi5sY6hMOchQqEoCLFCh97VtST4vm+S4UGA7jBO4agcH4z7eKg7joGowExhBcbtgm4LblCIiKPBiHZiKqHoZhuaFhoBbGMYBhiPBCgStUQYUuRzR6gaZDUXxH5fmov4Ac0-z6pgvEgvGsQctBwnLGJahIZJaEYdOmKEfJuQSoRRKSRcZHPNSunoPp750QxTEsTwbEcWoFkGuBkECfZXIwSJcEIS5Ekoe5MnOggXqIaUqFiiUhIInemkhiFzRNi2EU0Z+1KmYBagQM2YCAtZ9JQRljmiTlrn5dJnlFShOLwcpZjKBs+KBrUVb1WojU9c1hlRexMWsexnFdS2KV8QN5q7laNqHlmOaTcpmjoWc8L6HoYrBfOagjGMm02QyrXfqQf4dSBEB9Tqp1dllebichUkeVhRXTiU+QecUKhCps4pvWGn0QN9rJGW1ANmYlTKg98DAKHZpoORanoyqh8oImU3pKJifJ5Ohdr7CYqjIvKWMvDjeORttjHMXtCXA2T0xpdTg20+W9MSIzgorIRXlpr6ORbPs+jwQLFEgVRPj+JQf0mUTHXcaBYG+AE4OZcsxbuts5hbCK+zFmImJgSc5zPV6BQVD6RQG80lERXblCi7tcX7VxRvgVHDtDQgaE4vK2gXKiTA6ItubmJo8IoqOylERUVhBh0XXwHEWn1YmNO7mBKg+2KpzK2IpIBUwBhqUtwYre9tbvEutfpWdsFFnkPpVJnQqz15Ozur36FoypREbGH4Zj438u7tO1qIu5qK5PBGyYjebpEkS44e9oVTbxHr5tnvk9ZeXajTuW+zaHNuzYRUmoeCEp-RKlUHJbeYVhYDDfhDVIxR5IGGnISQk6E+6EkxMUBQX9c66EMMg3Q5Zt7rWNkuOBjsjilDUAqQsZQzzgOkJNUk7o7SmF-tiXOUCmQwMGBQ1OF4TgVGzFUG8yIxQGDZiYPI4oqh+mPsrDSy05xhmfm+KO-CLT+iRucEUuwFQqWzMWXM2YTAuTtL6ZBylkRcMrkAA */
   id: 'Home machine',
 
+  // KEVIN: LIST PROJECTS INVOKED
+  // initial: 'dog',
   initial: 'Reading projects',
 
   context: ({ input }) => ({
@@ -128,12 +131,14 @@ export const projectsMachine = setup({
       actions: assign(({ event }) => ({
         ...event.data,
       })),
-      target: '.Reading projects',
+      // KEVIN: LIST PROJECTS INVOKED
+      // target: '.Reading projects',
     },
 
     'Import file from URL': '.Creating file',
   },
   states: {
+    'dog': {},
     'Has no projects': {
       on: {
         'Read projects': {

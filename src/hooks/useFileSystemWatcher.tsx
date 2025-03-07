@@ -14,6 +14,7 @@ type Path = string
 export const useFileSystemWatcher = (
   callback: (eventType: string, path: Path) => Promise<void>,
   paths: Path[],
+  message?: string
 ): void => {
   // Used to track this instance of useFileSystemWatcher.
   // Assign to ref so it doesn't change between renders.
@@ -27,8 +28,8 @@ export const useFileSystemWatcher = (
   const [pathsTracked, setPathsTracked] = useState<Path[]>([])
 
   useEffect(() => {
-    console.log("[kevin] OUTPUT", output)
     if (!output) return
+    console.log("[kevin] callback output", output, message)
     callback(output.eventType, output.path).catch(reportRejection)
   }, [output])
 
@@ -40,6 +41,7 @@ export const useFileSystemWatcher = (
     if (!isDesktop()) return
 
     const cbWatcher = (eventType: string, path: string) => {
+      /* console.log('[kevin] callback', paths, eventType, path, message) */
       setOutput({ eventType, path })
     }
 
