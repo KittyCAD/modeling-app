@@ -722,14 +722,14 @@ export const makeTemplate: (
 
 const PLAYWRIGHT_DOWNLOAD_DIR = 'downloads-during-playwright'
 
-export const getPlaywrightDownloadDir = (page: Page) => {
-  return path.resolve(page.dir, PLAYWRIGHT_DOWNLOAD_DIR)
+export const getPlaywrightDownloadDir = (rootDir: string) => {
+  return path.resolve(rootDir, PLAYWRIGHT_DOWNLOAD_DIR)
 }
 
-const moveDownloadedFileTo = async (page: Page, toLocation: string) => {
+const moveDownloadedFileTo = async (rootDir: string, toLocation: string) => {
   await fsp.mkdir(path.dirname(toLocation), { recursive: true })
 
-  const downloadDir = getPlaywrightDownloadDir(page)
+  const downloadDir = getPlaywrightDownloadDir(rootDir)
 
   // Expect there to be at least one file
   await expect
@@ -756,6 +756,7 @@ export interface Paths {
 
 export const doExport = async (
   output: Models['OutputFormat_type'],
+  rootDir: string,
   page: Page,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
@@ -836,7 +837,7 @@ export const doExport = async (
     // (declared in src/lib/exportSave)
     // To remain consistent with our old web tests, we want to move some downloads
     // (images) to another directory.
-    await moveDownloadedFileTo(page, downloadLocation)
+    await moveDownloadedFileTo(rootDir, downloadLocation)
   }
 
   return {
@@ -935,103 +936,6 @@ export async function setup(
 let electronApp: ElectronApplication | undefined = undefined
 let context: BrowserContext | undefined = undefined
 let page: Page | undefined = undefined
-
-export async function setupElectron({
-  testInfo,
-  cleanProjectDir = true,
-  appSettings,
-  viewport,
-}: {
-  testInfo: TestInfo
-  folderSetupFn?: (projectDirName: string) => Promise<void>
-  cleanProjectDir?: boolean
-  appSettings?: DeepPartial<Settings>
-  viewport: {
-    width: number
-    height: number
-  }
-}): Promise<{
-  electronApp: ElectronApplication
-  context: BrowserContext
-  page: Page
-  dir: string
-}> {
-  // create or otherwise clear the folder
-  const projectDirName = testInfo.outputPath('electron-test-projects-dir')
-  try {
-    if (fsSync.existsSync(projectDirName) && cleanProjectDir) {
-      await fsp.rm(projectDirName, { recursive: true })
-    }
-  } catch (e) {
-    console.error(e)
-  }
-
-  if (cleanProjectDir) {
-    await fsp.mkdir(projectDirName)
-  }
-
-  const options = {
-    args: ['.', '--no-sandbox'],
-    env: {
-      ...process.env,
-      TEST_SETTINGS_FILE_KEY: projectDirName,
-      IS_PLAYWRIGHT: 'true',
-    },
-    ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
-      ? { executablePath: process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron' }
-      : {}),
-    ...(process.env.PLAYWRIGHT_RECORD_VIDEO
-      ? {
-          recordVideo: {
-            dir: testInfo.snapshotPath(),
-            size: viewport,
-          },
-        }
-      : {}),
-  }
-
-  // Do this once and then reuse window on subsequent calls.
-  if (!electronApp) {
-    electronApp = await electron.launch(options)
-  }
-
-  if (!context || !page) {
-    context = electronApp.context()
-    page = await electronApp.firstWindow()
-    context.on('console', console.log)
-    page.on('console', console.log)
-  }
-
-  if (cleanProjectDir) {
-    const tempSettingsFilePath = path.join(projectDirName, SETTINGS_FILE_NAME)
-    const settingsOverrides = settingsToToml(
-      appSettings
-        ? {
-            settings: {
-              ...TEST_SETTINGS,
-              ...appSettings,
-              app: {
-                ...TEST_SETTINGS.app,
-                project_directory: projectDirName,
-                ...appSettings.app,
-              },
-            },
-          }
-        : {
-            settings: {
-              ...TEST_SETTINGS,
-              app: {
-                ...TEST_SETTINGS.app,
-                project_directory: projectDirName,
-              },
-            },
-          }
-    )
-    await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
-  }
-
-  return { electronApp, page, context, dir: projectDirName }
-}
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
   // enabled for chrome for now

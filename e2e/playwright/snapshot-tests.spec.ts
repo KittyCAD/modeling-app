@@ -45,7 +45,7 @@ test.setTimeout(60_000)
 test.skip(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
-  async ({ page, context, scene, cmdBar }) => {
+  async ({ page, context, scene, cmdBar, tronApp }) => {
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -134,6 +134,7 @@ part001 = startSketchOn('-XZ')
           storage: 'ascii',
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -146,6 +147,7 @@ part001 = startSketchOn('-XZ')
           selection: { type: 'default_scene' },
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -158,6 +160,7 @@ part001 = startSketchOn('-XZ')
           selection: { type: 'default_scene' },
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -170,6 +173,7 @@ part001 = startSketchOn('-XZ')
           units: 'in',
           selection: { type: 'default_scene' },
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -182,6 +186,7 @@ part001 = startSketchOn('-XZ')
           units: 'in',
           selection: { type: 'default_scene' },
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -193,6 +198,7 @@ part001 = startSketchOn('-XZ')
           coords: sysType,
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -203,6 +209,7 @@ part001 = startSketchOn('-XZ')
           storage: 'embedded',
           presentation: 'pretty',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -213,6 +220,7 @@ part001 = startSketchOn('-XZ')
           storage: 'binary',
           presentation: 'pretty',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -223,6 +231,7 @@ part001 = startSketchOn('-XZ')
           storage: 'standard',
           presentation: 'pretty',
         },
+        tronApp.projectDirName,
         page
       )
     )
