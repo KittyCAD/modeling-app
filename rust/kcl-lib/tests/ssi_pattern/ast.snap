@@ -108,8 +108,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 89,
+                      "name": "length",
+                      "start": 83,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "end": 96,
@@ -141,9 +143,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 105,
+                      "end": 111,
                       "name": "end",
-                      "start": 102,
+                      "start": 108,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -252,8 +254,10 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "type": "Identifier",
-                      "name": "length"
+                      "end": 185,
+                      "name": "length",
+                      "start": 179,
+                      "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
@@ -292,9 +296,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 205,
+                      "end": 217,
                       "name": "endAbsolute",
-                      "start": 194,
+                      "start": 206,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -349,9 +353,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 249,
+                      "end": 261,
                       "name": "tag",
-                      "start": 246,
+                      "start": 258,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -417,9 +421,9 @@ snapshot_kind: text
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 312,
+                  "end": 324,
                   "name": "length",
-                  "start": 306,
+                  "start": 318,
                   "type": "Identifier"
                 },
                 "arg": {
@@ -506,9 +510,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 383,
+                      "end": 395,
                       "name": "center",
-                      "start": 377,
+                      "start": 389,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -552,9 +556,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 407,
+                      "end": 419,
                       "name": "radius",
-                      "start": 401,
+                      "start": 413,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -587,9 +591,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 445,
+                      "end": 457,
                       "name": "instances",
-                      "start": 436,
+                      "start": 448,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -607,9 +611,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 459,
+                      "end": 471,
                       "name": "distance",
-                      "start": 451,
+                      "start": 463,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -627,9 +631,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 469,
+                      "end": 481,
                       "name": "axis",
-                      "start": 465,
+                      "start": 477,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -681,9 +685,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 563,
+                      "end": 575,
                       "name": "instances",
-                      "start": 554,
+                      "start": 566,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -701,9 +705,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 577,
+                      "end": 589,
                       "name": "distance",
-                      "start": 569,
+                      "start": 581,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -721,9 +725,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 587,
+                      "end": 599,
                       "name": "axis",
-                      "start": 583,
+                      "start": 595,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -782,9 +786,9 @@ snapshot_kind: text
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 618,
+                      "end": 630,
                       "name": "length",
-                      "start": 612,
+                      "start": 624,
                       "type": "Identifier"
                     },
                     "arg": {

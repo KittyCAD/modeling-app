@@ -548,8 +548,10 @@ snapshot_kind: text
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "type": "Identifier",
-                    "name": "endAbsolute"
+                    "end": 460,
+                    "name": "endAbsolute",
+                    "start": 449,
+                    "type": "Identifier"
                   },
                   "arg": {
                     "end": 464,
