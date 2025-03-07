@@ -1105,7 +1105,9 @@ part002 = startSketchOn('XZ')
 
       await pollEditorLinesSelectedLength(page, 1)
       activeLinesContent = await page.locator('.cm-activeLine').all()
-      await expect(activeLinesContent[0]).toHaveText(`|> xLine(length = length001)`)
+      await expect(activeLinesContent[0]).toHaveText(
+        `|> xLine(length = length001)`
+      )
 
       // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
       await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
