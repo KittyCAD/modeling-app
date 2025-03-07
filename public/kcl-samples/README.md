@@ -8,8 +8,6 @@ The samples can be browsed in our documentation at <https://zoo.dev/docs/kcl-sam
 
 ## Guidelines for adding samples
 
-Merge PRs to the `next` branch, not main. When we release Modeling App, we will merge this repo's `next` into `main`. This way, `main` is always compatible with the latest ZMA release.
-
 KCL samples conform to a set of style guidelines to ensure consistency and readability.
 
 1. **File Naming:** Name your KCL files descriptively and concisely, using hyphens to separate words (e.g., flange.kcl, ball-bearing.kcl).

@@ -882,6 +882,73 @@ impl ExecutorContext {
         Ok(contents)
     }
 
+    /// Export the current scene as a CAD file.
+    pub async fn export(
+        &self,
+        format: kittycad_modeling_cmds::format::OutputFormat3d,
+    ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
+        let resp = self
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                crate::SourceRange::default(),
+                &kittycad_modeling_cmds::ModelingCmd::Export(kittycad_modeling_cmds::Export {
+                    entity_ids: vec![],
+                    format,
+                }),
+            )
+            .await?;
+
+        let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
+            return Err(KclError::Internal(crate::errors::KclErrorDetails {
+                message: format!("Expected Export response, got {resp:?}",),
+                source_ranges: vec![SourceRange::default()],
+            }));
+        };
+
+        Ok(files)
+    }
+
+    /// Export the current scene as a STEP file.
+    pub async fn export_step(
+        &self,
+        deterministic_time: bool,
+    ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
+        let mut files = self
+            .export(kittycad_modeling_cmds::format::OutputFormat3d::Step(
+                kittycad_modeling_cmds::format::step::export::Options {
+                    coords: *kittycad_modeling_cmds::coord::KITTYCAD,
+                    created: None,
+                },
+            ))
+            .await?;
+
+        if deterministic_time {
+            for kittycad_modeling_cmds::websocket::RawFile { contents, .. } in &mut files {
+                use std::fmt::Write;
+                let utf8 = std::str::from_utf8(contents).unwrap();
+                let mut postprocessed = String::new();
+                for line in utf8.lines() {
+                    if line.starts_with("FILE_NAME") {
+                        let name = "test.step";
+                        let time = "2021-01-01T00:00:00Z";
+                        let author = "Test";
+                        let org = "Zoo";
+                        let version = "zoo.dev beta";
+                        let system = "zoo.dev";
+                        let authorization = "Test";
+                        writeln!(&mut postprocessed, "FILE_NAME('{name}', '{time}', ('{author}'), ('{org}'), '{version}', '{system}', '{authorization}');").unwrap();
+                    } else {
+                        writeln!(&mut postprocessed, "{line}").unwrap();
+                    }
+                }
+                *contents = postprocessed.into_bytes();
+            }
+        }
+
+        Ok(files)
+    }
+
     pub async fn close(&self) {
         self.engine.close().await;
     }

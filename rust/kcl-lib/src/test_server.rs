@@ -40,11 +40,26 @@ pub async fn execute_and_snapshot_ast(
     ast: Program,
     units: UnitLength,
     current_file: Option<PathBuf>,
-) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
+    with_export_step: bool,
+) -> Result<(ExecState, EnvironmentRef, image::DynamicImage, Option<Vec<u8>>), ExecErrorWithState> {
     let ctx = new_context(units, true, current_file).await?;
-    let res = do_execute_and_snapshot(&ctx, ast).await;
+    let (exec_state, env, img) = do_execute_and_snapshot(&ctx, ast).await?;
+    let mut step = None;
+    if with_export_step {
+        let files = match ctx.export_step(true).await {
+            Ok(f) => f,
+            Err(err) => {
+                return Err(ExecErrorWithState::new(
+                    ExecError::BadExport(format!("Export failed: {:?}", err)),
+                    exec_state.clone(),
+                ));
+            }
+        };
+
+        step = files.into_iter().next().map(|f| f.contents);
+    }
     ctx.close().await;
-    res
+    Ok((exec_state, env, img, step))
 }
 
 pub async fn execute_and_snapshot_no_auth(
@@ -92,8 +107,6 @@ async fn do_execute_and_snapshot(
         .map_err(|e| ExecError::BadPng(e.to_string()))
         .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
         .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?;
-
-    ctx.close().await;
 
     Ok((exec_state, result.0, img))
 }
@@ -159,56 +172,15 @@ pub async fn execute_and_export_step(
         }
     }
 
-    let resp = ctx
-        .engine
-        .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
-            crate::SourceRange::default(),
-            &kittycad_modeling_cmds::ModelingCmd::Export(kittycad_modeling_cmds::Export {
-                entity_ids: vec![],
-                format: kittycad_modeling_cmds::format::OutputFormat3d::Step(
-                    kittycad_modeling_cmds::format::step::export::Options {
-                        coords: *kittycad_modeling_cmds::coord::KITTYCAD,
-                        // We want all to have the same timestamp.
-                        created: Some(
-                            chrono::DateTime::parse_from_rfc3339("2021-01-01T00:00:00Z")
-                                .unwrap()
-                                .into(),
-                        ),
-                    },
-                ),
-            }),
-        )
-        .await
-        .map_err(|err| ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone()))?;
-
-    let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { mut files } = resp else {
-        return Err(ExecErrorWithState::new(
-            ExecError::BadExport(format!("Expected export response, got: {:?}", resp)),
-            exec_state.clone(),
-        ));
-    };
-
-    for kittycad_modeling_cmds::websocket::RawFile { contents, .. } in &mut files {
-        use std::fmt::Write;
-        let utf8 = std::str::from_utf8(contents).unwrap();
-        let mut postprocessed = String::new();
-        for line in utf8.lines() {
-            if line.starts_with("FILE_NAME") {
-                let name = "test.step";
-                let time = "2021-01-01T00:00:00Z";
-                let author = "Test";
-                let org = "Zoo";
-                let version = "zoo.dev beta";
-                let system = "zoo.dev";
-                let authorization = "Test";
-                writeln!(&mut postprocessed, "FILE_NAME('{name}', '{time}', ('{author}'), ('{org}'), '{version}', '{system}', '{authorization}');").unwrap();
-            } else {
-                writeln!(&mut postprocessed, "{line}").unwrap();
-            }
+    let files = match ctx.export_step(true).await {
+        Ok(f) => f,
+        Err(err) => {
+            return Err(ExecErrorWithState::new(
+                ExecError::BadExport(format!("Export failed: {:?}", err)),
+                exec_state.clone(),
+            ));
         }
-        *contents = postprocessed.into_bytes();
-    }
+    };
 
     ctx.close().await;
 

@@ -73,7 +73,7 @@ async fn kcl_test_execute() {
     // Spawn a task for each test.
     for (index, test) in tests.iter().cloned().enumerate() {
         let handle = tasks.spawn(async move {
-            super::execute_test(&test, true).await;
+            super::execute_test(&test, true, true).await;
         });
         id_to_index.insert(handle.id(), index);
     }
@@ -99,6 +99,34 @@ async fn kcl_test_execute() {
         .filter(|name| !input_names.contains(name))
         .collect::<Vec<_>>();
     assert!(missing.is_empty(), "Expected input kcl-samples for the following. If these are no longer tests, delete the expected output directories for them in {}: {missing:?}", OUTPUTS_DIR.to_string_lossy());
+
+    // We want to move the step and screenshot for the inputs to the public/kcl-samples
+    // directory so that they can be used as inputs for the next run.
+    // First ensure each directory exists.
+    let public_screenshot_dir = INPUTS_DIR.join("screenshots");
+    let public_step_dir = INPUTS_DIR.join("step");
+    for dir in [&public_step_dir, &public_screenshot_dir] {
+        if !dir.exists() {
+            std::fs::create_dir_all(dir).unwrap();
+        }
+    }
+    for tests in tests {
+        let screenshot_file = OUTPUTS_DIR.join(&tests.name).join(super::RENDERED_MODEL_NAME);
+        if !screenshot_file.exists() {
+            panic!("Missing screenshot for test: {}", tests.name);
+        }
+        std::fs::rename(
+            screenshot_file,
+            public_screenshot_dir.join(format!("{}.png", &tests.name)),
+        )
+        .unwrap();
+
+        let step_file = OUTPUTS_DIR.join(&tests.name).join(super::EXPORTED_STEP_NAME);
+        if !step_file.exists() {
+            panic!("Missing step for test: {}", tests.name);
+        }
+        std::fs::rename(step_file, public_step_dir.join(format!("{}.step", &tests.name))).unwrap();
+    }
 }
 
 fn test(test_name: &str, entry_point: String) -> Test {
