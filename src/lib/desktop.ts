@@ -186,6 +186,7 @@ export async function listProjects(
 
   console.log('[kevin][return value] listProjects(callback);', JSON.parse(JSON.stringify(projects)))
   console.count('[kevin][counter] listProjects(callback);')
+  window.LISTED_PROJECTS = true
   return projects
 }
 

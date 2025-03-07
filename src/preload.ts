@@ -98,8 +98,10 @@ const rename = (prev: string, next: string) => fs.rename(prev, next)
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
-const stat = (path: string) =>
-  fs.stat(path).catch((e) => Promise.reject(e.code))
+const stat = (path: string) => {
+  return fs.stat(path).catch((e) => Promise.reject(e.code))
+}
+
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
 const statIsDirectory = (path: string) =>
