@@ -1105,6 +1105,34 @@ impl LanguageServer for Backend {
                     range: Some(range),
                 }))
             }
+            Hover::Type { name, range } => {
+                let Some(completion) = self.stdlib_completions.get(&name) else {
+                    return Ok(None);
+                };
+                let Some(docs) = &completion.documentation else {
+                    return Ok(None);
+                };
+
+                let docs = match docs {
+                    Documentation::String(docs) => docs,
+                    Documentation::MarkupContent(MarkupContent { value, .. }) => value,
+                };
+
+                let docs = if docs.len() > 320 {
+                    let end = docs.find("\n\n").or_else(|| docs.find("\n\r\n")).unwrap_or(320);
+                    &docs[..end]
+                } else {
+                    &**docs
+                };
+
+                Ok(Some(LspHover {
+                    contents: HoverContents::Markup(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: format!("```\n{}\n```\n\n{}", name, docs),
+                    }),
+                    range: Some(range),
+                }))
+            }
             Hover::KwArg {
                 name,
                 callee_name,

@@ -13,6 +13,7 @@ impl BodyItem {
             BodyItem::ImportStatement(stmt) => stmt.module_id,
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.module_id,
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.module_id,
+            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.module_id,
             BodyItem::ReturnStatement(return_statement) => return_statement.module_id,
         }
     }

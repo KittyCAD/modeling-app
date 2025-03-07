@@ -197,6 +197,7 @@ pub enum OpKclValue {
     },
     Function {},
     Module {},
+    Type {},
     KclNone {},
 }
 
@@ -293,6 +294,7 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Function { .. } => Self::Function {},
             KclValue::Module { .. } => Self::Module {},
             KclValue::KclNone { .. } => Self::KclNone {},
+            KclValue::Type { .. } => Self::Type {},
             KclValue::Tombstone { .. } => unreachable!("Tombstone OpKclValue"),
         }
     }

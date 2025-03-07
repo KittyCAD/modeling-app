@@ -21,11 +21,11 @@ helixRevolutions(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`HelixRevolutionsData`](/docs/kcl/types/HelixRevolutionsData) | Data for helix revolutions. | Yes |
-| `solid` | [`Solid`](/docs/kcl/types/Solid) | A solid is a collection of extrude surfaces. | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) |  | Yes |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid)
 
 
 ### Examples

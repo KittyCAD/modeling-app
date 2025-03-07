@@ -23,8 +23,8 @@ An angle and length with explicitly named parameters
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` |`number`| The angle of the line (in degrees). | No |
-| `length` |`number`| The length of the line. | No |
+| `angle` |[`number`](/docs/kcl/types/number)| The angle of the line (in degrees). | No |
+| `length` |[`number`](/docs/kcl/types/number)| The length of the line. | No |
 
 
 ----

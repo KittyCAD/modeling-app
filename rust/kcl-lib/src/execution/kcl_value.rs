@@ -4,7 +4,10 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::{memory::EnvironmentRef, MetaSettings};
+use super::{
+    memory::{self, EnvironmentRef},
+    MetaSettings,
+};
 use crate::{
     errors::KclErrorDetails,
     execution::{
@@ -93,6 +96,13 @@ pub enum KclValue {
     },
     Module {
         value: ModuleId,
+        #[serde(rename = "__meta")]
+        meta: Vec<Metadata>,
+    },
+    #[ts(skip)]
+    Type {
+        #[serde(skip)]
+        value: Option<(PrimitiveType, StdFnProps)>,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -188,6 +198,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
             KclValue::Module { meta, .. } => to_vec_sr(&meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
+            KclValue::Type { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
             KclValue::Tombstone { .. } => unreachable!("Tombstone SourceRange"),
         }
@@ -220,8 +231,16 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Object { meta, .. } => to_vec_sr(meta),
             KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
+            KclValue::Type { meta, .. } => to_vec_sr(meta),
             KclValue::Tombstone { .. } => unreachable!("Tombstone &SourceRange"),
         }
+    }
+}
+
+impl From<&KclValue> for SourceRange {
+    fn from(item: &KclValue) -> Self {
+        let v: Vec<_> = item.into();
+        v.into_iter().next().unwrap_or_default()
     }
 }
 
@@ -247,6 +266,7 @@ impl KclValue {
             KclValue::Function { meta, .. } => meta.clone(),
             KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
+            KclValue::Type { meta, .. } => meta.clone(),
             KclValue::Tombstone { .. } => unreachable!("Tombstone Metadata"),
         }
     }
@@ -317,6 +337,7 @@ impl KclValue {
             KclValue::Array { .. } => "array (list)",
             KclValue::Object { .. } => "object",
             KclValue::Module { .. } => "module",
+            KclValue::Type { .. } => "type",
             KclValue::KclNone { .. } => "None",
             KclValue::Tombstone { .. } => "TOMBSTONE",
         }
@@ -596,15 +617,16 @@ impl KclValue {
                     .collect::<Option<Vec<_>>>()?,
             )),
             KclValue::Face { .. } => None,
-            KclValue::Helix { .. } => None,
-            KclValue::ImportedGeometry(..) => None,
-            KclValue::Function { .. } => None,
-            KclValue::Module { .. } => None,
-            KclValue::TagIdentifier(_) => None,
-            KclValue::TagDeclarator(_) => None,
-            KclValue::KclNone { .. } => None,
-            KclValue::Uuid { .. } => None,
-            KclValue::Tombstone { .. } => None,
+            KclValue::Helix { .. }
+            | KclValue::ImportedGeometry(..)
+            | KclValue::Function { .. }
+            | KclValue::Module { .. }
+            | KclValue::TagIdentifier(_)
+            | KclValue::TagDeclarator(_)
+            | KclValue::KclNone { .. }
+            | KclValue::Type { .. }
+            | KclValue::Uuid { .. }
+            | KclValue::Tombstone { .. } => None,
         }
     }
 
@@ -714,6 +736,7 @@ impl KclValue {
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
             | KclValue::KclNone { .. }
+            | KclValue::Type { .. }
             | KclValue::Tombstone { .. } => None,
         }
     }
@@ -728,21 +751,29 @@ pub enum RuntimeType {
 }
 
 impl RuntimeType {
-    pub fn from_parsed(value: Type, settings: &super::MetaSettings) -> Option<Self> {
-        match value {
-            Type::Primitive(pt) => Some(RuntimeType::Primitive(PrimitiveType::from_parsed(pt, settings)?)),
-            Type::Array(pt) => Some(RuntimeType::Array(PrimitiveType::from_parsed(pt, settings)?)),
-            Type::Object { properties } => Some(RuntimeType::Object(
-                properties
-                    .into_iter()
-                    .map(|p| {
-                        p.type_.and_then(|t| {
-                            RuntimeType::from_parsed(t.inner, settings).map(|ty| (p.identifier.inner.name, ty))
-                        })
-                    })
-                    .collect::<Option<Vec<_>>>()?,
-            )),
-        }
+    pub fn from_parsed(
+        value: Type,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<Option<Self>, CompilationError> {
+        Ok(match value {
+            Type::Primitive(pt) => {
+                PrimitiveType::from_parsed(pt, exec_state, source_range)?.map(RuntimeType::Primitive)
+            }
+            Type::Array(pt) => PrimitiveType::from_parsed(pt, exec_state, source_range)?.map(RuntimeType::Array),
+            Type::Object { properties } => properties
+                .into_iter()
+                .map(|p| {
+                    let pt = match p.type_ {
+                        Some(t) => t,
+                        None => return Ok(None),
+                    };
+                    Ok(RuntimeType::from_parsed(pt.inner, exec_state, source_range)?
+                        .map(|ty| (p.identifier.inner.name, ty)))
+                })
+                .collect::<Result<Option<Vec<_>>, CompilationError>>()?
+                .map(RuntimeType::Object),
+        })
     }
 
     // Subtype with no coercion, including refining numeric types.
@@ -802,16 +833,33 @@ pub enum PrimitiveType {
 }
 
 impl PrimitiveType {
-    fn from_parsed(value: AstPrimitiveType, settings: &super::MetaSettings) -> Option<Self> {
-        match value {
+    fn from_parsed(
+        value: AstPrimitiveType,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<Option<Self>, CompilationError> {
+        Ok(match value {
             AstPrimitiveType::String => Some(PrimitiveType::String),
             AstPrimitiveType::Boolean => Some(PrimitiveType::Boolean),
-            AstPrimitiveType::Number(suffix) => Some(PrimitiveType::Number(NumericType::from_parsed(suffix, settings))),
-            AstPrimitiveType::Sketch => Some(PrimitiveType::Sketch),
-            AstPrimitiveType::Solid => Some(PrimitiveType::Solid),
-            AstPrimitiveType::Plane => Some(PrimitiveType::Plane),
+            AstPrimitiveType::Number(suffix) => Some(PrimitiveType::Number(NumericType::from_parsed(
+                suffix,
+                &exec_state.mod_local.settings,
+            ))),
+            AstPrimitiveType::Named(name) => {
+                let ty_val = exec_state
+                    .stack()
+                    .get(&format!("{}{}", memory::TYPE_PREFIX, name.name), source_range)
+                    .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {}", name.name)))?;
+
+                let (ty, _) = match ty_val {
+                    KclValue::Type { value: Some(ty), .. } => ty,
+                    _ => unreachable!(),
+                };
+
+                Some(ty.clone())
+            }
             _ => None,
-        }
+        })
     }
 }
 
