@@ -17,7 +17,8 @@
     "extends": [
       "plugin:css-modules/recommended",
       "plugin:jsx-a11y/recommended",
-      "plugin:react-hooks/recommended"
+      "plugin:react-hooks/recommended",
+      "plugin:react-perf/recommended"
     ],
     "rules": {
       "@typescript-eslint/no-floating-promises": "error",
