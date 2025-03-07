@@ -1004,11 +1004,6 @@ export function createCallExpressionStdLibKw(
   unlabeled: CallExpressionKw['unlabeled'],
   args: CallExpressionKw['arguments']
 ): Node<CallExpressionKw> {
-  console.error(
-    'ADAM: Creating call expression',
-    name,
-    args.map((a) => a.label.name)
-  )
   return {
     type: 'CallExpressionKw',
     start: 0,
