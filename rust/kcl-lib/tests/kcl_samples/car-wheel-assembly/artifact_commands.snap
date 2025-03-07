@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands car-wheel-assembly.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -4242,7 +4243,7 @@ description: Artifact commands car-wheel-assembly.kcl
     "cmdId": "[uuid]",
     "range": [
       2636,
-      2650,
+      2656,
       4
     ],
     "command": {
@@ -4262,8 +4263,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2656,
-      2670,
+      2662,
+      2682,
       4
     ],
     "command": {
@@ -4283,8 +4284,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2676,
-      2691,
+      2688,
+      2709,
       4
     ],
     "command": {
@@ -4304,8 +4305,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2697,
-      2753,
+      2715,
+      2771,
       4
     ],
     "command": {
@@ -4325,8 +4326,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2759,
-      2766,
+      2777,
+      2784,
       4
     ],
     "command": {
@@ -4337,8 +4338,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2772,
-      2915,
+      2790,
+      2933,
       4
     ],
     "command": {
@@ -4362,8 +4363,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4378,8 +4379,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4392,8 +4393,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4403,8 +4404,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4415,8 +4416,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4428,8 +4429,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4442,8 +4443,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4456,8 +4457,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4470,8 +4471,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4484,8 +4485,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4498,8 +4499,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4512,8 +4513,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4526,8 +4527,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4540,8 +4541,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4556,8 +4557,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4570,8 +4571,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4581,8 +4582,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4593,8 +4594,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4606,8 +4607,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4620,8 +4621,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4634,8 +4635,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4648,8 +4649,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4662,8 +4663,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4676,8 +4677,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4690,8 +4691,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4704,8 +4705,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4718,8 +4719,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4734,8 +4735,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4748,8 +4749,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4759,8 +4760,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4771,8 +4772,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4784,8 +4785,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4798,8 +4799,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4812,8 +4813,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4826,8 +4827,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4840,8 +4841,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4854,8 +4855,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4868,8 +4869,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4882,8 +4883,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4896,8 +4897,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4912,8 +4913,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4926,8 +4927,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4937,8 +4938,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4949,8 +4950,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4962,8 +4963,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4976,8 +4977,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -4990,8 +4991,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5004,8 +5005,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5018,8 +5019,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5032,8 +5033,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5046,8 +5047,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5060,8 +5061,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5074,8 +5075,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5090,8 +5091,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5104,8 +5105,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5115,8 +5116,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5127,8 +5128,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5140,8 +5141,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5154,8 +5155,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5168,8 +5169,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5182,8 +5183,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5196,8 +5197,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5210,8 +5211,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5224,8 +5225,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5238,8 +5239,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2931,
-      2999,
+      2949,
+      3017,
       4
     ],
     "command": {
@@ -5252,8 +5253,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3067,
-      3099,
+      3085,
+      3117,
       4
     ],
     "command": {
@@ -5268,8 +5269,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3067,
-      3099,
+      3085,
+      3117,
       4
     ],
     "command": {
@@ -5279,8 +5280,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3067,
-      3099,
+      3085,
+      3117,
       4
     ],
     "command": {
@@ -5296,8 +5297,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3105,
-      3120,
+      3123,
+      3144,
       4
     ],
     "command": {
@@ -5317,8 +5318,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3126,
-      3140,
+      3150,
+      3170,
       4
     ],
     "command": {
@@ -5338,8 +5339,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3146,
-      3160,
+      3176,
+      3196,
       4
     ],
     "command": {
@@ -5359,8 +5360,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3166,
-      3222,
+      3202,
+      3258,
       4
     ],
     "command": {
@@ -5380,8 +5381,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3228,
-      3235,
+      3264,
+      3271,
       4
     ],
     "command": {
@@ -5392,8 +5393,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3241,
-      3384,
+      3277,
+      3420,
       4
     ],
     "command": {
@@ -5417,8 +5418,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5433,8 +5434,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5447,8 +5448,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5458,8 +5459,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5470,8 +5471,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5483,8 +5484,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5497,8 +5498,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5511,8 +5512,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5525,8 +5526,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5539,8 +5540,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5553,8 +5554,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5567,8 +5568,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5581,8 +5582,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5595,8 +5596,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5611,8 +5612,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5625,8 +5626,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5636,8 +5637,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5648,8 +5649,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5661,8 +5662,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5675,8 +5676,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5689,8 +5690,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5703,8 +5704,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5717,8 +5718,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5731,8 +5732,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5745,8 +5746,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5759,8 +5760,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5773,8 +5774,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5789,8 +5790,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5803,8 +5804,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5814,8 +5815,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5826,8 +5827,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5839,8 +5840,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5853,8 +5854,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5867,8 +5868,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5881,8 +5882,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5895,8 +5896,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5909,8 +5910,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5923,8 +5924,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5937,8 +5938,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5951,8 +5952,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5967,8 +5968,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5981,8 +5982,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -5992,8 +5993,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6004,8 +6005,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6017,8 +6018,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6031,8 +6032,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6045,8 +6046,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6059,8 +6060,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6073,8 +6074,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6087,8 +6088,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6101,8 +6102,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6115,8 +6116,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6129,8 +6130,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6145,8 +6146,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6159,8 +6160,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6170,8 +6171,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6182,8 +6183,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6195,8 +6196,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6209,8 +6210,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6223,8 +6224,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6237,8 +6238,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6251,8 +6252,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6265,8 +6266,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6279,8 +6280,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6293,8 +6294,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3406,
-      3480,
+      3442,
+      3516,
       4
     ],
     "command": {
@@ -6307,8 +6308,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3486,
-      3547,
+      3522,
+      3583,
       4
     ],
     "command": {
@@ -6328,8 +6329,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3486,
-      3547,
+      3522,
+      3583,
       4
     ],
     "command": {
@@ -6349,8 +6350,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3486,
-      3547,
+      3522,
+      3583,
       4
     ],
     "command": {
@@ -6370,8 +6371,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3486,
-      3547,
+      3522,
+      3583,
       4
     ],
     "command": {
@@ -6391,8 +6392,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3486,
-      3547,
+      3522,
+      3583,
       4
     ],
     "command": {
@@ -8535,7 +8536,7 @@ description: Artifact commands car-wheel-assembly.kcl
     "cmdId": "[uuid]",
     "range": [
       1837,
-      1883,
+      1889,
       3
     ],
     "command": {
@@ -8555,8 +8556,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1889,
-      1994,
+      1895,
+      2000,
       3
     ],
     "command": {
@@ -8586,8 +8587,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2000,
-      2013,
+      2006,
+      2028,
       3
     ],
     "command": {
@@ -8607,8 +8608,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2019,
-      2075,
+      2034,
+      2090,
       3
     ],
     "command": {
@@ -8628,8 +8629,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2081,
-      2088,
+      2096,
+      2103,
       3
     ],
     "command": {
@@ -8640,8 +8641,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2081,
-      2088,
+      2096,
+      2103,
       3
     ],
     "command": {
@@ -8651,8 +8652,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8679,8 +8680,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8691,8 +8692,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8704,8 +8705,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8718,8 +8719,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8732,8 +8733,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8746,8 +8747,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8760,8 +8761,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8774,8 +8775,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8788,8 +8789,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8802,8 +8803,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2094,
-      2120,
+      2109,
+      2135,
       3
     ],
     "command": {
@@ -8816,8 +8817,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2126,
-      2185,
+      2141,
+      2200,
       3
     ],
     "command": {
@@ -8837,8 +8838,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2206,
-      2225,
+      2221,
+      2240,
       3
     ],
     "command": {
@@ -8866,8 +8867,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2231,
-      2277,
+      2246,
+      2292,
       3
     ],
     "command": {
@@ -8886,8 +8887,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2231,
-      2277,
+      2246,
+      2292,
       3
     ],
     "command": {
@@ -8897,8 +8898,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2231,
-      2277,
+      2246,
+      2292,
       3
     ],
     "command": {
@@ -8914,8 +8915,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2283,
-      2329,
+      2298,
+      2350,
       3
     ],
     "command": {
@@ -8935,8 +8936,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2335,
-      2442,
+      2356,
+      2463,
       3
     ],
     "command": {
@@ -8966,8 +8967,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2448,
-      2476,
+      2469,
+      2506,
       3
     ],
     "command": {
@@ -8987,8 +8988,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2482,
-      2538,
+      2512,
+      2568,
       3
     ],
     "command": {
@@ -9008,8 +9009,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2544,
-      2551,
+      2574,
+      2581,
       3
     ],
     "command": {
@@ -9020,8 +9021,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2544,
-      2551,
+      2574,
+      2581,
       3
     ],
     "command": {
@@ -9031,8 +9032,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9059,8 +9060,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9071,8 +9072,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9084,8 +9085,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9098,8 +9099,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9112,8 +9113,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9126,8 +9127,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9140,8 +9141,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9154,8 +9155,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9168,8 +9169,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9182,8 +9183,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2583,
+      2587,
+      2613,
       3
     ],
     "command": {
@@ -9196,8 +9197,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2589,
-      2648,
+      2619,
+      2678,
       3
     ],
     "command": {
@@ -9217,8 +9218,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3038,
-      3061,
+      3068,
+      3091,
       3
     ],
     "command": {
@@ -9246,8 +9247,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3069,
-      3116,
+      3099,
+      3146,
       3
     ],
     "command": {
@@ -9266,8 +9267,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3069,
-      3116,
+      3099,
+      3146,
       3
     ],
     "command": {
@@ -9277,8 +9278,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3069,
-      3116,
+      3099,
+      3146,
       3
     ],
     "command": {
@@ -9294,8 +9295,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3124,
-      3464,
+      3154,
+      3494,
       3
     ],
     "command": {
@@ -9325,8 +9326,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3472,
-      3498,
+      3502,
+      3534,
       3
     ],
     "command": {
@@ -9346,8 +9347,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3506,
-      3850,
+      3542,
+      3886,
       3
     ],
     "command": {
@@ -9377,8 +9378,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3858,
-      3914,
+      3894,
+      3950,
       3
     ],
     "command": {
@@ -9398,8 +9399,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3922,
-      3929,
+      3958,
+      3965,
       3
     ],
     "command": {
@@ -9410,8 +9411,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3922,
-      3929,
+      3958,
+      3965,
       3
     ],
     "command": {
@@ -9421,8 +9422,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9441,8 +9442,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9455,8 +9456,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9466,8 +9467,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9478,8 +9479,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9491,8 +9492,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9505,8 +9506,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9519,8 +9520,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9533,8 +9534,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9547,8 +9548,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9561,8 +9562,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9575,8 +9576,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9589,8 +9590,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9603,8 +9604,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4031,
-      4211,
+      4067,
+      4247,
       3
     ],
     "command": {
@@ -9628,8 +9629,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -9649,8 +9650,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -9670,8 +9671,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -9691,8 +9692,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -9712,8 +9713,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -9733,8 +9734,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -9754,8 +9755,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3038,
-      3061,
+      3068,
+      3091,
       3
     ],
     "command": {
@@ -9783,8 +9784,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3069,
-      3116,
+      3099,
+      3146,
       3
     ],
     "command": {
@@ -9803,8 +9804,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3069,
-      3116,
+      3099,
+      3146,
       3
     ],
     "command": {
@@ -9814,8 +9815,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3069,
-      3116,
+      3099,
+      3146,
       3
     ],
     "command": {
@@ -9831,8 +9832,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3124,
-      3464,
+      3154,
+      3494,
       3
     ],
     "command": {
@@ -9862,8 +9863,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3472,
-      3498,
+      3502,
+      3534,
       3
     ],
     "command": {
@@ -9883,8 +9884,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3506,
-      3850,
+      3542,
+      3886,
       3
     ],
     "command": {
@@ -9914,8 +9915,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3858,
-      3914,
+      3894,
+      3950,
       3
     ],
     "command": {
@@ -9935,8 +9936,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3922,
-      3929,
+      3958,
+      3965,
       3
     ],
     "command": {
@@ -9947,8 +9948,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3922,
-      3929,
+      3958,
+      3965,
       3
     ],
     "command": {
@@ -9958,8 +9959,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9978,8 +9979,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -9992,8 +9993,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10003,8 +10004,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10015,8 +10016,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10028,8 +10029,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10042,8 +10043,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10056,8 +10057,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10070,8 +10071,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10084,8 +10085,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10098,8 +10099,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10112,8 +10113,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10126,8 +10127,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3977,
-      4023,
+      4013,
+      4059,
       3
     ],
     "command": {
@@ -10140,8 +10141,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4031,
-      4211,
+      4067,
+      4247,
       3
     ],
     "command": {
@@ -10165,8 +10166,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -10186,8 +10187,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -10207,8 +10208,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -10228,8 +10229,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -10249,8 +10250,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -10270,8 +10271,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4219,
-      4278,
+      4255,
+      4314,
       3
     ],
     "command": {
@@ -10291,8 +10292,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4433,
-      4452,
+      4469,
+      4488,
       3
     ],
     "command": {
@@ -10320,8 +10321,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4458,
-      4553,
+      4494,
+      4589,
       3
     ],
     "command": {
@@ -10340,8 +10341,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4458,
-      4553,
+      4494,
+      4589,
       3
     ],
     "command": {
@@ -10351,8 +10352,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4458,
-      4553,
+      4494,
+      4589,
       3
     ],
     "command": {
@@ -10368,8 +10369,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4559,
-      4586,
+      4595,
+      4628,
       3
     ],
     "command": {
@@ -10389,8 +10390,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4592,
-      4643,
+      4634,
+      4685,
       3
     ],
     "command": {
@@ -10410,8 +10411,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4649,
-      4676,
+      4691,
+      4724,
       3
     ],
     "command": {
@@ -10431,8 +10432,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4682,
-      4732,
+      4730,
+      4780,
       3
     ],
     "command": {
@@ -10452,8 +10453,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4738,
-      4770,
+      4786,
+      4827,
       3
     ],
     "command": {
@@ -10473,8 +10474,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4776,
-      4825,
+      4833,
+      4882,
       3
     ],
     "command": {
@@ -10494,8 +10495,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4831,
-      4858,
+      4888,
+      4921,
       3
     ],
     "command": {
@@ -10515,8 +10516,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4864,
-      4892,
+      4927,
+      4961,
       3
     ],
     "command": {
@@ -10536,8 +10537,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4898,
-      4926,
+      4967,
+      5001,
       3
     ],
     "command": {
@@ -10557,8 +10558,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4932,
-      4984,
+      5007,
+      5059,
       3
     ],
     "command": {
@@ -10578,8 +10579,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4990,
-      5018,
+      5065,
+      5099,
       3
     ],
     "command": {
@@ -10599,8 +10600,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5024,
-      5100,
+      5105,
+      5181,
       3
     ],
     "command": {
@@ -10620,8 +10621,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5106,
-      5130,
+      5187,
+      5220,
       3
     ],
     "command": {
@@ -10641,8 +10642,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5136,
-      5212,
+      5226,
+      5302,
       3
     ],
     "command": {
@@ -10662,8 +10663,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5218,
-      5246,
+      5308,
+      5342,
       3
     ],
     "command": {
@@ -10683,8 +10684,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5252,
-      5326,
+      5348,
+      5422,
       3
     ],
     "command": {
@@ -10704,8 +10705,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5332,
-      5360,
+      5428,
+      5462,
       3
     ],
     "command": {
@@ -10725,8 +10726,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5366,
-      5417,
+      5468,
+      5519,
       3
     ],
     "command": {
@@ -10746,8 +10747,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5423,
-      5476,
+      5525,
+      5587,
       3
     ],
     "command": {
@@ -10767,8 +10768,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5482,
-      5533,
+      5593,
+      5644,
       3
     ],
     "command": {
@@ -10788,8 +10789,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5539,
-      5567,
+      5650,
+      5684,
       3
     ],
     "command": {
@@ -10809,8 +10810,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5573,
-      5600,
+      5690,
+      5723,
       3
     ],
     "command": {
@@ -10830,8 +10831,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5606,
-      5633,
+      5729,
+      5762,
       3
     ],
     "command": {
@@ -10851,8 +10852,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5639,
-      5646,
+      5768,
+      5775,
       3
     ],
     "command": {
@@ -10863,8 +10864,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5639,
-      5646,
+      5768,
+      5775,
       3
     ],
     "command": {
@@ -10874,8 +10875,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -10902,8 +10903,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -10914,8 +10915,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -10927,8 +10928,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -10941,8 +10942,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -10955,8 +10956,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -10969,8 +10970,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -10983,8 +10984,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -10997,8 +10998,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11011,8 +11012,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11025,8 +11026,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11039,8 +11040,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11053,8 +11054,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11067,8 +11068,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11081,8 +11082,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11095,8 +11096,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11109,8 +11110,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11123,8 +11124,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11137,8 +11138,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11151,8 +11152,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11165,8 +11166,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11179,8 +11180,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11193,8 +11194,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11207,8 +11208,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11221,8 +11222,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11235,8 +11236,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11249,8 +11250,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11263,8 +11264,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11277,8 +11278,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11291,8 +11292,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11305,8 +11306,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11319,8 +11320,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11333,8 +11334,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11347,8 +11348,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11361,8 +11362,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11375,8 +11376,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11389,8 +11390,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11403,8 +11404,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11417,8 +11418,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11431,8 +11432,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11445,8 +11446,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11459,8 +11460,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11473,8 +11474,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11487,8 +11488,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11501,8 +11502,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11515,8 +11516,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11529,8 +11530,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11543,8 +11544,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11557,8 +11558,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11571,8 +11572,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11585,8 +11586,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5652,
-      5678,
+      5781,
+      5807,
       3
     ],
     "command": {
@@ -11599,8 +11600,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5684,
-      5743,
+      5813,
+      5872,
       3
     ],
     "command": {
@@ -11620,8 +11621,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3069,
-      3116,
+      3099,
+      3146,
       3
     ],
     "command": {
@@ -11633,8 +11634,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3069,
-      3116,
+      3099,
+      3146,
       3
     ],
     "command": {
@@ -11757,7 +11758,7 @@ description: Artifact commands car-wheel-assembly.kcl
     "cmdId": "[uuid]",
     "range": [
       860,
-      887,
+      896,
       6
     ],
     "command": {
@@ -11777,8 +11778,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      895,
-      916,
+      904,
+      934,
       6
     ],
     "command": {
@@ -11798,8 +11799,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      924,
-      976,
+      942,
+      994,
       6
     ],
     "command": {
@@ -11818,8 +11819,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      984,
-      1009,
+      1002,
+      1042,
       6
     ],
     "command": {
@@ -11839,8 +11840,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1017,
-      1043,
+      1050,
+      1085,
       6
     ],
     "command": {
@@ -11860,8 +11861,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1051,
-      1080,
+      1093,
+      1131,
       6
     ],
     "command": {
@@ -11881,8 +11882,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1088,
-      1101,
+      1139,
+      1161,
       6
     ],
     "command": {
@@ -11902,8 +11903,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1109,
-      1116,
+      1169,
+      1176,
       6
     ],
     "command": {
@@ -11914,8 +11915,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1109,
-      1116,
+      1169,
+      1176,
       6
     ],
     "command": {
@@ -11925,8 +11926,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -11953,8 +11954,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -11965,8 +11966,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -11978,8 +11979,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -11992,8 +11993,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12006,8 +12007,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12020,8 +12021,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12034,8 +12035,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12048,8 +12049,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12062,8 +12063,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12076,8 +12077,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12090,8 +12091,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12104,8 +12105,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12118,8 +12119,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12132,8 +12133,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12146,8 +12147,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12160,8 +12161,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12174,8 +12175,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12188,8 +12189,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12202,8 +12203,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12216,8 +12217,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1124,
-      1150,
+      1184,
+      1210,
       6
     ],
     "command": {
@@ -12230,8 +12231,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1158,
-      1219,
+      1218,
+      1279,
       6
     ],
     "command": {

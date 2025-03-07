@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands gear.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -5023,7 +5024,7 @@ description: Artifact commands gear.kcl
     "cmdId": "[uuid]",
     "range": [
       2703,
-      2724,
+      2730,
       0
     ],
     "command": {
@@ -5043,8 +5044,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2730,
-      2752,
+      2736,
+      2764,
       0
     ],
     "command": {
@@ -5064,8 +5065,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2758,
-      2780,
+      2770,
+      2798,
       0
     ],
     "command": {
@@ -5085,8 +5086,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2786,
-      2906,
+      2804,
+      2924,
       0
     ],
     "command": {
@@ -5114,8 +5115,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2912,
-      3021,
+      2930,
+      3039,
       0
     ],
     "command": {
@@ -5143,8 +5144,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3027,
-      3034,
+      3045,
+      3052,
       0
     ],
     "command": {
@@ -5155,8 +5156,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5171,8 +5172,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5185,8 +5186,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5196,8 +5197,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5208,8 +5209,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5221,8 +5222,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5235,8 +5236,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5249,8 +5250,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5263,8 +5264,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5277,8 +5278,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5291,8 +5292,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5305,8 +5306,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5319,8 +5320,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {

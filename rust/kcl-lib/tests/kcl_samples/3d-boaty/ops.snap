@@ -1,14 +1,15 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed 3d-boaty.kcl
+snapshot_kind: text
 ---
 [
   {
     "type": "UserDefinedFunctionCall",
     "name": "divider",
     "functionSourceRange": [
-      1319,
-      1594,
+      1331,
+      1606,
       3
     ],
     "unlabeledArg": null,
@@ -24,14 +25,14 @@ description: Operations executed 3d-boaty.kcl
     "name": "dividerSketch",
     "functionSourceRange": [
       309,
-      1300,
+      1312,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1339,
-      1359,
+      1351,
+      1371,
       3
     ]
   },
@@ -72,16 +73,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1384,
-          1404,
+          1396,
+          1416,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "type": "StdLibCall",
@@ -104,14 +105,14 @@ description: Operations executed 3d-boaty.kcl
     "name": "dividerSketch",
     "functionSourceRange": [
       309,
-      1300,
+      1312,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1415,
-      1435,
+      1427,
+      1447,
       3
     ]
   },
@@ -152,16 +153,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1460,
-          1481,
+          1472,
+          1493,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "type": "StdLibCall",
@@ -192,8 +193,8 @@ description: Operations executed 3d-boaty.kcl
           ]
         },
         "sourceRange": [
-          1523,
-          1530,
+          1535,
+          1542,
           3
         ]
       },
@@ -212,16 +213,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1510,
-          1513,
+          1522,
+          1525,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1485,
-      1531,
+      1497,
+      1543,
       3
     ],
     "type": "StdLibCall",
@@ -233,8 +234,8 @@ description: Operations executed 3d-boaty.kcl
         }
       },
       "sourceRange": [
-        1491,
-        1496,
+        1503,
+        1508,
         3
       ]
     }
@@ -252,8 +253,8 @@ description: Operations executed 3d-boaty.kcl
           ]
         },
         "sourceRange": [
-          1571,
-          1580,
+          1583,
+          1592,
           3
         ]
       },
@@ -272,16 +273,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1558,
-          1561,
+          1570,
+          1573,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1534,
-      1581,
+      1546,
+      1593,
       3
     ],
     "type": "StdLibCall",
@@ -293,8 +294,8 @@ description: Operations executed 3d-boaty.kcl
         }
       },
       "sourceRange": [
-        1540,
-        1544,
+        1552,
+        1556,
         3
       ]
     }
@@ -342,8 +343,8 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "divider",
     "functionSourceRange": [
-      1319,
-      1594,
+      1331,
+      1606,
       3
     ],
     "unlabeledArg": null,
@@ -359,14 +360,14 @@ description: Operations executed 3d-boaty.kcl
     "name": "dividerSketch",
     "functionSourceRange": [
       309,
-      1300,
+      1312,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1339,
-      1359,
+      1351,
+      1371,
       3
     ]
   },
@@ -407,16 +408,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1384,
-          1404,
+          1396,
+          1416,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "type": "StdLibCall",
@@ -439,14 +440,14 @@ description: Operations executed 3d-boaty.kcl
     "name": "dividerSketch",
     "functionSourceRange": [
       309,
-      1300,
+      1312,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1415,
-      1435,
+      1427,
+      1447,
       3
     ]
   },
@@ -487,16 +488,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1460,
-          1481,
+          1472,
+          1493,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "type": "StdLibCall",
@@ -527,8 +528,8 @@ description: Operations executed 3d-boaty.kcl
           ]
         },
         "sourceRange": [
-          1523,
-          1530,
+          1535,
+          1542,
           3
         ]
       },
@@ -547,16 +548,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1510,
-          1513,
+          1522,
+          1525,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1485,
-      1531,
+      1497,
+      1543,
       3
     ],
     "type": "StdLibCall",
@@ -568,8 +569,8 @@ description: Operations executed 3d-boaty.kcl
         }
       },
       "sourceRange": [
-        1491,
-        1496,
+        1503,
+        1508,
         3
       ]
     }
@@ -587,8 +588,8 @@ description: Operations executed 3d-boaty.kcl
           ]
         },
         "sourceRange": [
-          1571,
-          1580,
+          1583,
+          1592,
           3
         ]
       },
@@ -607,16 +608,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1558,
-          1561,
+          1570,
+          1573,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1534,
-      1581,
+      1546,
+      1593,
       3
     ],
     "type": "StdLibCall",
@@ -628,8 +629,8 @@ description: Operations executed 3d-boaty.kcl
         }
       },
       "sourceRange": [
-        1540,
-        1544,
+        1552,
+        1556,
         3
       ]
     }
@@ -677,8 +678,8 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "divider",
     "functionSourceRange": [
-      1319,
-      1594,
+      1331,
+      1606,
       3
     ],
     "unlabeledArg": null,
@@ -694,14 +695,14 @@ description: Operations executed 3d-boaty.kcl
     "name": "dividerSketch",
     "functionSourceRange": [
       309,
-      1300,
+      1312,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1339,
-      1359,
+      1351,
+      1371,
       3
     ]
   },
@@ -742,16 +743,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1384,
-          1404,
+          1396,
+          1416,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "type": "StdLibCall",
@@ -774,14 +775,14 @@ description: Operations executed 3d-boaty.kcl
     "name": "dividerSketch",
     "functionSourceRange": [
       309,
-      1300,
+      1312,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1415,
-      1435,
+      1427,
+      1447,
       3
     ]
   },
@@ -822,16 +823,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1460,
-          1481,
+          1472,
+          1493,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "type": "StdLibCall",
@@ -862,8 +863,8 @@ description: Operations executed 3d-boaty.kcl
           ]
         },
         "sourceRange": [
-          1523,
-          1530,
+          1535,
+          1542,
           3
         ]
       },
@@ -882,16 +883,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1510,
-          1513,
+          1522,
+          1525,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1485,
-      1531,
+      1497,
+      1543,
       3
     ],
     "type": "StdLibCall",
@@ -903,8 +904,8 @@ description: Operations executed 3d-boaty.kcl
         }
       },
       "sourceRange": [
-        1491,
-        1496,
+        1503,
+        1508,
         3
       ]
     }
@@ -922,8 +923,8 @@ description: Operations executed 3d-boaty.kcl
           ]
         },
         "sourceRange": [
-          1571,
-          1580,
+          1583,
+          1592,
           3
         ]
       },
@@ -942,16 +943,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1558,
-          1561,
+          1570,
+          1573,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1534,
-      1581,
+      1546,
+      1593,
       3
     ],
     "type": "StdLibCall",
@@ -963,8 +964,8 @@ description: Operations executed 3d-boaty.kcl
         }
       },
       "sourceRange": [
-        1540,
-        1544,
+        1552,
+        1556,
         3
       ]
     }
@@ -1012,8 +1013,8 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "connector",
     "functionSourceRange": [
-      1877,
-      2040,
+      1889,
+      2052,
       3
     ],
     "unlabeledArg": null,
@@ -1028,15 +1029,15 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "connectorSketch",
     "functionSourceRange": [
-      1614,
-      1856,
+      1626,
+      1868,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1897,
-      1929,
+      1909,
+      1941,
       3
     ]
   },
@@ -1048,16 +1049,16 @@ description: Operations executed 3d-boaty.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          1659,
-          1664,
+          1671,
+          1676,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1645,
-      1665,
+      1657,
+      1677,
       3
     ],
     "type": "StdLibCall",
@@ -1083,16 +1084,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1954,
-          1960,
+          1966,
+          1972,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "type": "StdLibCall",
@@ -1114,15 +1115,15 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "connectorSketch",
     "functionSourceRange": [
-      1614,
-      1856,
+      1626,
+      1868,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1964,
-      1995,
+      1976,
+      2007,
       3
     ]
   },
@@ -1134,16 +1135,16 @@ description: Operations executed 3d-boaty.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          1659,
-          1664,
+          1671,
+          1676,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1645,
-      1665,
+      1657,
+      1677,
       3
     ],
     "type": "StdLibCall",
@@ -1169,16 +1170,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          2020,
-          2026,
+          2032,
+          2038,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "type": "StdLibCall",
@@ -1239,8 +1240,8 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "seatSlats",
     "functionSourceRange": [
-      2462,
-      2548,
+      2474,
+      2560,
       3
     ],
     "unlabeledArg": null,
@@ -1255,15 +1256,15 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "seatSlatSketch",
     "functionSourceRange": [
-      2059,
-      2441,
+      2071,
+      2453,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2482,
-      2503,
+      2494,
+      2515,
       3
     ]
   },
@@ -1275,16 +1276,16 @@ description: Operations executed 3d-boaty.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          2097,
-          2102,
+          2109,
+          2114,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2083,
-      2103,
+      2095,
+      2115,
       3
     ],
     "type": "StdLibCall",
@@ -1310,16 +1311,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          2528,
-          2534,
+          2540,
+          2546,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "type": "StdLibCall",
@@ -1388,8 +1389,8 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "backSlats",
     "functionSourceRange": [
-      2981,
-      3072,
+      2993,
+      3084,
       3
     ],
     "unlabeledArg": null,
@@ -1404,15 +1405,15 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "backSlatsSketch",
     "functionSourceRange": [
-      2568,
-      2960,
+      2580,
+      2972,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3005,
-      3027,
+      3017,
+      3039,
       3
     ]
   },
@@ -1424,16 +1425,16 @@ description: Operations executed 3d-boaty.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          2606,
-          2611,
+          2618,
+          2623,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2592,
-      2612,
+      2604,
+      2624,
       3
     ],
     "type": "StdLibCall",
@@ -1459,16 +1460,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          3052,
-          3058,
+          3064,
+          3070,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "type": "StdLibCall",
@@ -1498,8 +1499,8 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRest",
     "functionSourceRange": [
-      3641,
-      3831,
+      3671,
+      3861,
       3
     ],
     "unlabeledArg": null,
@@ -1521,16 +1522,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          3710,
-          3716,
+          3740,
+          3746,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3682,
-      3717,
+      3712,
+      3747,
       3
     ],
     "type": "StdLibCall",
@@ -1540,8 +1541,8 @@ description: Operations executed 3d-boaty.kcl
         "value": "-YZ"
       },
       "sourceRange": [
-        3694,
-        3699,
+        3724,
+        3729,
         3
       ]
     }
@@ -1550,15 +1551,15 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestPath",
     "functionSourceRange": [
-      3088,
-      3307,
+      3100,
+      3325,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3668,
-      3718,
+      3698,
+      3748,
       3
     ]
   },
@@ -1570,16 +1571,16 @@ description: Operations executed 3d-boaty.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3126,
-          3131,
+          3138,
+          3143,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3112,
-      3132,
+      3124,
+      3144,
       3
     ],
     "type": "StdLibCall",
@@ -1605,16 +1606,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          3776,
-          3778,
+          3806,
+          3808,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3748,
-      3779,
+      3778,
+      3809,
       3
     ],
     "type": "StdLibCall",
@@ -1624,8 +1625,8 @@ description: Operations executed 3d-boaty.kcl
         "value": "-XZ"
       },
       "sourceRange": [
-        3760,
-        3765,
+        3790,
+        3795,
         3
       ]
     }
@@ -1634,15 +1635,15 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestProfile",
     "functionSourceRange": [
-      3326,
-      3622,
+      3344,
+      3652,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3731,
-      3788,
+      3761,
+      3818,
       3
     ]
   },
@@ -1654,16 +1655,16 @@ description: Operations executed 3d-boaty.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3372,
-          3377,
+          3390,
+          3395,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3358,
-      3378,
+      3376,
+      3396,
       3
     ],
     "type": "StdLibCall",
@@ -1682,16 +1683,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          3813,
-          3817,
+          3843,
+          3847,
           3
         ]
       }
     },
     "name": "sweep",
     "sourceRange": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "type": "StdLibCall",
@@ -1703,8 +1704,8 @@ description: Operations executed 3d-boaty.kcl
         }
       },
       "sourceRange": [
-        3797,
-        3804,
+        3827,
+        3834,
         3
       ]
     }
@@ -1716,8 +1717,8 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRest",
     "functionSourceRange": [
-      3641,
-      3831,
+      3671,
+      3861,
       3
     ],
     "unlabeledArg": null,
@@ -1739,16 +1740,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          3710,
-          3716,
+          3740,
+          3746,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3682,
-      3717,
+      3712,
+      3747,
       3
     ],
     "type": "StdLibCall",
@@ -1758,8 +1759,8 @@ description: Operations executed 3d-boaty.kcl
         "value": "-YZ"
       },
       "sourceRange": [
-        3694,
-        3699,
+        3724,
+        3729,
         3
       ]
     }
@@ -1768,15 +1769,15 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestPath",
     "functionSourceRange": [
-      3088,
-      3307,
+      3100,
+      3325,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3668,
-      3718,
+      3698,
+      3748,
       3
     ]
   },
@@ -1788,16 +1789,16 @@ description: Operations executed 3d-boaty.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3126,
-          3131,
+          3138,
+          3143,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3112,
-      3132,
+      3124,
+      3144,
       3
     ],
     "type": "StdLibCall",
@@ -1823,16 +1824,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          3776,
-          3778,
+          3806,
+          3808,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3748,
-      3779,
+      3778,
+      3809,
       3
     ],
     "type": "StdLibCall",
@@ -1842,8 +1843,8 @@ description: Operations executed 3d-boaty.kcl
         "value": "-XZ"
       },
       "sourceRange": [
-        3760,
-        3765,
+        3790,
+        3795,
         3
       ]
     }
@@ -1852,15 +1853,15 @@ description: Operations executed 3d-boaty.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestProfile",
     "functionSourceRange": [
-      3326,
-      3622,
+      3344,
+      3652,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3731,
-      3788,
+      3761,
+      3818,
       3
     ]
   },
@@ -1872,16 +1873,16 @@ description: Operations executed 3d-boaty.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3372,
-          3377,
+          3390,
+          3395,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3358,
-      3378,
+      3376,
+      3396,
       3
     ],
     "type": "StdLibCall",
@@ -1900,16 +1901,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          3813,
-          3817,
+          3843,
+          3847,
           3
         ]
       }
     },
     "name": "sweep",
     "sourceRange": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "type": "StdLibCall",
@@ -1921,8 +1922,8 @@ description: Operations executed 3d-boaty.kcl
         }
       },
       "sourceRange": [
-        3797,
-        3804,
+        3827,
+        3834,
         3
       ]
     }

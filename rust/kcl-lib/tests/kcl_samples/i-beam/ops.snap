@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed i-beam.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -43,16 +44,16 @@ description: Operations executed i-beam.kcl
           }
         },
         "sourceRange": [
-          639,
-          649,
+          669,
+          679,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      622,
-      650,
+      652,
+      680,
       0
     ],
     "type": "StdLibCall",

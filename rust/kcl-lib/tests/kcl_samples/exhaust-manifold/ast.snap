@@ -1,6 +1,7 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing exhaust-manifold.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -1671,7 +1672,7 @@ description: Result of parsing exhaust-manifold.kcl
       },
       {
         "declaration": {
-          "end": 4153,
+          "end": 4240,
           "id": {
             "end": 1836,
             "name": "flangeSketch",
@@ -1780,35 +1781,47 @@ description: Result of parsing exhaust-manifold.kcl
               {
                 "arguments": [
                   {
-                    "argument": {
-                      "end": 1915,
-                      "raw": "2.6",
-                      "start": 1912,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 2.6,
-                        "suffix": "None"
-                      }
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1917,
+                      "name": "length",
+                      "start": 1911,
+                      "type": "Identifier"
                     },
-                    "end": 1915,
-                    "operator": "-",
-                    "start": 1911,
-                    "type": "UnaryExpression",
-                    "type": "UnaryExpression"
+                    "arg": {
+                      "argument": {
+                        "end": 1924,
+                        "raw": "2.6",
+                        "start": 1921,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.6,
+                          "suffix": "None"
+                        }
+                      },
+                      "end": 1924,
+                      "operator": "-",
+                      "start": 1920,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
                   },
                   {
-                    "end": 1918,
-                    "start": 1917,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 1926,
-                    "start": 1920,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "seg01"
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1929,
+                      "name": "tag",
+                      "start": 1926,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1938,
+                      "start": 1932,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "seg01"
+                    }
                   }
                 ],
                 "callee": {
@@ -1817,30 +1830,31 @@ description: Result of parsing exhaust-manifold.kcl
                   "start": 1905,
                   "type": "Identifier"
                 },
-                "end": 1927,
+                "end": 1939,
                 "start": 1905,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "end": 1976,
+                    "end": 1988,
                     "properties": [
                       {
-                        "end": 1960,
+                        "end": 1972,
                         "key": {
-                          "end": 1955,
+                          "end": 1967,
                           "name": "radius",
-                          "start": 1949,
+                          "start": 1961,
                           "type": "Identifier"
                         },
-                        "start": 1949,
+                        "start": 1961,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1960,
+                          "end": 1972,
                           "raw": ".3",
-                          "start": 1958,
+                          "start": 1970,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1850,20 +1864,20 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "end": 1974,
+                        "end": 1986,
                         "key": {
-                          "end": 1968,
+                          "end": 1980,
                           "name": "offset",
-                          "start": 1962,
+                          "start": 1974,
                           "type": "Identifier"
                         },
-                        "start": 1962,
+                        "start": 1974,
                         "type": "ObjectProperty",
                         "value": {
                           "argument": {
-                            "end": 1974,
+                            "end": 1986,
                             "raw": "40",
-                            "start": 1972,
+                            "start": 1984,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1871,55 +1885,55 @@ description: Result of parsing exhaust-manifold.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 1974,
+                          "end": 1986,
                           "operator": "-",
-                          "start": 1971,
+                          "start": 1983,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       }
                     ],
-                    "start": 1947,
+                    "start": 1959,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1979,
-                    "start": 1978,
+                    "end": 1991,
+                    "start": 1990,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1946,
+                  "end": 1958,
                   "name": "tangentialArc",
-                  "start": 1933,
+                  "start": 1945,
                   "type": "Identifier"
                 },
-                "end": 1980,
-                "start": 1933,
+                "end": 1992,
+                "start": 1945,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2028,
+                    "end": 2040,
                     "properties": [
                       {
-                        "end": 2013,
+                        "end": 2025,
                         "key": {
-                          "end": 2008,
+                          "end": 2020,
                           "name": "radius",
-                          "start": 2002,
+                          "start": 2014,
                           "type": "Identifier"
                         },
-                        "start": 2002,
+                        "start": 2014,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2013,
+                          "end": 2025,
                           "raw": ".9",
-                          "start": 2011,
+                          "start": 2023,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1929,19 +1943,19 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "end": 2026,
+                        "end": 2038,
                         "key": {
-                          "end": 2021,
+                          "end": 2033,
                           "name": "offset",
-                          "start": 2015,
+                          "start": 2027,
                           "type": "Identifier"
                         },
-                        "start": 2015,
+                        "start": 2027,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2026,
+                          "end": 2038,
                           "raw": "80",
-                          "start": 2024,
+                          "start": 2036,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1951,47 +1965,47 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       }
                     ],
-                    "start": 2000,
+                    "start": 2012,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2031,
-                    "start": 2030,
+                    "end": 2043,
+                    "start": 2042,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1999,
+                  "end": 2011,
                   "name": "tangentialArc",
-                  "start": 1986,
+                  "start": 1998,
                   "type": "Identifier"
                 },
-                "end": 2032,
-                "start": 1986,
+                "end": 2044,
+                "start": 1998,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2081,
+                    "end": 2093,
                     "properties": [
                       {
-                        "end": 2065,
+                        "end": 2077,
                         "key": {
-                          "end": 2060,
+                          "end": 2072,
                           "name": "radius",
-                          "start": 2054,
+                          "start": 2066,
                           "type": "Identifier"
                         },
-                        "start": 2054,
+                        "start": 2066,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2065,
+                          "end": 2077,
                           "raw": ".3",
-                          "start": 2063,
+                          "start": 2075,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2001,20 +2015,20 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "end": 2079,
+                        "end": 2091,
                         "key": {
-                          "end": 2073,
+                          "end": 2085,
                           "name": "offset",
-                          "start": 2067,
+                          "start": 2079,
                           "type": "Identifier"
                         },
-                        "start": 2067,
+                        "start": 2079,
                         "type": "ObjectProperty",
                         "value": {
                           "argument": {
-                            "end": 2079,
+                            "end": 2091,
                             "raw": "40",
-                            "start": 2077,
+                            "start": 2089,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2022,186 +2036,225 @@ description: Result of parsing exhaust-manifold.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 2079,
+                          "end": 2091,
                           "operator": "-",
-                          "start": 2076,
+                          "start": 2088,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       }
                     ],
-                    "start": 2052,
+                    "start": 2064,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2084,
-                    "start": 2083,
+                    "end": 2096,
+                    "start": 2095,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2051,
+                  "end": 2063,
                   "name": "tangentialArc",
-                  "start": 2038,
+                  "start": 2050,
                   "type": "Identifier"
                 },
-                "end": 2085,
-                "start": 2038,
+                "end": 2097,
+                "start": 2050,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "argument": {
-                      "end": 2101,
-                      "raw": "1.4",
-                      "start": 2098,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 1.4,
-                        "suffix": "None"
-                      }
-                    },
-                    "end": 2101,
-                    "operator": "-",
-                    "start": 2097,
-                    "type": "UnaryExpression",
-                    "type": "UnaryExpression"
-                  },
-                  {
-                    "end": 2104,
-                    "start": 2103,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2112,
-                    "start": 2106,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "seg03"
-                  }
-                ],
-                "callee": {
-                  "end": 2096,
-                  "name": "xLine",
-                  "start": 2091,
-                  "type": "Identifier"
-                },
-                "end": 2113,
-                "start": 2091,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "end": 2137,
-                        "name": "seg01",
-                        "start": 2132,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      }
-                    ],
-                    "callee": {
-                      "end": 2131,
-                      "name": "segLen",
-                      "start": 2125,
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2115,
+                      "name": "length",
+                      "start": 2109,
                       "type": "Identifier"
                     },
-                    "end": 2138,
-                    "start": 2125,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
-                  },
-                  {
-                    "end": 2141,
-                    "start": 2140,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2149,
-                    "start": 2143,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "seg04"
-                  }
-                ],
-                "callee": {
-                  "end": 2124,
-                  "name": "yLine",
-                  "start": 2119,
-                  "type": "Identifier"
-                },
-                "end": 2150,
-                "start": 2119,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "end": 2165,
-                    "raw": "3.1",
-                    "start": 2162,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 3.1,
-                      "suffix": "None"
+                    "arg": {
+                      "argument": {
+                        "end": 2122,
+                        "raw": "1.4",
+                        "start": 2119,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.4,
+                          "suffix": "None"
+                        }
+                      },
+                      "end": 2122,
+                      "operator": "-",
+                      "start": 2118,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
                     }
                   },
                   {
-                    "end": 2168,
-                    "start": 2167,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2176,
-                    "start": 2170,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "seg05"
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2127,
+                      "name": "tag",
+                      "start": 2124,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2136,
+                      "start": 2130,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "seg03"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 2161,
+                  "end": 2108,
                   "name": "xLine",
-                  "start": 2156,
+                  "start": 2103,
                   "type": "Identifier"
                 },
-                "end": 2177,
-                "start": 2156,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 2137,
+                "start": 2103,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "end": 2226,
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2155,
+                      "name": "length",
+                      "start": 2149,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "end": 2170,
+                          "name": "seg01",
+                          "start": 2165,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "callee": {
+                        "end": 2164,
+                        "name": "segLen",
+                        "start": 2158,
+                        "type": "Identifier"
+                      },
+                      "end": 2171,
+                      "start": 2158,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2176,
+                      "name": "tag",
+                      "start": 2173,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2185,
+                      "start": 2179,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "seg04"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2148,
+                  "name": "yLine",
+                  "start": 2143,
+                  "type": "Identifier"
+                },
+                "end": 2186,
+                "start": 2143,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2204,
+                      "name": "length",
+                      "start": 2198,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2210,
+                      "raw": "3.1",
+                      "start": 2207,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 3.1,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2215,
+                      "name": "tag",
+                      "start": 2212,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2224,
+                      "start": 2218,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "seg05"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2197,
+                  "name": "xLine",
+                  "start": 2192,
+                  "type": "Identifier"
+                },
+                "end": 2225,
+                "start": 2192,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 2274,
                     "properties": [
                       {
-                        "end": 2210,
+                        "end": 2258,
                         "key": {
-                          "end": 2205,
+                          "end": 2253,
                           "name": "radius",
-                          "start": 2199,
+                          "start": 2247,
                           "type": "Identifier"
                         },
-                        "start": 2199,
+                        "start": 2247,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2210,
+                          "end": 2258,
                           "raw": ".3",
-                          "start": 2208,
+                          "start": 2256,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2211,20 +2264,20 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "end": 2224,
+                        "end": 2272,
                         "key": {
-                          "end": 2218,
+                          "end": 2266,
                           "name": "offset",
-                          "start": 2212,
+                          "start": 2260,
                           "type": "Identifier"
                         },
-                        "start": 2212,
+                        "start": 2260,
                         "type": "ObjectProperty",
                         "value": {
                           "argument": {
-                            "end": 2224,
+                            "end": 2272,
                             "raw": "40",
-                            "start": 2222,
+                            "start": 2270,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2232,55 +2285,55 @@ description: Result of parsing exhaust-manifold.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 2224,
+                          "end": 2272,
                           "operator": "-",
-                          "start": 2221,
+                          "start": 2269,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       }
                     ],
-                    "start": 2197,
+                    "start": 2245,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2229,
-                    "start": 2228,
+                    "end": 2277,
+                    "start": 2276,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2196,
+                  "end": 2244,
                   "name": "tangentialArc",
-                  "start": 2183,
+                  "start": 2231,
                   "type": "Identifier"
                 },
-                "end": 2230,
-                "start": 2183,
+                "end": 2278,
+                "start": 2231,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2279,
+                    "end": 2327,
                     "properties": [
                       {
-                        "end": 2264,
+                        "end": 2312,
                         "key": {
-                          "end": 2258,
+                          "end": 2306,
                           "name": "radius",
-                          "start": 2252,
+                          "start": 2300,
                           "type": "Identifier"
                         },
-                        "start": 2252,
+                        "start": 2300,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2264,
+                          "end": 2312,
                           "raw": "1.5",
-                          "start": 2261,
+                          "start": 2309,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2290,19 +2343,19 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "end": 2277,
+                        "end": 2325,
                         "key": {
-                          "end": 2272,
+                          "end": 2320,
                           "name": "offset",
-                          "start": 2266,
+                          "start": 2314,
                           "type": "Identifier"
                         },
-                        "start": 2266,
+                        "start": 2314,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2277,
+                          "end": 2325,
                           "raw": "80",
-                          "start": 2275,
+                          "start": 2323,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2312,47 +2365,47 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       }
                     ],
-                    "start": 2250,
+                    "start": 2298,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2282,
-                    "start": 2281,
+                    "end": 2330,
+                    "start": 2329,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2249,
+                  "end": 2297,
                   "name": "tangentialArc",
-                  "start": 2236,
+                  "start": 2284,
                   "type": "Identifier"
                 },
-                "end": 2283,
-                "start": 2236,
+                "end": 2331,
+                "start": 2284,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2332,
+                    "end": 2380,
                     "properties": [
                       {
-                        "end": 2316,
+                        "end": 2364,
                         "key": {
-                          "end": 2311,
+                          "end": 2359,
                           "name": "radius",
-                          "start": 2305,
+                          "start": 2353,
                           "type": "Identifier"
                         },
-                        "start": 2305,
+                        "start": 2353,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2316,
+                          "end": 2364,
                           "raw": ".3",
-                          "start": 2314,
+                          "start": 2362,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2362,20 +2415,20 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "end": 2330,
+                        "end": 2378,
                         "key": {
-                          "end": 2324,
+                          "end": 2372,
                           "name": "offset",
-                          "start": 2318,
+                          "start": 2366,
                           "type": "Identifier"
                         },
-                        "start": 2318,
+                        "start": 2366,
                         "type": "ObjectProperty",
                         "value": {
                           "argument": {
-                            "end": 2330,
+                            "end": 2378,
                             "raw": "40",
-                            "start": 2328,
+                            "start": 2376,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2383,205 +2436,244 @@ description: Result of parsing exhaust-manifold.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 2330,
+                          "end": 2378,
                           "operator": "-",
-                          "start": 2327,
+                          "start": 2375,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       }
                     ],
-                    "start": 2303,
+                    "start": 2351,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2335,
-                    "start": 2334,
+                    "end": 2383,
+                    "start": 2382,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2302,
+                  "end": 2350,
                   "name": "tangentialArc",
-                  "start": 2289,
+                  "start": 2337,
                   "type": "Identifier"
                 },
-                "end": 2336,
-                "start": 2289,
+                "end": 2384,
+                "start": 2337,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "arguments": [
-                      {
-                        "end": 2360,
-                        "name": "seg05",
-                        "start": 2355,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      }
-                    ],
-                    "callee": {
-                      "end": 2354,
-                      "name": "segLen",
-                      "start": 2348,
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2402,
+                      "name": "length",
+                      "start": 2396,
                       "type": "Identifier"
                     },
-                    "end": 2361,
-                    "start": 2348,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
-                  },
-                  {
-                    "end": 2364,
-                    "start": 2363,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2372,
-                    "start": 2366,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "seg07"
-                  }
-                ],
-                "callee": {
-                  "end": 2347,
-                  "name": "xLine",
-                  "start": 2342,
-                  "type": "Identifier"
-                },
-                "end": 2373,
-                "start": 2342,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "end": 2402,
-                        "start": 2401,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
-                      }
-                    ],
-                    "callee": {
-                      "end": 2400,
-                      "name": "profileStartY",
-                      "start": 2387,
-                      "type": "Identifier"
-                    },
-                    "end": 2403,
-                    "start": 2387,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
-                  },
-                  {
-                    "end": 2406,
-                    "start": 2405,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2414,
-                    "start": 2408,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "seg08"
-                  }
-                ],
-                "callee": {
-                  "end": 2386,
-                  "name": "yLineTo",
-                  "start": 2379,
-                  "type": "Identifier"
-                },
-                "end": 2415,
-                "start": 2379,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "argument": {
+                    "arg": {
                       "arguments": [
                         {
-                          "end": 2440,
-                          "name": "seg03",
-                          "start": 2435,
+                          "end": 2417,
+                          "name": "seg05",
+                          "start": 2412,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
                       "callee": {
-                        "end": 2434,
+                        "end": 2411,
                         "name": "segLen",
-                        "start": 2428,
+                        "start": 2405,
                         "type": "Identifier"
                       },
-                      "end": 2441,
-                      "start": 2428,
+                      "end": 2418,
+                      "start": 2405,
                       "type": "CallExpression",
                       "type": "CallExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2423,
+                      "name": "tag",
+                      "start": 2420,
+                      "type": "Identifier"
                     },
-                    "end": 2441,
-                    "operator": "-",
-                    "start": 2427,
-                    "type": "UnaryExpression",
-                    "type": "UnaryExpression"
-                  },
-                  {
-                    "end": 2444,
-                    "start": 2443,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2452,
-                    "start": 2446,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "seg09"
+                    "arg": {
+                      "end": 2432,
+                      "start": 2426,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "seg07"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 2426,
+                  "end": 2395,
                   "name": "xLine",
-                  "start": 2421,
+                  "start": 2390,
                   "type": "Identifier"
                 },
-                "end": 2453,
-                "start": 2421,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 2433,
+                "start": 2390,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "end": 2502,
-                    "properties": [
-                      {
-                        "end": 2486,
-                        "key": {
-                          "end": 2481,
-                          "name": "radius",
-                          "start": 2475,
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2456,
+                      "name": "endAbsolute",
+                      "start": 2445,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "end": 2474,
+                          "start": 2473,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
+                      ],
+                      "callee": {
+                        "end": 2472,
+                        "name": "profileStartY",
+                        "start": 2459,
+                        "type": "Identifier"
+                      },
+                      "end": 2475,
+                      "start": 2459,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2480,
+                      "name": "tag",
+                      "start": 2477,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2489,
+                      "start": 2483,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "seg08"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2444,
+                  "name": "yLine",
+                  "start": 2439,
+                  "type": "Identifier"
+                },
+                "end": 2490,
+                "start": 2439,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2508,
+                      "name": "length",
+                      "start": 2502,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "arguments": [
+                          {
+                            "end": 2524,
+                            "name": "seg03",
+                            "start": 2519,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 2518,
+                          "name": "segLen",
+                          "start": 2512,
                           "type": "Identifier"
                         },
-                        "start": 2475,
+                        "end": 2525,
+                        "start": 2512,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "end": 2525,
+                      "operator": "-",
+                      "start": 2511,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2530,
+                      "name": "tag",
+                      "start": 2527,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2539,
+                      "start": 2533,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "seg09"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2501,
+                  "name": "xLine",
+                  "start": 2496,
+                  "type": "Identifier"
+                },
+                "end": 2540,
+                "start": 2496,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 2589,
+                    "properties": [
+                      {
+                        "end": 2573,
+                        "key": {
+                          "end": 2568,
+                          "name": "radius",
+                          "start": 2562,
+                          "type": "Identifier"
+                        },
+                        "start": 2562,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2486,
+                          "end": 2573,
                           "raw": ".3",
-                          "start": 2484,
+                          "start": 2571,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2591,20 +2683,20 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "end": 2500,
+                        "end": 2587,
                         "key": {
-                          "end": 2494,
+                          "end": 2581,
                           "name": "offset",
-                          "start": 2488,
+                          "start": 2575,
                           "type": "Identifier"
                         },
-                        "start": 2488,
+                        "start": 2575,
                         "type": "ObjectProperty",
                         "value": {
                           "argument": {
-                            "end": 2500,
+                            "end": 2587,
                             "raw": "40",
-                            "start": 2498,
+                            "start": 2585,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2612,55 +2704,55 @@ description: Result of parsing exhaust-manifold.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 2500,
+                          "end": 2587,
                           "operator": "-",
-                          "start": 2497,
+                          "start": 2584,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       }
                     ],
-                    "start": 2473,
+                    "start": 2560,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2505,
-                    "start": 2504,
+                    "end": 2592,
+                    "start": 2591,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2472,
+                  "end": 2559,
                   "name": "tangentialArc",
-                  "start": 2459,
+                  "start": 2546,
                   "type": "Identifier"
                 },
-                "end": 2506,
-                "start": 2459,
+                "end": 2593,
+                "start": 2546,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2554,
+                    "end": 2641,
                     "properties": [
                       {
-                        "end": 2539,
+                        "end": 2626,
                         "key": {
-                          "end": 2534,
+                          "end": 2621,
                           "name": "radius",
-                          "start": 2528,
+                          "start": 2615,
                           "type": "Identifier"
                         },
-                        "start": 2528,
+                        "start": 2615,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2539,
+                          "end": 2626,
                           "raw": ".9",
-                          "start": 2537,
+                          "start": 2624,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2670,19 +2762,19 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "end": 2552,
+                        "end": 2639,
                         "key": {
-                          "end": 2547,
+                          "end": 2634,
                           "name": "offset",
-                          "start": 2541,
+                          "start": 2628,
                           "type": "Identifier"
                         },
-                        "start": 2541,
+                        "start": 2628,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2552,
+                          "end": 2639,
                           "raw": "80",
-                          "start": 2550,
+                          "start": 2637,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2692,25 +2784,25 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       }
                     ],
-                    "start": 2526,
+                    "start": 2613,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2557,
-                    "start": 2556,
+                    "end": 2644,
+                    "start": 2643,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2525,
+                  "end": 2612,
                   "name": "tangentialArc",
-                  "start": 2512,
+                  "start": 2599,
                   "type": "Identifier"
                 },
-                "end": 2558,
-                "start": 2512,
+                "end": 2645,
+                "start": 2599,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2721,77 +2813,77 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "arguments": [
                           {
-                            "end": 2596,
-                            "start": 2595,
+                            "end": 2683,
+                            "start": 2682,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 2594,
+                          "end": 2681,
                           "name": "profileStartX",
-                          "start": 2581,
+                          "start": 2668,
                           "type": "Identifier"
                         },
-                        "end": 2597,
-                        "start": 2581,
+                        "end": 2684,
+                        "start": 2668,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 2614,
-                            "start": 2613,
+                            "end": 2701,
+                            "start": 2700,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 2612,
+                          "end": 2699,
                           "name": "profileStartY",
-                          "start": 2599,
+                          "start": 2686,
                           "type": "Identifier"
                         },
-                        "end": 2615,
-                        "start": 2599,
+                        "end": 2702,
+                        "start": 2686,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       }
                     ],
-                    "end": 2616,
-                    "start": 2580,
+                    "end": 2703,
+                    "start": 2667,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2619,
-                    "start": 2618,
+                    "end": 2706,
+                    "start": 2705,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2579,
+                  "end": 2666,
                   "name": "tangentialArcTo",
-                  "start": 2564,
+                  "start": 2651,
                   "type": "Identifier"
                 },
-                "end": 2620,
-                "start": 2564,
+                "end": 2707,
+                "start": 2651,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [],
                 "callee": {
-                  "end": 2631,
+                  "end": 2718,
                   "name": "close",
-                  "start": 2626,
+                  "start": 2713,
                   "type": "Identifier"
                 },
-                "end": 2633,
-                "start": 2626,
+                "end": 2720,
+                "start": 2713,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2802,17 +2894,17 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 2726,
+                          "end": 2813,
                           "name": "center",
-                          "start": 2720,
+                          "start": 2807,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 2731,
+                              "end": 2818,
                               "raw": "0",
-                              "start": 2730,
+                              "start": 2817,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -2821,9 +2913,9 @@ description: Result of parsing exhaust-manifold.kcl
                               }
                             },
                             {
-                              "end": 2734,
+                              "end": 2821,
                               "raw": "0",
-                              "start": 2733,
+                              "start": 2820,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -2832,8 +2924,8 @@ description: Result of parsing exhaust-manifold.kcl
                               }
                             }
                           ],
-                          "end": 2735,
-                          "start": 2729,
+                          "end": 2822,
+                          "start": 2816,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -2841,149 +2933,27 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 2750,
+                          "end": 2837,
                           "name": "radius",
-                          "start": 2744,
+                          "start": 2831,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 2792,
+                          "end": 2879,
                           "left": {
-                            "end": 2776,
+                            "end": 2863,
                             "left": {
-                              "end": 2772,
+                              "end": 2859,
                               "name": "primaryTubeDiameter",
-                              "start": 2753,
+                              "start": 2840,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 2776,
+                              "end": 2863,
                               "raw": "2",
-                              "start": 2775,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 2.0,
-                                "suffix": "None"
-                              }
-                            },
-                            "start": 2753,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          "operator": "-",
-                          "right": {
-                            "end": 2792,
-                            "name": "wallThickness",
-                            "start": 2779,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 2753,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "end": 2711,
-                      "name": "circle",
-                      "start": 2705,
-                      "type": "Identifier"
-                    },
-                    "end": 2799,
-                    "start": 2705,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": null
-                  },
-                  {
-                    "end": 2802,
-                    "start": 2801,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 2704,
-                  "name": "hole",
-                  "start": 2700,
-                  "type": "Identifier"
-                },
-                "end": 2803,
-                "start": 2700,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "end": 2835,
-                          "name": "center",
-                          "start": 2829,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "elements": [
-                            {
-                              "end": 2840,
-                              "raw": "2",
-                              "start": 2839,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 2.0,
-                                "suffix": "None"
-                              }
-                            },
-                            {
-                              "end": 2843,
-                              "raw": "0",
-                              "start": 2842,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          ],
-                          "end": 2844,
-                          "start": 2838,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "end": 2859,
-                          "name": "radius",
-                          "start": 2853,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "end": 2901,
-                          "left": {
-                            "end": 2885,
-                            "left": {
-                              "end": 2881,
-                              "name": "primaryTubeDiameter",
                               "start": 2862,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "operator": "/",
-                            "right": {
-                              "end": 2885,
-                              "raw": "2",
-                              "start": 2884,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -2991,51 +2961,51 @@ description: Result of parsing exhaust-manifold.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 2862,
+                            "start": 2840,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 2901,
+                            "end": 2879,
                             "name": "wallThickness",
-                            "start": 2888,
+                            "start": 2866,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 2862,
+                          "start": 2840,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 2820,
+                      "end": 2798,
                       "name": "circle",
-                      "start": 2814,
+                      "start": 2792,
                       "type": "Identifier"
                     },
-                    "end": 2908,
-                    "start": 2814,
+                    "end": 2886,
+                    "start": 2792,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 2911,
-                    "start": 2910,
+                    "end": 2889,
+                    "start": 2888,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2813,
+                  "end": 2791,
                   "name": "hole",
-                  "start": 2809,
+                  "start": 2787,
                   "type": "Identifier"
                 },
-                "end": 2912,
-                "start": 2809,
+                "end": 2890,
+                "start": 2787,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3046,17 +3016,139 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 2944,
+                          "end": 2922,
                           "name": "center",
-                          "start": 2938,
+                          "start": 2916,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 2949,
+                              "end": 2927,
+                              "raw": "2",
+                              "start": 2926,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 2.0,
+                                "suffix": "None"
+                              }
+                            },
+                            {
+                              "end": 2930,
+                              "raw": "0",
+                              "start": 2929,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
+                            }
+                          ],
+                          "end": 2931,
+                          "start": 2925,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 2946,
+                          "name": "radius",
+                          "start": 2940,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 2988,
+                          "left": {
+                            "end": 2972,
+                            "left": {
+                              "end": 2968,
+                              "name": "primaryTubeDiameter",
+                              "start": 2949,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "operator": "/",
+                            "right": {
+                              "end": 2972,
+                              "raw": "2",
+                              "start": 2971,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": {
+                                "value": 2.0,
+                                "suffix": "None"
+                              }
+                            },
+                            "start": 2949,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "operator": "-",
+                          "right": {
+                            "end": 2988,
+                            "name": "wallThickness",
+                            "start": 2975,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 2949,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 2907,
+                      "name": "circle",
+                      "start": 2901,
+                      "type": "Identifier"
+                    },
+                    "end": 2995,
+                    "start": 2901,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  },
+                  {
+                    "end": 2998,
+                    "start": 2997,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 2900,
+                  "name": "hole",
+                  "start": 2896,
+                  "type": "Identifier"
+                },
+                "end": 2999,
+                "start": 2896,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 3031,
+                          "name": "center",
+                          "start": 3025,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 3036,
                               "raw": "4",
-                              "start": 2948,
+                              "start": 3035,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -3065,9 +3157,9 @@ description: Result of parsing exhaust-manifold.kcl
                               }
                             },
                             {
-                              "end": 2952,
+                              "end": 3039,
                               "raw": "0",
-                              "start": 2951,
+                              "start": 3038,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -3076,8 +3168,8 @@ description: Result of parsing exhaust-manifold.kcl
                               }
                             }
                           ],
-                          "end": 2953,
-                          "start": 2947,
+                          "end": 3040,
+                          "start": 3034,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -3085,27 +3177,27 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 2968,
+                          "end": 3055,
                           "name": "radius",
-                          "start": 2962,
+                          "start": 3049,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 3010,
+                          "end": 3097,
                           "left": {
-                            "end": 2994,
+                            "end": 3081,
                             "left": {
-                              "end": 2990,
+                              "end": 3077,
                               "name": "primaryTubeDiameter",
-                              "start": 2971,
+                              "start": 3058,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 2994,
+                              "end": 3081,
                               "raw": "2",
-                              "start": 2993,
+                              "start": 3080,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -3113,51 +3205,51 @@ description: Result of parsing exhaust-manifold.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 2971,
+                            "start": 3058,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 3010,
+                            "end": 3097,
                             "name": "wallThickness",
-                            "start": 2997,
+                            "start": 3084,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 2971,
+                          "start": 3058,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 2929,
+                      "end": 3016,
                       "name": "circle",
-                      "start": 2923,
+                      "start": 3010,
                       "type": "Identifier"
                     },
-                    "end": 3017,
-                    "start": 2923,
+                    "end": 3104,
+                    "start": 3010,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 3020,
-                    "start": 3019,
+                    "end": 3107,
+                    "start": 3106,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2922,
+                  "end": 3009,
                   "name": "hole",
-                  "start": 2918,
+                  "start": 3005,
                   "type": "Identifier"
                 },
-                "end": 3021,
-                "start": 2918,
+                "end": 3108,
+                "start": 3005,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3168,17 +3260,17 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3053,
+                          "end": 3140,
                           "name": "center",
-                          "start": 3047,
+                          "start": 3134,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 3058,
+                              "end": 3145,
                               "raw": "6",
-                              "start": 3057,
+                              "start": 3144,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -3187,9 +3279,9 @@ description: Result of parsing exhaust-manifold.kcl
                               }
                             },
                             {
-                              "end": 3061,
+                              "end": 3148,
                               "raw": "0",
-                              "start": 3060,
+                              "start": 3147,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -3198,8 +3290,8 @@ description: Result of parsing exhaust-manifold.kcl
                               }
                             }
                           ],
-                          "end": 3062,
-                          "start": 3056,
+                          "end": 3149,
+                          "start": 3143,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -3207,27 +3299,27 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3077,
+                          "end": 3164,
                           "name": "radius",
-                          "start": 3071,
+                          "start": 3158,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 3119,
+                          "end": 3206,
                           "left": {
-                            "end": 3103,
+                            "end": 3190,
                             "left": {
-                              "end": 3099,
+                              "end": 3186,
                               "name": "primaryTubeDiameter",
-                              "start": 3080,
+                              "start": 3167,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 3103,
+                              "end": 3190,
                               "raw": "2",
-                              "start": 3102,
+                              "start": 3189,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -3235,51 +3327,51 @@ description: Result of parsing exhaust-manifold.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 3080,
+                            "start": 3167,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 3119,
+                            "end": 3206,
                             "name": "wallThickness",
-                            "start": 3106,
+                            "start": 3193,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 3080,
+                          "start": 3167,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 3038,
+                      "end": 3125,
                       "name": "circle",
-                      "start": 3032,
+                      "start": 3119,
                       "type": "Identifier"
                     },
-                    "end": 3126,
-                    "start": 3032,
+                    "end": 3213,
+                    "start": 3119,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 3129,
-                    "start": 3128,
+                    "end": 3216,
+                    "start": 3215,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 3031,
+                  "end": 3118,
                   "name": "hole",
-                  "start": 3027,
+                  "start": 3114,
                   "type": "Identifier"
                 },
-                "end": 3130,
-                "start": 3027,
+                "end": 3217,
+                "start": 3114,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3290,34 +3382,34 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3201,
+                          "end": 3288,
                           "name": "center",
-                          "start": 3195,
+                          "start": 3282,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 3240,
+                              "end": 3327,
                               "left": {
                                 "argument": {
-                                  "end": 3235,
+                                  "end": 3322,
                                   "name": "primaryTubeDiameter",
-                                  "start": 3216,
+                                  "start": 3303,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "end": 3235,
+                                "end": 3322,
                                 "operator": "-",
-                                "start": 3215,
+                                "start": 3302,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 3240,
+                                "end": 3327,
                                 "raw": ".6",
-                                "start": 3238,
+                                "start": 3325,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -3325,31 +3417,31 @@ description: Result of parsing exhaust-manifold.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 3215,
+                              "start": 3302,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             {
-                              "end": 3276,
+                              "end": 3363,
                               "left": {
                                 "argument": {
-                                  "end": 3271,
+                                  "end": 3358,
                                   "name": "primaryTubeDiameter",
-                                  "start": 3252,
+                                  "start": 3339,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "end": 3271,
+                                "end": 3358,
                                 "operator": "-",
-                                "start": 3251,
+                                "start": 3338,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 3276,
+                                "end": 3363,
                                 "raw": ".6",
-                                "start": 3274,
+                                "start": 3361,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -3357,13 +3449,13 @@ description: Result of parsing exhaust-manifold.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 3251,
+                              "start": 3338,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           ],
-                          "end": 3285,
-                          "start": 3204,
+                          "end": 3372,
+                          "start": 3291,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -3371,17 +3463,17 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3300,
+                          "end": 3387,
                           "name": "radius",
-                          "start": 3294,
+                          "start": 3381,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 3311,
+                          "end": 3398,
                           "left": {
-                            "end": 3307,
+                            "end": 3394,
                             "raw": "0.25",
-                            "start": 3303,
+                            "start": 3390,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -3391,9 +3483,9 @@ description: Result of parsing exhaust-manifold.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "end": 3311,
+                            "end": 3398,
                             "raw": "2",
-                            "start": 3310,
+                            "start": 3397,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -3401,39 +3493,39 @@ description: Result of parsing exhaust-manifold.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 3303,
+                          "start": 3390,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 3186,
+                      "end": 3273,
                       "name": "circle",
-                      "start": 3180,
+                      "start": 3267,
                       "type": "Identifier"
                     },
-                    "end": 3318,
-                    "start": 3180,
+                    "end": 3405,
+                    "start": 3267,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 3321,
-                    "start": 3320,
+                    "end": 3408,
+                    "start": 3407,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 3179,
+                  "end": 3266,
                   "name": "hole",
-                  "start": 3175,
+                  "start": 3262,
                   "type": "Identifier"
                 },
-                "end": 3322,
-                "start": 3175,
+                "end": 3409,
+                "start": 3262,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3444,27 +3536,27 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3354,
+                          "end": 3441,
                           "name": "center",
-                          "start": 3348,
+                          "start": 3435,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 3392,
+                              "end": 3479,
                               "left": {
-                                "end": 3387,
+                                "end": 3474,
                                 "name": "primaryTubeDiameter",
-                                "start": 3368,
+                                "start": 3455,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 3392,
+                                "end": 3479,
                                 "raw": ".6",
-                                "start": 3390,
+                                "start": 3477,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -3472,24 +3564,24 @@ description: Result of parsing exhaust-manifold.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 3368,
+                              "start": 3455,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             {
-                              "end": 3427,
+                              "end": 3514,
                               "left": {
-                                "end": 3422,
+                                "end": 3509,
                                 "name": "primaryTubeDiameter",
-                                "start": 3403,
+                                "start": 3490,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 3427,
+                                "end": 3514,
                                 "raw": ".6",
-                                "start": 3425,
+                                "start": 3512,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -3497,13 +3589,13 @@ description: Result of parsing exhaust-manifold.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 3403,
+                              "start": 3490,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           ],
-                          "end": 3436,
-                          "start": 3357,
+                          "end": 3523,
+                          "start": 3444,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -3511,17 +3603,17 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3451,
+                          "end": 3538,
                           "name": "radius",
-                          "start": 3445,
+                          "start": 3532,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 3462,
+                          "end": 3549,
                           "left": {
-                            "end": 3458,
+                            "end": 3545,
                             "raw": "0.25",
-                            "start": 3454,
+                            "start": 3541,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -3531,9 +3623,9 @@ description: Result of parsing exhaust-manifold.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "end": 3462,
+                            "end": 3549,
                             "raw": "2",
-                            "start": 3461,
+                            "start": 3548,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -3541,39 +3633,39 @@ description: Result of parsing exhaust-manifold.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 3454,
+                          "start": 3541,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 3339,
+                      "end": 3426,
                       "name": "circle",
-                      "start": 3333,
+                      "start": 3420,
                       "type": "Identifier"
                     },
-                    "end": 3469,
-                    "start": 3333,
+                    "end": 3556,
+                    "start": 3420,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 3472,
-                    "start": 3471,
+                    "end": 3559,
+                    "start": 3558,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 3332,
+                  "end": 3419,
                   "name": "hole",
-                  "start": 3328,
+                  "start": 3415,
                   "type": "Identifier"
                 },
-                "end": 3473,
-                "start": 3328,
+                "end": 3560,
+                "start": 3415,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3584,21 +3676,21 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3505,
+                          "end": 3592,
                           "name": "center",
-                          "start": 3499,
+                          "start": 3586,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 3552,
+                              "end": 3639,
                               "left": {
-                                "end": 3524,
+                                "end": 3611,
                                 "left": {
-                                  "end": 3520,
+                                  "end": 3607,
                                   "raw": "3",
-                                  "start": 3519,
+                                  "start": 3606,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -3608,9 +3700,9 @@ description: Result of parsing exhaust-manifold.kcl
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "end": 3524,
+                                  "end": 3611,
                                   "raw": "2",
-                                  "start": 3523,
+                                  "start": 3610,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -3618,25 +3710,25 @@ description: Result of parsing exhaust-manifold.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 3519,
+                                "start": 3606,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "-",
                               "right": {
-                                "end": 3552,
+                                "end": 3639,
                                 "left": {
-                                  "end": 3547,
+                                  "end": 3634,
                                   "name": "primaryTubeDiameter",
-                                  "start": 3528,
+                                  "start": 3615,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "end": 3552,
+                                  "end": 3639,
                                   "raw": ".6",
-                                  "start": 3550,
+                                  "start": 3637,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -3644,28 +3736,28 @@ description: Result of parsing exhaust-manifold.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 3528,
+                                "start": 3615,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
-                              "start": 3519,
+                              "start": 3606,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             {
-                              "end": 3588,
+                              "end": 3675,
                               "left": {
-                                "end": 3583,
+                                "end": 3670,
                                 "name": "primaryTubeDiameter",
-                                "start": 3564,
+                                "start": 3651,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 3588,
+                                "end": 3675,
                                 "raw": ".6",
-                                "start": 3586,
+                                "start": 3673,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -3673,13 +3765,13 @@ description: Result of parsing exhaust-manifold.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 3564,
+                              "start": 3651,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           ],
-                          "end": 3597,
-                          "start": 3508,
+                          "end": 3684,
+                          "start": 3595,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -3687,17 +3779,17 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3612,
+                          "end": 3699,
                           "name": "radius",
-                          "start": 3606,
+                          "start": 3693,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 3623,
+                          "end": 3710,
                           "left": {
-                            "end": 3619,
+                            "end": 3706,
                             "raw": "0.25",
-                            "start": 3615,
+                            "start": 3702,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -3707,9 +3799,9 @@ description: Result of parsing exhaust-manifold.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "end": 3623,
+                            "end": 3710,
                             "raw": "2",
-                            "start": 3622,
+                            "start": 3709,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -3717,39 +3809,39 @@ description: Result of parsing exhaust-manifold.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 3615,
+                          "start": 3702,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 3490,
+                      "end": 3577,
                       "name": "circle",
-                      "start": 3484,
+                      "start": 3571,
                       "type": "Identifier"
                     },
-                    "end": 3630,
-                    "start": 3484,
+                    "end": 3717,
+                    "start": 3571,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 3633,
-                    "start": 3632,
+                    "end": 3720,
+                    "start": 3719,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 3483,
+                  "end": 3570,
                   "name": "hole",
-                  "start": 3479,
+                  "start": 3566,
                   "type": "Identifier"
                 },
-                "end": 3634,
-                "start": 3479,
+                "end": 3721,
+                "start": 3566,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3760,21 +3852,21 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3666,
+                          "end": 3753,
                           "name": "center",
-                          "start": 3660,
+                          "start": 3747,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 3712,
+                              "end": 3799,
                               "left": {
-                                "end": 3685,
+                                "end": 3772,
                                 "left": {
-                                  "end": 3681,
+                                  "end": 3768,
                                   "raw": "3",
-                                  "start": 3680,
+                                  "start": 3767,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -3784,9 +3876,9 @@ description: Result of parsing exhaust-manifold.kcl
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "end": 3685,
+                                  "end": 3772,
                                   "raw": "2",
-                                  "start": 3684,
+                                  "start": 3771,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -3794,25 +3886,25 @@ description: Result of parsing exhaust-manifold.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 3680,
+                                "start": 3767,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "+",
                               "right": {
-                                "end": 3712,
+                                "end": 3799,
                                 "left": {
-                                  "end": 3707,
+                                  "end": 3794,
                                   "name": "primaryTubeDiameter",
-                                  "start": 3688,
+                                  "start": 3775,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "end": 3712,
+                                  "end": 3799,
                                   "raw": ".6",
-                                  "start": 3710,
+                                  "start": 3797,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -3820,35 +3912,35 @@ description: Result of parsing exhaust-manifold.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 3688,
+                                "start": 3775,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
-                              "start": 3680,
+                              "start": 3767,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             {
-                              "end": 3748,
+                              "end": 3835,
                               "left": {
                                 "argument": {
-                                  "end": 3743,
+                                  "end": 3830,
                                   "name": "primaryTubeDiameter",
-                                  "start": 3724,
+                                  "start": 3811,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "end": 3743,
+                                "end": 3830,
                                 "operator": "-",
-                                "start": 3723,
+                                "start": 3810,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 3748,
+                                "end": 3835,
                                 "raw": ".6",
-                                "start": 3746,
+                                "start": 3833,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -3856,13 +3948,13 @@ description: Result of parsing exhaust-manifold.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 3723,
+                              "start": 3810,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           ],
-                          "end": 3757,
-                          "start": 3669,
+                          "end": 3844,
+                          "start": 3756,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -3870,17 +3962,17 @@ description: Result of parsing exhaust-manifold.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3772,
+                          "end": 3859,
                           "name": "radius",
-                          "start": 3766,
+                          "start": 3853,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 3783,
+                          "end": 3870,
                           "left": {
-                            "end": 3779,
+                            "end": 3866,
                             "raw": "0.25",
-                            "start": 3775,
+                            "start": 3862,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -3890,9 +3982,9 @@ description: Result of parsing exhaust-manifold.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "end": 3783,
+                            "end": 3870,
                             "raw": "2",
-                            "start": 3782,
+                            "start": 3869,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -3900,39 +3992,39 @@ description: Result of parsing exhaust-manifold.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 3775,
+                          "start": 3862,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 3651,
+                      "end": 3738,
                       "name": "circle",
-                      "start": 3645,
+                      "start": 3732,
                       "type": "Identifier"
                     },
-                    "end": 3790,
-                    "start": 3645,
+                    "end": 3877,
+                    "start": 3732,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 3793,
-                    "start": 3792,
+                    "end": 3880,
+                    "start": 3879,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 3644,
+                  "end": 3731,
                   "name": "hole",
-                  "start": 3640,
+                  "start": 3727,
                   "type": "Identifier"
                 },
-                "end": 3794,
-                "start": 3640,
+                "end": 3881,
+                "start": 3727,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3941,28 +4033,28 @@ description: Result of parsing exhaust-manifold.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3860,
+                      "end": 3947,
                       "name": "length",
-                      "start": 3854,
+                      "start": 3941,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3874,
+                      "end": 3961,
                       "name": "plateHeight",
-                      "start": 3863,
+                      "start": 3950,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3853,
+                  "end": 3940,
                   "name": "extrude",
-                  "start": 3846,
+                  "start": 3933,
                   "type": "Identifier"
                 },
-                "end": 3875,
-                "start": 3846,
+                "end": 3962,
+                "start": 3933,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -3972,15 +4064,15 @@ description: Result of parsing exhaust-manifold.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3902,
+                      "end": 3989,
                       "name": "radius",
-                      "start": 3896,
+                      "start": 3983,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3908,
+                      "end": 3995,
                       "raw": "1.5",
-                      "start": 3905,
+                      "start": 3992,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -3992,9 +4084,9 @@ description: Result of parsing exhaust-manifold.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3921,
+                      "end": 4008,
                       "name": "tags",
-                      "start": 3917,
+                      "start": 4004,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -4002,61 +4094,61 @@ description: Result of parsing exhaust-manifold.kcl
                         {
                           "arguments": [
                             {
-                              "end": 3960,
+                              "end": 4047,
                               "name": "seg04",
-                              "start": 3955,
+                              "start": 4042,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 3954,
+                            "end": 4041,
                             "name": "getNextAdjacentEdge",
-                            "start": 3935,
+                            "start": 4022,
                             "type": "Identifier"
                           },
-                          "end": 3961,
-                          "start": 3935,
+                          "end": 4048,
+                          "start": 4022,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 3997,
+                              "end": 4084,
                               "name": "seg07",
-                              "start": 3992,
+                              "start": 4079,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 3991,
+                            "end": 4078,
                             "name": "getNextAdjacentEdge",
-                            "start": 3972,
+                            "start": 4059,
                             "type": "Identifier"
                           },
-                          "end": 3998,
-                          "start": 3972,
+                          "end": 4085,
+                          "start": 4059,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 4007,
-                      "start": 3924,
+                      "end": 4094,
+                      "start": 4011,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3887,
+                  "end": 3974,
                   "name": "fillet",
-                  "start": 3881,
+                  "start": 3968,
                   "type": "Identifier"
                 },
-                "end": 4014,
-                "start": 3881,
+                "end": 4101,
+                "start": 3968,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -4066,15 +4158,15 @@ description: Result of parsing exhaust-manifold.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4041,
+                      "end": 4128,
                       "name": "radius",
-                      "start": 4035,
+                      "start": 4122,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4047,
+                      "end": 4134,
                       "raw": ".25",
-                      "start": 4044,
+                      "start": 4131,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -4086,9 +4178,9 @@ description: Result of parsing exhaust-manifold.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4060,
+                      "end": 4147,
                       "name": "tags",
-                      "start": 4056,
+                      "start": 4143,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -4096,73 +4188,73 @@ description: Result of parsing exhaust-manifold.kcl
                         {
                           "arguments": [
                             {
-                              "end": 4099,
+                              "end": 4186,
                               "name": "seg03",
-                              "start": 4094,
+                              "start": 4181,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 4093,
+                            "end": 4180,
                             "name": "getNextAdjacentEdge",
-                            "start": 4074,
+                            "start": 4161,
                             "type": "Identifier"
                           },
-                          "end": 4100,
-                          "start": 4074,
+                          "end": 4187,
+                          "start": 4161,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 4136,
+                              "end": 4223,
                               "name": "seg08",
-                              "start": 4131,
+                              "start": 4218,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 4130,
+                            "end": 4217,
                             "name": "getNextAdjacentEdge",
-                            "start": 4111,
+                            "start": 4198,
                             "type": "Identifier"
                           },
-                          "end": 4137,
-                          "start": 4111,
+                          "end": 4224,
+                          "start": 4198,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 4146,
-                      "start": 4063,
+                      "end": 4233,
+                      "start": 4150,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 4026,
+                  "end": 4113,
                   "name": "fillet",
-                  "start": 4020,
+                  "start": 4107,
                   "type": "Identifier"
                 },
-                "end": 4153,
-                "start": 4020,
+                "end": 4240,
+                "start": 4107,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 4153,
+            "end": 4240,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "18": [
                   {
-                    "end": 2694,
-                    "start": 2635,
+                    "end": 2781,
+                    "start": 2722,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -4173,8 +4265,8 @@ description: Result of parsing exhaust-manifold.kcl
                 ],
                 "22": [
                   {
-                    "end": 3169,
-                    "start": 3132,
+                    "end": 3256,
+                    "start": 3219,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -4185,8 +4277,8 @@ description: Result of parsing exhaust-manifold.kcl
                 ],
                 "26": [
                   {
-                    "end": 3840,
-                    "start": 3796,
+                    "end": 3927,
+                    "start": 3883,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -4205,14 +4297,14 @@ description: Result of parsing exhaust-manifold.kcl
           "start": 1824,
           "type": "VariableDeclarator"
         },
-        "end": 4153,
+        "end": 4240,
         "kind": "const",
         "start": 1824,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 4154,
+    "end": 4241,
     "innerAttrs": [
       {
         "end": 126,

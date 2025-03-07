@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands gridfinity-baseplate.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -284,8 +285,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1111,
-      1151,
+      1123,
+      1163,
       0
     ],
     "command": {
@@ -313,8 +314,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1111,
-      1151,
+      1123,
+      1163,
       0
     ],
     "command": {
@@ -380,7 +381,7 @@ description: Artifact commands gridfinity-baseplate.kcl
     "cmdId": "[uuid]",
     "range": [
       831,
-      847,
+      853,
       0
     ],
     "command": {
@@ -400,8 +401,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      855,
-      914,
+      861,
+      920,
       0
     ],
     "command": {
@@ -421,8 +422,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      922,
-      943,
+      928,
+      955,
       0
     ],
     "command": {
@@ -442,8 +443,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      951,
-      1010,
+      963,
+      1022,
       0
     ],
     "command": {
@@ -463,8 +464,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1018,
-      1025,
+      1030,
+      1037,
       0
     ],
     "command": {
@@ -475,8 +476,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1018,
-      1025,
+      1030,
+      1037,
       0
     ],
     "command": {
@@ -486,8 +487,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -506,8 +507,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -520,8 +521,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -531,8 +532,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -543,8 +544,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -556,8 +557,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -570,8 +571,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -584,8 +585,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -598,8 +599,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -612,8 +613,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -626,8 +627,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -640,8 +641,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -654,8 +655,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -668,8 +669,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -682,8 +683,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1098,
-      1194,
+      1110,
+      1206,
       0
     ],
     "command": {
@@ -696,8 +697,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1269,
-      1432,
+      1281,
+      1444,
       0
     ],
     "command": {
@@ -721,8 +722,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1655,
-      1695,
+      1667,
+      1707,
       0
     ],
     "command": {
@@ -750,8 +751,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1655,
-      1695,
+      1667,
+      1707,
       0
     ],
     "command": {
@@ -817,7 +818,7 @@ description: Artifact commands gridfinity-baseplate.kcl
     "cmdId": "[uuid]",
     "range": [
       831,
-      847,
+      853,
       0
     ],
     "command": {
@@ -837,8 +838,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      855,
-      914,
+      861,
+      920,
       0
     ],
     "command": {
@@ -858,8 +859,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      922,
-      943,
+      928,
+      955,
       0
     ],
     "command": {
@@ -879,8 +880,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      951,
-      1010,
+      963,
+      1022,
       0
     ],
     "command": {
@@ -900,8 +901,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1018,
-      1025,
+      1030,
+      1037,
       0
     ],
     "command": {
@@ -912,8 +913,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1018,
-      1025,
+      1030,
+      1037,
       0
     ],
     "command": {
@@ -923,8 +924,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -951,8 +952,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -963,8 +964,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -976,8 +977,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -990,8 +991,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -1004,8 +1005,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -1018,8 +1019,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -1032,8 +1033,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -1046,8 +1047,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -1060,8 +1061,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -1074,8 +1075,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -1088,8 +1089,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -1102,8 +1103,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1609,
-      1697,
+      1621,
+      1709,
       0
     ],
     "command": {
@@ -1116,8 +1117,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1742,
-      1907,
+      1754,
+      1919,
       0
     ],
     "command": {
@@ -1141,8 +1142,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1970,
-      2100,
+      1982,
+      2112,
       0
     ],
     "command": {
@@ -1185,8 +1186,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1970,
-      2100,
+      1982,
+      2112,
       0
     ],
     "command": {
@@ -1229,8 +1230,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1970,
-      2100,
+      1982,
+      2112,
       0
     ],
     "command": {
@@ -1273,8 +1274,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1970,
-      2100,
+      1982,
+      2112,
       0
     ],
     "command": {
@@ -1317,8 +1318,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2223,
+      2118,
+      2235,
       0
     ],
     "command": {
@@ -1390,8 +1391,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2223,
+      2118,
+      2235,
       0
     ],
     "command": {
@@ -1463,8 +1464,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2223,
+      2118,
+      2235,
       0
     ],
     "command": {
@@ -1536,8 +1537,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2223,
+      2118,
+      2235,
       0
     ],
     "command": {
@@ -1609,8 +1610,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2223,
+      2118,
+      2235,
       0
     ],
     "command": {
@@ -1682,8 +1683,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2223,
+      2118,
+      2235,
       0
     ],
     "command": {
@@ -1755,8 +1756,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2223,
+      2118,
+      2235,
       0
     ],
     "command": {
@@ -1828,8 +1829,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2223,
+      2118,
+      2235,
       0
     ],
     "command": {
@@ -1901,8 +1902,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2309,
-      2441,
+      2321,
+      2453,
       0
     ],
     "command": {
@@ -1945,8 +1946,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2309,
-      2441,
+      2321,
+      2453,
       0
     ],
     "command": {
@@ -1989,8 +1990,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2309,
-      2441,
+      2321,
+      2453,
       0
     ],
     "command": {
@@ -2033,8 +2034,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2309,
-      2441,
+      2321,
+      2453,
       0
     ],
     "command": {
@@ -2077,8 +2078,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2447,
-      2564,
+      2459,
+      2576,
       0
     ],
     "command": {
@@ -2150,8 +2151,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2447,
-      2564,
+      2459,
+      2576,
       0
     ],
     "command": {
@@ -2223,8 +2224,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2447,
-      2564,
+      2459,
+      2576,
       0
     ],
     "command": {
@@ -2296,8 +2297,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2447,
-      2564,
+      2459,
+      2576,
       0
     ],
     "command": {
@@ -2369,8 +2370,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2447,
-      2564,
+      2459,
+      2576,
       0
     ],
     "command": {
@@ -2442,8 +2443,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2447,
-      2564,
+      2459,
+      2576,
       0
     ],
     "command": {
@@ -2515,8 +2516,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2447,
-      2564,
+      2459,
+      2576,
       0
     ],
     "command": {
@@ -2588,8 +2589,8 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2447,
-      2564,
+      2459,
+      2576,
       0
     ],
     "command": {

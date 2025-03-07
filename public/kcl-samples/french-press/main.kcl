@@ -38,8 +38,8 @@ plane001 = {
 // Cross section of the metal supports
 sketch002 = startSketchOn(plane001)
   |> startProfileAt([carafeDiameter / 2, 5.7], %)
-  |> xLine(0.1, %)
-  |> yLine(-5.2, %, $edge1)
+  |> xLine(length = 0.1)
+  |> yLine(length = -5.2, tag = $edge1)
   |> arc({
        angleStart = 180,
        angleEnd = 205,
@@ -57,9 +57,9 @@ sketch002 = startSketchOn(plane001)
        angleEnd = 90,
        radius = 0.5
      }, %)
-  |> xLineTo(0.1, %, $edgeLen)
-  |> yLine(0.1, %)
-  |> xLine(segLen(edgeLen) + 0.035, %, $edge4)
+  |> xLine(endAbsolute = 0.1, tag = $edgeLen)
+  |> yLine(length = 0.1)
+  |> xLine(length = segLen(edgeLen) + 0.035, tag = $edge4)
   |> arc({
        angleStart = 90,
        angleEnd = 60,
@@ -105,7 +105,7 @@ extrude001 = extrude(sketch003, length = 0.050)
 
 sketch004 = startSketchOn(extrude001, 'END')
   |> startProfileAt([0.3, 0.17], %)
-  |> yLine(1.2, %)
+  |> yLine(length = 1.2)
   |> arc({
        angleStart = 90,
        angleEnd = -30,
@@ -125,14 +125,14 @@ extrude002 = extrude(sketch004, length = -0.050)
 // Filter screen
 sketch005 = startSketchOn('XZ')
   |> startProfileAt([0.15, 1.11], %)
-  |> xLineTo(carafeDiameter / 2 - 0.2, %)
+  |> xLine(endAbsolute = carafeDiameter / 2 - 0.2)
   |> angledLineToX({
        angle = 30,
        to = carafeDiameter / 2 - 0.07
      }, %, $seg1)
   |> angledLine({ angle = -60, length = 0.050 }, %)
   |> angledLine({ angle = 30, length = -segLen(seg1) }, %)
-  |> xLineTo(0.15, %)
+  |> xLine(endAbsolute = 0.15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve({ axis = 'y' }, %)
@@ -142,9 +142,9 @@ sketch006 = startSketchOn('XZ')
   |> startProfileAt([0.1, 1], %)
   |> line(end = [0.1, 0])
   |> angledLineToX({ angle = 10, to = 0.05 }, %)
-  |> yLine(10, %)
+  |> yLine(length = 10)
   |> line(end = [0.6, 0])
-  |> yLine(-.05, %)
+  |> yLine(length = -.05)
   |> tangentialArc({ radius = 0.6, offset = -90 }, %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -198,10 +198,10 @@ extrude006 = extrude(sketch010, length = carafeHeight)
 // Draw and revolve the lid
 sketch011 = startSketchOn('XZ')
   |> startProfileAt([0.2, carafeHeight - 0.7], %)
-  |> xLine(carafeDiameter / 2 - 0.3, %)
-  |> yLine(0.7, %)
-  |> xLine(0.3, %)
-  |> yLine(0.4, %)
+  |> xLine(length = carafeDiameter / 2 - 0.3)
+  |> yLine(length = 0.7)
+  |> xLine(length = 0.3)
+  |> yLine(length = 0.4)
   |> line(end = [-0.02, 0.02])
   |> bezierCurve({
        to = [-carafeDiameter / 2 - 0.1, 1],

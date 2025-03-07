@@ -402,7 +402,7 @@ test.describe('Feature Tree pane', () => {
 sketch001 = startSketchOn(plane001)
 profile001 = circle(sketch001, center = [0, 20], radius = 12)
 profile002 = startProfileAt([0, 7.25], sketch001)
-  |> xLine(13.3, %)
+  |> xLine(length = 13.3)
 profile003 = startProfileAt([0, -4.93], sketch001)
   |> line(endAbsolute = [-5.56, 0])`
     await context.folderSetupFn(async (dir) => {

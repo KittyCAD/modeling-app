@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed exhaust-manifold.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -1412,8 +1413,8 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          2705,
-          2799,
+          2792,
+          2886,
           0
         ]
       },
@@ -1425,16 +1426,16 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          2801,
-          2802,
+          2888,
+          2889,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2700,
-      2803,
+      2787,
+      2890,
       0
     ],
     "type": "StdLibCall",
@@ -1450,8 +1451,8 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          2814,
-          2908,
+          2901,
+          2995,
           0
         ]
       },
@@ -1463,16 +1464,16 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          2910,
-          2911,
+          2997,
+          2998,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2809,
-      2912,
+      2896,
+      2999,
       0
     ],
     "type": "StdLibCall",
@@ -1488,8 +1489,8 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          2923,
-          3017,
+          3010,
+          3104,
           0
         ]
       },
@@ -1501,16 +1502,16 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3019,
-          3020,
+          3106,
+          3107,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2918,
-      3021,
+      3005,
+      3108,
       0
     ],
     "type": "StdLibCall",
@@ -1526,8 +1527,8 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3032,
-          3126,
+          3119,
+          3213,
           0
         ]
       },
@@ -1539,16 +1540,16 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3128,
-          3129,
+          3215,
+          3216,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3027,
-      3130,
+      3114,
+      3217,
       0
     ],
     "type": "StdLibCall",
@@ -1564,8 +1565,8 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3180,
-          3318,
+          3267,
+          3405,
           0
         ]
       },
@@ -1577,16 +1578,16 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3320,
-          3321,
+          3407,
+          3408,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3175,
-      3322,
+      3262,
+      3409,
       0
     ],
     "type": "StdLibCall",
@@ -1602,8 +1603,8 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3333,
-          3469,
+          3420,
+          3556,
           0
         ]
       },
@@ -1615,16 +1616,16 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3471,
-          3472,
+          3558,
+          3559,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3328,
-      3473,
+      3415,
+      3560,
       0
     ],
     "type": "StdLibCall",
@@ -1640,8 +1641,8 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3484,
-          3630,
+          3571,
+          3717,
           0
         ]
       },
@@ -1653,16 +1654,16 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3632,
-          3633,
+          3719,
+          3720,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3479,
-      3634,
+      3566,
+      3721,
       0
     ],
     "type": "StdLibCall",
@@ -1678,8 +1679,8 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3645,
-          3790,
+          3732,
+          3877,
           0
         ]
       },
@@ -1691,16 +1692,16 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3792,
-          3793,
+          3879,
+          3880,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3640,
-      3794,
+      3727,
+      3881,
       0
     ],
     "type": "StdLibCall",
@@ -1723,16 +1724,16 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3863,
-          3874,
+          3950,
+          3961,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3846,
-      3875,
+      3933,
+      3962,
       0
     ],
     "type": "StdLibCall",
@@ -1767,8 +1768,8 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          3905,
-          3908,
+          3992,
+          3995,
           0
         ]
       },
@@ -1787,16 +1788,16 @@ description: Operations executed exhaust-manifold.kcl
           ]
         },
         "sourceRange": [
-          3924,
-          4007,
+          4011,
+          4094,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      3881,
-      4014,
+      3968,
+      4101,
       0
     ],
     "type": "StdLibCall",
@@ -1831,8 +1832,8 @@ description: Operations executed exhaust-manifold.kcl
           }
         },
         "sourceRange": [
-          4044,
-          4047,
+          4131,
+          4134,
           0
         ]
       },
@@ -1851,16 +1852,16 @@ description: Operations executed exhaust-manifold.kcl
           ]
         },
         "sourceRange": [
-          4063,
-          4146,
+          4150,
+          4233,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      4020,
-      4153,
+      4107,
+      4240,
       0
     ],
     "type": "StdLibCall",

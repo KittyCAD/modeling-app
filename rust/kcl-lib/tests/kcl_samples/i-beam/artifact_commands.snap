@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands i-beam.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -374,7 +375,7 @@ description: Artifact commands i-beam.kcl
     "cmdId": "[uuid]",
     "range": [
       447,
-      468,
+      474,
       0
     ],
     "command": {
@@ -394,8 +395,8 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      474,
-      498,
+      480,
+      510,
       0
     ],
     "command": {
@@ -415,8 +416,8 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      504,
-      531,
+      516,
+      552,
       0
     ],
     "command": {
@@ -436,8 +437,8 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      537,
-      550,
+      558,
+      580,
       0
     ],
     "command": {
@@ -457,8 +458,8 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      556,
-      583,
+      586,
+      613,
       0
     ],
     "command": {
@@ -481,8 +482,8 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      589,
-      616,
+      619,
+      646,
       0
     ],
     "command": {
@@ -505,8 +506,8 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      622,
-      650,
+      652,
+      680,
       0
     ],
     "command": {
@@ -525,8 +526,8 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      622,
-      650,
+      652,
+      680,
       0
     ],
     "command": {
@@ -539,8 +540,8 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      622,
-      650,
+      652,
+      680,
       0
     ],
     "command": {
@@ -550,8 +551,8 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      622,
-      650,
+      652,
+      680,
       0
     ],
     "command": {
@@ -562,8 +563,8 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      622,
-      650,
+      652,
+      680,
       0
     ],
     "command": {

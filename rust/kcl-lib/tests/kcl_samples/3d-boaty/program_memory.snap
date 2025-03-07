@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing 3d-boaty.kcl
+snapshot_kind: text
 ---
 {
   "armRest": {
@@ -8,8 +9,8 @@ description: Variables in memory after executing 3d-boaty.kcl
     "__meta": [
       {
         "sourceRange": [
-          3641,
-          3831,
+          3671,
+          3861,
           3
         ]
       }
@@ -20,8 +21,8 @@ description: Variables in memory after executing 3d-boaty.kcl
     "__meta": [
       {
         "sourceRange": [
-          2981,
-          3072,
+          2993,
+          3084,
           3
         ]
       }
@@ -54,8 +55,8 @@ description: Variables in memory after executing 3d-boaty.kcl
     "__meta": [
       {
         "sourceRange": [
-          1877,
-          2040,
+          1889,
+          2052,
           3
         ]
       }
@@ -66,8 +67,8 @@ description: Variables in memory after executing 3d-boaty.kcl
     "__meta": [
       {
         "sourceRange": [
-          1319,
-          1594,
+          1331,
+          1606,
           3
         ]
       }
@@ -100,8 +101,8 @@ description: Variables in memory after executing 3d-boaty.kcl
     "__meta": [
       {
         "sourceRange": [
-          2462,
-          2548,
+          2474,
+          2560,
           3
         ]
       }

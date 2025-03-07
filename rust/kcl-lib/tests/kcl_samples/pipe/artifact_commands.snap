@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands pipe.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -458,7 +459,7 @@ description: Artifact commands pipe.kcl
     "cmdId": "[uuid]",
     "range": [
       902,
-      922,
+      928,
       0
     ],
     "command": {
@@ -478,8 +479,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      928,
-      963,
+      934,
+      969,
       0
     ],
     "command": {
@@ -499,8 +500,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      969,
-      1081,
+      975,
+      1087,
       0
     ],
     "command": {
@@ -520,8 +521,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1087,
-      1094,
+      1093,
+      1100,
       0
     ],
     "command": {
@@ -532,8 +533,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1087,
-      1094,
+      1093,
+      1100,
       0
     ],
     "command": {
@@ -543,8 +544,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -571,8 +572,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -583,8 +584,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -596,8 +597,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -610,8 +611,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -624,8 +625,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -638,8 +639,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -652,8 +653,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -666,8 +667,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -680,8 +681,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -694,8 +695,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -708,8 +709,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -722,8 +723,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -736,8 +737,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -750,8 +751,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -764,8 +765,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -778,8 +779,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -792,8 +793,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {
@@ -806,8 +807,8 @@ description: Artifact commands pipe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "command": {

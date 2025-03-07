@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed poopy-shoe.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -120,8 +121,8 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          855,
-          970,
+          918,
+          1033,
           0
         ]
       },
@@ -133,16 +134,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          972,
-          981,
+          1035,
+          1044,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      847,
-      982,
+      910,
+      1045,
       0
     ],
     "type": "StdLibCall",
@@ -156,16 +157,16 @@ description: Operations executed poopy-shoe.kcl
           "value": "-YZ"
         },
         "sourceRange": [
-          1010,
-          1015,
+          1073,
+          1078,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      996,
-      1016,
+      1059,
+      1079,
       0
     ],
     "type": "StdLibCall",
@@ -188,16 +189,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          1597,
-          1616,
+          1723,
+          1742,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1580,
-      1617,
+      1706,
+      1743,
       0
     ],
     "type": "StdLibCall",
@@ -399,16 +400,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          1888,
-          1899,
+          2014,
+          2025,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1874,
-      1900,
+      2000,
+      2026,
       0
     ],
     "type": "StdLibCall",
@@ -431,16 +432,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          2069,
-          2082,
+          2195,
+          2208,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2052,
-      2083,
+      2178,
+      2209,
       0
     ],
     "type": "StdLibCall",
@@ -468,8 +469,8 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          2111,
-          2120,
+          2237,
+          2246,
           0
         ]
       },
@@ -479,16 +480,16 @@ description: Operations executed poopy-shoe.kcl
           "value": "END"
         },
         "sourceRange": [
-          2122,
-          2127,
+          2248,
+          2253,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2097,
-      2128,
+      2223,
+      2254,
       0
     ],
     "type": "StdLibCall",
@@ -511,16 +512,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          2741,
-          2754,
+          2924,
+          2937,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2724,
-      2755,
+      2907,
+      2938,
       0
     ],
     "type": "StdLibCall",
@@ -722,16 +723,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          3027,
-          3039,
+          3210,
+          3222,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3013,
-      3040,
+      3196,
+      3223,
       0
     ],
     "type": "StdLibCall",
@@ -754,16 +755,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          3367,
-          3380,
+          3583,
+          3596,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3350,
-      3381,
+      3566,
+      3597,
       0
     ],
     "type": "StdLibCall",
@@ -791,8 +792,8 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          3409,
-          3418,
+          3625,
+          3634,
           0
         ]
       },
@@ -803,16 +804,16 @@ description: Operations executed poopy-shoe.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3420,
-          3425,
+          3636,
+          3641,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3395,
-      3426,
+      3611,
+      3642,
       0
     ],
     "type": "StdLibCall",
@@ -835,16 +836,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          3593,
-          3606,
+          3833,
+          3846,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3576,
-      3607,
+      3816,
+      3847,
       0
     ],
     "type": "StdLibCall",
@@ -872,8 +873,8 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          3635,
-          3644,
+          3875,
+          3884,
           0
         ]
       },
@@ -883,16 +884,16 @@ description: Operations executed poopy-shoe.kcl
           "value": "END"
         },
         "sourceRange": [
-          3646,
-          3651,
+          3886,
+          3891,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3621,
-      3652,
+      3861,
+      3892,
       0
     ],
     "type": "StdLibCall",
@@ -909,16 +910,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          3793,
-          3824,
+          4060,
+          4091,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3776,
-      3826,
+      4043,
+      4093,
       0
     ],
     "type": "StdLibCall",
@@ -1120,16 +1121,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          4111,
-          4123,
+          4378,
+          4390,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4097,
-      4124,
+      4364,
+      4391,
       0
     ],
     "type": "StdLibCall",
@@ -1152,16 +1153,16 @@ description: Operations executed poopy-shoe.kcl
           }
         },
         "sourceRange": [
-          4323,
-          4337,
+          4614,
+          4628,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4306,
-      4338,
+      4597,
+      4629,
       0
     ],
     "type": "StdLibCall",

@@ -1,6 +1,7 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed socket-head-cap-screw.kcl
+snapshot_kind: text
 ---
 [
   {
@@ -27,14 +28,14 @@ description: Operations executed socket-head-cap-screw.kcl
     "name": "capScrew",
     "functionSourceRange": [
       861,
-      2268,
+      2274,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2270,
-      2329,
+      2276,
+      2335,
       0
     ]
   },
@@ -152,16 +153,16 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          2027,
-          2045,
+          2033,
+          2051,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "type": "StdLibCall",
@@ -173,8 +174,8 @@ description: Operations executed socket-head-cap-screw.kcl
         }
       },
       "sourceRange": [
-        2000,
-        2016,
+        2006,
+        2022,
         0
       ]
     }
@@ -189,8 +190,8 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          2082,
-          2091,
+          2088,
+          2097,
           0
         ]
       },
@@ -200,16 +201,16 @@ description: Operations executed socket-head-cap-screw.kcl
           "value": "start"
         },
         "sourceRange": [
-          2093,
-          2100,
+          2099,
+          2106,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2068,
-      2101,
+      2074,
+      2107,
       0
     ],
     "type": "StdLibCall",
@@ -232,16 +233,16 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          2240,
           2246,
+          2252,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2206,
-      2247,
+      2212,
+      2253,
       0
     ],
     "type": "StdLibCall",
@@ -253,8 +254,8 @@ description: Operations executed socket-head-cap-screw.kcl
         }
       },
       "sourceRange": [
-        2214,
-        2229,
+        2220,
+        2235,
         0
       ]
     }
