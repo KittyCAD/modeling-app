@@ -28,8 +28,8 @@
     "@rollup/plugin-typescript": "^12.1.2",
     "rollup": "^4.29.1",
     "rollup-plugin-dts": "^6.1.1",
-    "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^2.1.9"
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.8"
   },
   "files": [
     "dist/"
