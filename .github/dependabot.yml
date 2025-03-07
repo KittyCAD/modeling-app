@@ -19,14 +19,14 @@ updates:
       - major
       - minor
       - patch
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       update-types:
       - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
     minor:
       applies-to: version-updates
       update-types:
@@ -52,14 +52,14 @@ updates:
       - major
       - minor
       - patch
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       update-types:
       - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
     minor:
       applies-to: version-updates
       update-types:
@@ -85,14 +85,14 @@ updates:
       - major
       - minor
       - patch
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       update-types:
       - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
     minor:
       applies-to: version-updates
       update-types:
@@ -118,14 +118,14 @@ updates:
       - major
       - minor
       - patch
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       update-types:
       - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
     minor:
       applies-to: version-updates
       update-types:
@@ -151,14 +151,14 @@ updates:
       - major
       - minor
       - patch
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       update-types:
       - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
     minor:
       applies-to: version-updates
       update-types:
@@ -184,14 +184,14 @@ updates:
       - major
       - minor
       - patch
-    major:
-      applies-to: version-updates
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       update-types:
       - patch
+    major:
+      applies-to: version-updates
+      update-types:
+      - major
     minor:
       applies-to: version-updates
       update-types:
