@@ -29,9 +29,12 @@ export const useProjectsLoader = (deps?: [number]) => {
 
       if (projectsDir) {
         const _projectPaths = await listProjects(configuration)
+        console.log('[kevin] final paths', JSON.parse(JSON.stringify(_projectPaths)))
         setProjectPaths(_projectPaths)
       }
     })().catch(trap)
+
+    console.log("[kevin] [deps] [project dir]", deps, projectsDir)
   }, deps ?? [])
 
   return {

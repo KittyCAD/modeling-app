@@ -68,13 +68,18 @@ const Home = () => {
   )
   const ref = useRef<HTMLDivElement>(null)
 
-  // Re-read projects listing if the projectDir has any updates.
-  useFileSystemWatcher(
-    async () => {
-      setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
-    },
-    projectsDir ? [projectsDir] : []
-  )
+  // Kevin: This is already covered in ProjectsContextProvider.tsx
+  // // Re-read projects listing if the projectDir has any updates.
+  // useFileSystemWatcher(
+  //   // Kevin: we already watch projectsDir
+  //   async () => {
+  //     console.log('[kevin]', projectsLoaderTrigger,'Project Dir Path', projectsDir)
+  //     setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
+  //   },
+  //   // Gotcha: For each folder in the projectsDir it will call listProjects
+  //   // If you have 6 folders, you call listProjects 6 times for the same computed value
+  //   projectsDir ? [projectsDir] : [],
+  // )
 
   const projects = state?.context.projects ?? []
   const [searchParams, setSearchParams] = useSearchParams()

@@ -13,26 +13,29 @@ type Path = string
 
 export const useFileSystemWatcher = (
   callback: (eventType: string, path: Path) => Promise<void>,
-  paths: Path[]
+  paths: Path[],
 ): void => {
   // Used to track this instance of useFileSystemWatcher.
   // Assign to ref so it doesn't change between renders.
   const key = useRef(Math.random().toString())
 
   const [output, setOutput] = useState<
-    { eventType: string; path: string } | undefined
+  { eventType: string; path: string } | undefined
   >(undefined)
 
   // Used to track if paths list changes.
   const [pathsTracked, setPathsTracked] = useState<Path[]>([])
 
   useEffect(() => {
+    console.log("[kevin] OUTPUT", output)
     if (!output) return
     callback(output.eventType, output.path).catch(reportRejection)
   }, [output])
 
   // On component teardown obliterate all watchers.
   useEffect(() => {
+    console.log('[kevin] pathsTracked', pathsTracked)
+
     // The hook is useless on web.
     if (!isDesktop()) return
 
@@ -48,6 +51,7 @@ export const useFileSystemWatcher = (
       // "There can be many keys (functions) per path"
       // Again if refs were preserved, we wouldn't need to do this. Keys
       // gives us uniqueness.
+      console.log('[kevin] path of pathsTracked', path)
       window.electron.watchFileOn(path, key.current, cbWatcher)
     }
 
@@ -79,5 +83,7 @@ export const useFileSystemWatcher = (
     const [, pathsRemaining] = difference(pathsTracked, paths)
     const [pathsAdded] = difference(paths, pathsTracked)
     setPathsTracked(pathsRemaining.concat(pathsAdded))
+    console.log('[kevin] pathsAdded', pathsAdded)
+    console.log('[kevin] hasDiff')
   }, [hasDiff])
 }

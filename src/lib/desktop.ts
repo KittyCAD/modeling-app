@@ -134,6 +134,7 @@ export async function createNewProjectDirectory(
 export async function listProjects(
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
+  console.count("[kevin] listProjects counter")
   // Make sure we have wasm initialized.
   const initializedResult = await initPromise
   if (err(initializedResult)) {
@@ -182,6 +183,9 @@ export async function listProjects(
     // Push folders you cannot readWrite to show users the issue
     projects.push(project)
   }
+
+  console.log('[kevin] listProjects return value', JSON.parse(JSON.stringify(projects)))
+  console.count('[kevin] listProjects return value')
   return projects
 }
 
