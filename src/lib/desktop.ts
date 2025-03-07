@@ -126,6 +126,8 @@ export async function createNewProjectDirectory(
     metadata,
     kcl_file_count: 1,
     directory_count: 0,
+    // If the mkdir did not crash you have readWriteAccess
+    readWriteAccess: true
   }
 }
 
@@ -150,7 +152,7 @@ export async function listProjects(
   const projects = []
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
 
-  // Gotcha: readdir will read /usr/<folder> and list folders
+  // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
   const entries = await window.electron.readdir(projectDir)
 
   // detect symlink inifinite ls
@@ -164,7 +166,7 @@ export async function listProjects(
     const projectPath = window.electron.path.join(projectDir, entry)
 
     // if it's not a directory ignore.
-    // Gotcha: statIsDirectory will work on /usr/<folder>
+    // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
     const isDirectory = await window.electron.statIsDirectory(projectPath)
     if (!isDirectory) {
       continue
@@ -218,7 +220,7 @@ const collectAllFilesRecursiveFrom = async (path: string, canReadWritePath: bool
     children: [],
   }
 
-  // If you canno read/write this project path do not collect the files
+  // If you cannot read/write this project path do not collect the files
   if (!canReadWritePath) {
     return entry
   }
@@ -365,15 +367,17 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
     )
   }
 
-  const {value: canReadWriteProjectPath, error} = await window.electron.canReadWriteDirectory(projectPath)
-
+  // Detect the projectPath has read write permission
+  const {value: canReadWriteProjectPath} = await window.electron.canReadWriteDirectory(projectPath)
   const metadata = await window.electron.stat(projectPath)
-  // Exit walked early if the project cannot read/write
+
+  // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(projectPath, canReadWriteProjectPath)
 
   // If the projectPath does not have read write permissions, the default_file is empty string
   let default_file = ''
   if (canReadWriteProjectPath) {
+    // Create the default main.kcl file only if the project path has read write permissions
     default_file = await getDefaultKclFileForDir(projectPath, walked)
   }
 
