@@ -21,11 +21,11 @@ max(args: [number]): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `args` | `[number]` |  | Yes |
+| `args` | [`[number]`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

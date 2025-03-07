@@ -81,8 +81,7 @@ class MockEngineCommandManager {
 export async function enginelessExecutor(
   ast: Node<Program>,
   usePrevMemory?: boolean,
-  path?: string,
-  variables?: VariableMap
+  path?: string
 ): Promise<ExecState> {
-  return await executeMock(ast, usePrevMemory, path, variables)
+  return await executeMock(ast, usePrevMemory, path)
 }

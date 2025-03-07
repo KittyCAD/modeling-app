@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing pipe-flange-assembly.kcl
 ---
 {
@@ -3475,7 +3475,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     ]
   },
   "screwStart": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",

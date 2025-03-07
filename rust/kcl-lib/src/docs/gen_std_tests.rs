@@ -13,7 +13,7 @@ use itertools::Itertools;
 use serde_json::json;
 use tokio::task::JoinSet;
 
-use super::kcl_doc::{ConstData, DocData, FnData};
+use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, TyData};
 use crate::{
     docs::{is_primitive, StdLibFn},
     std::StdLib,
@@ -22,6 +22,8 @@ use crate::{
 
 const TYPES_DIR: &str = "../../docs/kcl/types";
 const LANG_TOPICS: [&str; 4] = ["Types", "Modules", "Settings", "Known Issues"];
+// These types are declared in std.
+const DECLARED_TYPES: [&str; 7] = ["number", "string", "tag", "bool", "Sketch", "Solid", "Plane"];
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();
@@ -299,6 +301,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     hbs.register_template_string("function", include_str!("templates/function.hbs"))?;
     hbs.register_template_string("const", include_str!("templates/const.hbs"))?;
     hbs.register_template_string("type", include_str!("templates/type.hbs"))?;
+    hbs.register_template_string("kclType", include_str!("templates/kclType.hbs"))?;
 
     Ok(hbs)
 }
@@ -332,9 +335,11 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
         functions.entry(d.mod_name()).or_default().push(match d {
             DocData::Fn(f) => (f.name.clone(), d.file_name()),
             DocData::Const(c) => (c.name.clone(), d.file_name()),
+            DocData::Ty(t) => (t.name.clone(), d.file_name()),
         });
     }
 
+    // TODO we should sub-divide into types, constants, and functions.
     let mut sorted: Vec<_> = functions
         .into_iter()
         .map(|(m, mut fns)| {
@@ -373,6 +378,61 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
     Ok(())
 }
 
+fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_name: &str) -> Option<serde_json::Value> {
+    if props.inline && props.norun {
+        return None;
+    }
+
+    let content = if props.inline { "" } else { src };
+
+    let image_base64 = if props.norun {
+        String::new()
+    } else {
+        let image_path = format!(
+            "{}/tests/outputs/serial_test_example_{}{}.png",
+            env!("CARGO_MANIFEST_DIR"),
+            file_name,
+            index
+        );
+        let image_data =
+            std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
+        base64::engine::general_purpose::STANDARD.encode(&image_data)
+    };
+
+    Some(json!({
+        "content": content,
+        "image_base64": image_base64,
+    }))
+}
+
+fn generate_type_from_kcl(ty: &TyData, file_name: String) -> Result<()> {
+    if ty.properties.doc_hidden {
+        return Ok(());
+    }
+
+    let hbs = init_handlebars()?;
+
+    let examples: Vec<serde_json::Value> = ty
+        .examples
+        .iter()
+        .enumerate()
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &file_name))
+        .collect();
+
+    let data = json!({
+        "name": ty.qual_name(),
+        "summary": ty.summary,
+        "description": ty.description,
+        "deprecated": ty.properties.deprecated,
+        "examples": examples,
+    });
+
+    let output = hbs.render("kclType", &data)?;
+    expectorate::assert_contents(format!("../../docs/kcl/types/{}.md", file_name), &output);
+
+    Ok(())
+}
+
 fn generate_function_from_kcl(function: &FnData, file_name: String) -> Result<()> {
     if function.properties.doc_hidden {
         return Ok(());
@@ -386,22 +446,7 @@ fn generate_function_from_kcl(function: &FnData, file_name: String) -> Result<()
         .examples
         .iter()
         .enumerate()
-        .map(|(index, example)| {
-            let image_path = format!(
-                "{}/tests/outputs/serial_test_example_{}{}.png",
-                env!("CARGO_MANIFEST_DIR"),
-                file_name,
-                index
-            );
-            let image_data =
-                std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
-            let image_base64 = base64::engine::general_purpose::STANDARD.encode(&image_data);
-
-            json!({
-                "content": example,
-                "image_base64": image_base64,
-            })
-        })
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &file_name))
         .collect();
 
     let data = json!({
@@ -445,22 +490,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String) -> Result<()> {
         .examples
         .iter()
         .enumerate()
-        .map(|(index, example)| {
-            let image_path = format!(
-                "{}/tests/outputs/serial_test_example_{}{}.png",
-                env!("CARGO_MANIFEST_DIR"),
-                file_name,
-                index
-            );
-            let image_data =
-                std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
-            let image_base64 = base64::engine::general_purpose::STANDARD.encode(&image_data);
-
-            json!({
-                "content": example,
-                "image_base64": image_base64,
-            })
-        })
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &file_name))
         .collect();
 
     let data = json!({
@@ -564,7 +594,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
 
     let mut output = hbs.render("function", &data)?;
     // Fix the links to the types.
-    output = cleanup_type_links(&output, types.keys().cloned().collect());
+    output = cleanup_type_links(&output, types.keys());
 
     expectorate::assert_contents(format!("../../docs/kcl/{}.md", fn_name), &output);
 
@@ -586,10 +616,16 @@ fn cleanup_static_links(output: &str) -> String {
 }
 
 // Fix the links to the types.
-fn cleanup_type_links(output: &str, types: Vec<String>) -> String {
+fn cleanup_type_links<'a>(output: &str, types: impl Iterator<Item = &'a String>) -> String {
     let mut cleaned_output = output.to_string();
+
+    // Cleanup our weird number arrays.
+    // TODO: This is a hack for the handlebars template being too complex.
+    cleaned_output = cleaned_output.replace("`[, `number`, `number`]`", "`[number, number]`");
+    cleaned_output = cleaned_output.replace("`[, `number`, `number`, `number`]`", "`[number, number, number]`");
+
     // Fix the links to the types.
-    for type_name in types {
+    for type_name in types.map(|s| &**s).chain(DECLARED_TYPES) {
         if type_name == "TagDeclarator" || type_name == "TagIdentifier" || type_name == "TagNode" {
             continue;
         } else {
@@ -602,11 +638,6 @@ fn cleanup_type_links(output: &str, types: Vec<String>) -> String {
         }
     }
 
-    // Cleanup our weird number arrays.
-    // TODO: This is a hack for the handlebars template being too complex.
-    cleaned_output = cleaned_output.replace("`[, `number`, `number`]`", "`[number, number]`");
-    cleaned_output = cleaned_output.replace("`[, `number`, `number`, `number`]`", "`[number, number, number]`");
-
     cleanup_static_links(&cleaned_output)
 }
 
@@ -617,6 +648,14 @@ fn add_to_types(
 ) -> Result<()> {
     if name.is_empty() {
         return Err(anyhow::anyhow!("Empty type name"));
+    }
+
+    if DECLARED_TYPES.contains(&name) {
+        return Ok(());
+    }
+
+    if name.starts_with("number(") {
+        panic!("uom number");
     }
 
     let schemars::schema::Schema::Object(o) = schema else {
@@ -750,7 +789,7 @@ fn generate_type(
 
     let mut output = hbs.render("type", &data)?;
     // Fix the links to the types.
-    output = cleanup_type_links(&output, types.keys().cloned().collect());
+    output = cleanup_type_links(&output, types.keys());
     expectorate::assert_contents(format!("{}/{}.md", TYPES_DIR, name), &output);
 
     Ok(())
@@ -828,6 +867,10 @@ fn recurse_and_create_references(
     schema: &schemars::schema::Schema,
     types: &BTreeMap<String, schemars::schema::Schema>,
 ) -> Result<schemars::schema::Schema> {
+    if DECLARED_TYPES.contains(&name) {
+        return Ok(schema.clone());
+    }
+
     let schemars::schema::Schema::Object(o) = schema else {
         return Err(anyhow::anyhow!(
             "Failed to get object schema, should have not been a primitive"
@@ -838,6 +881,10 @@ fn recurse_and_create_references(
     if let Some(reference) = &o.reference {
         let mut obj = o.clone();
         let reference = reference.trim_start_matches("#/components/schemas/");
+        if DECLARED_TYPES.contains(&reference) {
+            return Ok(schema.clone());
+        }
+
         let t = types
             .get(reference)
             .ok_or_else(|| anyhow::anyhow!("Failed to get type: {} {:?}", reference, types.keys()))?;
@@ -982,6 +1029,7 @@ fn test_generate_stdlib_markdown_docs() {
         match d {
             DocData::Fn(f) => generate_function_from_kcl(f, d.file_name()).unwrap(),
             DocData::Const(c) => generate_const_from_kcl(c, d.file_name()).unwrap(),
+            DocData::Ty(t) => generate_type_from_kcl(t, d.file_name()).unwrap(),
         }
     }
 }

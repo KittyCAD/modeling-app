@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing gridfinity-baseplate-magnets.kcl
 ---
 {
@@ -10,7 +10,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "type": "Object",
         "value": {
           "axis": {
-            "type": "Array",
+            "type": "MixedArray",
             "value": [
               {
                 "type": "Number",
@@ -68,7 +68,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             ]
           },
           "origin": {
-            "type": "Array",
+            "type": "MixedArray",
             "value": [
               {
                 "type": "Number",

@@ -736,7 +736,7 @@ description: Variables in memory after executing i_shape.kcl
     ]
   },
   "d_wrist_circumference": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",

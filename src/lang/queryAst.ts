@@ -43,6 +43,7 @@ import { codeRefFromRange, getPlaneFromArtifact } from './std/artifactGraph'
 import { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
 import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+import { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 
 export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
 export const UNLABELED_ARG = 'unlabeled first arg'
@@ -176,6 +177,7 @@ type KCLNode = Node<
   | ImportStatement
   | VariableDeclaration
   | VariableDeclarator
+  | TypeDeclaration
   | ReturnStatement
 >
 

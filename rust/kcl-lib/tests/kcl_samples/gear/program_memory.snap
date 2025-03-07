@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing gear.kcl
 ---
 {
@@ -26,7 +26,7 @@ description: Variables in memory after executing gear.kcl
     ]
   },
   "angles": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",
@@ -1950,7 +1950,7 @@ description: Variables in memory after executing gear.kcl
     ]
   },
   "invas": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",
@@ -4896,7 +4896,7 @@ description: Variables in memory after executing gear.kcl
     ]
   },
   "rs": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",
@@ -116597,7 +116597,7 @@ description: Variables in memory after executing gear.kcl
     ]
   },
   "xs": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",
@@ -128239,7 +128239,7 @@ description: Variables in memory after executing gear.kcl
     ]
   },
   "ys": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",

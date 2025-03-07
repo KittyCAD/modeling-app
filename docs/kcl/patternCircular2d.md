@@ -26,10 +26,10 @@ patternCircular2d(
 |----------|------|-------------|----------|
 | `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | Which sketch(es) to pattern | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
-| `center` | `[number]` | The center about which to make the pattern. This is a 2D vector. | Yes |
-| `arcDegrees` | `number` | The arc angle (in degrees) to place the repetitions. Must be greater than 0. | Yes |
-| `rotateDuplicates` | `bool` | Whether or not to rotate the duplicates as they are copied. | Yes |
-| `useOriginal` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
+| `center` | [`[number]`](/docs/kcl/types/number) | The center about which to make the pattern. This is a 2D vector. | Yes |
+| `arcDegrees` | [`number`](/docs/kcl/types/number) | The arc angle (in degrees) to place the repetitions. Must be greater than 0. | Yes |
+| `rotateDuplicates` | [`bool`](/docs/kcl/types/bool) | Whether or not to rotate the duplicates as they are copied. | Yes |
+| `useOriginal` | [`bool`](/docs/kcl/types/bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 

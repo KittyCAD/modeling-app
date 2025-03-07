@@ -1,10 +1,10 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing array_elem_push.kcl
 ---
 {
   "arr": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",
@@ -84,7 +84,7 @@ description: Variables in memory after executing array_elem_push.kcl
     ]
   },
   "new_arr1": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",
@@ -186,7 +186,7 @@ description: Variables in memory after executing array_elem_push.kcl
     ]
   },
   "new_arr2": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",

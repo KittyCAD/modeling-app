@@ -51,14 +51,6 @@ lazy_static! {
         set.insert("struct", TokenType::Keyword);
         set.insert("object", TokenType::Keyword);
 
-        set.insert("string", TokenType::Type);
-        set.insert("number", TokenType::Type);
-        set.insert("bool", TokenType::Type);
-        set.insert("Sketch", TokenType::Type);
-        set.insert("SketchSurface", TokenType::Type);
-        set.insert("Solid", TokenType::Type);
-        set.insert("Plane", TokenType::Type);
-
         set
     };
 }

@@ -1,9 +1,12 @@
+use std::str::FromStr;
+
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
 };
 
 use crate::{
+    execution::annotations,
     parsing::{
         ast::types::{Annotation, Node, NonCodeNode, NonCodeValue, VariableKind},
         token::NumericSuffix,
@@ -69,6 +72,23 @@ impl CollectionVisitor {
 
                     self.result.push(dd);
                 }
+                crate::parsing::ast::types::BodyItem::TypeDeclaration(ty) if !ty.visibility.is_default() => {
+                    let qual_name = if self.name == "prelude" {
+                        "std::".to_owned()
+                    } else {
+                        format!("std::{}::", self.name)
+                    };
+                    let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name));
+
+                    // FIXME this association of metadata with items is pretty flaky.
+                    if i == 0 {
+                        dd.with_meta(&parsed.non_code_meta.start_nodes, &ty.outer_attrs);
+                    } else if let Some(meta) = parsed.non_code_meta.non_code_nodes.get(&(i - 1)) {
+                        dd.with_meta(meta, &ty.outer_attrs);
+                    }
+
+                    self.result.push(dd);
+                }
                 _ => {}
             }
         }
@@ -82,6 +102,7 @@ impl CollectionVisitor {
 pub enum DocData {
     Fn(FnData),
     Const(ConstData),
+    Ty(TyData),
 }
 
 impl DocData {
@@ -89,6 +110,7 @@ impl DocData {
         match self {
             DocData::Fn(f) => &f.name,
             DocData::Const(c) => &c.name,
+            DocData::Ty(t) => &t.name,
         }
     }
 
@@ -97,6 +119,8 @@ impl DocData {
         match self {
             DocData::Fn(f) => f.qual_name.replace("::", "-"),
             DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
+            // TODO might want to change this
+            DocData::Ty(t) => t.name.clone(),
         }
     }
 
@@ -105,6 +129,12 @@ impl DocData {
         let q = match self {
             DocData::Fn(f) => &f.qual_name,
             DocData::Const(c) => &c.qual_name,
+            DocData::Ty(t) => {
+                if t.properties.impl_kind == annotations::Impl::Primitive {
+                    return "Primitive types".to_owned();
+                }
+                &t.qual_name
+            }
         };
         q[0..q.rfind("::").unwrap()].to_owned()
     }
@@ -114,6 +144,7 @@ impl DocData {
         match self {
             DocData::Fn(f) => f.properties.doc_hidden || f.properties.deprecated,
             DocData::Const(c) => c.properties.doc_hidden || c.properties.deprecated,
+            DocData::Ty(t) => t.properties.doc_hidden || t.properties.deprecated,
         }
     }
 
@@ -121,6 +152,7 @@ impl DocData {
         match self {
             DocData::Fn(f) => f.to_completion_item(),
             DocData::Const(c) => c.to_completion_item(),
+            DocData::Ty(t) => t.to_completion_item(),
         }
     }
 
@@ -128,6 +160,7 @@ impl DocData {
         match self {
             DocData::Fn(f) => Some(f.to_signature_help()),
             DocData::Const(_) => None,
+            DocData::Ty(_) => None,
         }
     }
 
@@ -135,15 +168,18 @@ impl DocData {
         match self {
             DocData::Fn(f) => f.with_meta(meta, attrs),
             DocData::Const(c) => c.with_meta(meta, attrs),
+            DocData::Ty(t) => t.with_meta(meta, attrs),
         }
     }
 
     #[cfg(test)]
-    fn examples(&self) -> &[String] {
+    fn examples(&self) -> impl Iterator<Item = &String> {
         match self {
-            DocData::Fn(f) => &f.examples,
-            DocData::Const(c) => &c.examples,
+            DocData::Fn(f) => f.examples.iter(),
+            DocData::Const(c) => c.examples.iter(),
+            DocData::Ty(t) => t.examples.iter(),
         }
+        .filter_map(|(s, p)| (!p.norun).then_some(s))
     }
 }
 
@@ -162,7 +198,7 @@ pub struct ConstData {
     pub description: Option<String>,
     /// Code examples.
     /// These are tested and we know they compile and execute.
-    pub examples: Vec<String>,
+    pub examples: Vec<(String, ExampleProperties)>,
 }
 
 impl ConstData {
@@ -199,7 +235,7 @@ impl ConstData {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
                 doc_hidden: false,
-                impl_kind: ImplKind::Kcl,
+                impl_kind: annotations::Impl::Kcl,
             },
             summary: None,
             description: None,
@@ -270,7 +306,7 @@ pub struct FnData {
     pub description: Option<String>,
     /// Code examples.
     /// These are tested and we know they compile and execute.
-    pub examples: Vec<String>,
+    pub examples: Vec<(String, ExampleProperties)>,
 }
 
 impl FnData {
@@ -290,7 +326,7 @@ impl FnData {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
                 doc_hidden: false,
-                impl_kind: ImplKind::Kcl,
+                impl_kind: annotations::Impl::Kcl,
             },
             summary: None,
             description: None,
@@ -410,13 +446,14 @@ pub struct Properties {
     pub doc_hidden: bool,
     #[allow(dead_code)]
     pub exported: bool,
-    pub impl_kind: ImplKind,
+    pub impl_kind: annotations::Impl,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
-pub enum ImplKind {
-    Kcl,
-    Rust,
+pub struct ExampleProperties {
+    pub norun: bool,
+    pub inline: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -502,11 +539,98 @@ impl ArgKind {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct TyData {
+    /// The name of the function.
+    pub name: String,
+    /// The fully qualified name.
+    pub qual_name: String,
+    pub properties: Properties,
+
+    /// The summary of the function.
+    pub summary: Option<String>,
+    /// The description of the function.
+    pub description: Option<String>,
+    /// Code examples.
+    /// These are tested and we know they compile and execute.
+    pub examples: Vec<(String, ExampleProperties)>,
+}
+
+impl TyData {
+    fn from_ast(ty: &crate::parsing::ast::types::TypeDeclaration, mut qual_name: String) -> Self {
+        let name = ty.name.name.clone();
+        qual_name.push_str(&name);
+        TyData {
+            name,
+            qual_name,
+            properties: Properties {
+                exported: !ty.visibility.is_default(),
+                deprecated: false,
+                doc_hidden: false,
+                impl_kind: annotations::Impl::Kcl,
+            },
+            summary: None,
+            description: None,
+            examples: Vec::new(),
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn qual_name(&self) -> &str {
+        if self.properties.impl_kind == annotations::Impl::Primitive {
+            &self.name
+        } else {
+            &self.qual_name
+        }
+    }
+
+    fn short_docs(&self) -> Option<String> {
+        match (&self.summary, &self.description) {
+            (None, None) => None,
+            (None, Some(d)) | (Some(d), None) => Some(d.clone()),
+            (Some(s), Some(d)) => Some(format!("{s}\n\n{d}")),
+        }
+    }
+
+    fn to_completion_item(&self) -> CompletionItem {
+        CompletionItem {
+            label: self.name.clone(),
+            label_details: None,
+            kind: Some(CompletionItemKind::FUNCTION),
+            detail: Some(self.qual_name().to_owned()),
+            documentation: self.short_docs().map(|s| {
+                Documentation::MarkupContent(MarkupContent {
+                    kind: MarkupKind::Markdown,
+                    value: s,
+                })
+            }),
+            deprecated: Some(self.properties.deprecated),
+            preselect: None,
+            sort_text: None,
+            filter_text: None,
+            insert_text: Some(self.name.clone()),
+            insert_text_format: Some(InsertTextFormat::SNIPPET),
+            insert_text_mode: None,
+            text_edit: None,
+            additional_text_edits: None,
+            command: None,
+            commit_characters: None,
+            data: None,
+            tags: None,
+        }
+    }
+}
+
 trait ApplyMeta {
-    fn apply_docs(&mut self, summary: Option<String>, description: Option<String>, examples: Vec<String>);
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        examples: Vec<(String, ExampleProperties)>,
+    );
     fn deprecated(&mut self, deprecated: bool);
     fn doc_hidden(&mut self, doc_hidden: bool);
-    fn impl_kind(&mut self, impl_kind: ImplKind);
+    fn impl_kind(&mut self, impl_kind: annotations::Impl);
 
     fn with_meta(&mut self, meta: &[Node<NonCodeNode>], attrs: &[Node<Annotation>]) {
         for attr in attrs {
@@ -518,13 +642,9 @@ trait ApplyMeta {
             {
                 for p in props {
                     match &*p.key.name {
-                        "impl" => {
+                        annotations::IMPL => {
                             if let Some(s) = p.value.ident_name() {
-                                self.impl_kind(match s {
-                                    "kcl" => ImplKind::Kcl,
-                                    "std_rust" => ImplKind::Rust,
-                                    _ => unreachable!(),
-                                });
+                                self.impl_kind(annotations::Impl::from_str(s).unwrap());
                             }
                         }
                         "deprecated" => {
@@ -554,7 +674,7 @@ trait ApplyMeta {
 
         let mut summary = None;
         let mut description = None;
-        let mut example: Option<String> = None;
+        let mut example: Option<(String, ExampleProperties)> = None;
         let mut examples = Vec::new();
         for l in comments.into_iter().filter(|l| l.starts_with('/')).map(|l| {
             if let Some(ll) = l.strip_prefix("/ ") {
@@ -579,19 +699,40 @@ trait ApplyMeta {
                 }
                 continue;
             }
+            #[allow(clippy::manual_strip)]
             if l.starts_with("```") {
-                if let Some(e) = example {
-                    examples.push(e.trim().to_owned());
+                if let Some((e, p)) = example {
+                    if p.inline {
+                        description.as_mut().unwrap().push_str("```\n");
+                    }
+
+                    examples.push((e.trim().to_owned(), p));
                     example = None;
                 } else {
-                    example = Some(String::new());
+                    let args = l[3..].split(',');
+                    let mut inline = false;
+                    let mut norun = false;
+                    for a in args {
+                        match a.trim() {
+                            "inline" => inline = true,
+                            "norun" | "no_run" => norun = true,
+                            _ => {}
+                        }
+                    }
+                    example = Some((String::new(), ExampleProperties { norun, inline }));
+
+                    if inline {
+                        description.as_mut().unwrap().push_str("```js\n");
+                    }
                 }
                 continue;
             }
-            if let Some(e) = &mut example {
+            if let Some((e, p)) = &mut example {
                 e.push_str(l);
                 e.push('\n');
-                continue;
+                if !p.inline {
+                    continue;
+                }
             }
             match &mut description {
                 Some(d) => {
@@ -617,7 +758,12 @@ trait ApplyMeta {
 }
 
 impl ApplyMeta for ConstData {
-    fn apply_docs(&mut self, summary: Option<String>, description: Option<String>, examples: Vec<String>) {
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        examples: Vec<(String, ExampleProperties)>,
+    ) {
         self.summary = summary;
         self.description = description;
         self.examples = examples;
@@ -631,11 +777,16 @@ impl ApplyMeta for ConstData {
         self.properties.doc_hidden = doc_hidden;
     }
 
-    fn impl_kind(&mut self, _impl_kind: ImplKind) {}
+    fn impl_kind(&mut self, _impl_kind: annotations::Impl) {}
 }
 
 impl ApplyMeta for FnData {
-    fn apply_docs(&mut self, summary: Option<String>, description: Option<String>, examples: Vec<String>) {
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        examples: Vec<(String, ExampleProperties)>,
+    ) {
         self.summary = summary;
         self.description = description;
         self.examples = examples;
@@ -649,7 +800,32 @@ impl ApplyMeta for FnData {
         self.properties.doc_hidden = doc_hidden;
     }
 
-    fn impl_kind(&mut self, impl_kind: ImplKind) {
+    fn impl_kind(&mut self, impl_kind: annotations::Impl) {
+        self.properties.impl_kind = impl_kind;
+    }
+}
+
+impl ApplyMeta for TyData {
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        examples: Vec<(String, ExampleProperties)>,
+    ) {
+        self.summary = summary;
+        self.description = description;
+        self.examples = examples;
+    }
+
+    fn deprecated(&mut self, deprecated: bool) {
+        self.properties.deprecated = deprecated;
+    }
+
+    fn doc_hidden(&mut self, doc_hidden: bool) {
+        self.properties.doc_hidden = doc_hidden;
+    }
+
+    fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
     }
 }
@@ -680,7 +856,7 @@ mod test {
     async fn test_examples() -> miette::Result<()> {
         let std = walk_prelude();
         for d in std {
-            for (i, eg) in d.examples().iter().enumerate() {
+            for (i, eg) in d.examples().enumerate() {
                 let result =
                     match crate::test_server::execute_and_snapshot(eg, crate::settings::types::UnitLength::Mm, None)
                         .await

@@ -1,17 +1,10 @@
-import { useEffect, useState, useRef } from 'react'
-import { parse, BinaryPart, Expr, resultIsOk, VariableMap } from '../lang/wasm'
+import { BinaryPart } from '../lang/wasm'
 import {
   createIdentifier,
   createLiteral,
   createUnaryExpression,
-  findUniqueName,
 } from '../lang/modifyAst'
-import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
-import { engineCommandManager, kclManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { executeAst } from 'lang/langHelpers'
-import { trap } from 'lib/trap'
+import { PrevVariable } from '../lang/queryAst'
 
 export const AvailableVars = ({
   onVarClick,
@@ -75,119 +68,6 @@ export const addToInputHelper =
 
 function stringSplice(str: string, index: number, count: number, add: string) {
   return str.slice(0, index) + (add || '') + str.slice(index + count)
-}
-
-// what a terriable name
-export function useCalc({
-  value,
-  initialVariableName: valueName = '',
-}: {
-  value: string
-  initialVariableName?: string
-}): {
-  inputRef: React.RefObject<HTMLInputElement>
-  valueNode: Expr | null
-  calcResult: string
-  prevVariables: PrevVariable<unknown>[]
-  newVariableName: string
-  isNewVariableNameUnique: boolean
-  newVariableInsertIndex: number
-  setNewVariableName: (a: string) => void
-} {
-  const { variables } = useKclContext()
-  const { context } = useModelingContext()
-  const selectionRange =
-    context.selectionRanges?.graphSelections[0]?.codeRef?.range
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [availableVarInfo, setAvailableVarInfo] = useState<
-    ReturnType<typeof findAllPreviousVariables>
-  >({
-    variables: [],
-    insertIndex: 0,
-    bodyPath: [],
-  })
-  const [valueNode, setValueNode] = useState<Expr | null>(null)
-  const [calcResult, setCalcResult] = useState('NAN')
-  const [newVariableName, setNewVariableName] = useState('')
-  const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)
-
-  useEffect(() => {
-    setTimeout(() => {
-      inputRef.current && inputRef.current.focus()
-      inputRef.current &&
-        inputRef.current.setSelectionRange(0, String(value).length)
-    }, 100)
-    setNewVariableName(findUniqueName(kclManager.ast, valueName))
-  }, [])
-
-  useEffect(() => {
-    if (variables[newVariableName]) {
-      setIsNewVariableNameUnique(false)
-    } else {
-      setIsNewVariableNameUnique(true)
-    }
-  }, [newVariableName])
-
-  useEffect(() => {
-    if (!variables || !selectionRange) return
-    const varInfo = findAllPreviousVariables(
-      kclManager.ast,
-      kclManager.variables,
-      selectionRange
-    )
-    setAvailableVarInfo(varInfo)
-  }, [kclManager.ast, kclManager.variables, selectionRange])
-
-  useEffect(() => {
-    try {
-      const code = `const __result__ = ${value}`
-      const pResult = parse(code)
-      if (trap(pResult) || !resultIsOk(pResult)) return
-      const ast = pResult.program
-      const _variables: VariableMap = {}
-      for (const { key, value } of availableVarInfo.variables) {
-        const error = (_variables[key] = {
-          type: 'String',
-          value,
-          __meta: [],
-        })
-        if (trap(error)) return
-      }
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      executeAst({
-        ast,
-        engineCommandManager,
-        isMock: true,
-        variables,
-      }).then(({ execState }) => {
-        const resultDeclaration = ast.body.find(
-          (a) =>
-            a.type === 'VariableDeclaration' &&
-            a.declaration.id?.name === '__result__'
-        )
-        const init =
-          resultDeclaration?.type === 'VariableDeclaration' &&
-          resultDeclaration?.declaration.init
-        const result = execState.variables['__result__']?.value
-        setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
-        init && setValueNode(init)
-      })
-    } catch (e) {
-      setCalcResult('NAN')
-      setValueNode(null)
-    }
-  }, [value, availableVarInfo])
-
-  return {
-    valueNode,
-    calcResult,
-    prevVariables: availableVarInfo.variables,
-    newVariableInsertIndex: availableVarInfo.insertIndex,
-    newVariableName,
-    isNewVariableNameUnique,
-    setNewVariableName,
-    inputRef,
-  }
 }
 
 export const CalcResult = ({ calcResult }: { calcResult: string }) => {

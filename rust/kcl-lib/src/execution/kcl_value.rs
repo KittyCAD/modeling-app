@@ -4,7 +4,10 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::{memory::EnvironmentRef, MetaSettings};
+use super::{
+    memory::{self, EnvironmentRef},
+    MetaSettings,
+};
 use crate::{
     errors::KclErrorDetails,
     execution::{
@@ -25,7 +28,7 @@ use crate::{
 pub type KclObjectFields = HashMap<String, KclValue>;
 
 /// Any KCL value.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {
@@ -50,7 +53,7 @@ pub enum KclValue {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
-    Array {
+    MixedArray {
         value: Vec<KclValue>,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
@@ -96,6 +99,13 @@ pub enum KclValue {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+    #[ts(skip)]
+    Type {
+        #[serde(skip)]
+        value: Option<(PrimitiveType, StdFnProps)>,
+        #[serde(rename = "__meta")]
+        meta: Vec<Metadata>,
+    },
     KclNone {
         value: KclNone,
         #[serde(rename = "__meta")]
@@ -119,6 +129,7 @@ pub enum FunctionSource {
     },
     User {
         ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+        settings: MetaSettings,
         memory: EnvironmentRef,
     },
 }
@@ -184,10 +195,11 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
-            KclValue::Array { meta, .. } => to_vec_sr(&meta),
+            KclValue::MixedArray { meta, .. } => to_vec_sr(&meta),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
             KclValue::Module { meta, .. } => to_vec_sr(&meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
+            KclValue::Type { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
             KclValue::Tombstone { .. } => unreachable!("Tombstone SourceRange"),
         }
@@ -216,12 +228,20 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
-            KclValue::Array { meta, .. } => to_vec_sr(meta),
+            KclValue::MixedArray { meta, .. } => to_vec_sr(meta),
             KclValue::Object { meta, .. } => to_vec_sr(meta),
             KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
+            KclValue::Type { meta, .. } => to_vec_sr(meta),
             KclValue::Tombstone { .. } => unreachable!("Tombstone &SourceRange"),
         }
+    }
+}
+
+impl From<&KclValue> for SourceRange {
+    fn from(item: &KclValue) -> Self {
+        let v: Vec<_> = item.into();
+        v.into_iter().next().unwrap_or_default()
     }
 }
 
@@ -232,7 +252,7 @@ impl KclValue {
             KclValue::Bool { value: _, meta } => meta.clone(),
             KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
-            KclValue::Array { value: _, meta } => meta.clone(),
+            KclValue::MixedArray { value: _, meta } => meta.clone(),
             KclValue::Object { value: _, meta } => meta.clone(),
             KclValue::TagIdentifier(x) => x.meta.clone(),
             KclValue::TagDeclarator(x) => vec![x.metadata()],
@@ -247,6 +267,7 @@ impl KclValue {
             KclValue::Function { meta, .. } => meta.clone(),
             KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
+            KclValue::Type { meta, .. } => meta.clone(),
             KclValue::Tombstone { .. } => unreachable!("Tombstone Metadata"),
         }
     }
@@ -268,7 +289,7 @@ impl KclValue {
         match self {
             KclValue::Solid { value } => Ok(SolidSet::Solid(value.clone())),
             KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
-            KclValue::Array { value, .. } => {
+            KclValue::MixedArray { value, .. } => {
                 let solids: Vec<_> = value
                     .iter()
                     .enumerate()
@@ -314,9 +335,10 @@ impl KclValue {
             KclValue::Bool { .. } => "boolean (true/false value)",
             KclValue::Number { .. } => "number",
             KclValue::String { .. } => "string (text)",
-            KclValue::Array { .. } => "array (list)",
+            KclValue::MixedArray { .. } => "array (list)",
             KclValue::Object { .. } => "object",
             KclValue::Module { .. } => "module",
+            KclValue::Type { .. } => "type",
             KclValue::KclNone { .. } => "None",
             KclValue::Tombstone { .. } => "TOMBSTONE",
         }
@@ -374,7 +396,7 @@ impl KclValue {
 
     /// Put the point into a KCL value.
     pub fn from_point2d(p: [f64; 2], ty: NumericType, meta: Vec<Metadata>) -> Self {
-        Self::Array {
+        Self::MixedArray {
             value: vec![
                 Self::Number {
                     value: p[0],
@@ -430,7 +452,7 @@ impl KclValue {
     }
 
     pub fn as_array(&self) -> Option<&[KclValue]> {
-        if let KclValue::Array { value, meta: _ } = &self {
+        if let KclValue::MixedArray { value, meta: _ } = &self {
             Some(value)
         } else {
             None
@@ -589,22 +611,23 @@ impl KclValue {
             KclValue::Sketches { .. } => Some(RuntimeType::Array(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
             KclValue::Solids { .. } => Some(RuntimeType::Array(PrimitiveType::Solid)),
-            KclValue::Array { value, .. } => Some(RuntimeType::Tuple(
+            KclValue::MixedArray { value, .. } => Some(RuntimeType::Tuple(
                 value
                     .iter()
                     .map(|v| v.principal_type().and_then(RuntimeType::primitive))
                     .collect::<Option<Vec<_>>>()?,
             )),
             KclValue::Face { .. } => None,
-            KclValue::Helix { .. } => None,
-            KclValue::ImportedGeometry(..) => None,
-            KclValue::Function { .. } => None,
-            KclValue::Module { .. } => None,
-            KclValue::TagIdentifier(_) => None,
-            KclValue::TagDeclarator(_) => None,
-            KclValue::KclNone { .. } => None,
-            KclValue::Uuid { .. } => None,
-            KclValue::Tombstone { .. } => None,
+            KclValue::Helix { .. }
+            | KclValue::ImportedGeometry(..)
+            | KclValue::Function { .. }
+            | KclValue::Module { .. }
+            | KclValue::TagIdentifier(_)
+            | KclValue::TagDeclarator(_)
+            | KclValue::KclNone { .. }
+            | KclValue::Type { .. }
+            | KclValue::Uuid { .. }
+            | KclValue::Tombstone { .. } => None,
         }
     }
 
@@ -643,7 +666,7 @@ impl KclValue {
                 result
             }
             KclValue::Function {
-                value: FunctionSource::User { ast, memory },
+                value: FunctionSource::User { ast, memory, .. },
                 ..
             } => crate::execution::exec_ast::call_user_defined_function(args, *memory, ast, exec_state, &ctx).await,
             _ => Err(KclError::Semantic(KclErrorDetails {
@@ -679,7 +702,7 @@ impl KclValue {
                 todo!("Implement KCL stdlib fns with keyword args");
             }
             KclValue::Function {
-                value: FunctionSource::User { ast, memory },
+                value: FunctionSource::User { ast, memory, .. },
                 ..
             } => {
                 crate::execution::exec_ast::call_user_defined_function_kw(args.kw_args, *memory, ast, exec_state, &ctx)
@@ -701,7 +724,7 @@ impl KclValue {
             KclValue::TagDeclarator(tag) => Some(format!("${}", tag.name)),
             KclValue::TagIdentifier(tag) => Some(format!("${}", tag.value)),
             // TODO better Array and Object stringification
-            KclValue::Array { .. } => Some("[...]".to_owned()),
+            KclValue::MixedArray { .. } => Some("[...]".to_owned()),
             KclValue::Object { .. } => Some("{ ... }".to_owned()),
             KclValue::Module { .. }
             | KclValue::Solid { .. }
@@ -714,6 +737,7 @@ impl KclValue {
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
             | KclValue::KclNone { .. }
+            | KclValue::Type { .. }
             | KclValue::Tombstone { .. } => None,
         }
     }
@@ -728,21 +752,29 @@ pub enum RuntimeType {
 }
 
 impl RuntimeType {
-    pub fn from_parsed(value: Type, settings: &super::MetaSettings) -> Option<Self> {
-        match value {
-            Type::Primitive(pt) => Some(RuntimeType::Primitive(PrimitiveType::from_parsed(pt, settings)?)),
-            Type::Array(pt) => Some(RuntimeType::Array(PrimitiveType::from_parsed(pt, settings)?)),
-            Type::Object { properties } => Some(RuntimeType::Object(
-                properties
-                    .into_iter()
-                    .map(|p| {
-                        p.type_.and_then(|t| {
-                            RuntimeType::from_parsed(t.inner, settings).map(|ty| (p.identifier.inner.name, ty))
-                        })
-                    })
-                    .collect::<Option<Vec<_>>>()?,
-            )),
-        }
+    pub fn from_parsed(
+        value: Type,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<Option<Self>, CompilationError> {
+        Ok(match value {
+            Type::Primitive(pt) => {
+                PrimitiveType::from_parsed(pt, exec_state, source_range)?.map(RuntimeType::Primitive)
+            }
+            Type::Array(pt) => PrimitiveType::from_parsed(pt, exec_state, source_range)?.map(RuntimeType::Array),
+            Type::Object { properties } => properties
+                .into_iter()
+                .map(|p| {
+                    let pt = match p.type_ {
+                        Some(t) => t,
+                        None => return Ok(None),
+                    };
+                    Ok(RuntimeType::from_parsed(pt.inner, exec_state, source_range)?
+                        .map(|ty| (p.identifier.inner.name, ty)))
+                })
+                .collect::<Result<Option<Vec<_>>, CompilationError>>()?
+                .map(RuntimeType::Object),
+        })
     }
 
     // Subtype with no coercion, including refining numeric types.
@@ -802,16 +834,33 @@ pub enum PrimitiveType {
 }
 
 impl PrimitiveType {
-    fn from_parsed(value: AstPrimitiveType, settings: &super::MetaSettings) -> Option<Self> {
-        match value {
+    fn from_parsed(
+        value: AstPrimitiveType,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<Option<Self>, CompilationError> {
+        Ok(match value {
             AstPrimitiveType::String => Some(PrimitiveType::String),
             AstPrimitiveType::Boolean => Some(PrimitiveType::Boolean),
-            AstPrimitiveType::Number(suffix) => Some(PrimitiveType::Number(NumericType::from_parsed(suffix, settings))),
-            AstPrimitiveType::Sketch => Some(PrimitiveType::Sketch),
-            AstPrimitiveType::Solid => Some(PrimitiveType::Solid),
-            AstPrimitiveType::Plane => Some(PrimitiveType::Plane),
+            AstPrimitiveType::Number(suffix) => Some(PrimitiveType::Number(NumericType::from_parsed(
+                suffix,
+                &exec_state.mod_local.settings,
+            ))),
+            AstPrimitiveType::Named(name) => {
+                let ty_val = exec_state
+                    .stack()
+                    .get(&format!("{}{}", memory::TYPE_PREFIX, name.name), source_range)
+                    .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {}", name.name)))?;
+
+                let (ty, _) = match ty_val {
+                    KclValue::Type { value: Some(ty), .. } => ty,
+                    _ => unreachable!(),
+                };
+
+                Some(ty.clone())
+            }
             _ => None,
-        }
+        })
     }
 }
 

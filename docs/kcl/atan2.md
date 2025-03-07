@@ -24,12 +24,12 @@ atan2(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `y` | `number` |  | Yes |
-| `x` | `number` |  | Yes |
+| `y` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `x` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

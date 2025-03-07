@@ -25,9 +25,9 @@ patternLinear2d(
 |----------|------|-------------|----------|
 | `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | The sketch(es) to duplicate | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
-| `distance` | `number` | Distance between each repetition. Also known as 'spacing'. | Yes |
-| `axis` | `[number]` | The axis of the pattern. A 2D vector. | Yes |
-| `useOriginal` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
+| `distance` | [`number`](/docs/kcl/types/number) | Distance between each repetition. Also known as 'spacing'. | Yes |
+| `axis` | [`[number]`](/docs/kcl/types/number) | The axis of the pattern. A 2D vector. | Yes |
+| `useOriginal` | [`bool`](/docs/kcl/types/bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 

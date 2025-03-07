@@ -21,13 +21,13 @@ startProfileAt(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `to` | `[number]` |  | Yes |
+| `to` | [`[number]`](/docs/kcl/types/number) |  | Yes |
 | `sketchSurface` | [`SketchSurface`](/docs/kcl/types/SketchSurface) | A sketch type. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples

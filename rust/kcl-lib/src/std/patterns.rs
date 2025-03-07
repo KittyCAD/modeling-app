@@ -441,7 +441,7 @@ async fn make_transform<T: GeometryTrait>(
     })?;
     let transforms = match transform_fn_return {
         KclValue::Object { value, meta: _ } => vec![value],
-        KclValue::Array { value, meta: _ } => {
+        KclValue::MixedArray { value, meta: _ } => {
             let transforms: Vec<_> = value
                 .into_iter()
                 .map(|val| {
@@ -540,7 +540,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
 }
 
 fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-    let KclValue::Array { value: arr, meta } = val else {
+    let KclValue::MixedArray { value: arr, meta } = val else {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Expected an array of 3 numbers (i.e. a 3D point)".to_string(),
             source_ranges,
@@ -572,7 +572,7 @@ fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<P
 }
 
 fn array_to_point2d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point2d, KclError> {
-    let KclValue::Array { value: arr, meta } = val else {
+    let KclValue::MixedArray { value: arr, meta } = val else {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Expected an array of 2 numbers (i.e. a 2D point)".to_string(),
             source_ranges,
@@ -662,7 +662,7 @@ mod tests {
 
     #[test]
     fn test_array_to_point3d() {
-        let input = KclValue::Array {
+        let input = KclValue::MixedArray {
             value: vec![
                 KclValue::Number {
                     value: 1.1,
