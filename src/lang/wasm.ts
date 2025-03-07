@@ -418,13 +418,9 @@ export function sketchFromKclValue(
 export const executeMock = async (
   node: Node<Program>,
   usePrevMemory?: boolean,
-  path?: string,
-  variables?: { [key in string]?: KclValue }
+  path?: string
 ): Promise<ExecState> => {
   try {
-    if (!variables) {
-      variables = {}
-    }
     if (usePrevMemory === undefined) {
       usePrevMemory = true
     }
@@ -433,7 +429,6 @@ export const executeMock = async (
       path,
       JSON.stringify({ settings: await jsAppSettings() }),
       usePrevMemory,
-      JSON.stringify(variables),
       fileSystemManager
     )
     return mockExecStateFromRust(execOutcome)

@@ -19,7 +19,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let (array, f): (Vec<KclValue>, &FunctionSource) = FromArgs::from_args(&args, 0)?;
     let meta = vec![args.source_range.into()];
     let new_array = inner_map(array, f, exec_state, &args).await?;
-    Ok(KclValue::Array { value: new_array, meta })
+    Ok(KclValue::MixedArray { value: new_array, meta })
 }
 
 /// Apply a function to every element of a list.
@@ -230,7 +230,7 @@ async fn call_reduce_closure(
 async fn inner_push(mut array: Vec<KclValue>, elem: KclValue, args: &Args) -> Result<KclValue, KclError> {
     // Unwrap the KclValues to JValues for manipulation
     array.push(elem);
-    Ok(KclValue::Array {
+    Ok(KclValue::MixedArray {
         value: array,
         meta: vec![args.source_range.into()],
     })
@@ -241,7 +241,7 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let (val, elem): (KclValue, KclValue) = FromArgs::from_args(&args, 0)?;
 
     let meta = vec![args.source_range];
-    let KclValue::Array { value: array, meta: _ } = val else {
+    let KclValue::MixedArray { value: array, meta: _ } = val else {
         let actual_type = val.human_friendly_type();
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: meta,
@@ -281,7 +281,7 @@ async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclErr
     // Create a new array with all elements except the last one
     let new_array = array[..array.len() - 1].to_vec();
 
-    Ok(KclValue::Array {
+    Ok(KclValue::MixedArray {
         value: new_array,
         meta: vec![args.source_range.into()],
     })
@@ -292,7 +292,7 @@ pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let val = args.get_unlabeled_kw_arg("array")?;
 
     let meta = vec![args.source_range];
-    let KclValue::Array { value: array, meta: _ } = val else {
+    let KclValue::MixedArray { value: array, meta: _ } = val else {
         let actual_type = val.human_friendly_type();
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: meta,

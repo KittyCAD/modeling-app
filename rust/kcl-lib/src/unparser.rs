@@ -6,7 +6,8 @@ use crate::parsing::{
         CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression,
         IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-        PipeExpression, Program, TagDeclarator, Type, UnaryExpression, VariableDeclaration, VariableKind,
+        PipeExpression, Program, TagDeclarator, Type, TypeDeclaration, UnaryExpression, VariableDeclaration,
+        VariableKind,
     },
     token::NumericSuffix,
     PIPE_OPERATOR,
@@ -48,6 +49,7 @@ impl Program {
                     BodyItem::VariableDeclaration(variable_declaration) => {
                         variable_declaration.recast(options, indentation_level)
                     }
+                    BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(),
                     BodyItem::ReturnStatement(return_statement) => {
                         format!(
                             "{}return {}",
@@ -411,6 +413,28 @@ impl VariableDeclaration {
                 .trim()
         );
         output
+    }
+}
+
+impl TypeDeclaration {
+    pub fn recast(&self) -> String {
+        let vis = match self.visibility {
+            ItemVisibility::Default => String::new(),
+            ItemVisibility::Export => "export ".to_owned(),
+        };
+
+        let mut arg_str = String::new();
+        if let Some(args) = &self.args {
+            arg_str.push('(');
+            for a in args {
+                if arg_str.len() > 1 {
+                    arg_str.push_str(", ");
+                }
+                arg_str.push_str(&a.name);
+            }
+            arg_str.push(')');
+        }
+        format!("{}type {}{}", vis, self.name.name, arg_str)
     }
 }
 
@@ -2268,6 +2292,19 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
+    }
+
+    #[test]
+    fn recast_types() {
+        let some_program_string = r#"type foo
+
+// A comment
+@(impl = primitive)
+export type bar(unit, baz)
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
     }
 
     #[test]

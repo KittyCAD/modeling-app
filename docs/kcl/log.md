@@ -24,12 +24,12 @@ log(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number` |  | Yes |
-| `base` | `number` |  | Yes |
+| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `base` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

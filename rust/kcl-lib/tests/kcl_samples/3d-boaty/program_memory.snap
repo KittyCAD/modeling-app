@@ -1,0 +1,110 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Variables in memory after executing 3d-boaty.kcl
+---
+{
+  "armRest": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          3641,
+          3831,
+          3
+        ]
+      }
+    ]
+  },
+  "backSlats": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          2981,
+          3072,
+          3
+        ]
+      }
+    ]
+  },
+  "benchLength": {
+    "type": "Number",
+    "value": 56.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          440,
+          442,
+          0
+        ]
+      }
+    ]
+  },
+  "connector": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1877,
+          2040,
+          3
+        ]
+      }
+    ]
+  },
+  "divider": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          1319,
+          1594,
+          3
+        ]
+      }
+    ]
+  },
+  "dividerThickness": {
+    "type": "Number",
+    "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          290,
+          291,
+          3
+        ]
+      }
+    ]
+  },
+  "seatSlats": {
+    "type": "Function",
+    "__meta": [
+      {
+        "sourceRange": [
+          2462,
+          2548,
+          3
+        ]
+      }
+    ]
+  }
+}

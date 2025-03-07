@@ -1,0 +1,44 @@
+// Tire
+// A tire is a critical component of a vehicle that provides the necessary traction and grip between the car and the road. It supports the vehicle's weight and absorbs shocks from road irregularities.
+
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+
+// Import Constants
+import tireInnerDiameter, tireOuterDiameter, tireDepth, bendRadius, tireTreadWidth, tireTreadDepth, tireTreadOffset from "globals.kcl"
+
+// Create the sketch of the tire
+tireSketch = startSketchOn("XY")
+  |> startProfileAt([tireInnerDiameter / 2, tireDepth / 2], %)
+  |> line(endAbsolute = [
+       tireOuterDiameter / 2 - bendRadius,
+       tireDepth / 2
+     ], tag = $edge1)
+  |> tangentialArc({ offset = -90, radius = bendRadius }, %)
+  |> line(endAbsolute = [
+       tireOuterDiameter / 2,
+       tireDepth / 2 - tireTreadOffset
+     ])
+  |> line(end = [-tireTreadDepth, 0])
+  |> line(end = [0, -tireTreadWidth])
+  |> line(end = [tireTreadDepth, 0])
+  |> line(endAbsolute = [
+       tireOuterDiameter / 2,
+       -tireDepth / 2 + tireTreadOffset + tireTreadWidth
+     ])
+  |> line(end = [-tireTreadDepth, 0])
+  |> line(end = [0, -tireTreadWidth])
+  |> line(end = [tireTreadDepth, 0])
+  |> line(endAbsolute = [
+       tireOuterDiameter / 2,
+       -tireDepth / 2 + bendRadius
+     ])
+  |> tangentialArc({ offset = -90, radius = bendRadius }, %)
+  |> line(endAbsolute = [tireInnerDiameter / 2, -tireDepth / 2], tag = $edge2)
+  |> close()
+
+// Revolve the sketch to create the tire
+revolve({ axis = "Y" }, tireSketch)
+  |> appearance(color = "#0f0f0f", roughness = 80)

@@ -1,0 +1,246 @@
+// 80/20 Rail
+// An 80/20 extruded aluminum linear rail. T-slot profile adjustable by profile height, rail length, and origin position
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define function
+fn rail8020(originStart, railHeight, railLength) {
+  // Sketch side 1 of profile
+  sketch001 = startSketchOn('-XZ')
+    |> startProfileAt([
+         originStart[0],
+         0.1 * railHeight + originStart[1]
+       ], %)
+    |> arc({
+         angleStart = 180,
+         angleEnd = 270,
+         radius = 0.1 * railHeight
+       }, %)
+    |> arc({
+         angleStart = 180,
+         angleEnd = 0,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> xLine(0.1 * railHeight, %)
+    |> arc({
+         angleStart = 180,
+         angleEnd = 0,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> xLine(0.06 * railHeight, %, $edge1)
+    |> yLine(0.087 * railHeight, %, $edge2)
+    |> xLine(-0.183 * railHeight, %, $edge3)
+    |> angledLineToY({
+         angle = 45,
+         to = (1 - 0.356) / 2 * railHeight + originStart[1]
+       }, %, $edge4)
+    |> xLine(0.232 * railHeight, %, $edge5)
+    |> angledLineToY({
+         angle = -45,
+         to = 0.087 * railHeight + originStart[1]
+       }, %, $edge6)
+    |> xLine(-0.183 * railHeight, %, $edge7)
+    |> yLine(-0.087 * railHeight, %, $edge8)
+    |> xLine(0.06 * railHeight, %)
+    |> arc({
+         angleStart = 180,
+         angleEnd = 0,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> xLine(0.1 * railHeight, %)
+    |> arc({
+         angleStart = 180,
+         angleEnd = 0,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> arc({
+         angleStart = -90,
+         angleEnd = 0,
+         radius = 0.1 * railHeight
+       }, %)
+
+    // Sketch side 2 of profile
+    |> arc({
+         angleStart = 270,
+         angleEnd = 90,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> yLine(0.1 * railHeight, %)
+    |> arc({
+         angleStart = 270,
+         angleEnd = 90,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> yLine(0.06 * railHeight, %, $edge9)
+    |> xLine(-0.087 * railHeight, %, $edge10)
+    |> yLine(-0.183 * railHeight, %, $edge11) // edge11
+    |> angledLineToX({
+         angle = 135,
+         to = ((1 - 0.356) / 2 + 0.356) * railHeight + originStart[0]
+       }, %, $edge12) // edge12
+    |> yLine(0.232 * railHeight, %, $edge13) // 13
+    |> angledLineToX({
+         angle = 45,
+         to = (1 - 0.087) * railHeight + originStart[0]
+       }, %, $edge14) // 14
+    |> yLine(-0.183 * railHeight, %, $edge15) // 15
+    |> xLine(0.087 * railHeight, %, $edge16)
+    |> yLine(0.06 * railHeight, %)
+    |> arc({
+         angleStart = 270,
+         angleEnd = 90,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> yLine(0.1 * railHeight, %)
+    |> arc({
+         angleStart = 270,
+         angleEnd = 90,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+
+    // Sketch side 3 of profile
+    |> arc({
+         angleStart = 0,
+         angleEnd = 90,
+         radius = 0.1 * railHeight
+       }, %)
+    |> arc({
+         angleStart = 0,
+         angleEnd = -180,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> xLine(-0.1 * railHeight, %)
+    |> arc({
+         angleStart = 0,
+         angleEnd = -180,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> xLine(-0.06 * railHeight, %, $edge17)
+    |> yLine(-0.087 * railHeight, %, $edge18)
+    |> xLine(0.183 * railHeight, %, $edge19)
+    |> angledLineToY({
+         angle = 45,
+         to = ((1 - 0.356) / 2 + 0.356) * railHeight + originStart[1]
+       }, %, $edge20)
+    |> xLine(-0.232 * railHeight, %, $edge21)
+    |> angledLineToY({
+         angle = 135,
+         to = (1 - 0.087) * railHeight + originStart[1]
+       }, %, $edge22)
+    |> xLine(0.183 * railHeight, %, $edge23)
+    |> yLine(0.087 * railHeight, %, $edge24)
+    |> xLine(-0.06 * railHeight, %)
+    |> arc({
+         angleStart = 0,
+         angleEnd = -180,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> xLine(-0.1 * railHeight, %)
+    |> arc({
+         angleStart = 0,
+         angleEnd = -180,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> arc({
+         angleStart = 90,
+         angleEnd = 180,
+         radius = 0.1 * railHeight
+       }, %)
+
+    // Sketch side 4 of profile
+    |> arc({
+         angleStart = 90,
+         angleEnd = -90,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> yLine(-0.1 * railHeight, %)
+    |> arc({
+         angleStart = 90,
+         angleEnd = -90,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> yLine(-0.06 * railHeight, %, $edge25)
+    |> xLine(0.087 * railHeight, %, $edge26)
+    |> yLine(0.183 * railHeight, %, $edge27)
+    |> angledLineToX({
+         angle = 135,
+         to = (1 - 0.356) / 2 * railHeight + originStart[0]
+       }, %, $edge28)
+    |> yLine(-0.232 * railHeight, %, $edge29)
+    |> angledLineToX({
+         angle = 45,
+         to = 0.087 * railHeight + originStart[0]
+       }, %, $edge30)
+    |> yLine(0.183 * railHeight, %, $edge31)
+    |> xLine(-0.087 * railHeight, %, $edge32)
+    |> yLine(-0.06 * railHeight, %)
+    |> arc({
+         angleStart = 90,
+         angleEnd = -90,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> yLine(-0.1 * railHeight, %)
+    |> arc({
+         angleStart = 90,
+         angleEnd = -90,
+         radius = 0.072 / 4 * railHeight
+       }, %)
+    |> close()
+
+    // Sketch center hole of profile
+    |> hole(circle(
+         center = [
+           .5 * railHeight + originStart[0],
+           .5 * railHeight + originStart[1]
+         ],
+         radius = .205 * railHeight / 2
+       ), %)
+    |> extrude(length = railLength)
+    |> fillet(
+         radius = 0.06,
+         tags = [
+           getNextAdjacentEdge(edge3),
+           getNextAdjacentEdge(edge4),
+           getNextAdjacentEdge(edge5),
+           getNextAdjacentEdge(edge6),
+           getNextAdjacentEdge(edge11),
+           getNextAdjacentEdge(edge12),
+           getNextAdjacentEdge(edge13),
+           getNextAdjacentEdge(edge14),
+           getNextAdjacentEdge(edge19),
+           getNextAdjacentEdge(edge20),
+           getNextAdjacentEdge(edge21),
+           getNextAdjacentEdge(edge22),
+           getNextAdjacentEdge(edge27),
+           getNextAdjacentEdge(edge28),
+           getNextAdjacentEdge(edge29),
+           getNextAdjacentEdge(edge30)
+         ]
+       )
+    |> fillet(
+         radius = 0.03,
+         tags = [
+           getNextAdjacentEdge(edge1),
+           getNextAdjacentEdge(edge2),
+           getNextAdjacentEdge(edge7),
+           getNextAdjacentEdge(edge8),
+           getNextAdjacentEdge(edge9),
+           getNextAdjacentEdge(edge10),
+           getNextAdjacentEdge(edge15),
+           getNextAdjacentEdge(edge16),
+           getNextAdjacentEdge(edge17),
+           getNextAdjacentEdge(edge18),
+           getNextAdjacentEdge(edge23),
+           getNextAdjacentEdge(edge24),
+           getNextAdjacentEdge(edge25),
+           getNextAdjacentEdge(edge26),
+           getNextAdjacentEdge(edge31),
+           getNextAdjacentEdge(edge32)
+         ]
+       )
+  return sketch001
+}
+
+// Generate one adjustable rail of 80/20
+rail8020([0, 0], 1.5, 48)

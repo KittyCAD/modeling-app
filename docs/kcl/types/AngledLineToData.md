@@ -16,7 +16,7 @@ Data to draw an angled line to a point.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` |`number`| The angle of the line. | No |
-| `to` |`number`| The point to draw to. | No |
+| `angle` |[`number`](/docs/kcl/types/number)| The angle of the line. | No |
+| `to` |[`number`](/docs/kcl/types/number)| The point to draw to. | No |
 
 

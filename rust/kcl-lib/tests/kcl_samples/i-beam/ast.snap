@@ -1,0 +1,627 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing i-beam.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 185,
+          "id": {
+            "end": 180,
+            "name": "beamLength",
+            "start": 170,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 185,
+            "raw": "24",
+            "start": 183,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 24.0,
+              "suffix": "None"
+            }
+          },
+          "start": 170,
+          "type": "VariableDeclarator"
+        },
+        "end": 185,
+        "kind": "const",
+        "start": 170,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 203,
+          "id": {
+            "end": 195,
+            "name": "beamWidth",
+            "start": 186,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 203,
+            "raw": "2.663",
+            "start": 198,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 2.663,
+              "suffix": "None"
+            }
+          },
+          "start": 186,
+          "type": "VariableDeclarator"
+        },
+        "end": 203,
+        "kind": "const",
+        "start": 186,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 218,
+          "id": {
+            "end": 214,
+            "name": "beamHeight",
+            "start": 204,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 218,
+            "raw": "4",
+            "start": 217,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 4.0,
+              "suffix": "None"
+            }
+          },
+          "start": 204,
+          "type": "VariableDeclarator"
+        },
+        "end": 218,
+        "kind": "const",
+        "start": 204,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 240,
+          "id": {
+            "end": 232,
+            "name": "wallThickness",
+            "start": 219,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 240,
+            "raw": "0.293",
+            "start": 235,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.293,
+              "suffix": "None"
+            }
+          },
+          "start": 219,
+          "type": "VariableDeclarator"
+        },
+        "end": 240,
+        "kind": "const",
+        "start": 219,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 650,
+          "id": {
+            "end": 376,
+            "name": "sketch001",
+            "start": 367,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 398,
+                    "raw": "'-XZ'",
+                    "start": 393,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "-XZ"
+                  }
+                ],
+                "callee": {
+                  "end": 392,
+                  "name": "startSketchOn",
+                  "start": 379,
+                  "type": "Identifier"
+                },
+                "end": 399,
+                "start": 379,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 422,
+                        "raw": "0",
+                        "start": 421,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 436,
+                        "left": {
+                          "end": 434,
+                          "name": "beamHeight",
+                          "start": 424,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "operator": "/",
+                        "right": {
+                          "end": 436,
+                          "raw": "2",
+                          "start": 435,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "start": 424,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      }
+                    ],
+                    "end": 437,
+                    "start": 420,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 440,
+                    "start": 439,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 419,
+                  "name": "startProfileAt",
+                  "start": 405,
+                  "type": "Identifier"
+                },
+                "end": 441,
+                "start": 405,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 464,
+                    "left": {
+                      "end": 462,
+                      "name": "beamWidth",
+                      "start": 453,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "end": 464,
+                      "raw": "2",
+                      "start": 463,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 453,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  {
+                    "end": 467,
+                    "start": 466,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 452,
+                  "name": "xLine",
+                  "start": 447,
+                  "type": "Identifier"
+                },
+                "end": 468,
+                "start": 447,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "argument": {
+                      "end": 494,
+                      "name": "wallThickness",
+                      "start": 481,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "end": 494,
+                    "operator": "-",
+                    "start": 480,
+                    "type": "UnaryExpression",
+                    "type": "UnaryExpression"
+                  },
+                  {
+                    "end": 497,
+                    "start": 496,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 479,
+                  "name": "yLine",
+                  "start": 474,
+                  "type": "Identifier"
+                },
+                "end": 498,
+                "start": 474,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 527,
+                    "left": {
+                      "end": 525,
+                      "name": "wallThickness",
+                      "start": 512,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "end": 527,
+                      "raw": "2",
+                      "start": 526,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 512,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  {
+                    "end": 530,
+                    "start": 529,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 511,
+                  "name": "xLineTo",
+                  "start": 504,
+                  "type": "Identifier"
+                },
+                "end": 531,
+                "start": 504,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 546,
+                    "raw": "0",
+                    "start": 545,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "end": 549,
+                    "start": 548,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 544,
+                  "name": "yLineTo",
+                  "start": 537,
+                  "type": "Identifier"
+                },
+                "end": 550,
+                "start": 537,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 579,
+                    "properties": [
+                      {
+                        "end": 577,
+                        "key": {
+                          "end": 571,
+                          "name": "axis",
+                          "start": 567,
+                          "type": "Identifier"
+                        },
+                        "start": 567,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "end": 577,
+                          "raw": "'X'",
+                          "start": 574,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": "X"
+                        }
+                      }
+                    ],
+                    "start": 565,
+                    "type": "ObjectExpression",
+                    "type": "ObjectExpression"
+                  },
+                  {
+                    "end": 582,
+                    "start": 581,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 564,
+                  "name": "mirror2d",
+                  "start": 556,
+                  "type": "Identifier"
+                },
+                "end": 583,
+                "start": 556,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 612,
+                    "properties": [
+                      {
+                        "end": 610,
+                        "key": {
+                          "end": 604,
+                          "name": "axis",
+                          "start": 600,
+                          "type": "Identifier"
+                        },
+                        "start": 600,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "end": 610,
+                          "raw": "'Y'",
+                          "start": 607,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": "Y"
+                        }
+                      }
+                    ],
+                    "start": 598,
+                    "type": "ObjectExpression",
+                    "type": "ObjectExpression"
+                  },
+                  {
+                    "end": 615,
+                    "start": 614,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 597,
+                  "name": "mirror2d",
+                  "start": 589,
+                  "type": "Identifier"
+                },
+                "end": 616,
+                "start": 589,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 636,
+                      "name": "length",
+                      "start": 630,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 649,
+                      "name": "beamLength",
+                      "start": 639,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 629,
+                  "name": "extrude",
+                  "start": 622,
+                  "type": "Identifier"
+                },
+                "end": 650,
+                "start": 622,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 650,
+            "start": 379,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 367,
+          "type": "VariableDeclarator"
+        },
+        "end": 650,
+        "kind": "const",
+        "start": 367,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 651,
+    "innerAttrs": [
+      {
+        "end": 143,
+        "name": {
+          "end": 119,
+          "name": "settings",
+          "start": 111,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 142,
+            "key": {
+              "end": 137,
+              "name": "defaultLengthUnit",
+              "start": 120,
+              "type": "Identifier"
+            },
+            "start": 120,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 142,
+              "name": "in",
+              "start": 140,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 110,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "3": [
+          {
+            "end": 366,
+            "start": 240,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Sketch a quadrant of the beam cross section, then mirror for symmetry across each axis. Extrude to the appropriate length",
+              "style": "line"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 9,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "I-beam",
+            "style": "line"
+          }
+        },
+        {
+          "end": 95,
+          "start": 10,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "A structural metal beam with an I shaped cross section. Often used in construction",
+            "style": "line"
+          }
+        },
+        {
+          "end": 97,
+          "start": 95,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 109,
+          "start": 97,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Set Units",
+            "style": "line"
+          }
+        },
+        {
+          "end": 145,
+          "start": 143,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 169,
+          "start": 145,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Define Beam Dimensions",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

@@ -1,0 +1,93 @@
+// Router template for a cross bar
+// A guide for routing a notch into a cross bar.
+
+// Set Units
+@settings(defaultLengthUnit = mm)
+
+routerDiameter = 12.7
+templateDiameter = 11 / 16 * inch()
+templateGap = (templateDiameter - routerDiameter) / 2 - 0.5
+slateWidthHalf = 41.5 / 2
+minClampingDistance = 50 + 30
+templateThickness = 10
+radius = 10
+depth = 30
+distanceToInsideEdge = slateWidthHalf + templateThickness + templateGap
+sketch001 = startSketchOn('XZ')
+  |> startProfileAt([ZERO, depth + templateGap], %)
+  |> xLine(slateWidthHalf - radius, %, $seg01)
+  |> arc({
+       angleEnd = 0,
+       angleStart = 90,
+       radius = 10 + templateGap
+     }, %, $seg09)
+  |> yLineTo(-templateThickness, %, $seg03)
+  |> xLine(templateThickness, %, $seg07)
+  |> yLineTo((segEndY(seg01) + templateThickness) / 2 - templateThickness, %, $seg02)
+  |> xLineTo(segEndX(seg03) + minClampingDistance, %, $seg06)
+  |> yLine(templateThickness * 2, %, $seg08)
+  |> xLineTo(segEndX(seg02) + 0, %, $seg05)
+  |> yLineTo(segEndY(seg01) + templateThickness, %, $seg10)
+  |> xLineTo(ZERO, %, $seg04)
+  |> xLine(-segLen(seg04), %)
+  |> yLine(-segLen(seg10), %)
+  |> xLine(-segLen(seg05), %)
+  |> yLine(-segLen(seg08), %)
+  |> xLine(segLen(seg06), %)
+  |> yLine(-segLen(seg02), %)
+  |> xLine(segLen(seg07), %)
+  |> yLine(segLen(seg03), %)
+  |> arc({
+       angleEnd = 90,
+       angleStart = 180,
+       radius = 10 + templateGap
+     }, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 5)
+
+sketch003 = startSketchOn(extrude001, 'START')
+  |> startProfileAt([distanceToInsideEdge, 0], %)
+  |> angledLine([180, templateThickness], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) + 90,
+       templateThickness
+     ], %, $rectangleSegmentB002)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %, $rectangleSegmentC002)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude003 = extrude(sketch003, length = 13)
+
+sketch002 = startSketchOn(extrude001, 'START')
+  |> startProfileAt([-distanceToInsideEdge, 0], %)
+  |> angledLine([0, templateThickness], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       templateThickness
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+extrude002 = extrude(sketch002, length = 13)
+
+sketch004 = startSketchOn(extrude002, 'END')
+  |> startProfileAt([-distanceToInsideEdge, 0], %)
+  |> angledLine([0, distanceToInsideEdge * 2], %, $rectangleSegmentA003)
+  |> angledLine([
+       segAng(rectangleSegmentA003) - 90,
+       templateThickness
+     ], %, $rectangleSegmentB003)
+  |> angledLine([
+       segAng(rectangleSegmentA003),
+       -segLen(rectangleSegmentA003)
+     ], %, $rectangleSegmentC003)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude004 = extrude(sketch004, length = 4)

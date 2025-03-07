@@ -1,0 +1,164 @@
+// Poopy Shoe
+// poop shute for bambu labs printer - optimized for printing.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+wallThickness = 0.125
+wallsWidth = 3
+height = 5.125
+filletRadius = 0.050
+backLength = 6
+exitHeight = 1
+frontLength = 7
+
+sketch001 = startSketchOn("-YZ")
+  |> startProfileAt([wallsWidth / 2, 0], %)
+  |> xLine(wallThickness / 2, %)
+  |> angledLineToX({ angle = 60, to = wallsWidth }, %, $seg01)
+  |> yLineTo(height, %)
+  |> xLine(-wallThickness, %)
+  |> yLineTo(segEndY(seg01), %)
+  |> angledLineToX({
+       angle = 60,
+       to = wallsWidth / 2 + wallThickness / 2
+     }, %)
+  |> xLine(-wallThickness, %)
+  |> angledLineToX({ angle = 180 - 60, to = wallThickness }, %)
+  |> yLineTo(height, %)
+  |> xLineTo(0, %)
+  |> yLineTo(segEndY(seg01), %)
+  |> angledLineToY({ angle = 180 - 60, to = 0 }, %)
+  |> close()
+part001 = revolve({
+  angle = 90,
+  axis = {
+    custom = {
+      axis = [1.0, 0.0],
+      origin = [0.0, height + .0001]
+    }
+  }
+}, sketch001)
+
+sketch002 = startSketchOn('-YZ')
+  |> startProfileAt([wallsWidth / 2, 0], %)
+  |> xLine(wallThickness / 2, %)
+  |> angledLineToX({ angle = 60, to = wallsWidth }, %, $seg02)
+  |> yLineTo(height, %)
+  |> xLine(-wallThickness, %)
+  |> yLineTo(segEndY(seg01), %)
+  |> angledLineToX({
+       angle = 60,
+       to = wallsWidth / 2 + wallThickness / 2
+     }, %)
+  |> xLine(-wallThickness, %)
+  |> angledLineToX({ angle = 180 - 60, to = wallThickness }, %)
+  |> yLineTo(height, %)
+  |> xLineTo(0, %)
+  |> yLineTo(segEndY(seg02), %)
+  |> angledLineToY({ angle = 180 - 60, to = 0 }, %)
+  |> close()
+  |> extrude(length = backLength - height)
+
+customPlane = {
+  plane = {
+    origin = {
+      x = 0,
+      y = -(wallsWidth / 2 - (wallThickness / 2)),
+      z = 0
+    },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+    zAxis = { x = 0, y = -1, z = 0 }
+  }
+}
+sketch003 = startSketchOn(customPlane)
+  |> startProfileAt([0, 0], %)
+  |> tangentialArc({ offset = 60, radius = height }, %)
+  |> angledLineToY({ angle = 60, to = 0 }, %)
+  |> close()
+  |> extrude(length = wallThickness)
+
+sketch004 = startSketchOn(sketch002, 'END')
+  |> startProfileAt([0, 0], %)
+  |> yLineTo(height, %)
+  |> xLineTo(wallThickness, %)
+  |> yLineTo(segEndY(seg01), %)
+  |> angledLineToX({
+       angle = 180 - 60,
+       to = wallsWidth / 2 - (wallThickness / 2)
+     }, %)
+  |> xLine(wallThickness, %)
+  |> angledLineToY({ angle = 60, to = segEndY(seg01) }, %)
+  |> yLineTo(height, %)
+  |> xLine(wallThickness, %)
+  |> tangentialArcTo([
+       (frontLength - wallsWidth) / 2 + wallsWidth,
+       height - ((height - exitHeight) / 2)
+     ], %)
+  |> tangentialArcTo([frontLength, exitHeight], %)
+  |> yLineTo(0, %)
+  |> close(tag = $seg04)
+  |> extrude(length = wallThickness)
+
+customPlane2 = {
+  plane = {
+    origin = {
+      x = -1 * (backLength - height + wallsWidth),
+      y = 0,
+      z = 0
+    },
+    xAxis = { x = 0, y = -1, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+    zAxis = { x = 1, y = 0, z = 0 }
+  }
+}
+sketch005 = startSketchOn(customPlane2)
+  |> startProfileAt([0, 0], %)
+  |> yLineTo(height, %)
+  |> xLineTo(wallsWidth, %)
+  |> tangentialArcTo([
+       (frontLength - wallsWidth) / 2 + wallsWidth,
+       height - ((height - exitHeight) / 2)
+     ], %)
+  |> tangentialArcTo([frontLength, exitHeight], %)
+  |> yLineTo(0, %, $seg03)
+  |> close()
+  |> extrude(length = wallThickness)
+
+sketch006 = startSketchOn(sketch005, seg03)
+  |> startProfileAt([0, -1 * (backLength - height)], %)
+  |> xLineTo(-exitHeight, %)
+  |> yLine(-wallsWidth, %)
+  |> xLineTo(0, %)
+  |> close()
+  |> extrude(length = wallThickness)
+
+sketch007 = startSketchOn(sketch004, 'END')
+  |> startProfileAt([0, 0], %)
+  |> xLineTo(wallThickness, %)
+  |> yLineTo(height, %)
+  |> xLineTo(0, %)
+  |> close()
+  |> extrude(length = wallsWidth - (2 * wallThickness))
+
+customPlane3 = {
+  plane = {
+    origin = {
+      x = -1 * (backLength - height + wallsWidth),
+      y = 0,
+      z = wallThickness
+    },
+    xAxis = { x = 0, y = -1, z = 0 },
+    yAxis = { x = 1, y = 0, z = 0 },
+    zAxis = { x = 0, y = 0, z = 1 }
+  }
+}
+
+sketch008 = startSketchOn(customPlane3)
+  |> startProfileAt([wallThickness, wallThickness], %)
+  |> xLineTo(frontLength, %)
+  |> yLine(wallsWidth - (2 * wallThickness), %)
+  |> xLineTo(wallThickness, %)
+  |> close()
+  |> extrude(length = -wallThickness)

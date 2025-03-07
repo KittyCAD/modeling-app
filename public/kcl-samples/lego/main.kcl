@@ -1,0 +1,109 @@
+// Lego Brick
+// A standard Lego brick. This is a small, plastic construction block toy that can be interlocked with other blocks to build various structures, models, and figures. There are a lot of hacks used in this code.
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+// Define constants
+lbumps = 5 // number of bumps long
+wbumps = 3 // number of bumps wide
+pitch = 8.0
+clearance = 0.1
+bumpDiam = 4.8
+bumpHeight = 1.8
+height = 3.2
+t = (pitch - (2 * clearance) - bumpDiam) / 2.0
+postDiam = pitch - t // works out to 6.5
+totalLength = lbumps * pitch - (2.0 * clearance)
+totalWidth = wbumps * pitch - (2.0 * clearance)
+
+// Calculate the number of segments in the length and width
+lSegments = totalLength / lbumps
+wSegments = totalWidth / wbumps
+
+// Add assertions to ensure that the number of bumps are greater than 1
+assertGreaterThan(lbumps, 1, "lbumps must be greater than 1")
+assertGreaterThan(wbumps, 1, "wbumps must be greater than 1")
+
+// Create the plane for the pegs. This is a hack so that the pegs can be patterned along the face of the lego base.
+pegFace = {
+  plane = {
+    origin = { x = 0, y = 0, z = height },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 1, z = 0 },
+    zAxis = { x = 0, y = 0, z = 1 }
+  }
+}
+
+// Create the plane for the tubes underneath the lego. This is a hack so that the tubes can be patterned underneath the lego.
+tubeFace = {
+  plane = {
+    origin = { x = 0, y = 0, z = height - t },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 1, z = 0 },
+    zAxis = { x = 0, y = 0, z = 1 }
+  }
+}
+
+// Make the base
+s = startSketchOn('XY')
+  |> startProfileAt([-totalWidth / 2, -totalLength / 2], %)
+  |> line(end = [totalWidth, 0])
+  |> line(end = [0, totalLength])
+  |> line(end = [-totalWidth, 0])
+  |> close()
+  |> extrude(length = height)
+
+// Sketch and extrude a rectangular shape to create the shell underneath the lego. This is a hack until we have a shell function.
+shellExtrude = startSketchOn(s, "start")
+  |> startProfileAt([
+       -(totalWidth / 2 - t),
+       -(totalLength / 2 - t)
+     ], %)
+  |> line(end = [totalWidth - (2 * t), 0])
+  |> line(end = [0, totalLength - (2 * t)])
+  |> line(end = [-(totalWidth - (2 * t)), 0])
+  |> close()
+  |> extrude(length = -(height - t))
+
+// Create the pegs on the top of the base
+peg = startSketchOn(s, 'end')
+  |> circle(
+       center = [
+         -(pitch * (wbumps - 1) / 2),
+         -(pitch * (lbumps - 1) / 2)
+       ],
+       radius = bumpDiam / 2
+     )
+  |> patternLinear2d(
+       axis = [1, 0],
+       instances = wbumps,
+       distance = pitch
+     )
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = lbumps,
+       distance = pitch
+     )
+  |> extrude(length = bumpHeight)
+
+// Create the pegs on the bottom of the base
+tubePattern = startSketchOn(tubeFace)
+  |> circle(
+       center = [
+         -(pitch * (wbumps - 1) / 2 - (pitch / 2)),
+         -(pitch * (lbumps - 1) / 2 - (pitch / 2))
+       ],
+       radius = bumpDiam / 2
+     )
+  |> patternLinear2d(
+       axis = [1, 0],
+       instances = wbumps - 1,
+       distance = pitch
+     )
+  |> patternLinear2d(
+       axis = [0, 1],
+       instances = lbumps - 1,
+       distance = pitch
+     )
+  |> extrude(length = -bumpHeight)
