@@ -158,6 +158,22 @@ export class ToolbarFixture {
     ).toBeVisible()
     await this.page.getByTestId('dropdown-circle-three-points').click()
   }
+  selectArc = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Tangential Arc:' })
+      .click()
+    await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
+    await this.page.getByTestId('dropdown-arc').click()
+  }
+  selectThreePointArc = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Tangential Arc:' })
+      .click()
+    await expect(
+      this.page.getByTestId('dropdown-three-point-arc')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-three-point-arc').click()
+  }
 
   async closePane(paneId: SidebarType) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
