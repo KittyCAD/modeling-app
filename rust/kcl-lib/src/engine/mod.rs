@@ -228,6 +228,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         // In isolated mode, we don't send the command to the engine.
+        //
+        // Note: It's important to allow commands through for the mock engine
+        // because it needs the commands to build the artifact graph in sketch
+        // mode.
         if self.execution_kind().await.is_isolated() {
             return Ok(());
         }
@@ -253,6 +257,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         // In isolated mode, we don't send the command to the engine.
+        //
+        // Note: It's important to allow commands through for the mock engine
+        // because it needs the commands to build the artifact graph in sketch
+        // mode.
         if self.execution_kind().await.is_isolated() {
             return Ok(());
         }
