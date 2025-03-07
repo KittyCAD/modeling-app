@@ -99,9 +99,12 @@ const Home = () => {
       },
     })
 
-    window.electron.canReadWriteDirectory(settings.app.projectDirectory.current).then((res)=>{
-      setReadWriteProjectDir(res)
-    }).catch(reportRejection)
+    // Must be a truthy string, not '' or null or undefined
+    if (settings.app.projectDirectory.current) {
+      window.electron.canReadWriteDirectory(settings.app.projectDirectory.current).then((res)=>{
+        setReadWriteProjectDir(res)
+      }).catch(reportRejection)
+    }
   }, [
     settings.app.projectDirectory.current,
     settings.projects.defaultProjectName.current,

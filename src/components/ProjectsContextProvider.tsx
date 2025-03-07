@@ -190,7 +190,6 @@ const ProjectsContextDesktop = ({
 
   // Re-read projects listing if the projectDir has any updates.
   // Kevin: we already watch projectsDir
-  console.log('HERE!')
   useFileSystemWatcher(
     async () => {
       return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
