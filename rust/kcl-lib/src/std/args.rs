@@ -341,7 +341,7 @@ impl Args {
             meta: vec![meta],
             ty: NumericType::Unknown,
         };
-        Ok(KclValue::Array {
+        Ok(KclValue::MixedArray {
             value: vec![x, y],
             meta: vec![meta],
         })
@@ -377,7 +377,7 @@ impl Args {
                 ty: ty.clone(),
             })
             .collect::<Vec<_>>();
-        Ok(KclValue::Array {
+        Ok(KclValue::MixedArray {
             value: array,
             meta: vec![Metadata {
                 source_range: self.source_range,
@@ -631,7 +631,7 @@ impl<'a> FromArgs<'a> for Vec<KclValue> {
                 source_ranges: vec![args.source_range],
             }));
         };
-        let KclValue::Array { value: array, meta: _ } = &arg.value else {
+        let KclValue::MixedArray { value: array, meta: _ } = &arg.value else {
             let message = format!("Expected an array but found {}", arg.value.human_friendly_type());
             return Err(KclError::Type(KclErrorDetails {
                 source_ranges: arg.source_ranges(),
@@ -733,7 +733,7 @@ where
 
 impl<'a> FromKclValue<'a> for [f64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Array { value, meta: _ } = arg else {
+        let KclValue::MixedArray { value, meta: _ } = arg else {
             return None;
         };
         if value.len() != 2 {
@@ -748,7 +748,7 @@ impl<'a> FromKclValue<'a> for [f64; 2] {
 
 impl<'a> FromKclValue<'a> for [usize; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Array { value, meta: _ } = arg else {
+        let KclValue::MixedArray { value, meta: _ } = arg else {
             return None;
         };
         if value.len() != 3 {
@@ -764,7 +764,7 @@ impl<'a> FromKclValue<'a> for [usize; 3] {
 
 impl<'a> FromKclValue<'a> for [f64; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Array { value, meta: _ } = arg else {
+        let KclValue::MixedArray { value, meta: _ } = arg else {
             return None;
         };
         if value.len() != 3 {
@@ -1249,7 +1249,7 @@ impl_from_kcl_for_vec!(Sketch);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Array { value, meta: _ } = arg else {
+        let KclValue::MixedArray { value, meta: _ } = arg else {
             return None;
         };
         if value.len() != 3 {
@@ -1517,7 +1517,7 @@ impl<'a> FromKclValue<'a> for SketchSet {
         match arg {
             KclValue::Sketch { value: sketch } => Some(SketchSet::from(sketch.to_owned())),
             KclValue::Sketches { value } => Some(SketchSet::from(value.to_owned())),
-            KclValue::Array { .. } => {
+            KclValue::MixedArray { .. } => {
                 let v: Option<Vec<Sketch>> = FromKclValue::from_kcl_val(arg);
                 Some(SketchSet::Sketches(v?.iter().cloned().map(Box::new).collect()))
             }

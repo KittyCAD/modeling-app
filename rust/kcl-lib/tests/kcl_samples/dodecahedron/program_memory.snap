@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing dodecahedron.kcl
 ---
 {
@@ -2419,7 +2419,7 @@ description: Variables in memory after executing dodecahedron.kcl
         "type": "Object",
         "value": {
           "origin": {
-            "type": "Array",
+            "type": "MixedArray",
             "value": [
               {
                 "type": "Number",
@@ -2536,7 +2536,7 @@ description: Variables in memory after executing dodecahedron.kcl
             ]
           },
           "xAxis": {
-            "type": "Array",
+            "type": "MixedArray",
             "value": [
               {
                 "type": "Number",
@@ -2606,7 +2606,7 @@ description: Variables in memory after executing dodecahedron.kcl
             ]
           },
           "yAxis": {
-            "type": "Array",
+            "type": "MixedArray",
             "value": [
               {
                 "type": "Number",
@@ -2686,7 +2686,7 @@ description: Variables in memory after executing dodecahedron.kcl
             ]
           },
           "zAxis": {
-            "type": "Array",
+            "type": "MixedArray",
             "value": [
               {
                 "type": "Number",

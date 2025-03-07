@@ -55,7 +55,7 @@ mod memory;
 mod state;
 
 /// Outcome of executing a program.  This is used in TS.
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
@@ -517,7 +517,6 @@ impl ExecutorContext {
         &self,
         program: crate::Program,
         use_prev_memory: bool,
-        variables: IndexMap<String, KclValue>,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(self.is_mock());
 
@@ -531,22 +530,9 @@ impl ExecutorContext {
             self.prepare_mem(&mut exec_state).await?
         };
 
-        let mut to_restore = Vec::new();
-        {
-            let mem = exec_state.mut_stack();
-
-            // Push a scope so that old variables can be overwritten (since we might be re-executing some
-            // part of the scene).
-            mem.push_new_env_for_scope();
-
-            // Add any extra variables to memory (we want to remove these variables after execution, but
-            // can't do this using scopes because we want to keep the results of computation in other cases).
-            for (k, v) in variables {
-                to_restore.push((k.clone(), mem.get(&k, SourceRange::default()).ok().cloned()));
-                mem.add(k, v, SourceRange::synthetic())
-                    .map_err(KclErrorWithOutputs::no_outputs)?;
-            }
-        }
+        // Push a scope so that old variables can be overwritten (since we might be re-executing some
+        // part of the scene).
+        exec_state.mut_stack().push_new_env_for_scope();
 
         let result = self.inner_run(&program, &mut exec_state, true).await?;
 
@@ -558,12 +544,6 @@ impl ExecutorContext {
         let outcome = exec_state.to_mock_wasm_outcome(result.0);
 
         mem.squash_env(result.0);
-        for (k, v) in to_restore {
-            match v {
-                Some(v) => mem.insert_or_update(k, v),
-                None => mem.clear(k),
-            }
-        }
         cache::write_old_memory(mem).await;
 
         Ok(outcome)
@@ -1886,33 +1866,6 @@ let w = f() + f()
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn mock_variables() {
-        let ctx = ExecutorContext::new_mock().await;
-
-        let program = crate::Program::parse_no_errs("x = y").unwrap();
-        let mut vars = IndexMap::new();
-        vars.insert(
-            "y".to_owned(),
-            KclValue::Number {
-                value: 2.0,
-                ty: kcl_value::NumericType::Unknown,
-                meta: Vec::new(),
-            },
-        );
-        let result = ctx.run_mock(program, true, vars).await.unwrap();
-        assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
-        cache::read_old_memory()
-            .await
-            .unwrap()
-            .get("y", SourceRange::default())
-            .unwrap_err();
-
-        let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
-        let result = ctx.run_mock(program2, true, IndexMap::new()).await.unwrap();
-        assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn mock_after_not_mock() {
         let ctx = ExecutorContext::new_with_default_client(UnitLength::Mm).await.unwrap();
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
@@ -1921,7 +1874,7 @@ let w = f() + f()
 
         let ctx2 = ExecutorContext::new_mock().await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
-        let result = ctx2.run_mock(program2, true, IndexMap::new()).await.unwrap();
+        let result = ctx2.run_mock(program2, true).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
     }
 }
