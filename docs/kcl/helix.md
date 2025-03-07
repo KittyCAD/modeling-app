@@ -24,12 +24,12 @@ helix(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `revolutions` | `number` | Number of revolutions. | Yes |
-| `angleStart` | `number` | Start angle (in degrees). | Yes |
-| `ccw` | `bool` | Is the helix rotation counter clockwise? The default is `false`. | No |
-| `radius` | `number` | Radius of the helix. | Yes |
+| `revolutions` | [`number`](/docs/kcl/types/number) | Number of revolutions. | Yes |
+| `angleStart` | [`number`](/docs/kcl/types/number) | Start angle (in degrees). | Yes |
+| `ccw` | [`bool`](/docs/kcl/types/bool) | Is the helix rotation counter clockwise? The default is `false`. | No |
+| `radius` | [`number`](/docs/kcl/types/number) | Radius of the helix. | Yes |
 | `axis` | [`Axis3dOrEdgeReference`](/docs/kcl/types/Axis3dOrEdgeReference) | Axis to use for the helix. | Yes |
-| `length` | `number` | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |
+| `length` | [`number`](/docs/kcl/types/number) | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |
 
 ### Returns
 
