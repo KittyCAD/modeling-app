@@ -1,20 +1,20 @@
 {
-    "version": 2,
-    "headers": [
+  "version": 2,
+  "headers": [
+    {
+      "source": "/",
+      "missing": [
         {
-            "source": "/",
-            "missing": [
-                {
-                    "type": "host",
-                    "value": "app.zoo.dev"
-                }
-            ],
-            "headers": [
-                {
-                    "key": "X-Robots-Tag",
-                    "value": "noindex"
-                }
-            ]
+          "type": "host",
+          "value": "app.zoo.dev"
         }
-    ]
+      ],
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
+  ]
 }
