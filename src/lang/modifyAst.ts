@@ -277,9 +277,7 @@ export function mutateKwArg(
 }
 
 /**
-Set the keyword argument to the given value.
-Returns true if it overwrote an existing argument.
-Returns false if no argument with the label existed before.
+Mutates the given node by removing the labeled arguments.
 */
 export function removeKwArgs(labels: string[], node: CallExpressionKw) {
   for (const label of labels) {
