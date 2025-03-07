@@ -444,9 +444,10 @@ const ProjectsContextDesktop = ({
     }
   )
 
-  useEffect(() => {
-    send({ type: 'Read projects', data: {} })
-  }, [projectPaths])
+  // KEVIN: LIST PROJECTS INVOKED
+  /* useEffect(() => {
+   *   send({ type: 'Read projects', data: {} })
+   * }, [projectPaths]) */
 
   // register all project-related command palette commands
   useStateMachineCommands({

@@ -5,6 +5,7 @@ import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
 import { Project } from 'lib/project'
 import { isDesktop } from 'lib/isDesktop'
 
+// KEVIN: LIST PROJECTS INVOKED
 // Hook uses [number] to give users familiarity. It is meant to mimic a
 // dependency array, but is intended to only ever be used with 1 value.
 export const useProjectsLoader = (deps?: [number]) => {
@@ -29,7 +30,7 @@ export const useProjectsLoader = (deps?: [number]) => {
 
       if (projectsDir) {
         const _projectPaths = await listProjects(configuration)
-        console.log('[kevin] final paths', JSON.parse(JSON.stringify(_projectPaths)))
+        /* console.log('[kevin] final paths', JSON.parse(JSON.stringify(_projectPaths))) */
         setProjectPaths(_projectPaths)
       }
     })().catch(trap)
