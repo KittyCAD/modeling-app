@@ -25,6 +25,7 @@ import { useProjectsContext } from 'hooks/useProjectsContext'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 import { useSettings } from 'machines/appMachine'
+import { reportRejection } from 'lib/trap'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -32,6 +33,7 @@ const Home = () => {
   const { state, send } = useProjectsContext()
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
+  const [readWriteProjectDir, setReadWriteProjectDir] = useState({value: true, error: undefined})
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery((argDefaultValues) => {
@@ -66,13 +68,18 @@ const Home = () => {
   )
   const ref = useRef<HTMLDivElement>(null)
 
-  // Re-read projects listing if the projectDir has any updates.
-  useFileSystemWatcher(
-    async () => {
-      setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
-    },
-    projectsDir ? [projectsDir] : []
-  )
+  // Kevin: This is already covered in ProjectsContextProvider.tsx
+  // // Re-read projects listing if the projectDir has any updates.
+  // useFileSystemWatcher(
+  //   // Kevin: we already watch projectsDir
+  //   async () => {
+  //     console.log('[kevin]', projectsLoaderTrigger,'Project Dir Path', projectsDir)
+  //     setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
+  //   },
+  //   // Gotcha: For each folder in the projectsDir it will call listProjects
+  //   // If you have 6 folders, you call listProjects 6 times for the same computed value
+  //   projectsDir ? [projectsDir] : [],
+  // )
 
   const projects = state?.context.projects ?? []
   const [searchParams, setSearchParams] = useSearchParams()
@@ -91,6 +98,13 @@ const Home = () => {
         defaultDirectory: settings.app.projectDirectory.current,
       },
     })
+
+    // Must be a truthy string, not '' or null or undefined
+    if (settings.app.projectDirectory.current) {
+      window.electron.canReadWriteDirectory(settings.app.projectDirectory.current).then((res)=>{
+        setReadWriteProjectDir(res)
+      }).catch(reportRejection)
+    }
   }, [
     settings.app.projectDirectory.current,
     settings.projects.defaultProjectName.current,
@@ -219,6 +233,23 @@ const Home = () => {
             </Link>
             .
           </p>
+          { !readWriteProjectDir.value &&
+
+            <section>
+              <div className="flex items-center select-none">
+                <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm grow">
+                  <p className="">{readWriteProjectDir.error.message}</p>
+                    <Link
+              data-testid="project-directory-settings-link"
+              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+              className="py-1 text-white underline underline-offset-2 text-sm"
+            >
+                    Change Project Directory
+            </Link>
+            </div>
+          </div>
+        </section>
+          }
         </section>
         <section
           data-testid="home-section"

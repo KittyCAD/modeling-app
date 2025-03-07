@@ -188,12 +188,20 @@ const ProjectsContextDesktop = ({
     projectsLoaderTrigger,
   ])
 
+  // KEVIN: LIST PROJECTS INVOKED
   // Re-read projects listing if the projectDir has any updates.
+  // Kevin: we already watch projectsDir
   useFileSystemWatcher(
-    async () => {
+    async (eventType, path) => {
+      console.log("[kevin] INVOKE LISTPROJECTS(callback);", eventType, path)
+      // KEVIN: invocation
+      if (!window.LISTED_PROJECTS) {
+        return
+      }
       return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
     },
-    projectsDir ? [projectsDir] : []
+    projectsDir ? [projectsDir] : [],
+    'nice'
   )
 
   const [state, send, actor] = useMachine(
@@ -313,7 +321,12 @@ const ProjectsContextDesktop = ({
           ),
       },
       actors: {
-        readProjects: fromPromise(() => listProjects()),
+        readProjects: fromPromise(() => {
+          var a = new Error()
+          console.log("[kevin] readProjects(callback)")
+          console.log("[kevin] readProjects(callback) error", a.stack)
+          return listProjects()
+        }),
         createProject: fromPromise(async ({ input }) => {
           let name = (
             input && 'name' in input && input.name
@@ -431,9 +444,10 @@ const ProjectsContextDesktop = ({
     }
   )
 
-  useEffect(() => {
-    send({ type: 'Read projects', data: {} })
-  }, [projectPaths])
+  // KEVIN: LIST PROJECTS INVOKED
+  /* useEffect(() => {
+   *   send({ type: 'Read projects', data: {} })
+   * }, [projectPaths]) */
 
   // register all project-related command palette commands
   useStateMachineCommands({

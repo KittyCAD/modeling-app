@@ -43,4 +43,5 @@ export type Project = {
   path: string
   name: string
   children: Array<FileEntry> | null
+  readWriteAccess: boolean
 }
