@@ -888,12 +888,10 @@ impl ExecutorContext {
 }
 
 #[cfg(test)]
-pub(crate) async fn parse_execute(
-    code: &str,
-) -> Result<(crate::Program, EnvironmentRef, ExecutorContext, ExecState), KclError> {
+pub(crate) async fn parse_execute(code: &str) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
-    let ctx = ExecutorContext {
+    let exec_ctxt = ExecutorContext {
         engine: Arc::new(Box::new(
             crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
                 KclError::Internal(crate::errors::KclErrorDetails {
@@ -907,10 +905,24 @@ pub(crate) async fn parse_execute(
         settings: Default::default(),
         context_type: ContextType::Mock,
     };
-    let mut exec_state = ExecState::new(&ctx.settings);
-    let result = ctx.run(&program, &mut exec_state).await?;
+    let mut exec_state = ExecState::new(&exec_ctxt.settings);
+    let result = exec_ctxt.run(&program, &mut exec_state).await?;
 
-    Ok((program, result.0, ctx, exec_state))
+    Ok(ExecTestResults {
+        program,
+        mem_env: result.0,
+        exec_ctxt,
+        exec_state,
+    })
+}
+
+#[cfg(test)]
+#[derive(Debug)]
+pub(crate) struct ExecTestResults {
+    program: crate::Program,
+    mem_env: EnvironmentRef,
+    exec_ctxt: ExecutorContext,
+    exec_state: ExecState,
 }
 
 #[cfg(test)]
@@ -933,8 +945,8 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_warn() {
         let text = "@blah";
-        let (_, _, _, exec_state) = parse_execute(text).await.unwrap();
-        let errs = exec_state.errors();
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
         assert_eq!(errs.len(), 1);
         assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
         assert!(
@@ -947,8 +959,8 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_warn_on_deprecated() {
         let text = "p = pi()";
-        let (_, _, _, exec_state) = parse_execute(text).await.unwrap();
-        let errs = exec_state.errors();
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
         assert_eq!(errs.len(), 1);
         assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
         assert!(
@@ -1324,8 +1336,8 @@ const answer = returnX()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_override_prelude() {
         let text = "PI = 3.0";
-        let (_, _, _, exec_state) = parse_execute(text).await.unwrap();
-        let errs = exec_state.errors();
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
         assert!(errs.is_empty());
     }
 
@@ -1391,50 +1403,79 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(5.0, mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap());
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            5.0,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "myVar")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute() {
         let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap());
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            7.4,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "myVar")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"const myVar = -5 + 6"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(1.0, mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap());
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            1.0,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "myVar")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
         let ast = r#"const myVar = PI * 2"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             std::f64::consts::TAU,
-            mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "myVar")
+                .as_f64()
+                .unwrap()
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(exec_state.stack(), env, "thing").as_f64().unwrap());
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            7.4,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "thing")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_default() {
         let ast = r#"const inMm = 25.4 * mm()
 const inInches = 1.0 * inch()"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(25.4, mem_get_json(exec_state.stack(), env, "inMm").as_f64().unwrap());
+        let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             25.4,
-            mem_get_json(exec_state.stack(), env, "inInches").as_f64().unwrap()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
+                .as_f64()
+                .unwrap()
+        );
+        assert_eq!(
+            25.4,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
+                .as_f64()
+                .unwrap()
         );
     }
 
@@ -1443,12 +1484,20 @@ const inInches = 1.0 * inch()"#;
         let ast = r#"@settings(defaultLengthUnit = inch)
 const inMm = 25.4 * mm()
 const inInches = 1.0 * inch()"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
-            mem_get_json(exec_state.stack(), env, "inMm").as_f64().unwrap().round()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
+                .as_f64()
+                .unwrap()
+                .round()
         );
-        assert_eq!(1.0, mem_get_json(exec_state.stack(), env, "inInches").as_f64().unwrap());
+        assert_eq!(
+            1.0,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1456,12 +1505,20 @@ const inInches = 1.0 * inch()"#;
         let ast = r#"@settings(defaultLengthUnit = in)
 const inMm = 25.4 * mm()
 const inInches = 2.0 * inch()"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
-            mem_get_json(exec_state.stack(), env, "inMm").as_f64().unwrap().round()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
+                .as_f64()
+                .unwrap()
+                .round()
         );
-        assert_eq!(2.0, mem_get_json(exec_state.stack(), env, "inInches").as_f64().unwrap());
+        assert_eq!(
+            2.0,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1500,17 +1557,31 @@ fn check = (x) => {
 }
 check(false)
 "#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             false,
-            mem_get_json(exec_state.stack(), env, "notTrue").as_bool().unwrap()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "notTrue")
+                .as_bool()
+                .unwrap()
         );
         assert_eq!(
             true,
-            mem_get_json(exec_state.stack(), env, "notFalse").as_bool().unwrap()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "notFalse")
+                .as_bool()
+                .unwrap()
         );
-        assert_eq!(true, mem_get_json(exec_state.stack(), env, "c").as_bool().unwrap());
-        assert_eq!(false, mem_get_json(exec_state.stack(), env, "d").as_bool().unwrap());
+        assert_eq!(
+            true,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "c")
+                .as_bool()
+                .unwrap()
+        );
+        assert_eq!(
+            false,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "d")
+                .as_bool()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
