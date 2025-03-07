@@ -20,6 +20,7 @@ export interface ToolbarItemCallbackProps {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   sketchPathId: string | false
+  editorHasFocus: boolean | undefined
 }
 
 export type ToolbarItem = {
@@ -65,8 +66,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     items: [
       {
         id: 'sketch',
-        onClick: ({ modelingSend, sketchPathId }) =>
-          !sketchPathId
+        onClick: ({ modelingSend, sketchPathId, editorHasFocus }) =>
+          !(editorHasFocus && sketchPathId)
             ? modelingSend({
                 type: 'Enter sketch',
                 data: { forceNewSketch: true },
@@ -74,8 +75,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             : modelingSend({ type: 'Enter sketch' }),
         icon: 'sketch',
         status: 'available',
-        title: ({ sketchPathId }) =>
-          sketchPathId ? 'Edit Sketch' : 'Start Sketch',
+        title: ({ editorHasFocus, sketchPathId }) =>
+          editorHasFocus && sketchPathId ? 'Edit Sketch' : 'Start Sketch',
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
