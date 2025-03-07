@@ -1167,7 +1167,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
     for (const doesHaveTagOutsideSketch of [true, false]) {
       for (const lineOfInterest of cases) {
         const isObj = lineOfInterest.includes('{ angle = 3,')
-        test(`${lineOfInterest.split('(')[0]}${isObj ? '-[obj-input]' : ''}${
+        test(`${lineOfInterest.split('=')[0]}${isObj ? '-[obj-input]' : ''}${
           doesHaveTagOutsideSketch ? '-[tagOutsideSketch]' : ''
         }`, async ({ page, editor, homePage }) => {
           await page.addInitScript(
@@ -1329,7 +1329,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
 
     for (const { before, after } of cases) {
       const isObj = before.includes('{ angle = 3')
-      test(`${before.split('(')[0]}${isObj ? '-[obj-input]' : ''}`, async ({
+      test(`${before.split('=')[0]}${isObj ? '-[obj-input]' : ''}`, async ({
         page,
         editor,
         homePage,
