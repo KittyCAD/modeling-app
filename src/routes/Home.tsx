@@ -228,25 +228,16 @@ const Home = () => {
           { !readWriteProjectDir.value &&
 
             <section>
-              <div className="flex justify-between items-center select-none">
-                <div className="flex gap-8 items-center grow">
-                  <p className="bg-destroy-80 text-destory-10 p-1 my-2 rounded-b-sm grow">{readWriteProjectDir.error.message}</p>
-                  <ActionButton
-                    Element="button"
-                    iconStart={{
-                      icon: 'settings',
-                      size: 'sm',
-                      className:'group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15',
-                    }}
-                  >
+              <div className="flex items-center select-none">
+                <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm grow">
+                  <p className="">{readWriteProjectDir.error.message}</p>
                     <Link
               data-testid="project-directory-settings-link"
               to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-              className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+              className="py-1 text-white underline underline-offset-2 text-sm"
             >
                     Change Project Directory
             </Link>
-              </ActionButton>
             </div>
           </div>
         </section>
