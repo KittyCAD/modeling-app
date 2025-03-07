@@ -1792,8 +1792,9 @@ export const arcTo: SketchLineHelper = {
         ),
         stdLibFnName: 'arcTo',
         argPosition: {
-          type: 'objectProperty',
+          type: 'arrayInObject',
           key: 'interior',
+          index: 0,
         },
         sourceRange: topLevelRange(
           interiorArr.elements[0].start,
@@ -1811,8 +1812,9 @@ export const arcTo: SketchLineHelper = {
         ),
         stdLibFnName: 'arcTo',
         argPosition: {
-          type: 'objectProperty',
+          type: 'arrayInObject',
           key: 'interior',
+          index: 1,
         },
         sourceRange: topLevelRange(
           interiorArr.elements[1].start,
@@ -1827,8 +1829,9 @@ export const arcTo: SketchLineHelper = {
         value: code.slice(endArr.elements[0].start, endArr.elements[0].end),
         stdLibFnName: 'arcTo',
         argPosition: {
-          type: 'objectProperty',
+          type: 'arrayInObject',
           key: 'end',
+          index: 0,
         },
         sourceRange: topLevelRange(
           endArr.elements[0].start,
@@ -1843,8 +1846,9 @@ export const arcTo: SketchLineHelper = {
         value: code.slice(endArr.elements[1].start, endArr.elements[1].end),
         stdLibFnName: 'arcTo',
         argPosition: {
-          type: 'objectProperty',
+          type: 'arrayInObject',
           key: 'end',
+          index: 1,
         },
         sourceRange: topLevelRange(
           endArr.elements[1].start,

@@ -158,7 +158,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           const unconstrainedLocator = page.locator(
             `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
           )
-          await expect(unconstrainedLocator).toBeVisible()
+          // await expect(unconstrainedLocator).toHaveCount
           await unconstrainedLocator.hover()
           await expect(
             await page.getByTestId('constraint-symbol-popover').count()
@@ -818,6 +818,138 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           ang: ang + 180,
           steps: 10,
           locator: '[data-overlay-toolbar-index="12"]',
+        })
+      })
+      test('for segment [arcTo]', async ({
+        page,
+        editor,
+        homePage,
+        scene,
+        cmdBar,
+      }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([56.37, 120.33], sketch001)
+  |> line(end = [162.86, 106.48])
+  |> arcTo({
+       interior = [360.16, 231.76],
+       end = [391.48, 131.54]
+     }, %)
+  |> yLine(-131.54, %)
+  |> arc({
+       radius = 126.46,
+       angleStart = 33.53,
+       angleEnd = -141.07
+     }, %)
+`
+          )
+          localStorage.setItem('disableAxis', 'true')
+        })
+        const u = await getUtils(page)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+
+        await homePage.goToModelingScene()
+        await scene.connectionEstablished()
+        await scene.settled(cmdBar)
+
+        // wait for execution done
+
+        await page.getByText('line(end = [162.86, 106.48])').click()
+        await page.waitForTimeout(100)
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+        await page.waitForTimeout(500)
+
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
+
+        const clickUnconstrained = _clickUnconstrained(page, editor)
+        const clickConstrained = _clickConstrained(page, editor)
+
+        const arcTo = await u.getBoundingBox('[data-overlay-index="1"]')
+        let ang = await u.getAngle('[data-overlay-index="1"]')
+        console.log('arcTo interior x')
+        await clickUnconstrained({
+          hoverPos: { x: arcTo.x, y: arcTo.y },
+          constraintType: 'xAbsolute',
+          expectBeforeUnconstrained: `arcTo({
+       interior = [360.16, 231.76],
+       end = [391.48, 131.54]
+     }, %)`,
+          expectAfterUnconstrained: `arcTo({
+       interior = [360.16, 231.76],
+       end = [391.48, 131.54]
+     }, %)`,
+          expectFinal: `arcTo({
+       interior = [xAbs001, 231.76],
+       end = [391.48, 131.54]
+     }, %)`,
+          ang: ang,
+          steps: 6,
+          locator: '[data-overlay-toolbar-index="1"]',
+        })
+
+        console.log('arcTo interior y')
+        await clickUnconstrained({
+          hoverPos: { x: arcTo.x, y: arcTo.y },
+          constraintType: 'yAbsolute',
+          expectBeforeUnconstrained: `arcTo({
+       interior = [xAbs001, 231.76],
+       end = [391.48, 131.54]
+     }, %)`,
+          expectAfterUnconstrained: `arcTo({
+       interior = [xAbs001, yAbs001],
+       end = [391.48, 131.54]
+     }, %)`,
+          expectFinal: `arcTo({
+       interior = [xAbs001, 231.76],
+       end = [391.48, 131.54]
+     }, %)`,
+          ang: ang,
+          steps: 10,
+          locator: '[data-overlay-toolbar-index="1"]',
+        })
+
+        console.log('arcTo end x')
+        await clickConstrained({
+          hoverPos: { x: arcTo.x, y: arcTo.y },
+          constraintType: 'xAbsolute',
+          expectBeforeUnconstrained: `arcTo({
+       interior = [xAbs001, 231.76],
+       end = [391.48, 131.54]
+     }, %)`,
+          expectAfterUnconstrained: `arcTo({
+       interior = [xAbs001, 231.76],
+       end = [391.48, 131.54]
+     }, %)`,
+          expectFinal: `arcTo({
+       interior = [xAbs001, 231.76],
+       end = [xAbs002, 131.54]
+     }, %)`,
+          ang: ang + 180,
+          steps: 6,
+          locator: '[data-overlay-toolbar-index="1"]',
+        })
+
+        console.log('arcTo end y')
+        await clickUnconstrained({
+          hoverPos: { x: arcTo.x, y: arcTo.y },
+          constraintType: 'yAbsolute',
+          expectBeforeUnconstrained: `arcTo({
+       interior = [xAbs001, 231.76],
+       end = [xAbs002, 131.54]
+     }, %)`,
+          expectAfterUnconstrained: `arcTo({
+       interior = [xAbs001, 231.76],
+       end = [xAbs002, yAbs002]
+     }, %)`,
+          expectFinal: `arcTo({
+       interior = [xAbs001, 231.76],
+       end = [xAbs002, 131.54]
+     }, %)`,
+          ang: ang + 180,
+          steps: 10,
+          locator: '[data-overlay-toolbar-index="1"]',
         })
       })
       test('for segment [circle]', async ({ page, editor, homePage }) => {

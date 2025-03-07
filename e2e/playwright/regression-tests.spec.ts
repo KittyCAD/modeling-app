@@ -318,7 +318,6 @@ extrude001 = extrude(sketch001, length = 50)
     'when engine fails export we handle the failure and alert the user',
     { tag: '@skipLocalEngine' },
     async ({ scene, page, homePage, cmdBar }) => {
-      const u = await getUtils(page)
       await page.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
