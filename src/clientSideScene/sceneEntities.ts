@@ -15,6 +15,9 @@ import {
   Scene,
   Vector2,
   Vector3,
+  Shape,
+  LineCurve3,
+  ExtrudeGeometry,
 } from 'three'
 import {
   ANGLE_SNAP_THRESHOLD_DEGREES,
@@ -65,6 +68,7 @@ import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { executeAst, ToolTip } from 'lang/langHelpers'
 import {
   createProfileStartHandle,
+  dashedStraight,
   SegmentUtils,
   segmentUtils,
 } from './segments'
@@ -74,6 +78,7 @@ import {
   addNewSketchLn,
   ARG_END_ABSOLUTE,
   changeSketchArguments,
+  Coords2d,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
 import { isArray, isOverlap, roundOff } from 'lib/utils'
@@ -125,6 +130,9 @@ type DraftSegment = 'line' | 'tangentialArcTo'
 export const EXTRA_SEGMENT_HANDLE = 'extraSegmentHandle'
 export const EXTRA_SEGMENT_OFFSET_PX = 8
 export const PROFILE_START = 'profile-start'
+
+export const DRAFT_DASHED_LINE = 'draft-dashed-line'
+
 export const STRAIGHT_SEGMENT = 'straight-segment'
 export const STRAIGHT_SEGMENT_BODY = 'straight-segment-body'
 export const STRAIGHT_SEGMENT_DASH = 'straight-segment-body-dashed'
@@ -144,6 +152,22 @@ export const CIRCLE_SEGMENT_BODY = 'circle-segment-body'
 export const CIRCLE_SEGMENT_DASH = 'circle-segment-body-dashed'
 export const CIRCLE_CENTER_HANDLE = 'circle-center-handle'
 export const SEGMENT_WIDTH_PX = 1.6
+
+// Arc segment constants
+export const ARC_SEGMENT = 'arc-segment'
+export const ARC_SEGMENT_BODY = 'arc-segment-body'
+export const ARC_SEGMENT_DASH = 'arc-segment-dash'
+export const ARC_ANGLE_END = 'arc-angle-end'
+export const ARC_CENTER_TO_FROM = 'arc-center-to-from'
+export const ARC_CENTER_TO_TO = 'arc-center-to-to'
+export const ARC_ANGLE_REFERENCE_LINE = 'arc-angle-reference-line'
+
+export const THREE_POINT_ARC_SEGMENT = 'three-point-arc-segment'
+export const THREE_POINT_ARC_SEGMENT_BODY = 'three-point-arc-segment-body'
+export const THREE_POINT_ARC_SEGMENT_DASH = 'three-point-arc-segment-dash'
+export const THREE_POINT_ARC_HANDLE2 = 'three-point-arc-handle2'
+export const THREE_POINT_ARC_HANDLE3 = 'three-point-arc-handle3'
+
 export const HIDE_SEGMENT_LENGTH = 75 // in pixels
 export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
 export const SEGMENT_BODIES = [
@@ -151,6 +175,8 @@ export const SEGMENT_BODIES = [
   TANGENTIAL_ARC_TO_SEGMENT,
   CIRCLE_SEGMENT,
   CIRCLE_THREE_POINT_SEGMENT,
+  ARC_SEGMENT,
+  THREE_POINT_ARC_SEGMENT,
 ]
 export const SEGMENT_BODIES_PLUS_PROFILE_START = [
   ...SEGMENT_BODIES,
@@ -212,6 +238,7 @@ export class SceneEntities {
         update = segmentUtils.tangentialArcTo.update
       }
       if (
+        segment.userData &&
         segment.userData.from &&
         segment.userData.center &&
         segment.userData.radius &&
@@ -221,8 +248,28 @@ export class SceneEntities {
         input = {
           type: 'arc-segment',
           from: segment.userData.from,
+          to: segment.userData.from,
           center: segment.userData.center,
           radius: segment.userData.radius,
+          ccw: true,
+        }
+      }
+      if (
+        segment.userData &&
+        segment.userData.from &&
+        segment.userData.center &&
+        segment.userData.radius &&
+        segment.userData.to &&
+        segment.userData.type === ARC_SEGMENT
+      ) {
+        update = segmentUtils.arc.update
+        input = {
+          type: 'arc-segment',
+          from: segment.userData.from,
+          to: segment.userData.to,
+          center: segment.userData.center,
+          radius: segment.userData.radius,
+          ccw: segment.userData.ccw,
         }
       }
       if (
@@ -232,6 +279,22 @@ export class SceneEntities {
         segment.userData.type === CIRCLE_THREE_POINT_SEGMENT
       ) {
         update = segmentUtils.circleThreePoint.update
+        input = {
+          type: 'circle-three-point-segment',
+          p1: segment.userData.p1,
+          p2: segment.userData.p2,
+          p3: segment.userData.p3,
+        }
+      }
+      if (
+        segment.userData &&
+        segment.userData.from &&
+        segment.userData.center &&
+        segment.userData.radius &&
+        segment.userData.to &&
+        segment.userData.type === THREE_POINT_ARC_SEGMENT
+      ) {
+        update = segmentUtils.threePointArc.update
         input = {
           type: 'circle-three-point-segment',
           p1: segment.userData.p1,
@@ -438,7 +501,11 @@ export class SceneEntities {
             sceneObject.object.name === Y_AXIS
         )
 
-        const arrowHead = getParentGroup(args.intersects[0].object, [ARROWHEAD])
+        const arrowHead = getParentGroup(args.intersects[0].object, [
+          ARROWHEAD,
+          ARC_ANGLE_END,
+          THREE_POINT_ARC_HANDLE3,
+        ])
         const parent = getParentGroup(
           args.intersects[0].object,
           SEGMENT_BODIES_PLUS_PROFILE_START
@@ -686,23 +753,39 @@ export class SceneEntities {
             ? segmentUtils.tangentialArcTo.init
             : segment.type === 'Circle'
             ? segmentUtils.circle.init
+            : segment.type === 'Arc'
+            ? segmentUtils.arc.init
             : segment.type === 'CircleThreePoint'
             ? segmentUtils.circleThreePoint.init
+            : segment.type === 'ArcThreePoint'
+            ? segmentUtils.threePointArc.init
             : segmentUtils.straight.init
         const input: SegmentInputs =
           segment.type === 'Circle'
             ? {
                 type: 'arc-segment',
                 from: segment.from,
+                to: segment.from,
+                ccw: true,
                 center: segment.center,
                 radius: segment.radius,
               }
-            : segment.type === 'CircleThreePoint'
+            : segment.type === 'CircleThreePoint' ||
+              segment.type === 'ArcThreePoint'
             ? {
                 type: 'circle-three-point-segment',
                 p1: segment.p1,
                 p2: segment.p2,
                 p3: segment.p3,
+              }
+            : segment.type === 'Arc'
+            ? {
+                type: 'arc-segment',
+                from: segment.from,
+                center: segment.center,
+                to: segment.to,
+                ccw: segment.ccw,
+                radius: segment.radius,
               }
             : {
                 type: 'straight-segment',
@@ -1584,6 +1667,448 @@ export class SceneEntities {
       expressionIndexToDelete: insertIndex,
     }
   }
+  setupDraftArc = async (
+    sketchEntryNodePath: PathToNode,
+    sketchNodePaths: PathToNode[],
+    planeNodePath: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    sketchOrigin: [number, number, number],
+    center: [x: number, y: number]
+  ): Promise<SketchDetailsUpdate | Error> => {
+    let _ast = structuredClone(kclManager.ast)
+
+    const _node1 = getNodeFromPath<VariableDeclaration>(
+      _ast,
+      sketchEntryNodePath || [],
+      'VariableDeclaration'
+    )
+    if (trap(_node1)) return Promise.reject(_node1)
+    const variableDeclarationName = _node1.node?.declaration.id?.name || ''
+
+    const sg = sketchFromKclValue(
+      kclManager.variables[variableDeclarationName],
+      variableDeclarationName
+    )
+    if (err(sg)) return Promise.reject(sg)
+    const lastSeg = sg?.paths?.slice(-1)[0] || sg.start
+
+    // Calculate a default center point and radius based on the last segment's endpoint
+    const from: [number, number] = [lastSeg.to[0], lastSeg.to[1]]
+    const radius = Math.sqrt(
+      Math.pow(center[0] - from[0], 2) + Math.pow(center[1] - from[1], 2)
+    )
+    const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
+    const endAngle = startAngle + Math.PI / 180 // arbitrary 1 degree arc as starting default
+    const to: [number, number] = [
+      center[0] + radius * Math.cos(endAngle),
+      center[1] + radius * Math.sin(endAngle),
+    ]
+
+    // Use addNewSketchLn to append an arc to the existing sketch
+    const mod = addNewSketchLn({
+      node: _ast,
+      variables: kclManager.variables,
+      input: {
+        type: 'arc-segment',
+        from,
+        to,
+        center,
+        radius,
+        ccw: true,
+      },
+      fnName: 'arc' as ToolTip,
+      pathToNode: sketchEntryNodePath,
+    })
+
+    if (trap(mod)) return Promise.reject(mod)
+    const pResult = parse(recast(mod.modifiedAst))
+    if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+    _ast = pResult.program
+
+    // do a quick mock execution to get the program memory up-to-date
+    await kclManager.executeAstMock(_ast)
+
+    const index = sg.paths.length // because we've added a new segment that's not in the memory yet
+    const draftExpressionsIndices = { start: index, end: index }
+
+    this.tearDownSketch({ removeAxis: false })
+    sceneInfra.resetMouseListeners()
+
+    const { truncatedAst } = await this.setupSketch({
+      sketchEntryNodePath,
+      sketchNodePaths,
+      forward,
+      up,
+      position: sketchOrigin,
+      maybeModdedAst: _ast,
+      draftExpressionsIndices,
+    })
+
+    sceneInfra.setCallbacks({
+      onMove: async (args) => {
+        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
+        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
+          mod.pathToNode
+        )
+
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          firstProfileIndex
+        const _node = getNodeFromPath<VariableDeclaration>(
+          truncatedAst,
+          nodePathWithCorrectedIndexForTruncatedAst,
+          'VariableDeclaration'
+        )
+        let modded = structuredClone(truncatedAst)
+        if (trap(_node)) return
+        const sketchInit = _node.node.declaration.init
+
+        if (sketchInit.type === 'PipeExpression') {
+          // Calculate end angle based on mouse position
+          const endAngle = Math.atan2(
+            args.intersectionPoint.twoD.y - center[1],
+            args.intersectionPoint.twoD.x - center[0]
+          )
+
+          // Calculate the new 'to' point using the existing radius and the new end angle
+          const newTo: [number, number] = [
+            center[0] + radius * Math.cos(endAngle),
+            center[1] + radius * Math.sin(endAngle),
+          ]
+
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.variables,
+            {
+              type: 'path',
+              pathToNode: nodePathWithCorrectedIndexForTruncatedAst,
+            },
+            {
+              type: 'arc-segment',
+              from: lastSeg.to,
+              to: newTo,
+              center: center,
+              radius: radius,
+              ccw: true,
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+        }
+        const { execState } = await executeAst({
+          ast: modded,
+          engineCommandManager: this.engineCommandManager,
+          isMock: true,
+        })
+        const sketch = sketchFromKclValue(
+          execState.variables[variableDeclarationName],
+          variableDeclarationName
+        )
+        if (err(sketch)) return
+        const sgPaths = sketch.paths
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+        const varDecIndex = Number(sketchEntryNodePath[1][0])
+
+        this.updateSegment(
+          sketch.start,
+          0,
+          varDecIndex,
+          _ast,
+          orthoFactor,
+          sketch
+        )
+        sgPaths.forEach((seg, index) =>
+          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+        )
+      },
+      onClick: async (args) => {
+        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
+        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
+          mod.pathToNode
+        )
+
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          firstProfileIndex
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
+        // Commit the arc to the full AST/code and return to sketch.idle
+        const mousePoint = args.intersectionPoint?.twoD
+        if (!mousePoint || args.mouseEvent.button !== 0) return
+
+        const _node = getNodeFromPath<VariableDeclaration>(
+          _ast,
+          sketchEntryNodePath || [],
+          'VariableDeclaration'
+        )
+        if (trap(_node)) return
+        const sketchInit = _node.node?.declaration.init
+
+        let modded = structuredClone(_ast)
+        if (sketchInit.type === 'PipeExpression') {
+          // Calculate end angle based on final mouse position
+          const endAngle = Math.atan2(
+            mousePoint.y - center[1],
+            mousePoint.x - center[0]
+          )
+
+          // Calculate the final 'to' point using the existing radius and the final end angle
+          const finalTo: [number, number] = [
+            center[0] + radius * Math.cos(endAngle),
+            center[1] + radius * Math.sin(endAngle),
+          ]
+
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.variables,
+            {
+              type: 'path',
+              pathToNode: mod.pathToNode,
+            },
+            {
+              type: 'arc-segment',
+              from: lastSeg.to,
+              to: finalTo,
+              center: center,
+              radius: radius,
+              ccw: true,
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+
+          const newCode = recast(modded)
+          if (err(newCode)) return
+          const pResult = parse(newCode)
+          if (trap(pResult) || !resultIsOk(pResult))
+            return Promise.reject(pResult)
+          _ast = pResult.program
+
+          // Update the primary AST and unequip the arc tool
+          await kclManager.executeAstMock(_ast)
+          sceneInfra.modelingSend({ type: 'Finish arc' })
+          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
+        }
+      },
+    })
+    return {
+      updatedEntryNodePath: sketchEntryNodePath,
+      updatedSketchNodePaths: sketchNodePaths,
+      expressionIndexToDelete: -1, // No need to delete any expression
+    }
+  }
+  setupDraftArcThreePoint = async (
+    sketchEntryNodePath: PathToNode,
+    sketchNodePaths: PathToNode[],
+    planeNodePath: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    sketchOrigin: [number, number, number],
+    p2: [x: number, y: number]
+  ): Promise<SketchDetailsUpdate | Error> => {
+    let _ast = structuredClone(kclManager.ast)
+
+    const _node1 = getNodeFromPath<VariableDeclaration>(
+      _ast,
+      sketchEntryNodePath || [],
+      'VariableDeclaration'
+    )
+    if (trap(_node1)) return Promise.reject(_node1)
+    const variableDeclarationName = _node1.node?.declaration.id?.name || ''
+
+    const sg = sketchFromKclValue(
+      kclManager.variables[variableDeclarationName],
+      variableDeclarationName
+    )
+    if (err(sg)) return Promise.reject(sg)
+    const lastSeg = sg?.paths?.slice(-1)[0] || sg.start
+
+    // Calculate a default center point and radius based on the last segment's endpoint
+    const p1: [number, number] = [lastSeg.to[0], lastSeg.to[1]]
+    const p3: [number, number] = [p2[0] + 0.1, p2[1] + 0.1]
+
+    // Use addNewSketchLn to append an arc to the existing sketch
+    const mod = addNewSketchLn({
+      node: _ast,
+      variables: kclManager.variables,
+      input: {
+        type: 'circle-three-point-segment',
+        p1,
+        p2,
+        p3,
+      },
+      fnName: 'arcTo' as ToolTip,
+      pathToNode: sketchEntryNodePath,
+    })
+
+    if (trap(mod)) return Promise.reject(mod)
+    const pResult = parse(recast(mod.modifiedAst))
+    if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+    _ast = pResult.program
+
+    // do a quick mock execution to get the program memory up-to-date
+    await kclManager.executeAstMock(_ast)
+
+    const index = sg.paths.length // because we've added a new segment that's not in the memory yet
+    const draftExpressionsIndices = { start: index, end: index }
+
+    this.tearDownSketch({ removeAxis: false })
+    sceneInfra.resetMouseListeners()
+
+    const { truncatedAst } = await this.setupSketch({
+      sketchEntryNodePath,
+      sketchNodePaths,
+      forward,
+      up,
+      position: sketchOrigin,
+      maybeModdedAst: _ast,
+      draftExpressionsIndices,
+    })
+
+    sceneInfra.setCallbacks({
+      onMove: async (args) => {
+        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
+        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
+          mod.pathToNode
+        )
+
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          firstProfileIndex
+        const _node = getNodeFromPath<VariableDeclaration>(
+          truncatedAst,
+          nodePathWithCorrectedIndexForTruncatedAst,
+          'VariableDeclaration'
+        )
+        let modded = structuredClone(truncatedAst)
+        if (trap(_node)) return
+        const sketchInit = _node.node.declaration.init
+
+        if (sketchInit.type === 'PipeExpression') {
+          const newP3: [number, number] = [
+            args.intersectionPoint.twoD.x,
+            args.intersectionPoint.twoD.y,
+          ]
+
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.variables,
+            {
+              type: 'path',
+              pathToNode: nodePathWithCorrectedIndexForTruncatedAst,
+            },
+            {
+              type: 'circle-three-point-segment',
+              p1,
+              p2,
+              p3: newP3,
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+        }
+        const { execState } = await executeAst({
+          ast: modded,
+          engineCommandManager: this.engineCommandManager,
+          isMock: true,
+        })
+        const sketch = sketchFromKclValue(
+          execState.variables[variableDeclarationName],
+          variableDeclarationName
+        )
+        if (err(sketch)) return
+        const sgPaths = sketch.paths
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+        const varDecIndex = Number(sketchEntryNodePath[1][0])
+
+        this.updateSegment(
+          sketch.start,
+          0,
+          varDecIndex,
+          _ast,
+          orthoFactor,
+          sketch
+        )
+        sgPaths.forEach((seg, index) =>
+          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+        )
+      },
+      onClick: async (args) => {
+        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
+        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
+          mod.pathToNode
+        )
+
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          firstProfileIndex
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
+        // Commit the arc to the full AST/code and return to sketch.idle
+        const mousePoint = args.intersectionPoint?.twoD
+        if (!mousePoint || args.mouseEvent.button !== 0) return
+
+        const _node = getNodeFromPath<VariableDeclaration>(
+          _ast,
+          sketchEntryNodePath || [],
+          'VariableDeclaration'
+        )
+        if (trap(_node)) return
+        const sketchInit = _node.node?.declaration.init
+
+        let modded = structuredClone(_ast)
+        if (sketchInit.type === 'PipeExpression') {
+          // Calculate end angle based on final mouse position
+
+          // Calculate the final 'to' point using the existing radius and the final end angle
+          const finalP3: [number, number] = [mousePoint.x, mousePoint.y]
+
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.variables,
+            {
+              type: 'path',
+              pathToNode: mod.pathToNode,
+            },
+            {
+              type: 'circle-three-point-segment',
+              p1,
+              p2,
+              p3: finalP3,
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+
+          const newCode = recast(modded)
+          if (err(newCode)) return
+          const pResult = parse(newCode)
+          if (trap(pResult) || !resultIsOk(pResult))
+            return Promise.reject(pResult)
+          _ast = pResult.program
+
+          // Update the primary AST and unequip the arc tool
+          await kclManager.executeAstMock(_ast)
+          sceneInfra.modelingSend({ type: 'Finish arc' })
+          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
+        }
+      },
+    })
+    return {
+      updatedEntryNodePath: sketchEntryNodePath,
+      updatedSketchNodePaths: sketchNodePaths,
+      expressionIndexToDelete: -1, // No need to delete any expression
+    }
+  }
   setupDraftCircle = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
@@ -1679,6 +2204,8 @@ export class SceneEntities {
               center: circleCenter,
               radius: Math.sqrt(x ** 2 + y ** 2),
               from: circleCenter,
+              to: circleCenter, // Same as from for a full circle
+              ccw: true,
             }
           )
           if (err(moddedResult)) return
@@ -1744,6 +2271,8 @@ export class SceneEntities {
               center: circleCenter,
               radius: Math.sqrt(x ** 2 + y ** 2),
               from: circleCenter,
+              to: circleCenter, // Same as from for a full circle
+              ccw: true,
             }
           )
           if (err(moddedResult)) return
@@ -1981,6 +2510,9 @@ export class SceneEntities {
       CIRCLE_THREE_POINT_HANDLE1,
       CIRCLE_THREE_POINT_HANDLE2,
       CIRCLE_THREE_POINT_HANDLE3,
+      THREE_POINT_ARC_HANDLE2,
+      THREE_POINT_ARC_HANDLE3,
+      ARC_ANGLE_END,
     ])
     if (!group) return
     const pathToNode: PathToNode = structuredClone(group.userData.pathToNode)
@@ -2033,12 +2565,14 @@ export class SceneEntities {
         return {
           type: 'arc-segment',
           from,
+          to: from, // Same as from for a full circle
           center: group.userData.center,
           // distance between the center and the drag point
           radius: Math.sqrt(
             (group.userData.center[0] - dragTo[0]) ** 2 +
               (group.userData.center[1] - dragTo[1]) ** 2
           ),
+          ccw: true,
         }
       if (
         group.name === CIRCLE_SEGMENT &&
@@ -2047,9 +2581,66 @@ export class SceneEntities {
         return {
           type: 'arc-segment',
           from,
+          to: from, // Same as from for a full circle
           center: dragTo,
           radius: group.userData.radius,
+          ccw: true,
         }
+
+      // Handle ARC_SEGMENT with center handle
+      if (
+        group.name === ARC_SEGMENT &&
+        subGroup?.name === CIRCLE_CENTER_HANDLE
+      ) {
+        // the user is dragging the circle's center, but the values they updating the arc's radius and start angle
+        // we need to calculate what the radius should be and a new to point that respects the endAngle
+        const newCenter = dragTo
+        const radius = Math.sqrt(
+          (newCenter[0] - group.userData.from[0]) ** 2 +
+            (newCenter[1] - group.userData.from[1]) ** 2
+        )
+        const endAngle = Math.atan2(
+          group.userData.to[1] - group.userData.center[1],
+          group.userData.to[0] - group.userData.center[0]
+        )
+        const newTo: [number, number] = [
+          newCenter[0] + radius * Math.cos(endAngle),
+          newCenter[1] + radius * Math.sin(endAngle),
+        ]
+        return {
+          type: 'arc-segment',
+          from: group.userData.from,
+          to: newTo,
+          center: newCenter,
+          radius,
+          ccw: group.userData.ccw,
+        }
+      }
+      // Handle ARC_SEGMENT with end angle handle
+      if (group.name === ARC_SEGMENT && subGroup?.name === ARC_ANGLE_END) {
+        // Calculate the angle from center to drag point
+        const center = group.userData.center
+        const endAngle = Math.atan2(
+          dragTo[1] - center[1],
+          dragTo[0] - center[0]
+        )
+
+        // Calculate the point on the arc at the given angle and radius
+        const radius = group.userData.radius
+        const toPoint: [number, number] = [
+          center[0] + radius * Math.cos(endAngle),
+          center[1] + radius * Math.sin(endAngle),
+        ]
+
+        return {
+          type: 'arc-segment',
+          from: group.userData.from,
+          to: toPoint,
+          center: center,
+          radius: radius,
+          ccw: group.userData.ccw,
+        }
+      }
       if (
         subGroup?.name &&
         [
@@ -2069,6 +2660,25 @@ export class SceneEntities {
         } else if (subGroup?.name === CIRCLE_THREE_POINT_HANDLE2) {
           input.p2 = dragTo
         } else if (subGroup?.name === CIRCLE_THREE_POINT_HANDLE3) {
+          input.p3 = dragTo
+        }
+        return input
+      }
+      if (
+        subGroup?.name &&
+        [THREE_POINT_ARC_HANDLE2, THREE_POINT_ARC_HANDLE3].includes(
+          subGroup?.name
+        )
+      ) {
+        const input: SegmentInputs = {
+          type: 'circle-three-point-segment',
+          p1: group.userData.p1,
+          p2: group.userData.p2,
+          p3: group.userData.p3,
+        }
+        if (subGroup?.name === THREE_POINT_ARC_HANDLE2) {
+          input.p2 = dragTo
+        } else if (subGroup?.name === THREE_POINT_ARC_HANDLE3) {
           input.p3 = dragTo
         }
         return input
@@ -2221,8 +2831,10 @@ export class SceneEntities {
       input = {
         type: 'arc-segment',
         from: segment.from,
+        to: segment.from, // Use from as to for full circles
         center: segment.center,
         radius: segment.radius,
+        ccw: true,
       }
     } else if (
       type === CIRCLE_THREE_POINT_SEGMENT &&
@@ -2230,6 +2842,32 @@ export class SceneEntities {
       segment.type === 'CircleThreePoint'
     ) {
       update = segmentUtils.circleThreePoint.update
+      input = {
+        type: 'circle-three-point-segment',
+        p1: segment.p1,
+        p2: segment.p2,
+        p3: segment.p3,
+      }
+    } else if (
+      type === ARC_SEGMENT &&
+      'type' in segment &&
+      segment.type === 'Arc'
+    ) {
+      update = segmentUtils.arc.update
+      input = {
+        type: 'arc-segment',
+        from: segment.from,
+        to: segment.to,
+        center: segment.center,
+        radius: segment.radius,
+        ccw: segment.ccw,
+      }
+    } else if (
+      type === THREE_POINT_ARC_SEGMENT &&
+      'type' in segment &&
+      segment.type === 'ArcThreePoint'
+    ) {
+      update = segmentUtils.threePointArc.update
       input = {
         type: 'circle-three-point-segment',
         p1: segment.p1,
@@ -2361,10 +2999,44 @@ export class SceneEntities {
             input = {
               type: 'arc-segment',
               from: parent.userData.from,
+              to: parent.userData.to,
               radius: parent.userData.radius,
               center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === CIRCLE_SEGMENT) {
+            update = segmentUtils.circle.update
+            input = {
+              type: 'arc-segment',
+              from: parent.userData.from,
+              to: parent.userData.to,
+              radius: parent.userData.radius,
+              center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === ARC_SEGMENT) {
+            update = segmentUtils.arc.update
+            input = {
+              type: 'arc-segment',
+              from: parent.userData.from,
+              to: parent.userData.to,
+              radius: parent.userData.radius,
+              center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === THREE_POINT_ARC_SEGMENT) {
+            update = segmentUtils.threePointArc.update
+            input = {
+              type: 'circle-three-point-segment',
+              p1: parent.userData.p1,
+              p2: parent.userData.p2,
+              p3: parent.userData.p3,
             }
           }
+
           update &&
             update({
               prevSegment: parent.userData.prevSegment,
@@ -2404,10 +3076,44 @@ export class SceneEntities {
             input = {
               type: 'arc-segment',
               from: parent.userData.from,
+              to: parent.userData.to,
               radius: parent.userData.radius,
               center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === CIRCLE_SEGMENT) {
+            update = segmentUtils.circle.update
+            input = {
+              type: 'arc-segment',
+              from: parent.userData.from,
+              to: parent.userData.to,
+              radius: parent.userData.radius,
+              center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === ARC_SEGMENT) {
+            update = segmentUtils.arc.update
+            input = {
+              type: 'arc-segment',
+              from: parent.userData.from,
+              to: parent.userData.to,
+              radius: parent.userData.radius,
+              center: parent.userData.center,
+              ccw:
+                parent.userData.ccw !== undefined ? parent.userData.ccw : true,
+            }
+          } else if (parent.name === THREE_POINT_ARC_SEGMENT) {
+            update = segmentUtils.threePointArc.update
+            input = {
+              type: 'circle-three-point-segment',
+              p1: parent.userData.p1,
+              p2: parent.userData.p2,
+              p3: parent.userData.p3,
             }
           }
+
           update &&
             update({
               prevSegment: parent.userData.prevSegment,
@@ -2449,6 +3155,73 @@ export class SceneEntities {
         type: 'clear',
       },
     })
+  }
+
+  drawDashedLine({ from, to }: { from: Coords2d; to: Coords2d }) {
+    const baseColor = getThemeColorForThreeJs(sceneInfra._theme)
+    const color = baseColor
+    const meshType = STRAIGHT_SEGMENT_DASH
+
+    const segmentGroup = new Group()
+    const shape = new Shape()
+    shape.moveTo(0, -5) // The width of the line in px (2.4px in this case)
+    shape.lineTo(0, 5)
+    const line = new LineCurve3(
+      new Vector3(from[0], from[1], 0),
+      new Vector3(to[0], to[1], 0)
+    )
+    const geometry = new ExtrudeGeometry(shape, {
+      steps: 2,
+      bevelEnabled: false,
+      extrudePath: line,
+    })
+    const body = new MeshBasicMaterial({ color })
+    const mesh = new Mesh(geometry, body)
+
+    mesh.userData.type = meshType
+    mesh.name = meshType
+    segmentGroup.name = DRAFT_DASHED_LINE
+    segmentGroup.userData = {
+      type: DRAFT_DASHED_LINE,
+      from,
+      to,
+    }
+
+    segmentGroup.add(mesh)
+    segmentGroup.layers.set(SKETCH_LAYER)
+    segmentGroup.traverse((child) => {
+      child.layers.set(SKETCH_LAYER)
+    })
+    if (this.currentSketchQuaternion) {
+      segmentGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
+    }
+    return {
+      group: segmentGroup,
+      updater: (group: Group, to: Coords2d, orthoFactor: number) => {
+        const scale =
+          (sceneInfra.camControls.camera instanceof OrthographicCamera
+            ? orthoFactor
+            : perspScale(sceneInfra.camControls.camera, group)) /
+          sceneInfra._baseUnitMultiplier
+        const from = group.userData.from
+
+        const shape = new Shape()
+        shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
+        shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
+
+        const straightSegmentBodyDashed = group.children.find(
+          (child) => child.userData.type === STRAIGHT_SEGMENT_DASH
+        ) as Mesh
+        if (straightSegmentBodyDashed) {
+          straightSegmentBodyDashed.geometry = dashedStraight(
+            from,
+            to,
+            shape,
+            scale
+          )
+        }
+      },
+    }
   }
 }
 

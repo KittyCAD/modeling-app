@@ -318,7 +318,6 @@ extrude001 = extrude(sketch001, length = 50)
     'when engine fails export we handle the failure and alert the user',
     { tag: '@skipLocalEngine' },
     async ({ scene, page, homePage, cmdBar }) => {
-      const u = await getUtils(page)
       await page.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
@@ -636,7 +635,7 @@ extrude001 = extrude(sketch001, length = 50)
     })
 
     const toolBarMode = () =>
-      page.locator('[data-currentMode]').getAttribute('data-currentMode')
+      page.locator('[data-current-mode]').getAttribute('data-current-mode')
 
     await test.step('Start sketch and select a plane', async () => {
       await expect.poll(toolBarMode).toEqual('modeling')
