@@ -2367,8 +2367,13 @@ export function fnNameToTooltip(
       return isAbsolute ? 'xLineTo' : 'xLine'
     case 'yLine':
       return isAbsolute ? 'yLineTo' : 'yLine'
+    case 'circleThreePoint':
+    case 'circle':
+      return fnName
     default:
-      return new Error(`Unknown sketch line function ${fnName}`)
+      const err = `Unknown sketch line function ${fnName}`
+      console.error(err)
+      return new Error(err)
   }
 }
 
