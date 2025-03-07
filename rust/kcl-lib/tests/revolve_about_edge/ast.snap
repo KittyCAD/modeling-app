@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing revolve_about_edge.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {

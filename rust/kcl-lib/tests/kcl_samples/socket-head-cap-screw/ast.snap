@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing socket-head-cap-screw.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {

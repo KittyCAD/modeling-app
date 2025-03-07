@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands gridfinity-bins.kcl
-snapshot_kind: text
 ---
 [
   {

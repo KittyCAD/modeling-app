@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed 80-20-rail.kcl
-snapshot_kind: text
 ---
 [
   {

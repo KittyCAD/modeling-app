@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
-snapshot_kind: text
 ---
 [
   {

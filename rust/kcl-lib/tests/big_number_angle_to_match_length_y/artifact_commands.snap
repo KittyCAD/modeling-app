@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands big_number_angle_to_match_length_y.kcl
-snapshot_kind: text
 ---
 [
   {

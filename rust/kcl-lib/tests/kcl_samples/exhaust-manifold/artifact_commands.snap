@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands exhaust-manifold.kcl
-snapshot_kind: text
 ---
 [
   {

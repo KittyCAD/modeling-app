@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands artifact_graph_sketch_on_face_etc.kcl
-snapshot_kind: text
 ---
 [
   {

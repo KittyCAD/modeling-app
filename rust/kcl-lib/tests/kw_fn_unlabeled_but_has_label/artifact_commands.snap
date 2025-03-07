@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands kw_fn_unlabeled_but_has_label.kcl
-snapshot_kind: text
 ---
 [
   {

@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands kw_fn_with_defaults.kcl
-snapshot_kind: text
 ---
 [
   {

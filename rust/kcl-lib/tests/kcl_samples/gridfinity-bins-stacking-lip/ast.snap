@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing gridfinity-bins-stacking-lip.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {

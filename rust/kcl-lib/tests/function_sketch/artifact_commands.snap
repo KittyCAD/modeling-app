@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands function_sketch.kcl
-snapshot_kind: text
 ---
 [
   {

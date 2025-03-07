@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing router-template-slate.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {

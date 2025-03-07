@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands riddle_small.kcl
-snapshot_kind: text
 ---
 [
   {

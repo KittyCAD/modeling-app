@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands object_prop_not_found.kcl
-snapshot_kind: text
 ---
 [
   {

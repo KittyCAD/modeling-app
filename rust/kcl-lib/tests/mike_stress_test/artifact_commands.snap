@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands mike_stress_test.kcl
-snapshot_kind: text
 ---
 [
   {

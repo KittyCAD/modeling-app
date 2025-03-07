@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands artifact_graph_example_code_offset_planes.kcl
-snapshot_kind: text
 ---
 [
   {

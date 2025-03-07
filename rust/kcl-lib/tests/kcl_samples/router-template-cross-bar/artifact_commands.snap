@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands router-template-cross-bar.kcl
-snapshot_kind: text
 ---
 [
   {

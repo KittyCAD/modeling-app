@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed walkie-talkie.kcl
-snapshot_kind: text
 ---
 [
   {

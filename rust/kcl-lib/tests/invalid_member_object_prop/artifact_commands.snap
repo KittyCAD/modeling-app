@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands invalid_member_object_prop.kcl
-snapshot_kind: text
 ---
 [
   {

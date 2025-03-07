@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing ssi_pattern.kcl
-snapshot_kind: text
 ---
 {
   "extrude001": {

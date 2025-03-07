@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands if_else.kcl
-snapshot_kind: text
 ---
 [
   {

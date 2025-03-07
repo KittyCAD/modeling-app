@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing router-template-cross-bar.kcl
-snapshot_kind: text
 ---
 {
   "depth": {

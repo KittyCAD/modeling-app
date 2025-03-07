@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands array_range_expr.kcl
-snapshot_kind: text
 ---
 [
   {

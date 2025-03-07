@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands ssi_pattern.kcl
-snapshot_kind: text
 ---
 [
   {

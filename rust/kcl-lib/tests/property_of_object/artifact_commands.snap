@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands property_of_object.kcl
-snapshot_kind: text
 ---
 [
   {

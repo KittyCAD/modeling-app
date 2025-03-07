@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands pipe_substitution_inside_function_called_from_pipeline.kcl
-snapshot_kind: text
 ---
 [
   {
