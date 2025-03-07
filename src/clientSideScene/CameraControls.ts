@@ -1,4 +1,17 @@
+import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import * as TWEEN from '@tweenjs/tween.js'
+import { EngineCommand } from 'lang/std/artifactGraph'
+import {
+  EngineCommandManager,
+  Subscription,
+  UnreliableSubscription,
+} from 'lang/std/engineConnection'
 import { cameraMouseDragGuards, MouseGuard } from 'lib/cameraControls'
+import { AxisNames } from 'lib/constants'
+import { reportRejection } from 'lib/trap'
+import { isReducedMotion, roundOff, throttle, toSync, uuidv4 } from 'lib/utils'
+import { deg2Rad } from 'lib/utils2d'
 import {
   Euler,
   MathUtils,
@@ -10,26 +23,13 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+import { isQuaternionVertical } from './helpers'
 import {
   DEBUG_SHOW_INTERSECTION_PLANE,
   INTERSECTION_PLANE_LAYER,
   SKETCH_LAYER,
   ZOOM_MAGIC_NUMBER,
 } from './sceneInfra'
-import {
-  Subscription,
-  EngineCommandManager,
-  UnreliableSubscription,
-} from 'lang/std/engineConnection'
-import { EngineCommand } from 'lang/std/artifactGraph'
-import { toSync, uuidv4 } from 'lib/utils'
-import { deg2Rad } from 'lib/utils2d'
-import { isReducedMotion, roundOff, throttle } from 'lib/utils'
-import * as TWEEN from '@tweenjs/tween.js'
-import { isQuaternionVertical } from './helpers'
-import { reportRejection } from 'lib/trap'
-import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -865,9 +865,7 @@ export class CameraControls {
     })
   }
 
-  async updateCameraToAxis(
-    axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
-  ): Promise<void> {
+  async updateCameraToAxis(axis: AxisNames): Promise<void> {
     const distance = this.camera.position.distanceTo(this.target)
     const vantage = this.target.clone()
 
@@ -877,24 +875,24 @@ export class CameraControls {
     let up = unitZ
 
     switch (axis) {
-      case 'x':
+      case AxisNames.X:
         vantage.x += distance
         break
-      case '-x':
+      case AxisNames.NEG_X:
         vantage.x -= distance
         break
-      case 'y':
+      case AxisNames.Y:
         vantage.y += distance
         break
-      case '-y':
+      case AxisNames.NEG_Y:
         vantage.y -= distance
         break
-      case 'z':
+      case AxisNames.Z:
         // Looking from top-down, so X positive to the right, Y positive up.
         vantage.z += distance
         up = unitY
         break
-      case '-z':
+      case AxisNames.NEG_Z:
         // Looking from bottom-up, so X positive to the left, Y positive up.
         vantage.z -= distance
         up = unitY
