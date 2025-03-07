@@ -11,6 +11,7 @@ import {
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 import { SceneFixture } from './fixtures/sceneFixture'
+import { CmdBarFixture } from './fixtures/cmdBarFixture'
 
 test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -190,7 +191,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       page: Page,
       homePage: HomePageFixture,
       openPanes: string[],
-      scene: SceneFixture
+      scene: SceneFixture,
+      cmdBar: CmdBarFixture
     ) => {
       // Load the app with the code panes
       await page.addInitScript(async () => {
@@ -200,6 +202,15 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
       |> tangentialArcTo([24.95, -5.38], %)
+      |> arcTo({
+          interior = [20.18, -1.7],
+          end = [11.82, -1.16]
+        }, %)
+      |> arc({
+          radius = 5.92,
+          angleStart = -89.36,
+          angleEnd = 135.81
+        }, %)
       |> close()`
         )
       })
@@ -207,6 +218,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       const u = await getUtils(page)
       await homePage.goToModelingScene()
       await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
@@ -241,7 +253,17 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
       |> tangentialArcTo([24.95, -5.38], %)
-      |> close()`)
+      |> arcTo({
+          interior = [20.18, -1.7],
+          end = [11.82, -1.16]
+        }, %)
+      |> arc({
+          radius = 5.92,
+          angleStart = -89.36,
+          angleEnd = 135.81
+        }, %)
+      |> close()
+`)
       } else {
         // Ensure we don't see the code.
         await expect(u.codeLocator).not.toBeVisible()
@@ -271,7 +293,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
 
       const step5 = { steps: 5 }
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
 
       // drag startProfileAt handle
       await page.mouse.move(startPX[0], startPX[1])
@@ -309,22 +331,94 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
       }
 
+      // add code for dragging three point arc and arc handles here
+      // drag arcTo interior handle (three point arc)
+      const arcToHandle = await u.getBoundingBox('[data-overlay-index="2"]')
+      await page.mouse.move(arcToHandle.x, arcToHandle.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(
+        arcToHandle.x - dragPX,
+        arcToHandle.y + dragPX,
+        step5
+      )
+      await page.mouse.up()
+      await page.waitForTimeout(100)
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+        prevContent = await page.locator('.cm-content').innerText()
+      }
+
+      // drag arcTo end handle (three point arc)
+      const arcToEndHandle = await u.getBoundingBox('[data-overlay-index="3"]')
+      await page.mouse.move(arcToEndHandle.x, arcToEndHandle.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(
+        arcToEndHandle.x - dragPX,
+        arcToEndHandle.y + dragPX,
+        step5
+      )
+      await page.mouse.up()
+      await page.waitForTimeout(100)
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+        prevContent = await page.locator('.cm-content').innerText()
+      }
+
+      // drag arc radius handle
+      const arcRadiusHandle = await u.getBoundingBox('[data-overlay-index="4"]')
+      await page.mouse.move(arcRadiusHandle.x, arcRadiusHandle.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(
+        arcRadiusHandle.x - dragPX,
+        arcRadiusHandle.y + dragPX,
+        step5
+      )
+      await page.mouse.up()
+      await page.waitForTimeout(100)
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      }
+
+      // drag arc center handle (we'll have to hardcode the position because it doesn't have a overlay near the handl)
+      const arcCenterHandle = { x: 745, y: 214 }
+      await page.mouse.move(arcCenterHandle.x, arcCenterHandle.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(
+        arcCenterHandle.x - dragPX,
+        arcCenterHandle.y + dragPX,
+        step5
+      )
+      await page.mouse.up()
+      await page.waitForTimeout(100)
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      }
+
       // Open the code pane
       await u.openKclCodePanel()
 
       // expect the code to have changed
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
-      |> startProfileAt([6.44, -12.07], %)
-      |> line(end = [14.72, 1.97])
-      |> tangentialArcTo([24.95, -5.38], %)
-      |> line(end = [1.97, 2.06])
-      |> close()`)
+  |> startProfileAt([6.44, -12.07], %)
+  |> line(end = [14.72, 1.97])
+  |> tangentialArcTo([26.92, -3.32], %)
+  |> arcTo({
+       interior = [18.11, -3.73],
+       end = [9.77, -3.19]
+     }, %)
+  |> arc({
+       radius = 3.75,
+       angleStart = -58.29,
+       angleEnd = 161.17
+     }, %)
+  |> close()
+`)
     }
     test(
       'code pane open at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage, scene }) => {
+      async ({ page, homePage, scene, cmdBar }) => {
         // Load the app with the code panes
         await page.addInitScript(async () => {
           localStorage.setItem(
@@ -337,14 +431,20 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
             })
           )
         })
-        await doEditSegmentsByDraggingHandle(page, homePage, ['code'], scene)
+        await doEditSegmentsByDraggingHandle(
+          page,
+          homePage,
+          ['code'],
+          scene,
+          cmdBar
+        )
       }
     )
 
     test(
       'code pane closed at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage, scene }) => {
+      async ({ page, homePage, scene, cmdBar }) => {
         // Load the app with the code panes
         await page.addInitScript(async (persistModelingContext) => {
           localStorage.setItem(
@@ -352,7 +452,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
             JSON.stringify({ openPanes: [] })
           )
         }, PERSIST_MODELING_CONTEXT)
-        await doEditSegmentsByDraggingHandle(page, homePage, [], scene)
+        await doEditSegmentsByDraggingHandle(page, homePage, [], scene, cmdBar)
       }
     )
   })
