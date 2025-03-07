@@ -13,16 +13,6 @@ updates:
     timezone: America/Los_Angeles
   open-pull-requests-limit: 5
   groups:
-    security:
-      applies-to: security-updates
-      update-types:
-      - major
-      - minor
-      - patch
-    patch:
-      applies-to: version-updates
-      update-types:
-      - patch
     major:
       applies-to: version-updates
       update-types:
@@ -30,6 +20,16 @@ updates:
     minor:
       applies-to: version-updates
       update-types:
+      - minor
+      - patch
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    security:
+      applies-to: security-updates
+      update-types:
+      - major
       - minor
       - patch
 - package-ecosystem: cargo
@@ -46,16 +46,6 @@ updates:
   - irev-dev
   - jessfraz
   groups:
-    security:
-      applies-to: security-updates
-      update-types:
-      - major
-      - minor
-      - patch
-    patch:
-      applies-to: version-updates
-      update-types:
-      - patch
     major:
       applies-to: version-updates
       update-types:
@@ -63,6 +53,16 @@ updates:
     minor:
       applies-to: version-updates
       update-types:
+      - minor
+      - patch
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    security:
+      applies-to: security-updates
+      update-types:
+      - major
       - minor
       - patch
 - package-ecosystem: npm
@@ -79,16 +79,6 @@ updates:
   - irev-dev
   - jessfraz
   groups:
-    security:
-      applies-to: security-updates
-      update-types:
-      - major
-      - minor
-      - patch
-    patch:
-      applies-to: version-updates
-      update-types:
-      - patch
     major:
       applies-to: version-updates
       update-types:
@@ -96,6 +86,16 @@ updates:
     minor:
       applies-to: version-updates
       update-types:
+      - minor
+      - patch
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    security:
+      applies-to: security-updates
+      update-types:
+      - major
       - minor
       - patch
 - package-ecosystem: npm
@@ -112,16 +112,6 @@ updates:
   - irev-dev
   - jessfraz
   groups:
-    security:
-      applies-to: security-updates
-      update-types:
-      - major
-      - minor
-      - patch
-    patch:
-      applies-to: version-updates
-      update-types:
-      - patch
     major:
       applies-to: version-updates
       update-types:
@@ -129,6 +119,16 @@ updates:
     minor:
       applies-to: version-updates
       update-types:
+      - minor
+      - patch
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    security:
+      applies-to: security-updates
+      update-types:
+      - major
       - minor
       - patch
 - package-ecosystem: npm
@@ -145,16 +145,6 @@ updates:
   - irev-dev
   - jessfraz
   groups:
-    security:
-      applies-to: security-updates
-      update-types:
-      - major
-      - minor
-      - patch
-    patch:
-      applies-to: version-updates
-      update-types:
-      - patch
     major:
       applies-to: version-updates
       update-types:
@@ -162,6 +152,16 @@ updates:
     minor:
       applies-to: version-updates
       update-types:
+      - minor
+      - patch
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    security:
+      applies-to: security-updates
+      update-types:
+      - major
       - minor
       - patch
 - package-ecosystem: pip
@@ -178,16 +178,6 @@ updates:
   - irev-dev
   - jessfraz
   groups:
-    security:
-      applies-to: security-updates
-      update-types:
-      - major
-      - minor
-      - patch
-    patch:
-      applies-to: version-updates
-      update-types:
-      - patch
     major:
       applies-to: version-updates
       update-types:
@@ -195,5 +185,15 @@ updates:
     minor:
       applies-to: version-updates
       update-types:
+      - minor
+      - patch
+    patch:
+      applies-to: version-updates
+      update-types:
+      - patch
+    security:
+      applies-to: security-updates
+      update-types:
+      - major
       - minor
       - patch
