@@ -1,0 +1,22 @@
+// I-beam
+// A structural metal beam with an I shaped cross section. Often used in construction
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+//Define Beam Dimensions
+beamLength = 24
+beamWidth = 2.663
+beamHeight = 4
+wallThickness = 0.293
+
+// Sketch a quadrant of the beam cross section, then mirror for symmetry across each axis. Extrude to the appropriate length
+sketch001 = startSketchOn('-XZ')
+  |> startProfileAt([0, beamHeight/2], %)
+  |> xLine(beamWidth/2, %)
+  |> yLine(-wallThickness, %)
+  |> xLineTo(wallThickness/2, %)
+  |> yLineTo(0, %)
+  |> mirror2d({ axis = 'X' }, %)
+  |> mirror2d({ axis = 'Y' }, %)
+  |> extrude(length = beamLength)

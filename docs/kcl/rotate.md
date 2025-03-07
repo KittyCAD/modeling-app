@@ -40,16 +40,16 @@ rotate(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl/types/Solid) | The solid to rotate. | Yes |
-| `roll` | `number` | The roll angle in degrees. Must be used with `pitch` and `yaw`. Must be between -360 and 360. | No |
-| `pitch` | `number` | The pitch angle in degrees. Must be used with `roll` and `yaw`. Must be between -360 and 360. | No |
-| `yaw` | `number` | The yaw angle in degrees. Must be used with `roll` and `pitch`. Must be between -360 and 360. | No |
-| `axis` | `[number]` | The axis to rotate around. Must be used with `angle`. | No |
-| `angle` | `number` | The angle to rotate in degrees. Must be used with `axis`. Must be between -360 and 360. | No |
-| `global` | `bool` | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
+| `roll` | [`number`](/docs/kcl/types/number) | The roll angle in degrees. Must be used with `pitch` and `yaw`. Must be between -360 and 360. | No |
+| `pitch` | [`number`](/docs/kcl/types/number) | The pitch angle in degrees. Must be used with `roll` and `yaw`. Must be between -360 and 360. | No |
+| `yaw` | [`number`](/docs/kcl/types/number) | The yaw angle in degrees. Must be used with `roll` and `pitch`. Must be between -360 and 360. | No |
+| `axis` | [`[number]`](/docs/kcl/types/number) | The axis to rotate around. Must be used with `angle`. | No |
+| `angle` | [`number`](/docs/kcl/types/number) | The angle to rotate in degrees. Must be used with `axis`. Must be between -360 and 360. | No |
+| `global` | [`bool`](/docs/kcl/types/bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid)
 
 
 ### Examples

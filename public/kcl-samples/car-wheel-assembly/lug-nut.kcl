@@ -1,0 +1,42 @@
+// Lug Nut
+// lug Nuts are essential components used to create secure connections, whether for electrical purposes, like terminating wires or grounding, or for mechanical purposes, such as providing mounting points or reinforcing structural joints.
+
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+
+// Import Constants
+import lugDiameter, lugHeadLength, lugThreadDiameter, lugLength, lugThreadDepth, lugSpacing from "globals.kcl"
+
+customPlane = {
+  plane = {
+    origin = {
+      x = lugSpacing / 2,
+      y = -30 * mm(),
+      z = 0
+    },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = -1, z = 0 },
+    zAxis = { x = 0, y = 0, z = 1 }
+  }
+}
+
+fn lug(plane, length, diameter) {
+  lugSketch = startSketchOn(customPlane)
+    |> startProfileAt([0 + diameter / 2, 0], %)
+    |> angledLineOfYLength({ angle = 70, length = lugHeadLength }, %)
+    |> xLineTo(lugDiameter / 2, %)
+    |> yLineTo(lugLength, %)
+    |> tangentialArc({ offset = 90, radius = 3 * mm() }, %)
+    |> xLineTo(0 + .001, %, $c1)
+    |> yLineTo(lugThreadDepth, %)
+    |> xLineTo(lugThreadDiameter, %)
+    |> yLineTo(0, %)
+    |> close()
+    |> revolve({ axis = "Y" }, %)
+    |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
+  return lugSketch
+}
+
+lug(customPlane, lugLength, lugDiameter)

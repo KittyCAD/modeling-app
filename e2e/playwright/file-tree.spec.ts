@@ -9,7 +9,7 @@ test.describe('integrations tests', () => {
   test(
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@electron' },
-    async ({ page, context, homePage, scene, editor, toolbar }) => {
+    async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -32,9 +32,10 @@ test.describe('integrations tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        await scene.waitForExecutionDone()
       })
       await test.step('enter sketch mode', async () => {
+        await scene.connectionEstablished()
+        await scene.settled(cmdBar)
         await clickObj()
         await scene.moveNoWhere()
         await editor.expectState({
@@ -61,7 +62,9 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
-        await scene.waitForExecutionDone()
+
+        await scene.settled(cmdBar)
+
         await clickObj()
         await scene.moveNoWhere()
         await editor.expectState({

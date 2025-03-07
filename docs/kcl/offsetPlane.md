@@ -21,11 +21,11 @@ offsetPlane(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `plane` | [`PlaneData`](/docs/kcl/types/PlaneData) | The plane (e.g. 'XY') which this new plane is created from. | Yes |
-| `offset` | `number` | Distance from the standard plane this new plane will be created at. | Yes |
+| `offset` | [`number`](/docs/kcl/types/number) | Distance from the standard plane this new plane will be created at. | Yes |
 
 ### Returns
 
-[`Plane`](/docs/kcl/types/Plane) - A plane.
+[`Plane`](/docs/kcl/types/Plane)
 
 
 ### Examples

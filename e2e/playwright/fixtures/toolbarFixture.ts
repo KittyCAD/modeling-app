@@ -76,11 +76,23 @@ export class ToolbarFixture {
   }
 
   get exeIndicator() {
-    return this.page.getByTestId('model-state-indicator-receive-reliable')
+    return this.page
+      .getByTestId('model-state-indicator-receive-reliable')
+      .or(this.page.getByTestId('model-state-indicator-execution-done'))
   }
 
   startSketchPlaneSelection = async () =>
     doAndWaitForImageDiff(this.page, () => this.startSketchBtn.click(), 500)
+
+  exitSketch = async () => {
+    await this.exitSketchBtn.click()
+    await expect(
+      this.page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+    await expect(
+      this.page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+  }
 
   editSketch = async () => {
     await this.editSketchBtn.first().click()

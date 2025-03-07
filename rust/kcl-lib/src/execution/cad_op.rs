@@ -197,6 +197,7 @@ pub enum OpKclValue {
     },
     Function {},
     Module {},
+    Type {},
     KclNone {},
 }
 
@@ -233,7 +234,7 @@ impl From<&KclValue> for OpKclValue {
                 ty: ty.clone(),
             },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
-            KclValue::Array { value, .. } => {
+            KclValue::MixedArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
                 Self::Array { value }
             }
@@ -293,6 +294,7 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Function { .. } => Self::Function {},
             KclValue::Module { .. } => Self::Module {},
             KclValue::KclNone { .. } => Self::KclNone {},
+            KclValue::Type { .. } => Self::Type {},
             KclValue::Tombstone { .. } => unreachable!("Tombstone OpKclValue"),
         }
     }

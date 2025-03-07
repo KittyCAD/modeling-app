@@ -1,10 +1,10 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing computed_var.kcl
 ---
 {
   "arr": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",

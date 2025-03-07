@@ -56,7 +56,7 @@ function CommandBarTextareaInput({
               | undefined) || (arg.defaultValue as string)
           }
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && !event.currentTarget.value) {
+            if (event.key === 'Backspace' && event.shiftKey) {
               stepBack()
             } else if (
               event.key === 'Enter' &&

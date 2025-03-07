@@ -100,7 +100,7 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
-      const result = await getCalculatedKclExpressionValue(value, {})
+      const result = await getCalculatedKclExpressionValue(value)
       if (result instanceof Error || 'errors' in result) {
         setCalcResult('NAN')
         setValueNode(null)

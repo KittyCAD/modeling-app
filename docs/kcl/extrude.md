@@ -21,7 +21,7 @@ extrude(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | Which sketches should be extruded | Yes |
-| `length` | `number` | How far to extrude the given sketches | Yes |
+| `length` | [`number`](/docs/kcl/types/number) | How far to extrude the given sketches | Yes |
 
 ### Returns
 

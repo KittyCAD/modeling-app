@@ -17,6 +17,41 @@ permissions:
 
 
 jobs:
+
+  path-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      significant: ${{ steps.path-changes.outputs.significant }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch the base branch
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch origin ${{ github.base_ref }} --depth=1
+      - name: Check for path changes
+        id: path-changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Manual runs or push should run all tests.
+          if [[ ${{ github.event_name }} != 'pull_request' ]]; then
+            echo "significant=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          changed_files=$(git diff --name-only origin/${{ github.base_ref }})
+          echo "$changed_files"
+          if grep -Evq '^README.md|^public/kcl-samples/|^rust/kcl-lib/tests/kcl_samples/' <<< "$changed_files" ; then
+            echo "significant=true" >> $GITHUB_OUTPUT
+          else
+            echo "significant=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Display path changes
+        run: |
+          # For debugging purposes.
+          echo "significant: ${{ steps.path-changes.outputs.significant }}"
+
   electron:
     timeout-minutes: 60
     name: playwright:electron:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
@@ -29,6 +64,8 @@ jobs:
         shardTotal: [4]
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
+    needs: path-changes
+    if: ${{ needs.path-changes.outputs.significant == 'true' }}
     steps:
     - uses: actions/create-github-app-token@v1
       id: app-token
@@ -81,7 +118,7 @@ jobs:
       continue-on-error: true
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
-    - uses: taiki-e/install-action@a209ff0ce0349f9e7cadc4ba8f6a415c8d3b0813
+    - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
       with:
         tool: wasm-pack
     - name: Cache Wasm (because rust diff)
@@ -134,7 +171,7 @@ jobs:
       # TODO: break this in its own job, for now it's not slowing down the overall execution as ubuntu is the quickest,
       # but we could do better. This forces a large 1/1 shard of all 20 snapshot tests that runs in about 3 minutes.
       run: |
-        PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot --trace=on --shard=1/1
+        yarn test:snapshots
       env:
         CI: true
         NODE_ENV: development

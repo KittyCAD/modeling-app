@@ -1,0 +1,6 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Artifact graph flowchart 80-20-rail.kcl
+extension: md
+snapshot_kind: binary
+---

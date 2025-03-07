@@ -1,0 +1,85 @@
+// Walkie talkie case
+
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+
+// Import constants and Zoo logo
+import width, height, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight, squareHoleSideLength, caseTolerance from "globals.kcl"
+import zLogo, oLogo, oLogo2 from "zoo-logo.kcl"
+
+plane = offsetPlane("XZ", offset = 1)
+
+fn screenHole(sketchStart) {
+  sketch006 = startSketchOn(sketchStart)
+    |> startProfileAt([-screenWidth / 2, screenYPosition], %)
+    |> xLine(screenWidth, %)
+    |> yLine(-screenHeight, %)
+    |> xLine(-screenWidth, %)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  return sketch006
+}
+
+fn squareHolePattern(plane, x, y) {
+  fn transformX(i) {
+    return { translate = [.125 * i, 0] }
+  }
+  fn transformY(i) {
+    return { translate = [0, -.125 * i] }
+  }
+  squareHolePatternSketch = startSketchOn(plane)
+    |> startProfileAt([-x, -y], %)
+    |> line(end = [squareHoleSideLength / 2, 0])
+    |> line(end = [0, -squareHoleSideLength / 2])
+    |> line(end = [-squareHoleSideLength / 2, 0])
+    |> close()
+    |> patternTransform2d(instances = 13, transform = transformX)
+    |> patternTransform2d(instances = 11, transform = transformY)
+  return squareHolePatternSketch
+}
+sketch005 = startSketchOn(offsetPlane("XZ", offset = 1))
+  |> startProfileAt([
+       -width / 2 + offset + caseTolerance,
+       height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))
+     ], %)
+  |> angledLineToY({
+       angle = 45,
+       to = height / 2 - (offset + caseTolerance)
+     }, %)
+  |> line(endAbsolute = [
+       width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))),
+       height / 2 - (offset + caseTolerance)
+     ])
+  |> angledLineToX({
+       angle = -45,
+       to = width / 2 - (offset + caseTolerance)
+     }, %)
+  |> line(endAbsolute = [
+       width / 2 - (offset + caseTolerance),
+       -(height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))))
+     ])
+  |> angledLineToY({
+       angle = -135,
+       to = -height / 2 + offset + caseTolerance
+     }, %)
+  |> line(endAbsolute = [
+       -(width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))),
+       -height / 2 + offset + caseTolerance
+     ])
+  |> angledLineToX({
+       angle = -225,
+       to = -width / 2 + offset + caseTolerance
+     }, %)
+  |> close()
+  |> hole(screenHole(plane), %)
+  |> hole(squareHolePattern(plane, .75, .125), %)
+  |> hole(zLogo(plane, [-.30, -1.825], .20), %)
+  |> hole(oLogo(plane, [-.075, -1.825], .20), %)
+  |> hole(oLogo2(plane, [-.075, -1.825], .20), %)
+  |> hole(oLogo(plane, [.175, -1.825], .20), %)
+  |> hole(oLogo2(plane, [.175, -1.825], .20), %)
+
+extrude(sketch005, length = -0.0625)
+  |> appearance(color = '#D0FF01', metalness = 0, roughness = 50)

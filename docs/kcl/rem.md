@@ -24,12 +24,12 @@ rem(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number` | The number which will be divided by `divisor`. | Yes |
-| `divisor` | `number` | The number which will divide `num`. | Yes |
+| `num` | [`number`](/docs/kcl/types/number) | The number which will be divided by `divisor`. | Yes |
+| `divisor` | [`number`](/docs/kcl/types/number) | The number which will divide `num`. | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

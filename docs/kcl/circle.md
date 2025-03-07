@@ -23,13 +23,13 @@ circle(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketchOrSurface` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on. | Yes |
-| `center` | `[number]` | The center of the circle. | Yes |
-| `radius` | `number` | The radius of the circle. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this circle | No |
+| `center` | [`[number]`](/docs/kcl/types/number) | The center of the circle. | Yes |
+| `radius` | [`number`](/docs/kcl/types/number) | The radius of the circle. | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this circle | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples

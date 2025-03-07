@@ -203,6 +203,24 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
     }
 }
 
+pub(crate) fn std_ty(path: &str, fn_name: &str) -> (crate::execution::PrimitiveType, StdFnProps) {
+    match (path, fn_name) {
+        ("prelude", "Sketch") => (
+            crate::execution::PrimitiveType::Sketch,
+            StdFnProps::default("std::Sketch"),
+        ),
+        ("prelude", "Solid") => (
+            crate::execution::PrimitiveType::Solid,
+            StdFnProps::default("std::Solid"),
+        ),
+        ("prelude", "Plane") => (
+            crate::execution::PrimitiveType::Plane,
+            StdFnProps::default("std::Plane"),
+        ),
+        _ => unreachable!(),
+    }
+}
+
 pub struct StdLib {
     pub fns: IndexMap<String, Box<dyn StdLibFn>>,
 }

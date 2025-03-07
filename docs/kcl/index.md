@@ -15,9 +15,17 @@ layout: manual
 
 ### Standard library
 
-* **`std`**
+* **Primitive types**
+  * [`bool`](kcl/bool)
+  * [`number`](kcl/number)
+  * [`string`](kcl/string)
+  * [`tag`](kcl/tag)
+* **std**
   * [`HALF_TURN`](kcl/const_std-HALF_TURN)
+  * [`Plane`](kcl/Plane)
   * [`QUARTER_TURN`](kcl/const_std-QUARTER_TURN)
+  * [`Sketch`](kcl/Sketch)
+  * [`Solid`](kcl/Solid)
   * [`THREE_QUARTER_TURN`](kcl/const_std-THREE_QUARTER_TURN)
   * [`XY`](kcl/const_std-XY)
   * [`XZ`](kcl/const_std-XZ)
@@ -127,7 +135,7 @@ layout: manual
   * [`yLine`](kcl/yLine)
   * [`yLineTo`](kcl/yLineTo)
   * [`yd`](kcl/yd)
-* **`std::math`**
+* **std::math**
   * [`E`](kcl/const_std-math-E)
   * [`PI`](kcl/const_std-math-PI)
   * [`TAU`](kcl/const_std-math-TAU)

@@ -21,7 +21,7 @@ lastSegX(sketch: Sketch): number
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples
