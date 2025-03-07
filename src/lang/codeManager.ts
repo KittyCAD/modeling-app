@@ -174,7 +174,7 @@ export default class CodeManager {
     if (err(newCode)) return
     // Test to see if we can parse the recast code, and never update the editor with bad code.
     // This should never happen ideally and should mean there is a bug in recast.
-    const result = await parse(newCode)
+    const result = parse(newCode)
     if (err(result)) {
       console.log('Recast code could not be parsed:', result, ast)
       return
