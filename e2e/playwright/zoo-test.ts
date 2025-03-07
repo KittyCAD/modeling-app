@@ -54,7 +54,7 @@ export type TestDetails = TestDetailsPlaywright & {
 const pwTestFnWithFixtures_ = playwrightTestFn.extend<Fixtures>({
   tronApp: async ({}, use) => {
     await use(new ElectronZoo())
-  }
+  },
 })
 
 export const test = pwTestFnWithFixtures_.extend<Fixtures>(fixtures)

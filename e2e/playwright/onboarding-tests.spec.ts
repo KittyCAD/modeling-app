@@ -21,45 +21,36 @@ import { expectPixelColor } from './fixtures/sceneFixture'
 // we must set it to empty for the tests where we want to see the onboarding immediately.
 
 test.describe('Onboarding tests', () => {
-  test(
-    'Onboarding code is shown in the editor',
-    async ({ page, homePage, tronApp }) => {
-      await tronApp.cleanProjectDir({
-        appSettings: {
-          app: {
-            onboarding_status: '',
-          },
-        }
-      })
+  test('Onboarding code is shown in the editor', async ({
+    page,
+    homePage,
+    tronApp,
+  }) => {
+    await tronApp.cleanProjectDir({
+      app: {
+        onboarding_status: '',
+      },
+    })
 
-      const u = await getUtils(page)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
+    const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
 
-      // Test that the onboarding pane loaded
-      await expect(
-        page.getByText('Welcome to Modeling App! This')
-      ).toBeVisible()
+    // Test that the onboarding pane loaded
+    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
 
-      // Test that the onboarding pane loaded
-      await expect(
-        page.getByText('Welcome to Modeling App! This')
-      ).toBeVisible()
+    // Test that the onboarding pane loaded
+    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
 
-      // *and* that the code is shown in the editor
-      await expect(page.locator('.cm-content')).toContainText(
-        '// Shelf Bracket'
-      )
+    // *and* that the code is shown in the editor
+    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
 
-      // Make sure the model loaded
-      const XYPlanePoint = { x: 774, y: 116 } as const
-      const modelColor: [number, number, number] = [45, 45, 45]
-      await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-      expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(
-        8
-      )
-    }
-  )
+    // Make sure the model loaded
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const modelColor: [number, number, number] = [45, 45, 45]
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(8)
+  })
 
   test(
     'Desktop: fresh onboarding executes and loads',
@@ -68,11 +59,9 @@ test.describe('Onboarding tests', () => {
     },
     async ({ page, tronApp }) => {
       await tronApp.cleanProjectDir({
-        appSettings: {
-          app: {
-            onboarding_status: '',
-          },
-        }
+        app: {
+          onboarding_status: '',
+        },
       })
       const u = await getUtils(page)
 
@@ -108,49 +97,52 @@ test.describe('Onboarding tests', () => {
     }
   )
 
-  test(
-    'Code resets after confirmation',
-    async ({ context, page, homePage, tronApp }) => {
-      await tronApp.cleanProjectDir()
+  test('Code resets after confirmation', async ({
+    context,
+    page,
+    homePage,
+    tronApp,
+    scene,
+    cmdBar,
+  }) => {
+    await tronApp.cleanProjectDir()
 
-      const initialCode = `sketch001 = startSketchOn('XZ')`
+    const initialCode = `sketch001 = startSketchOn('XZ')`
 
-      // Load the page up with some code so we see the confirmation warning
-      // when we go to replay onboarding
-      await context.addInitScript((code) => {
-        localStorage.setItem('persistCode', code)
-      }, initialCode)
+    // Load the page up with some code so we see the confirmation warning
+    // when we go to replay onboarding
+    await page.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, initialCode)
 
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
 
-      // Replay the onboarding
-      await page.getByRole('link', { name: 'Settings' }).last().click()
-      const replayButton = page.getByRole('button', {
-        name: 'Replay onboarding',
-      })
-      await expect(replayButton).toBeVisible()
-      await replayButton.click()
+    // Replay the onboarding
+    await page.getByRole('link', { name: 'Settings' }).last().click()
+    const replayButton = page.getByRole('button', {
+      name: 'Replay onboarding',
+    })
+    await expect(replayButton).toBeVisible()
+    await replayButton.click()
 
-      // Ensure we see the warning, and that the code has not yet updated
-      await expect(page.getByText('Would you like to create')).toBeVisible()
-      await expect(page.locator('.cm-content')).toHaveText(initialCode)
+    // Ensure we see the warning, and that the code has not yet updated
+    await expect(page.getByText('Would you like to create')).toBeVisible()
+    await expect(page.locator('.cm-content')).toHaveText(initialCode)
 
-      const nextButton = page.getByTestId('onboarding-next')
-      await nextButton.hover()
-      await nextButton.click()
+    const nextButton = page.getByTestId('onboarding-next')
+    await nextButton.hover()
+    await nextButton.click()
 
-      // Ensure we see the introduction and that the code has been reset
-      await expect(page.getByText('Welcome to Modeling App!')).toBeVisible()
-      await expect(page.locator('.cm-content')).toContainText(
-        '// Shelf Bracket'
-      )
+    // Ensure we see the introduction and that the code has been reset
+    await expect(page.getByText('Welcome to Modeling App!')).toBeVisible()
+    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
 
-      // There used to be old code here that checked if we stored the reset
-      // code into localStorage but that isn't the case on desktop. It gets
-      // saved to the file system, which we have other tests for.
-    }
-  )
+    // There used to be old code here that checked if we stored the reset
+    // code into localStorage but that isn't the case on desktop. It gets
+    // saved to the file system, which we have other tests for.
+  })
 
   test(
     'Click through each onboarding step and back',
@@ -208,106 +200,105 @@ test.describe('Onboarding tests', () => {
     }
   )
 
-  test(
-    'Onboarding redirects and code updating',
-    async ({ context, page, homePage, tronApp }) => {
-      await tronApp.cleanProjectDir({
-        appSettings: {
-          app: {
-            onboarding_status: '/export',
-          },
-        },
-      })
+  test('Onboarding redirects and code updating', async ({
+    context,
+    page,
+    homePage,
+    tronApp,
+  }) => {
+    await tronApp.cleanProjectDir({
+      app: {
+        onboarding_status: '/export',
+      },
+    })
 
-      const originalCode = 'sigmaAllow = 15000'
+    const originalCode = 'sigmaAllow = 15000'
 
-      // Override beforeEach test setup
-      await context.addInitScript(
-        async ({ settingsKey, settings }) => {
-          // Give some initial code, so we can test that it's cleared
-          localStorage.setItem('persistCode', originalCode)
-          localStorage.setItem(settingsKey, settings)
-        },
-        {
-          settingsKey: TEST_SETTINGS_KEY,
-          settings: settingsToToml({
-            settings: TEST_SETTINGS_ONBOARDING_EXPORT,
-          }),
-        }
-      )
+    // Override beforeEach test setup
+    await context.addInitScript(
+      async ({ settingsKey, settings }) => {
+        // Give some initial code, so we can test that it's cleared
+        localStorage.setItem('persistCode', originalCode)
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: settingsToToml({
+          settings: TEST_SETTINGS_ONBOARDING_EXPORT,
+        }),
+      }
+    )
 
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
 
-      // Test that the redirect happened
-      await expect.poll(() => page.url()).toContain('/onboarding/export')
+    // Test that the redirect happened
+    await expect.poll(() => page.url()).toContain('/onboarding/export')
 
-      // Test that you come back to this page when you refresh
-      await page.reload()
-      await expect.poll(() => page.url()).toContain('/onboarding/export')
+    // Test that you come back to this page when you refresh
+    await page.reload()
+    await expect.poll(() => page.url()).toContain('/onboarding/export')
 
-      // Test that the code changes when you advance to the next step
-      await page.getByTestId('onboarding-next').hover()
-      await page.getByTestId('onboarding-next').click()
+    // Test that the code changes when you advance to the next step
+    await page.getByTestId('onboarding-next').hover()
+    await page.getByTestId('onboarding-next').click()
 
-      // Test that the onboarding pane loaded
-      const title = page.locator('[data-testid="onboarding-content"]')
-      await expect(title).toBeAttached()
+    // Test that the onboarding pane loaded
+    const title = page.locator('[data-testid="onboarding-content"]')
+    await expect(title).toBeAttached()
 
-      await expect(page.locator('.cm-content')).not.toHaveText(originalCode)
+    await expect(page.locator('.cm-content')).not.toHaveText(originalCode)
 
-      // Test that the code is not empty when you click on the next step
-      await page.locator('[data-testid="onboarding-next"]').hover()
-      await page.locator('[data-testid="onboarding-next"]').click()
-      await expect(page.locator('.cm-content')).toHaveText(/.+/)
-    }
-  )
+    // Test that the code is not empty when you click on the next step
+    await page.locator('[data-testid="onboarding-next"]').hover()
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await expect(page.locator('.cm-content')).toHaveText(/.+/)
+  })
 
-  test(
-    'Onboarding code gets reset to demo on Interactive Numbers step',
-    async ({ page, homePage, tronApp }) => {
-      await tronApp.cleanProjectDir({
-        appSettings: {
-          app: {
-            onboarding_status: '/parametric-modeling',
-          },
-        },
-      })
+  test('Onboarding code gets reset to demo on Interactive Numbers step', async ({
+    page,
+    homePage,
+    tronApp,
+  }) => {
+    await tronApp.cleanProjectDir({
+      app: {
+        onboarding_status: '/parametric-modeling',
+      },
+    })
 
-      const u = await getUtils(page)
-      const badCode = `// This is bad code we shouldn't see`
+    const u = await getUtils(page)
+    const badCode = `// This is bad code we shouldn't see`
 
-      await page.setBodyDimensions({ width: 1200, height: 1080 })
-      await homePage.goToModelingScene()
+    await page.setBodyDimensions({ width: 1200, height: 1080 })
+    await homePage.goToModelingScene()
 
-      await expect
-        .poll(() => page.url())
-        .toContain(onboardingPaths.PARAMETRIC_MODELING)
+    await expect
+      .poll(() => page.url())
+      .toContain(onboardingPaths.PARAMETRIC_MODELING)
 
-      const bracketNoNewLines = bracket.replace(/\n/g, '')
+    const bracketNoNewLines = bracket.replace(/\n/g, '')
 
-      // Check the code got reset on load
-      await expect(page.locator('#code-pane')).toBeVisible()
-      await expect(u.codeLocator).toHaveText(bracketNoNewLines, {
-        timeout: 10_000,
-      })
+    // Check the code got reset on load
+    await expect(page.locator('#code-pane')).toBeVisible()
+    await expect(u.codeLocator).toHaveText(bracketNoNewLines, {
+      timeout: 10_000,
+    })
 
-      // Mess with the code again
-      await u.codeLocator.selectText()
-      await u.codeLocator.fill(badCode)
-      await expect(u.codeLocator).toHaveText(badCode)
+    // Mess with the code again
+    await u.codeLocator.selectText()
+    await u.codeLocator.fill(badCode)
+    await expect(u.codeLocator).toHaveText(badCode)
 
-      // Click to the next step
-      await page.locator('[data-testid="onboarding-next"]').hover()
-      await page.locator('[data-testid="onboarding-next"]').click()
-      await page.waitForURL('**' + onboardingPaths.INTERACTIVE_NUMBERS, {
-        waitUntil: 'domcontentloaded',
-      })
+    // Click to the next step
+    await page.locator('[data-testid="onboarding-next"]').hover()
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await page.waitForURL('**' + onboardingPaths.INTERACTIVE_NUMBERS, {
+      waitUntil: 'domcontentloaded',
+    })
 
-      // Check that the code has been reset
-      await expect(u.codeLocator).toHaveText(bracketNoNewLines)
-    }
-  )
+    // Check that the code has been reset
+    await expect(u.codeLocator).toHaveText(bracketNoNewLines)
+  })
 
   // (lee) The two avatar tests are weird because even on main, we don't have
   // anything to do with the avatar inside the onboarding test. Due to the
@@ -316,10 +307,8 @@ test.describe('Onboarding tests', () => {
     'Avatar text updates depending on image load success',
     async ({ context, page, homePage, tronApp }) => {
       await tronApp.cleanProjectDir({
-        appSettings: {
-          app: {
-            onboarding_status: '',
-          },
+        app: {
+          onboarding_status: '',
         },
       })
 
@@ -389,10 +378,8 @@ test.describe('Onboarding tests', () => {
     "Avatar text doesn't mention avatar when no avatar",
     async ({ context, page, homePage, tronApp }) => {
       await tronApp.cleanProjectDir({
-        appSettings: {
-          app: {
-            onboarding_status: '',
-          },
+        app: {
+          onboarding_status: '',
         },
       })
       // Override beforeEach test setup
@@ -444,11 +431,9 @@ test.fixme(
   'Restarting onboarding on desktop takes one attempt',
   async ({ context, page, tronApp }) => {
     await tronApp.cleanProjectDir({
-      appSettings: {
-        app: {
-          onboarding_status: 'dismissed',
-        },
-      }
+      app: {
+        onboarding_status: 'dismissed',
+      },
     })
 
     await context.folderSetupFn(async (dir) => {

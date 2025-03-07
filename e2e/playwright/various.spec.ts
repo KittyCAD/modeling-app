@@ -466,7 +466,7 @@ test('Delete key does not navigate back', async ({ page, homePage }) => {
   await expect.poll(() => page.url()).not.toContain('/settings')
 })
 
-test('Sketch on face', async ({ page, homePage, scene, cmdBar }) => {
+test('Sketch on face', async ({ page, homePage, scene, cmdBar, toolbar }) => {
   test.setTimeout(90_000)
   const u = await getUtils(page)
   await page.addInitScript(async () => {
@@ -497,14 +497,17 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
 
   let previousCodeContent = await page.locator('.cm-content').innerText()
 
-  await u.openDebugPanel()
-  await u.doAndWaitForCmd(
-    () => page.mouse.click(625, 165),
-    'default_camera_get_settings',
-    true
-  )
-  await page.waitForTimeout(150)
-  await u.closeDebugPanel()
+  await toolbar.startSketchThenCallbackThenWaitUntilReady(async () => {
+    await u.openAndClearDebugPanel()
+    await u.doAndWaitForCmd(
+      () => page.mouse.click(625, 165),
+      'default_camera_get_settings',
+      true
+    )
+    await page.waitForTimeout(150)
+    await u.closeDebugPanel()
+  })
+  await page.waitForTimeout(300)
 
   const firstClickPosition = [612, 238]
   const secondClickPosition = [661, 242]

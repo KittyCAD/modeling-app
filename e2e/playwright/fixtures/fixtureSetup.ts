@@ -77,8 +77,7 @@ export class ElectronZoo {
   public viewPortSize = { width: 1200, height: 500 }
   public dir = ''
 
-  constructor() {
-  }
+  constructor() {}
 
   close = async () => {
     // await this.electron?.close?.()
@@ -103,7 +102,10 @@ export class ElectronZoo {
         IS_PLAYWRIGHT: 'true',
       },
       ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
-        ? { executablePath: process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron' }
+        ? {
+            executablePath:
+              process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron',
+          }
         : {}),
       ...(process.env.PLAYWRIGHT_RECORD_VIDEO
         ? {
@@ -143,16 +145,13 @@ export class ElectronZoo {
         await app.resizeWindow(dims.width, dims.height)
       }, dims)
 
-      return this.evaluate(
-        async (dims: { width: number; height: number }) => {
-          await window.electron.resizeWindow(dims.width, dims.height)
-          window.document.body.style.width = dims.width + 'px'
-          window.document.body.style.height = dims.height + 'px'
-          window.document.documentElement.style.width = dims.width + 'px'
-          window.document.documentElement.style.height = dims.height + 'px'
-        },
-        dims
-      )
+      return this.evaluate(async (dims: { width: number; height: number }) => {
+        await window.electron.resizeWindow(dims.width, dims.height)
+        window.document.body.style.width = dims.width + 'px'
+        window.document.body.style.height = dims.height + 'px'
+        window.document.documentElement.style.width = dims.width + 'px'
+        window.document.documentElement.style.height = dims.height + 'px'
+      }, dims)
     }
 
     await this.page.setBodyDimensions(this.viewPortSize)
@@ -166,6 +165,26 @@ export class ElectronZoo {
         .then(() => ({
           dir: that.projectDirName,
         }))
+    }
+
+    // We need to patch this because addInitScript will bind too late in our
+    // electron tests, never running. We need to call reload() after each call
+    // to guarantee it runs.
+    const oldContextAddInitScript = this.context.addInitScript
+    this.context.addInitScript = async function (a, b) {
+      // @ts-ignore pretty sure way out of tsc's type checking capabilities.
+      // This code works perfectly fine.
+      await oldContextAddInitScript.apply(this, [a, b])
+      await that.page.reload()
+    }
+
+    // No idea why we mix and match page and context's addInitScript but we do
+    const oldPageAddInitScript = this.page.addInitScript
+    this.page.addInitScript = async function (a: any, b: any) {
+      // @ts-ignore pretty sure way out of tsc's type checking capabilities.
+      // This code works perfectly fine.
+      await oldPageAddInitScript.apply(this, [a, b])
+      await that.page.reload()
     }
 
     if (!this.firstUrl) {
@@ -203,11 +222,14 @@ export class ElectronZoo {
 
     try {
       await fsp.mkdir(this.projectDirName)
-    } catch(e) {
+    } catch (e) {
       // Not a problem if it already exists.
     }
 
-    const tempSettingsFilePath = path.join(this.projectDirName, SETTINGS_FILE_NAME)
+    const tempSettingsFilePath = path.join(
+      this.projectDirName,
+      SETTINGS_FILE_NAME
+    )
     const settingsOverrides = TOML.stringify(
       appSettings
         ? {
@@ -216,7 +238,7 @@ export class ElectronZoo {
               ...appSettings,
               app: {
                 ...TEST_SETTINGS.app,
-                projectDirectory: this.projectDirName,
+                project_directory: this.projectDirName,
                 ...appSettings.app,
               },
             },
@@ -226,7 +248,7 @@ export class ElectronZoo {
               ...TEST_SETTINGS,
               app: {
                 ...TEST_SETTINGS.app,
-                projectDirectory: this.projectDirName,
+                project_directory: this.projectDirName,
               },
             },
           }
@@ -260,4 +282,3 @@ export const fixtures = {
     await use(new HomePageFixture(page))
   },
 }
-

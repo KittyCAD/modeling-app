@@ -1745,7 +1745,7 @@ test(
       await expect
         .poll(() => page.locator('section#projectDirectory input').inputValue())
         .toContain(newProjectDirName)
-  
+
       await page.getByTestId('settings-close-button').click()
 
       await homePage.projectsLoaded()
