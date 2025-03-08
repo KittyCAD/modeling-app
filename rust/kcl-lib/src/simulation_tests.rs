@@ -27,7 +27,7 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
-pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.step";
+//pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.step";
 
 impl Test {
     fn new(name: &str) -> Self {
