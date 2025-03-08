@@ -138,7 +138,7 @@ async fn kcl_test_execute() {
         // Format:
         new_content.push_str(&format!(
             r#"#### [{}]({}/main.kcl) ([step](step/{}.step)) ([screenshot](screenshots/{}.png))
-[![{}](screenshots/{})]({}/main.kcl)
+[![{}](screenshots/{}.png)]({}/main.kcl)
 "#,
             test.name, test.name, test.name, test.name, test.name, test.name, test.name
         ));
@@ -167,8 +167,19 @@ fn filter_from_env() -> Option<String> {
 
 fn kcl_samples_inputs(filter: Option<&str>) -> Vec<Test> {
     let mut tests = Vec::new();
-    for entry in INPUTS_DIR.read_dir().unwrap() {
-        let entry = entry.unwrap();
+
+    // Collect all directory entries first and sort them by name for consistent ordering
+    let mut entries: Vec<_> = INPUTS_DIR
+        .read_dir()
+        .unwrap()
+        .filter_map(Result::ok)
+        .filter(|e| e.path().is_dir())
+        .collect();
+
+    // Sort directories by name for consistent ordering
+    entries.sort_by_key(|a| a.file_name());
+
+    for entry in entries {
         let path = entry.path();
         if !path.is_dir() {
             // We're looking for directories only.

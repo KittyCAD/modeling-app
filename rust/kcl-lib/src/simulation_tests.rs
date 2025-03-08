@@ -189,7 +189,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
                     }))
                     .unwrap();
-                    let report = error.clone().into_miette_report_with_outputs().unwrap();
+                    let report = error.clone().into_miette_report_with_outputs(&input).unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
                         eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl-lib/{} and other associated passing artifacts", ok_path.to_string_lossy());

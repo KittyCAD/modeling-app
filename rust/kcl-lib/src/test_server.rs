@@ -83,7 +83,7 @@ async fn do_execute_and_snapshot(
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = ExecState::new(&ctx.settings);
     let result = ctx
-        .run_with_ui_outputs(&program, &mut exec_state)
+        .run(&program, &mut exec_state)
         .await
         .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
     for e in exec_state.errors() {
@@ -160,7 +160,7 @@ pub async fn execute_and_export_step(
     let program = Program::parse_no_errs(code)
         .map_err(|err| ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone()))?;
     let result = ctx
-        .run_with_ui_outputs(&program, &mut exec_state)
+        .run(&program, &mut exec_state)
         .await
         .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
     for e in exec_state.errors() {

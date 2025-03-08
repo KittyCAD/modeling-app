@@ -625,8 +625,6 @@ impl ExecutorContext {
                 let mut exec_state = old_state;
                 exec_state.reset(&self.settings);
 
-                exec_state.add_root_module_contents(&program);
-
                 // We don't do this in mock mode since there is no engine connection
                 // anyways and from the TS side we override memory and don't want to clear it.
                 self.send_clear_scene(&mut exec_state, Default::default())
@@ -636,7 +634,6 @@ impl ExecutorContext {
                 (exec_state, false)
             } else {
                 old_state.mut_stack().restore_env(result_env);
-                old_state.add_root_module_contents(&program);
 
                 (old_state, true)
             };
@@ -644,7 +641,6 @@ impl ExecutorContext {
             (program, exec_state, preserve_mem)
         } else {
             let mut exec_state = ExecState::new(&self.settings);
-            exec_state.add_root_module_contents(&program);
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -683,28 +679,7 @@ impl ExecutorContext {
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
-    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclError> {
-        self.run_with_ui_outputs(program, exec_state)
-            .await
-            .map_err(|e| e.into())
-    }
-
-    /// Perform the execution of a program.
-    ///
-    /// You can optionally pass in some initialization memory for partial
-    /// execution.
-    ///
-    /// The error includes additional outputs used for the feature tree and
-    /// artifact graph.
-    pub async fn run_with_ui_outputs(
-        &self,
-        program: &crate::Program,
-        exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        exec_state.add_root_module_contents(program);
-        self.send_clear_scene(exec_state, Default::default())
-            .await
-            .map_err(KclErrorWithOutputs::no_outputs)?;
         self.inner_run(program, exec_state, false).await
     }
 
@@ -716,6 +691,8 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        exec_state.add_root_module_contents(program);
+
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Re-apply the settings, in case the cache was busted.
