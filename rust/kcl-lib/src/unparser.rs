@@ -450,7 +450,7 @@ impl Literal {
                 if self.raw.contains('.') && value.fract() == 0.0 {
                     format!("{value:?}{suffix}")
                 } else {
-                    format!("{}{suffix}", self.raw)
+                    self.raw.clone()
                 }
             }
             LiteralValue::String(ref s) => {
@@ -1540,7 +1540,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      ), %)
   |> extrude(-thk, %)
-  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10ft)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1657,7 +1657,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2,
      ), %)
   |> extrude(-thk, %)
-  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10ft)
 "#
         );
     }
