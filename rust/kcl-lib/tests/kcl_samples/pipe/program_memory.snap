@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing pipe.kcl
 ---
 {
@@ -59,18 +59,7 @@ description: Variables in memory after executing pipe.kcl
           "id": "[uuid]",
           "sourceRange": [
             902,
-            922,
-            0
-          ],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [
             928,
-            963,
             0
           ],
           "tag": null,
@@ -80,8 +69,8 @@ description: Variables in memory after executing pipe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
+            934,
             969,
-            1081,
             0
           ],
           "tag": null,
@@ -91,8 +80,19 @@ description: Variables in memory after executing pipe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
+            975,
             1087,
-            1094,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1093,
+            1100,
             0
           ],
           "tag": null,
@@ -200,7 +200,7 @@ description: Variables in memory after executing pipe.kcl
               "id": "[uuid]",
               "sourceRange": [
                 902,
-                922,
+                928,
                 0
               ]
             },
@@ -222,8 +222,8 @@ description: Variables in memory after executing pipe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                928,
-                963,
+                934,
+                969,
                 0
               ]
             },
@@ -245,8 +245,8 @@ description: Variables in memory after executing pipe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                969,
-                1081,
+                975,
+                1087,
                 0
               ]
             },
@@ -268,8 +268,8 @@ description: Variables in memory after executing pipe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1087,
-                1094,
+                1093,
+                1100,
                 0
               ]
             },
@@ -519,7 +519,7 @@ description: Variables in memory after executing pipe.kcl
             "id": "[uuid]",
             "sourceRange": [
               902,
-              922,
+              928,
               0
             ]
           },
@@ -541,8 +541,8 @@ description: Variables in memory after executing pipe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              928,
-              963,
+              934,
+              969,
               0
             ]
           },
@@ -564,8 +564,8 @@ description: Variables in memory after executing pipe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              969,
-              1081,
+              975,
+              1087,
               0
             ]
           },
@@ -587,8 +587,8 @@ description: Variables in memory after executing pipe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1087,
-              1094,
+              1093,
+              1100,
               0
             ]
           },

@@ -40,9 +40,9 @@ sketch002 = startSketchOn(loftPlane)
        origin[0] + (antennaBaseWidth - antennaTopWidth) / 2,
        origin[1] - ((antennaBaseHeight - antennaTopHeight) / 2)
      ], %)
-  |> xLine(antennaTopWidth, %)
-  |> yLine(-antennaTopHeight, %)
-  |> xLine(-antennaTopWidth, %)
+  |> xLine(length = antennaTopWidth)
+  |> yLine(length = -antennaTopHeight)
+  |> xLine(length = -antennaTopWidth)
   |> close()
 
 // Create the antenna using a loft

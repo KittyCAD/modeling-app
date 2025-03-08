@@ -176,7 +176,7 @@ description: Artifact commands i_shape.kcl
     "cmdId": "[uuid]",
     "range": [
       575,
-      605,
+      611,
       0
     ],
     "command": {
@@ -196,8 +196,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      611,
-      670,
+      617,
+      676,
       0
     ],
     "command": {
@@ -217,8 +217,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      676,
-      735,
+      682,
+      747,
       0
     ],
     "command": {
@@ -238,8 +238,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      741,
-      800,
+      753,
+      812,
       0
     ],
     "command": {
@@ -259,8 +259,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      806,
-      858,
+      818,
+      876,
       0
     ],
     "command": {
@@ -280,8 +280,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      864,
-      922,
+      882,
+      940,
       0
     ],
     "command": {
@@ -301,8 +301,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      928,
-      964,
+      946,
+      988,
       0
     ],
     "command": {
@@ -322,8 +322,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      970,
-      1028,
+      994,
+      1052,
       0
     ],
     "command": {
@@ -343,8 +343,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1034,
-      1064,
+      1058,
+      1094,
       0
     ],
     "command": {
@@ -364,8 +364,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1070,
-      1129,
+      1100,
+      1159,
       0
     ],
     "command": {
@@ -385,8 +385,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1135,
-      1198,
+      1165,
+      1234,
       0
     ],
     "command": {
@@ -406,8 +406,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1204,
-      1264,
+      1240,
+      1300,
       0
     ],
     "command": {
@@ -427,8 +427,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1270,
-      1303,
+      1306,
+      1345,
       0
     ],
     "command": {
@@ -448,8 +448,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1309,
-      1368,
+      1351,
+      1410,
       0
     ],
     "command": {
@@ -469,8 +469,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1374,
-      1410,
+      1416,
+      1458,
       0
     ],
     "command": {
@@ -490,8 +490,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1416,
-      1475,
+      1464,
+      1523,
       0
     ],
     "command": {
@@ -511,8 +511,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1481,
-      1536,
+      1529,
+      1590,
       0
     ],
     "command": {
@@ -532,8 +532,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1542,
-      1602,
+      1596,
+      1656,
       0
     ],
     "command": {
@@ -553,8 +553,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1608,
-      1732,
+      1662,
+      1792,
       0
     ],
     "command": {
@@ -574,8 +574,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1738,
       1798,
+      1858,
       0
     ],
     "command": {
@@ -595,8 +595,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1804,
-      1837,
+      1864,
+      1903,
       0
     ],
     "command": {
@@ -616,8 +616,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1843,
-      1902,
+      1909,
+      1968,
       0
     ],
     "command": {
@@ -637,8 +637,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1908,
-      1916,
+      1974,
+      1982,
       0
     ],
     "command": {
@@ -649,8 +649,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1908,
-      1916,
+      1974,
+      1982,
       0
     ],
     "command": {
@@ -660,8 +660,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1926,
-      1943,
+      1992,
+      2009,
       0
     ],
     "command": {
@@ -689,8 +689,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1949,
-      1974,
+      2015,
+      2040,
       0
     ],
     "command": {
@@ -709,8 +709,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1949,
-      1974,
+      2015,
+      2040,
       0
     ],
     "command": {
@@ -720,8 +720,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1949,
-      1974,
+      2015,
+      2040,
       0
     ],
     "command": {
@@ -737,8 +737,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1980,
-      1993,
+      2046,
+      2065,
       0
     ],
     "command": {
@@ -758,8 +758,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1999,
-      2057,
+      2071,
+      2129,
       0
     ],
     "command": {
@@ -779,8 +779,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2063,
-      2099,
+      2135,
+      2177,
       0
     ],
     "command": {
@@ -800,8 +800,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2105,
-      2164,
+      2183,
+      2242,
       0
     ],
     "command": {
@@ -821,8 +821,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2170,
-      2184,
+      2248,
+      2268,
       0
     ],
     "command": {
@@ -842,8 +842,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2190,
-      2250,
+      2274,
+      2334,
       0
     ],
     "command": {
@@ -863,8 +863,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2256,
-      2295,
+      2340,
+      2385,
       0
     ],
     "command": {
@@ -884,8 +884,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2301,
-      2360,
+      2391,
+      2450,
       0
     ],
     "command": {
@@ -905,8 +905,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2366,
-      2374,
+      2456,
+      2464,
       0
     ],
     "command": {
@@ -917,8 +917,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2366,
-      2374,
+      2456,
+      2464,
       0
     ],
     "command": {
@@ -928,8 +928,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2400,
-      2414,
+      2490,
+      2504,
       0
     ],
     "command": {
@@ -941,8 +941,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2400,
-      2414,
+      2490,
+      2504,
       0
     ],
     "command": {
@@ -954,8 +954,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -974,8 +974,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -988,8 +988,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -999,8 +999,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1011,8 +1011,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1024,8 +1024,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1038,8 +1038,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1052,8 +1052,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1066,8 +1066,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1080,8 +1080,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1094,8 +1094,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1108,8 +1108,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1122,8 +1122,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1136,8 +1136,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1150,8 +1150,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1164,8 +1164,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1178,8 +1178,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1192,8 +1192,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1206,8 +1206,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1220,8 +1220,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1234,8 +1234,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1248,8 +1248,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1262,8 +1262,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1276,8 +1276,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1290,8 +1290,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1304,8 +1304,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1318,8 +1318,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1332,8 +1332,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1346,8 +1346,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1360,8 +1360,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1374,8 +1374,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1388,8 +1388,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1402,8 +1402,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1416,8 +1416,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1430,8 +1430,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1444,8 +1444,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1458,8 +1458,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1472,8 +1472,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1486,8 +1486,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1500,8 +1500,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1514,8 +1514,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1528,8 +1528,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1542,8 +1542,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1556,8 +1556,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1570,8 +1570,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1584,8 +1584,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1598,8 +1598,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1612,8 +1612,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1626,8 +1626,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1640,8 +1640,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1654,8 +1654,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1668,8 +1668,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1682,8 +1682,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1696,8 +1696,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1710,8 +1710,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1724,8 +1724,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1738,8 +1738,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1752,8 +1752,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1766,8 +1766,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1780,8 +1780,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1794,8 +1794,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1808,8 +1808,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1822,8 +1822,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1836,8 +1836,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1850,8 +1850,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1864,8 +1864,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1878,8 +1878,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1892,8 +1892,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {
@@ -1906,8 +1906,8 @@ description: Artifact commands i_shape.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2420,
-      2441,
+      2510,
+      2531,
       0
     ],
     "command": {

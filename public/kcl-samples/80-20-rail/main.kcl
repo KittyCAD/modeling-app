@@ -22,33 +22,33 @@ fn rail8020(originStart, railHeight, railLength) {
          angleEnd = 0,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> xLine(0.1 * railHeight, %)
+    |> xLine(length = 0.1 * railHeight)
     |> arc({
          angleStart = 180,
          angleEnd = 0,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> xLine(0.06 * railHeight, %, $edge1)
-    |> yLine(0.087 * railHeight, %, $edge2)
-    |> xLine(-0.183 * railHeight, %, $edge3)
+    |> xLine(length = 0.06 * railHeight, tag = $edge1)
+    |> yLine(length = 0.087 * railHeight, tag = $edge2)
+    |> xLine(length = -0.183 * railHeight, tag = $edge3)
     |> angledLineToY({
          angle = 45,
          to = (1 - 0.356) / 2 * railHeight + originStart[1]
        }, %, $edge4)
-    |> xLine(0.232 * railHeight, %, $edge5)
+    |> xLine(length = 0.232 * railHeight, tag = $edge5)
     |> angledLineToY({
          angle = -45,
          to = 0.087 * railHeight + originStart[1]
        }, %, $edge6)
-    |> xLine(-0.183 * railHeight, %, $edge7)
-    |> yLine(-0.087 * railHeight, %, $edge8)
-    |> xLine(0.06 * railHeight, %)
+    |> xLine(length = -0.183 * railHeight, tag = $edge7)
+    |> yLine(length = -0.087 * railHeight, tag = $edge8)
+    |> xLine(length = 0.06 * railHeight)
     |> arc({
          angleStart = 180,
          angleEnd = 0,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> xLine(0.1 * railHeight, %)
+    |> xLine(length = 0.1 * railHeight)
     |> arc({
          angleStart = 180,
          angleEnd = 0,
@@ -66,33 +66,33 @@ fn rail8020(originStart, railHeight, railLength) {
          angleEnd = 90,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> yLine(0.1 * railHeight, %)
+    |> yLine(length = 0.1 * railHeight)
     |> arc({
          angleStart = 270,
          angleEnd = 90,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> yLine(0.06 * railHeight, %, $edge9)
-    |> xLine(-0.087 * railHeight, %, $edge10)
-    |> yLine(-0.183 * railHeight, %, $edge11) // edge11
+    |> yLine(length = 0.06 * railHeight, tag = $edge9)
+    |> xLine(length = -0.087 * railHeight, tag = $edge10)
+    |> yLine(length = -0.183 * railHeight, tag = $edge11) // edge11
     |> angledLineToX({
          angle = 135,
          to = ((1 - 0.356) / 2 + 0.356) * railHeight + originStart[0]
        }, %, $edge12) // edge12
-    |> yLine(0.232 * railHeight, %, $edge13) // 13
+    |> yLine(length = 0.232 * railHeight, tag = $edge13) // 13
     |> angledLineToX({
          angle = 45,
          to = (1 - 0.087) * railHeight + originStart[0]
        }, %, $edge14) // 14
-    |> yLine(-0.183 * railHeight, %, $edge15) // 15
-    |> xLine(0.087 * railHeight, %, $edge16)
-    |> yLine(0.06 * railHeight, %)
+    |> yLine(length = -0.183 * railHeight, tag = $edge15) // 15
+    |> xLine(length = 0.087 * railHeight, tag = $edge16)
+    |> yLine(length = 0.06 * railHeight)
     |> arc({
          angleStart = 270,
          angleEnd = 90,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> yLine(0.1 * railHeight, %)
+    |> yLine(length = 0.1 * railHeight)
     |> arc({
          angleStart = 270,
          angleEnd = 90,
@@ -110,33 +110,33 @@ fn rail8020(originStart, railHeight, railLength) {
          angleEnd = -180,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> xLine(-0.1 * railHeight, %)
+    |> xLine(length = -0.1 * railHeight)
     |> arc({
          angleStart = 0,
          angleEnd = -180,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> xLine(-0.06 * railHeight, %, $edge17)
-    |> yLine(-0.087 * railHeight, %, $edge18)
-    |> xLine(0.183 * railHeight, %, $edge19)
+    |> xLine(length = -0.06 * railHeight, tag = $edge17)
+    |> yLine(length = -0.087 * railHeight, tag = $edge18)
+    |> xLine(length = 0.183 * railHeight, tag = $edge19)
     |> angledLineToY({
          angle = 45,
          to = ((1 - 0.356) / 2 + 0.356) * railHeight + originStart[1]
        }, %, $edge20)
-    |> xLine(-0.232 * railHeight, %, $edge21)
+    |> xLine(length = -0.232 * railHeight, tag = $edge21)
     |> angledLineToY({
          angle = 135,
          to = (1 - 0.087) * railHeight + originStart[1]
        }, %, $edge22)
-    |> xLine(0.183 * railHeight, %, $edge23)
-    |> yLine(0.087 * railHeight, %, $edge24)
-    |> xLine(-0.06 * railHeight, %)
+    |> xLine(length = 0.183 * railHeight, tag = $edge23)
+    |> yLine(length = 0.087 * railHeight, tag = $edge24)
+    |> xLine(length = -0.06 * railHeight)
     |> arc({
          angleStart = 0,
          angleEnd = -180,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> xLine(-0.1 * railHeight, %)
+    |> xLine(length = -0.1 * railHeight)
     |> arc({
          angleStart = 0,
          angleEnd = -180,
@@ -154,33 +154,33 @@ fn rail8020(originStart, railHeight, railLength) {
          angleEnd = -90,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> yLine(-0.1 * railHeight, %)
+    |> yLine(length = -0.1 * railHeight)
     |> arc({
          angleStart = 90,
          angleEnd = -90,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> yLine(-0.06 * railHeight, %, $edge25)
-    |> xLine(0.087 * railHeight, %, $edge26)
-    |> yLine(0.183 * railHeight, %, $edge27)
+    |> yLine(length = -0.06 * railHeight, tag = $edge25)
+    |> xLine(length = 0.087 * railHeight, tag = $edge26)
+    |> yLine(length = 0.183 * railHeight, tag = $edge27)
     |> angledLineToX({
          angle = 135,
          to = (1 - 0.356) / 2 * railHeight + originStart[0]
        }, %, $edge28)
-    |> yLine(-0.232 * railHeight, %, $edge29)
+    |> yLine(length = -0.232 * railHeight, tag = $edge29)
     |> angledLineToX({
          angle = 45,
          to = 0.087 * railHeight + originStart[0]
        }, %, $edge30)
-    |> yLine(0.183 * railHeight, %, $edge31)
-    |> xLine(-0.087 * railHeight, %, $edge32)
-    |> yLine(-0.06 * railHeight, %)
+    |> yLine(length = 0.183 * railHeight, tag = $edge31)
+    |> xLine(length = -0.087 * railHeight, tag = $edge32)
+    |> yLine(length = -0.06 * railHeight)
     |> arc({
          angleStart = 90,
          angleEnd = -90,
          radius = 0.072 / 4 * railHeight
        }, %)
-    |> yLine(-0.1 * railHeight, %)
+    |> yLine(length = -0.1 * railHeight)
     |> arc({
          angleStart = 90,
          angleEnd = -90,

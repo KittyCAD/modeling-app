@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed walkie-talkie.kcl
 ---
 [
@@ -43,16 +43,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          512,
-          521,
+          548,
+          557,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      483,
-      522,
+      519,
+      558,
       3
     ],
     "type": "StdLibCall",
@@ -64,8 +64,8 @@ description: Operations executed walkie-talkie.kcl
         }
       },
       "sourceRange": [
-        491,
-        501,
+        527,
+        537,
         3
       ]
     }
@@ -87,8 +87,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          553,
-          566,
+          589,
+          602,
           3
         ]
       },
@@ -115,16 +115,16 @@ description: Operations executed walkie-talkie.kcl
           ]
         },
         "sourceRange": [
-          582,
-          751,
+          618,
+          787,
           3
         ]
       }
     },
     "name": "chamfer",
     "sourceRange": [
-      528,
-      758,
+      564,
+      794,
       3
     ],
     "type": "StdLibCall",
@@ -152,8 +152,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          827,
-          838,
+          863,
+          874,
           3
         ]
       },
@@ -163,16 +163,16 @@ description: Operations executed walkie-talkie.kcl
           "value": "END"
         },
         "sourceRange": [
-          840,
-          845,
+          876,
+          881,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      813,
-      846,
+      849,
+      882,
       3
     ],
     "type": "StdLibCall",
@@ -189,8 +189,8 @@ description: Operations executed walkie-talkie.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      947,
-      965,
+      983,
+      1001,
       3
     ]
   },
@@ -208,8 +208,8 @@ description: Operations executed walkie-talkie.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1117,
-      1135,
+      1153,
+      1171,
       3
     ]
   },
@@ -227,8 +227,8 @@ description: Operations executed walkie-talkie.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1342,
-      1360,
+      1378,
+      1396,
       3
     ]
   },
@@ -246,8 +246,8 @@ description: Operations executed walkie-talkie.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1534,
-      1552,
+      1570,
+      1588,
       3
     ]
   },
@@ -271,16 +271,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          1731,
-          1738,
+          1767,
+          1774,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1703,
       1739,
+      1775,
       3
     ],
     "type": "StdLibCall",
@@ -292,8 +292,8 @@ description: Operations executed walkie-talkie.kcl
         }
       },
       "sourceRange": [
-        1711,
-        1720,
+        1747,
+        1756,
         3
       ]
     }
@@ -308,8 +308,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          1803,
-          1813,
+          1839,
+          1849,
           3
         ]
       },
@@ -319,16 +319,16 @@ description: Operations executed walkie-talkie.kcl
           "value": "start"
         },
         "sourceRange": [
-          1815,
-          1822,
+          1851,
+          1858,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1789,
-      1823,
+      1825,
+      1859,
       3
     ],
     "type": "StdLibCall",
@@ -351,16 +351,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2094,
-          2105,
+          2154,
+          2165,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2066,
-      2106,
+      2126,
+      2166,
       3
     ],
     "type": "StdLibCall",
@@ -372,8 +372,8 @@ description: Operations executed walkie-talkie.kcl
         }
       },
       "sourceRange": [
-        2074,
-        2083,
+        2134,
+        2143,
         3
       ]
     }
@@ -388,8 +388,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2160,
-          2170,
+          2220,
+          2230,
           3
         ]
       },
@@ -399,16 +399,16 @@ description: Operations executed walkie-talkie.kcl
           "value": "start"
         },
         "sourceRange": [
-          2172,
-          2179,
+          2232,
+          2239,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2146,
-      2180,
+      2206,
+      2240,
       3
     ],
     "type": "StdLibCall",
@@ -431,16 +431,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2361,
-          2364,
+          2439,
+          2442,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2333,
-      2365,
+      2411,
+      2443,
       3
     ],
     "type": "StdLibCall",
@@ -452,8 +452,8 @@ description: Operations executed walkie-talkie.kcl
         }
       },
       "sourceRange": [
-        2341,
-        2350,
+        2419,
+        2428,
         3
       ]
     }
@@ -517,16 +517,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          1346,
-          1347,
+          1364,
+          1365,
           5
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      1319,
-      1348,
+      1337,
+      1366,
       5
     ],
     "type": "StdLibCall",
@@ -536,8 +536,8 @@ description: Operations executed walkie-talkie.kcl
         "value": "XZ"
       },
       "sourceRange": [
-        1331,
-        1335,
+        1349,
+        1353,
         5
       ]
     }
@@ -550,16 +550,16 @@ description: Operations executed walkie-talkie.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          1319,
-          1348,
+          1337,
+          1366,
           5
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1305,
-      1349,
+      1323,
+      1367,
       5
     ],
     "type": "StdLibCall",
@@ -576,8 +576,8 @@ description: Operations executed walkie-talkie.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1484,
       1502,
+      1520,
       5
     ]
   },
@@ -595,8 +595,8 @@ description: Operations executed walkie-talkie.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1709,
       1727,
+      1745,
       5
     ]
   },
@@ -614,8 +614,8 @@ description: Operations executed walkie-talkie.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2025,
       2043,
+      2061,
       5
     ]
   },
@@ -633,8 +633,8 @@ description: Operations executed walkie-talkie.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2251,
       2269,
+      2287,
       5
     ]
   },
@@ -646,14 +646,14 @@ description: Operations executed walkie-talkie.kcl
     "name": "screenHole",
     "functionSourceRange": [
       399,
-      707,
+      725,
       5
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2449,
-      2466,
+      2467,
+      2484,
       5
     ]
   },
@@ -693,8 +693,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2449,
-          2466,
+          2467,
+          2484,
           5
         ]
       },
@@ -706,16 +706,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2468,
-          2469,
+          2486,
+          2487,
           5
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2444,
-      2470,
+      2462,
+      2488,
       5
     ],
     "type": "StdLibCall",
@@ -725,15 +725,15 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "squareHolePattern",
     "functionSourceRange": [
-      729,
-      1292,
+      747,
+      1310,
       5
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2481,
-      2516,
+      2499,
+      2534,
       5
     ]
   },
@@ -745,16 +745,16 @@ description: Operations executed walkie-talkie.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          920,
-          925,
+          938,
+          943,
           5
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      906,
-      926,
+      924,
+      944,
       5
     ],
     "type": "StdLibCall",
@@ -1201,8 +1201,8 @@ description: Operations executed walkie-talkie.kcl
           ]
         },
         "sourceRange": [
-          2481,
-          2516,
+          2499,
+          2534,
           5
         ]
       },
@@ -1214,16 +1214,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2518,
-          2519,
+          2536,
+          2537,
           5
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2476,
-      2520,
+      2494,
+      2538,
       5
     ],
     "type": "StdLibCall",
@@ -1234,14 +1234,14 @@ description: Operations executed walkie-talkie.kcl
     "name": "zLogo",
     "functionSourceRange": [
       69,
-      1010,
+      1088,
       10
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2531,
-      2564,
+      2549,
+      2582,
       5
     ]
   },
@@ -1258,8 +1258,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2531,
-          2564,
+          2549,
+          2582,
           5
         ]
       },
@@ -1271,16 +1271,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2566,
-          2567,
+          2584,
+          2585,
           5
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2526,
-      2568,
+      2544,
+      2586,
       5
     ],
     "type": "StdLibCall",
@@ -1290,15 +1290,15 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "oLogo",
     "functionSourceRange": [
-      1068,
-      1578,
+      1146,
+      1656,
       10
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2579,
-      2613,
+      2597,
+      2631,
       5
     ]
   },
@@ -1315,8 +1315,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2579,
-          2613,
+          2597,
+          2631,
           5
         ]
       },
@@ -1328,16 +1328,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2615,
-          2616,
+          2633,
+          2634,
           5
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2574,
-      2617,
+      2592,
+      2635,
       5
     ],
     "type": "StdLibCall",
@@ -1347,15 +1347,15 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "oLogo2",
     "functionSourceRange": [
-      1596,
-      2106,
+      1674,
+      2184,
       10
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2628,
-      2663,
+      2646,
+      2681,
       5
     ]
   },
@@ -1372,8 +1372,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2628,
-          2663,
+          2646,
+          2681,
           5
         ]
       },
@@ -1385,16 +1385,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2665,
-          2666,
+          2683,
+          2684,
           5
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2623,
-      2667,
+      2641,
+      2685,
       5
     ],
     "type": "StdLibCall",
@@ -1404,15 +1404,15 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "oLogo",
     "functionSourceRange": [
-      1068,
-      1578,
+      1146,
+      1656,
       10
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2678,
-      2711,
+      2696,
+      2729,
       5
     ]
   },
@@ -1429,8 +1429,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2678,
-          2711,
+          2696,
+          2729,
           5
         ]
       },
@@ -1442,16 +1442,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2713,
-          2714,
+          2731,
+          2732,
           5
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2673,
-      2715,
+      2691,
+      2733,
       5
     ],
     "type": "StdLibCall",
@@ -1461,15 +1461,15 @@ description: Operations executed walkie-talkie.kcl
     "type": "UserDefinedFunctionCall",
     "name": "oLogo2",
     "functionSourceRange": [
-      1596,
-      2106,
+      1674,
+      2184,
       10
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2726,
-      2760,
+      2744,
+      2778,
       5
     ]
   },
@@ -1486,8 +1486,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2726,
-          2760,
+          2744,
+          2778,
           5
         ]
       },
@@ -1499,16 +1499,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2762,
-          2763,
+          2780,
+          2781,
           5
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2721,
-      2764,
+      2739,
+      2782,
       5
     ],
     "type": "StdLibCall",
@@ -1531,16 +1531,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          2794,
-          2801,
+          2812,
+          2819,
           5
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2766,
-      2802,
+      2784,
+      2820,
       5
     ],
     "type": "StdLibCall",
@@ -1552,8 +1552,8 @@ description: Operations executed walkie-talkie.kcl
         }
       },
       "sourceRange": [
-        2774,
-        2783,
+        2792,
+        2801,
         5
       ]
     }
@@ -1837,16 +1837,16 @@ description: Operations executed walkie-talkie.kcl
           ]
         },
         "sourceRange": [
-          1202,
-          1224,
+          1220,
+          1242,
           4
         ]
       }
     },
     "name": "loft",
     "sourceRange": [
-      1197,
-      1225,
+      1215,
+      1243,
       4
     ],
     "type": "StdLibCall",
@@ -2830,16 +2830,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          832,
-          848,
+          868,
+          884,
           6
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      797,
-      849,
+      833,
+      885,
       6
     ],
     "type": "StdLibCall",
@@ -2851,8 +2851,8 @@ description: Operations executed walkie-talkie.kcl
         }
       },
       "sourceRange": [
-        805,
-        821,
+        841,
+        857,
         6
       ]
     }
@@ -2874,8 +2874,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          879,
-          884,
+          915,
+          920,
           6
         ]
       },
@@ -2902,16 +2902,16 @@ description: Operations executed walkie-talkie.kcl
           ]
         },
         "sourceRange": [
-          900,
-          1053,
+          936,
+          1089,
           6
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      855,
-      1060,
+      891,
+      1096,
       6
     ],
     "type": "StdLibCall",
@@ -3129,8 +3129,8 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          757,
-          771,
+          778,
+          792,
           7
         ]
       },
@@ -3142,16 +3142,16 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": [
-          773,
-          774,
+          794,
+          795,
           7
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      749,
-      775,
+      770,
+      796,
       7
     ],
     "type": "StdLibCall",
