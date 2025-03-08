@@ -2052,7 +2052,7 @@ sketch000 = startSketchOn('XY')
         .unwrap();
     let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
-    ctx.run_with_ui_outputs(&program, &mut exec_state).await.unwrap();
+    ctx.run(&program, &mut exec_state).await.unwrap();
 
     // Ensure nothing is left in the batch
     assert!(ctx.engine.batch().read().await.is_empty());
@@ -2077,7 +2077,7 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
         .unwrap();
     let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
     let program = kcl_lib::Program::parse_no_errs(&code).unwrap();
-    ctx.run_with_ui_outputs(&program, &mut exec_state).await.unwrap();
+    ctx.run(&program, &mut exec_state).await.unwrap();
 
     // Ensure nothing is left in the batch
     assert!(ctx.engine.batch().read().await.is_empty());
