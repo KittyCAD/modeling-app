@@ -24,7 +24,7 @@ mod test_examples_my_func {
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
-                error: e,
+                error: e.error,
                 filename: format!("{}{}", "my_func", 0usize),
                 kcl_source: "This is another code block.\nyes sirrr.\nmyFunc".to_string(),
             }));
