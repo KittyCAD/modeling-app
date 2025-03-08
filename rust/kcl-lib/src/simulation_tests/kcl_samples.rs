@@ -131,7 +131,10 @@ async fn kcl_test_execute() {
         }
         std::fs::copy(step_file, public_step_dir.join(format!("{}.step", &tests.name))).unwrap();
     }
+}
 
+#[test]
+fn generate_manifest() {
     // Generate the manifest.json
     generate_kcl_manifest(&INPUTS_DIR).unwrap();
 }
