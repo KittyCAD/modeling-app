@@ -4,10 +4,14 @@
 //! the samples, in this case, all those that start with "gear".
 use std::{
     collections::HashMap,
+    error::Error,
+    fs,
+    io::Write,
     path::{Path, PathBuf},
 };
 
 use fnv::FnvHashSet;
+use serde::{Deserialize, Serialize};
 use tokio::task::JoinSet;
 
 use super::Test;
@@ -127,6 +131,9 @@ async fn kcl_test_execute() {
         }
         std::fs::copy(step_file, public_step_dir.join(format!("{}.step", &tests.name))).unwrap();
     }
+
+    // Generate the manifest.json
+    generate_kcl_manifest(&INPUTS_DIR).unwrap();
 }
 
 fn test(test_name: &str, entry_point: String) -> Test {
@@ -211,4 +218,123 @@ fn kcl_samples_outputs(filter: Option<&str>) -> Vec<String> {
     }
 
     outputs
+}
+
+const MANIFEST_FILE: &str = "manifest.json";
+const COMMENT_PREFIX: &str = "//";
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct KclMetadata {
+    file: String,
+    path_from_project_directory_to_first_file: String,
+    multiple_files: bool,
+    title: String,
+    description: String,
+}
+
+// Function to read and parse .kcl files
+fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata> {
+    // Find primary kcl file (main.kcl or first sorted file)
+    let primary_kcl_file = files
+        .iter()
+        .find(|file| file.contains("main.kcl"))
+        .unwrap_or_else(|| files.iter().min().unwrap())
+        .clone();
+
+    let full_path_to_primary_kcl = project_path.join(&primary_kcl_file);
+
+    // Read the file content
+    let content = match fs::read_to_string(&full_path_to_primary_kcl) {
+        Ok(content) => content,
+        Err(_) => return None,
+    };
+
+    let lines: Vec<&str> = content.lines().collect();
+
+    if lines.len() < 2 {
+        return None;
+    }
+
+    // Extract title and description from the first two lines
+    let title = lines[0].replace(COMMENT_PREFIX, "").trim().to_string();
+    let description = lines[1].replace(COMMENT_PREFIX, "").trim().to_string();
+
+    // Get the path components
+    let path_components: Vec<String> = full_path_to_primary_kcl
+        .components()
+        .map(|comp| comp.as_os_str().to_string_lossy().to_string())
+        .collect();
+
+    // Get the last two path components
+    let len = path_components.len();
+    let path_from_project_dir = if len >= 2 {
+        format!("{}/{}", path_components[len - 2], path_components[len - 1])
+    } else {
+        primary_kcl_file.clone()
+    };
+
+    Some(KclMetadata {
+        file: primary_kcl_file,
+        path_from_project_directory_to_first_file: path_from_project_dir,
+        multiple_files: files.len() > 1,
+        title,
+        description,
+    })
+}
+
+// Function to scan the directory and generate the manifest.json
+fn generate_kcl_manifest(dir: &Path) -> Result<(), Box<dyn Error>> {
+    let mut manifest = Vec::new();
+
+    // Collect all directory entries first and sort them by name for consistent ordering
+    let mut entries: Vec<_> = fs::read_dir(dir)?
+        .filter_map(Result::ok)
+        .filter(|e| e.path().is_dir())
+        .collect();
+
+    // Sort directories by name for consistent ordering
+    entries.sort_by_key(|a| a.file_name());
+
+    for entry in entries {
+        let project_path = entry.path();
+
+        if project_path.is_dir() {
+            // Get all .kcl files in the directory
+            let files: Vec<String> = fs::read_dir(&project_path)?
+                .filter_map(Result::ok)
+                .filter(|e| {
+                    if let Some(ext) = e.path().extension() {
+                        ext == "kcl"
+                    } else {
+                        false
+                    }
+                })
+                .map(|e| e.file_name().to_string_lossy().to_string())
+                .collect();
+
+            if files.is_empty() {
+                continue;
+            }
+
+            if let Some(metadata) = get_kcl_metadata(&project_path, &files) {
+                manifest.push(metadata);
+            }
+        }
+    }
+
+    // Write the manifest.json
+    let output_path = dir.join(MANIFEST_FILE);
+    let manifest_json = serde_json::to_string_pretty(&manifest)?;
+
+    let mut file = fs::File::create(output_path.clone())?;
+    file.write_all(manifest_json.as_bytes())?;
+
+    println!(
+        "Manifest of {} items written to {}",
+        manifest.len(),
+        output_path.display()
+    );
+
+    Ok(())
 }

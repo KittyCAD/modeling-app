@@ -10,8 +10,10 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
-        annotations, kcl_value, memory::ProgramMemory, memory::Stack, Artifact, ArtifactCommand, ArtifactGraph,
-        ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, Operation, UnitAngle, UnitLen,
+        annotations, kcl_value,
+        memory::{ProgramMemory, Stack},
+        Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue,
+        Operation, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::Annotation,
