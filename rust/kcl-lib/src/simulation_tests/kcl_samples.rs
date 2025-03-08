@@ -208,7 +208,7 @@ fn kcl_samples_inputs(filter: Option<&str>) -> Vec<Test> {
         let entry_point = if sub_dir.join("main.kcl").exists() {
             "main.kcl".to_owned()
         } else {
-            format!("{dir_name_str}.kcl")
+            panic!("No main.kcl found in {:?}", sub_dir);
         };
         tests.push(test(&dir_name_str, entry_point));
     }
@@ -284,8 +284,8 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
     }
 
     // Extract title and description from the first two lines
-    let title = lines[0].replace(COMMENT_PREFIX, "").trim().to_string();
-    let description = lines[1].replace(COMMENT_PREFIX, "").trim().to_string();
+    let title = lines[0].trim_start_matches(COMMENT_PREFIX).trim().to_string();
+    let description = lines[1].trim_start_matches(COMMENT_PREFIX).trim().to_string();
 
     // Get the path components
     let path_components: Vec<String> = full_path_to_primary_kcl
