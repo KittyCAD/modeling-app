@@ -153,8 +153,9 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             }
             if export_step {
                 let step = step.unwrap();
-                let step_path = test.output_dir.join(EXPORTED_STEP_NAME);
-                insta::assert_binary_snapshot!(&step_path.to_string_lossy(), step);
+                assert_snapshot(test, "Step file", || {
+                    insta::assert_binary_snapshot!(EXPORTED_STEP_NAME, step);
+                });
             }
             let outcome = exec_state.to_wasm_outcome(env_ref);
             assert_common_snapshots(

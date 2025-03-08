@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Step file pipe.kcl
+extension: step
+snapshot_kind: binary
+---

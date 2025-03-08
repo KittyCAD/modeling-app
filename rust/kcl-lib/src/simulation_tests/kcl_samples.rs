@@ -115,17 +115,17 @@ async fn kcl_test_execute() {
         if !screenshot_file.exists() {
             panic!("Missing screenshot for test: {}", tests.name);
         }
-        std::fs::rename(
+        std::fs::copy(
             screenshot_file,
             public_screenshot_dir.join(format!("{}.png", &tests.name)),
         )
         .unwrap();
 
-        let step_file = OUTPUTS_DIR.join(&tests.name).join(super::EXPORTED_STEP_NAME);
+        let step_file = OUTPUTS_DIR.join(&tests.name).join("exported_step.snap.step");
         if !step_file.exists() {
             panic!("Missing step for test: {}", tests.name);
         }
-        std::fs::rename(step_file, public_step_dir.join(format!("{}.step", &tests.name))).unwrap();
+        std::fs::copy(step_file, public_step_dir.join(format!("{}.step", &tests.name))).unwrap();
     }
 }
 
