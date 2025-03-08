@@ -4,12 +4,12 @@
 //! the samples, in this case, all those that start with "gear".
 use std::{
     collections::HashMap,
-    error::Error,
     fs,
     io::Write,
     path::{Path, PathBuf},
 };
 
+use anyhow::Result;
 use fnv::FnvHashSet;
 use serde::{Deserialize, Serialize};
 use tokio::task::JoinSet;
@@ -114,7 +114,7 @@ async fn kcl_test_execute() {
             std::fs::create_dir_all(dir).unwrap();
         }
     }
-    for tests in tests {
+    for tests in &tests {
         let screenshot_file = OUTPUTS_DIR.join(&tests.name).join(super::RENDERED_MODEL_NAME);
         if !screenshot_file.exists() {
             panic!("Missing screenshot for test: {}", tests.name);
@@ -131,6 +131,19 @@ async fn kcl_test_execute() {
         }
         std::fs::copy(step_file, public_step_dir.join(format!("{}.step", &tests.name))).unwrap();
     }
+
+    // Update the README.md with the new screenshots and steps.
+    let mut new_content = String::new();
+    for test in tests {
+        // Format:
+        new_content.push_str(&format!(
+            r#"#### [{}]({}/main.kcl) ([step](step/{}.step)) ([screenshot](screenshots/{}.png))
+[![{}](screenshots/{})]({}/main.kcl)
+"#,
+            test.name, test.name, test.name, test.name, test.name, test.name, test.name
+        ));
+    }
+    update_readme(&INPUTS_DIR, &new_content).unwrap();
 }
 
 #[test]
@@ -287,7 +300,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 }
 
 // Function to scan the directory and generate the manifest.json
-fn generate_kcl_manifest(dir: &Path) -> Result<(), Box<dyn Error>> {
+fn generate_kcl_manifest(dir: &Path) -> Result<()> {
     let mut manifest = Vec::new();
 
     // Collect all directory entries first and sort them by name for consistent ordering
@@ -338,6 +351,36 @@ fn generate_kcl_manifest(dir: &Path) -> Result<(), Box<dyn Error>> {
         manifest.len(),
         output_path.display()
     );
+
+    Ok(())
+}
+
+/// Updates README.md by finding a specific search string and replacing all content after it
+/// with the new content provided.
+fn update_readme(dir: &Path, new_content: &str) -> Result<()> {
+    let search_str = "---\n";
+    let readme_path = dir.join("README.md");
+
+    // Read the file content
+    let content = fs::read_to_string(&readme_path)?;
+
+    // Find the line containing the search string
+    let Some(index) = content.find(search_str) else {
+        anyhow::bail!(
+            "Search string '{}' not found in `{}`",
+            search_str,
+            readme_path.display()
+        );
+    };
+
+    // Get the position just after the search string
+    let position = index + search_str.len();
+
+    // Create the updated content
+    let updated_content = format!("{}{}\n", &content[..position], new_content);
+
+    // Write the modified content back to the file
+    std::fs::write(readme_path, updated_content)?;
 
     Ok(())
 }
