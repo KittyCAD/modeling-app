@@ -295,7 +295,6 @@ export const isPathToNodeNumber = (
 export interface ExecState {
   variables: { [key in string]?: KclValue }
   operations: Operation[]
-  artifacts: { [key in ArtifactId]?: RustArtifact }
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
   errors: CompilationError[]
@@ -310,7 +309,6 @@ export function emptyExecState(): ExecState {
   return {
     variables: {},
     operations: [],
-    artifacts: {},
     artifactCommands: [],
     artifactGraph: defaultArtifactGraph(),
     errors: [],
@@ -337,7 +335,6 @@ function execStateFromRust(
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
-    artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph,
     errors: execOutcome.errors,
@@ -349,7 +346,6 @@ function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
-    artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph: new Map<ArtifactId, Artifact>(),
     errors: execOutcome.errors,
