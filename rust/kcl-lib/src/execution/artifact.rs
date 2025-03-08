@@ -488,6 +488,11 @@ impl ArtifactGraph {
     pub fn len(&self) -> usize {
         self.map.len()
     }
+
+    #[cfg(test)]
+    pub(crate) fn iter(&self) -> impl Iterator<Item = (&ArtifactId, &Artifact)> {
+        self.map.iter()
+    }
 }
 
 pub(super) fn build_artifact_graph(

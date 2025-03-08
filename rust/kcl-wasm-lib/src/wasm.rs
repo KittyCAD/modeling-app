@@ -5,8 +5,8 @@ use std::sync::Arc;
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    bust_cache, clear_mem_cache, exec::IdGenerator, pretty::NumericSuffix, CoreDump, EngineManager, ModuleId, Point2d,
-    Program,
+    bust_cache, clear_mem_cache, clear_mock_ids, exec::IdGenerator, pretty::NumericSuffix, CoreDump, EngineManager,
+    ModuleId, Point2d, Program,
 };
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
@@ -20,6 +20,7 @@ pub async fn clear_scene_and_bust_cache(
 
     bust_cache().await;
     clear_mem_cache().await;
+    clear_mock_ids().await;
 
     let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
         .await

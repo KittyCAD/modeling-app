@@ -7,7 +7,7 @@ pub use artifact::{
     Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane,
 };
 use cache::OldAstState;
-pub use cache::{bust_cache, clear_mem_cache};
+pub use cache::{bust_cache, clear_mem_cache, clear_mock_ids};
 pub use cad_op::Operation;
 pub use geometry::*;
 pub(crate) use import::{
@@ -518,7 +518,9 @@ impl ExecutorContext {
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(self.is_mock());
 
-        let mut exec_state = ExecState::new(&self.settings);
+        let mut id_generator = cache::read_mock_ids().await.unwrap_or_default();
+        id_generator.next_id = 0;
+        let mut exec_state = ExecState::with_ids(&self.settings, id_generator);
         if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => *exec_state.mut_stack() = mem,
@@ -533,6 +535,10 @@ impl ExecutorContext {
         exec_state.mut_stack().push_new_env_for_scope();
 
         let result = self.inner_run(&program, &mut exec_state, true).await?;
+
+        // Mock execution has its own ID generator.  Save it so that multiple executions get the
+        // same IDs.
+        cache::write_mock_ids(exec_state.global.id_generator.clone()).await;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -1989,5 +1995,23 @@ let w = f() + f()
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(program2, true).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_has_stable_ids() {
+        let ctx = ExecutorContext::new_mock().await;
+        let code = "sk = startSketchOn(XY)
+        |> startProfileAt([0, 0], %)";
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(program, false).await.unwrap();
+        let ids = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
+        assert!(!ids.is_empty(), "IDs should not be empty");
+
+        let ctx2 = ExecutorContext::new_mock().await;
+        let program2 = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx2.run_mock(program2, false).await.unwrap();
+        let ids2 = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
+
+        assert_eq!(ids, ids2, "Generated IDs should match");
     }
 }

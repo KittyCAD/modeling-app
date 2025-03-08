@@ -86,7 +86,8 @@ pub use errors::{
     CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
 };
 pub use execution::{
-    bust_cache, clear_mem_cache, ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
+    bust_cache, clear_mem_cache, clear_mock_ids, ExecOutcome, ExecState, ExecutorContext, ExecutorSettings,
+    MetaSettings, Point2d,
 };
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,

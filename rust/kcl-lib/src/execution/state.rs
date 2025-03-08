@@ -74,8 +74,12 @@ pub(super) struct ModuleState {
 
 impl ExecState {
     pub fn new(exec_settings: &ExecutorSettings) -> Self {
+        Self::with_ids(exec_settings, IdGenerator::default())
+    }
+
+    pub fn with_ids(exec_settings: &ExecutorSettings, id_generator: IdGenerator) -> Self {
         ExecState {
-            global: GlobalState::new(exec_settings),
+            global: GlobalState::new(exec_settings, id_generator),
             mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new()),
         }
     }
@@ -86,8 +90,7 @@ impl ExecState {
         // This is for the front end to keep track of the ids.
         id_generator.next_id = 0;
 
-        let mut global = GlobalState::new(exec_settings);
-        global.id_generator = id_generator;
+        let global = GlobalState::new(exec_settings, id_generator);
 
         *self = ExecState {
             global,
@@ -145,8 +148,8 @@ impl ExecState {
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
             operations: Default::default(),
-            artifact_commands: Default::default(),
-            artifact_graph: Default::default(),
+            artifact_commands: self.global.artifact_commands,
+            artifact_graph: self.global.artifact_graph,
             errors: self.global.errors,
             filenames: Default::default(),
         }
@@ -239,9 +242,9 @@ impl ExecState {
 }
 
 impl GlobalState {
-    fn new(settings: &ExecutorSettings) -> Self {
+    fn new(settings: &ExecutorSettings, id_generator: IdGenerator) -> Self {
         let mut global = GlobalState {
-            id_generator: Default::default(),
+            id_generator,
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
