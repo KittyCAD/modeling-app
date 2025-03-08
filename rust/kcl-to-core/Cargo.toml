@@ -1,7 +1,7 @@
 [package]
 name = "kcl-to-core"
 description = "Utility methods to convert kcl to engine core executable tests"
-version = "0.1.46"
+version = "0.1.47"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
