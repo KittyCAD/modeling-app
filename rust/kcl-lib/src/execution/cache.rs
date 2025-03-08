@@ -5,6 +5,7 @@ use std::sync::Arc;
 use itertools::{EitherOrBoth, Itertools};
 use tokio::sync::RwLock;
 
+use super::IdGenerator;
 use crate::{
     execution::{annotations, memory::Stack, EnvironmentRef, ExecState, ExecutorSettings},
     parsing::ast::types::{Annotation, Node, Program},
@@ -16,6 +17,8 @@ lazy_static::lazy_static! {
     static ref OLD_AST: Arc<RwLock<Option<OldAstState>>> = Default::default();
     // The last successful run's memory. Not cleared after an unsuccessful run.
     static ref PREV_MEMORY: Arc<RwLock<Option<Stack>>> = Default::default();
+    /// The ID generator for mock execution.
+    static ref MOCK_ID_GENERATOR: Arc<RwLock<Option<IdGenerator>>> = Default::default();
 }
 
 /// Read the old ast memory from the lock.
@@ -47,6 +50,21 @@ pub async fn bust_cache() {
 pub async fn clear_mem_cache() {
     let mut old_mem = PREV_MEMORY.write().await;
     *old_mem = None;
+}
+
+pub(crate) async fn read_mock_ids() -> Option<IdGenerator> {
+    let cache = MOCK_ID_GENERATOR.read().await;
+    cache.clone()
+}
+
+pub(super) async fn write_mock_ids(id_gen: IdGenerator) {
+    let mut cache = MOCK_ID_GENERATOR.write().await;
+    *cache = Some(id_gen);
+}
+
+pub async fn clear_mock_ids() {
+    let mut cache = MOCK_ID_GENERATOR.write().await;
+    *cache = None;
 }
 
 /// Information for the caching an AST and smartly re-executing it if we can.
