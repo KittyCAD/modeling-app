@@ -14,7 +14,7 @@ exclude = ["tests/*", "benches/*", "examples/*", "e2e/*", "bindings/*", "fuzz/*"
 [dependencies]
 anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
-async-trait = {workspace = true}
+async-trait = { workspace = true }
 base64 = "0.22.1"
 chrono = "0.4.38"
 clap = { version = "4.5.27", default-features = false, optional = true, features = [
@@ -22,7 +22,7 @@ clap = { version = "4.5.27", default-features = false, optional = true, features
     "derive",
 ] }
 convert_case = "0.8.0"
-dashmap = {workspace = true}
+dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
 form_urlencoded = "1.2.1"
