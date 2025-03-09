@@ -203,6 +203,7 @@ export function buildCommandArgument<
       createVariableByDefault: arg.createVariableByDefault,
       variableName: arg.variableName,
       defaultValue: arg.defaultValue,
+      validation: arg.validation,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'kcl' }
   } else {

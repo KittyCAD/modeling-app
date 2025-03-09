@@ -4,6 +4,8 @@ import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
 import { ApiError_type } from '@kittycad/lib/dist/types/src/models'
+import { KclCommandValue } from 'lib/commandTypes'
+import { getSweepArtifactFromSelection } from 'lang/std/artifactGraph'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -169,6 +171,150 @@ export const loftValidator = async ({
   const reason = parseEngineErrorMessage(result) || 'unknown'
   return `Unable to loft with the current selection. Reason: ${reason}`
 }
+
+export const filletValidator = async ({
+  data,
+  context,
+}: {
+  data: KclCommandValue
+  context: CommandBarContext
+}): Promise<boolean | string> => {
+
+  /**
+   * Selection
+   */
+
+  // Retrieve the selections from the context
+  const selections = context.argumentsToSubmit.selection
+  if (!isSelections(selections)) {
+    return 'Unable to fillet, selections are missing'
+  }
+
+  // Extract the edge IDs from the selections
+  const edgeIds = selections.graphSelections.flatMap((s) =>
+    s.artifact ? s.artifact.id : []
+  )
+
+  // Verify we have valid edge IDs for all selections
+  if (edgeIds.length !== selections.graphSelections.length) {
+    return 'Unable to fillet, some selections are missing edges'
+  }
+
+  // Verify there are no nulls or undefined in the edge IDs
+  if (edgeIds.some((id) => !id)) {
+    return 'Unable to fillet, some edges are missing'
+  }
+
+  /**
+   * Parent solid
+   * 
+   * Since we might fillet multiple edges,
+   * we need to find the parent solid for each edge
+   * 
+   * additionally, we could also group the edges
+   * by their parent solid
+   */
+
+  const artifactGraph = engineCommandManager.artifactGraph
+
+  // Retrieve the parent solid for each selection
+  const sweepArtifacts = selections.graphSelections.map((selection) =>
+    getSweepArtifactFromSelection(selection, artifactGraph)
+  )
+
+  // Extract the object IDs from the sweep artifacts
+  const objectIds = sweepArtifacts.map((sweepArtifact) =>
+    sweepArtifact && 'pathId' in sweepArtifact ? sweepArtifact.pathId : undefined
+  )
+
+  // Check if all Ids are valid ( no undefined and nulls )
+  if (objectIds.some((id) => !id)) {
+    return 'Unable to fillet, no parent solid'
+  }
+
+  // Explicit type guard for this specific array
+  if (!objectIds.every((id): id is string => typeof id === 'string')) {
+    return 'Unable to fillet, internal type error with object IDs'
+  }
+
+  /**
+   * Radius
+   */
+
+  // Narrow the type locally using a custom check
+  function hasRadius(value: any): value is { radius: { valueCalculated: string | number } } {
+    return value?.radius?.valueCalculated !== undefined
+  }
+  if (!hasRadius(data)) {
+    return 'Unable to fillet: missing radius'
+  }
+
+  const { radius } = data
+
+  // ensure radiusValue is a number even if it's a string
+  const radiusValue = typeof radius.valueCalculated === 'string'
+    ? parseFloat(radius.valueCalculated)
+    : radius.valueCalculated
+
+  /**
+   * Tolerance
+   * 
+   * There is a caveat with the tolerance value
+   * defined here instead of the file settings
+   * because fillet might fail or succeed
+   * based on the tolerance value
+   * 
+   * which leads to discrepancies between
+   * the dry run and the actual run
+   */
+  
+  const DEFAULT_TOLERANCE = 1e-9
+
+  /**
+   * Fillet
+   * 
+   * We might fillet multiple edges 
+   * that belong to different parent solids
+   * 
+   * For this we need a batch request
+   * that contains multiple fillet requests
+   * with different object IDs
+   */
+
+  // construct a command that would loop through the edges
+  // and pick corresponding object id:
+  
+  const command = async () => {
+    return await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_batch_req',
+      batch_id: uuidv4(),
+      responses: true,
+      requests: edgeIds.map((edgeId, index) => ({
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'solid3d_fillet_edge',
+          edge_id: edgeId,
+          radius: radiusValue,
+          tolerance: DEFAULT_TOLERANCE,
+          cut_type: 'fillet',
+          object_id: objectIds[index],
+        },
+      })),
+    })
+  }
+
+  // Run the dry run
+  const result = await dryRunWrapper(command)
+  if (result?.success) {
+    return true
+  }
+
+  // Parse the error message
+  const reason = parseEngineErrorMessage(result) || 'unknown'
+  return `Unable to fillet with the current selection. Reason: ${reason}`
+}
+
+// TODO: add chamferValidator
 
 export const shellValidator = async ({
   data,
