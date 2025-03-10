@@ -152,7 +152,7 @@ jobs:
       if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
       shell: bash
       run: |
-        cp --update=none rust/rust-toolchain.toml ./ || true
+        [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
     - name: Install rust
       if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
       uses: actions-rust-lang/setup-rust-toolchain@v1
