@@ -1,7 +1,4 @@
 //! Run all the KCL samples in the `kcl_samples` directory.
-//!
-//! Use the `KCL_SAMPLES_ONLY=gear` environment variable to run only a subset of
-//! the samples, in this case, all those that start with "gear".
 use std::{
     fs,
     io::Write,
