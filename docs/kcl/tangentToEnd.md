@@ -9,7 +9,7 @@ Returns the angle coming out of the end of the segment in degrees.
 
 
 ```js
-tangentToEnd(tag: TagIdentifier) -> number
+tangentToEnd(tag: TagIdentifier): number
 ```
 
 
@@ -17,11 +17,11 @@ tangentToEnd(tag: TagIdentifier) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples
@@ -91,7 +91,7 @@ bottom = startSketchOn("XY")
 
 ```js
 circSketch = startSketchOn("XY")
-  |> circle({ center = [0, 0], radius = 3 }, %, $circ)
+  |> circle(center = [0, 0], radius = 3, tag = $circ)
 
 triangleSketch = startSketchOn("XY")
   |> startProfileAt([-5, 0], %)

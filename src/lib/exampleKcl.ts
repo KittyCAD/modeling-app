@@ -21,11 +21,11 @@ mountingHoleDiameter = 0.5
 
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> xLine(shelfMountL - thickness, %, $seg01)
-  |> yLine(thickness, %, $seg02)
-  |> xLine(-shelfMountL, %, $seg03)
-  |> yLine(-wallMountL, %, $seg04)
-  |> xLine(thickness, %, $seg05)
+  |> xLine(length = shelfMountL - thickness, tag = $seg01)
+  |> yLine(length = thickness, tag = $seg02)
+  |> xLine(length = -shelfMountL, tag = $seg03)
+  |> yLine(length = -wallMountL, tag = $seg04)
+  |> xLine(length = thickness, tag = $seg05)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg06)
   |> close()
   |> extrude(%, length = width)
@@ -47,10 +47,10 @@ sketch001 = startSketchOn('XZ')
     )
 
 sketch002 = startSketchOn(sketch001, seg03)
-  |> circle({
+  |> circle(
     center = [-1.25, 1],
     radius = mountingHoleDiameter / 2,
-  }, %)
+  )
   |> patternLinear2d(
     instances = 2,
     distance = 2.5,
@@ -64,10 +64,10 @@ sketch002 = startSketchOn(sketch001, seg03)
   |> extrude(%, length = -thickness-.01)
 
 sketch003 = startSketchOn(sketch001, seg04)
-  |> circle({
+  |> circle(
     center = [1, -1],
     radius = mountingHoleDiameter / 2,
-  }, %)
+  )
   |> patternLinear2d(
     instances = 2,
     distance = 4,

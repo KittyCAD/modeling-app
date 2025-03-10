@@ -1,0 +1,34 @@
+// 3D Boaty
+// This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench.
+
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm)
+
+// Define the bench length
+benchLength = 56
+
+// Import various constants and functions from our library
+import dividerThickness from "boat-parts.kcl"
+import divider from "boat-parts.kcl"
+import connector from "boat-parts.kcl"
+import seatSlats from "boat-parts.kcl"
+import backSlats from "boat-parts.kcl"
+import armRest from "boat-parts.kcl"
+
+// Create the dividers, these hold the seat and back slats
+divider("YZ")
+divider(offsetPlane("-YZ", offset = benchLength / 2))
+divider(offsetPlane("YZ", offset = benchLength / 2))
+
+// Create the connectors to join the dividers
+connector(offsetPlane("YZ", offset = -benchLength / 2), benchLength)
+
+// Create the seat slats
+seatSlats(offsetPlane("YZ", offset = -benchLength / 2 - dividerThickness / 2), benchLength + dividerThickness)
+
+// Create the back slats
+backSlats(offsetPlane("YZ", offset = -benchLength / 2 - dividerThickness / 2), benchLength + dividerThickness)
+
+// Create the arm rests
+armRest("-YZ", benchLength / 2)
+armRest("-YZ", -benchLength / 2)

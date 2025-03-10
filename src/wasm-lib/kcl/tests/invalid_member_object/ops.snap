@@ -1,6 +1,0 @@
----
-source: kcl/src/simulation_tests.rs
-description: Operations executed invalid_member_object.kcl
-snapshot_kind: text
----
-[]

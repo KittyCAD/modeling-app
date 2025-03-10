@@ -1,19 +1,19 @@
 ---
 title: "shell"
-excerpt: "Remove volume from a 3-dimensional shape such that a wall of the"
+excerpt: "Remove volume from a 3-dimensional shape such that a wall of the provided thickness remains, taking volume starting at the provided face, leaving it open in that direction."
 layout: manual
 ---
 
-Remove volume from a 3-dimensional shape such that a wall of the
+Remove volume from a 3-dimensional shape such that a wall of the provided thickness remains, taking volume starting at the provided face, leaving it open in that direction.
 
-provided thickness remains, taking volume starting at the provided face, leaving it open in that direction.
+
 
 ```js
 shell(
   solidSet: SolidSet,
   thickness: number,
   faces: [FaceTag],
-) -> SolidSet
+): SolidSet
 ```
 
 
@@ -22,7 +22,7 @@ shell(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | Which solid (or solids) to shell out | Yes |
-| `thickness` | `number` | The thickness of the shell | Yes |
+| `thickness` | [`number`](/docs/kcl/types/number) | The thickness of the shell | Yes |
 | `faces` | [`[FaceTag]`](/docs/kcl/types/FaceTag) | The faces you want removed | Yes |
 
 ### Returns
@@ -108,17 +108,11 @@ case = startSketchOn('-XZ')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
-  |> circle({
-       center = [size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 // We put "case" in the shell function to shell the entire object.
@@ -139,17 +133,11 @@ case = startSketchOn('XY')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
-  |> circle({
-       center = [size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 // We put "thing1" in the shell function to shell the end face of the object.
@@ -173,17 +161,11 @@ case = startSketchOn('XY')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
-  |> circle({
-       center = [size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 // We put "thing1" and "thing2" in the shell function to shell the end face of the object.

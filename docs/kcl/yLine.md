@@ -1,19 +1,20 @@
 ---
 title: "yLine"
-excerpt: "Draw a line relative to the current origin to a specified distance away"
+excerpt: "Draw a line relative to the current origin to a specified distance away from the current position along the 'y' axis."
 layout: manual
 ---
 
-Draw a line relative to the current origin to a specified distance away
+Draw a line relative to the current origin to a specified distance away from the current position along the 'y' axis.
 
-from the current position along the 'y' axis.
+
 
 ```js
 yLine(
-  length: number,
   sketch: Sketch,
+  length?: number,
+  endAbsolute?: number,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 
@@ -21,13 +22,14 @@ yLine(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `length` | `number` |  | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
+| `length` | [`number`](/docs/kcl/types/number) | How far away along the Y axis should this line go? Incompatible with `endAbsolute`. | No |
+| `endAbsolute` | [`number`](/docs/kcl/types/number) | Which absolute Y value should this line go to? Incompatible with `length`. | No |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples
@@ -35,10 +37,10 @@ yLine(
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> yLine(15, %)
+  |> yLine(length = 15)
   |> angledLine({ angle = 30, length = 15 }, %)
   |> line(end = [8, -10])
-  |> yLine(-5, %)
+  |> yLine(length = -5)
   |> close()
 
 example = extrude(exampleSketch, length = 10)

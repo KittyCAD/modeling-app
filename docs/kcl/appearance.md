@@ -14,7 +14,7 @@ appearance(
   color: String,
   metalness?: number,
   roughness?: number,
-) -> SolidSet
+): SolidSet
 ```
 
 
@@ -24,8 +24,8 @@ appearance(
 |----------|------|-------------|----------|
 | `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) whose appearance is being set | Yes |
 | `color` | `String` | Color of the new material, a hex string like '#ff0000' | Yes |
-| `metalness` | `number` | Metalness of the new material, a percentage like 95.7. | No |
-| `roughness` | `number` | Roughness of the new material, a percentage like 95.7. | No |
+| `metalness` | [`number`](/docs/kcl/types/number) | Metalness of the new material, a percentage like 95.7. | No |
+| `roughness` | [`number`](/docs/kcl/types/number) | Roughness of the new material, a percentage like 95.7. | No |
 
 ### Returns
 
@@ -53,7 +53,7 @@ example = extrude(exampleSketch, length = 5)
 ```js
 // Add color to a revolved solid.
 sketch001 = startSketchOn('XY')
-  |> circle({ center = [15, 0], radius = 5 }, %)
+  |> circle(center = [15, 0], radius = 5)
   |> revolve({ angle = 360, axis = 'y' }, %)
   |> appearance(color = '#ff0000', metalness = 90, roughness = 90)
 ```
@@ -195,10 +195,10 @@ sweepPath = startSketchOn('XZ')
   |> line(end = [0, 7])
 
 pipeHole = startSketchOn('XY')
-  |> circle({ center = [0, 0], radius = 1.5 }, %)
+  |> circle(center = [0, 0], radius = 1.5)
 
 sweepSketch = startSketchOn('XY')
-  |> circle({ center = [0, 0], radius = 2 }, %)
+  |> circle(center = [0, 0], radius = 2)
   |> hole(pipeHole, %)
   |> sweep(path = sweepPath)
   |> appearance(color = "#ff0000", metalness = 50, roughness = 50)

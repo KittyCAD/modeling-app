@@ -21,7 +21,7 @@ exampleSketch = startSketchOn("XZ")
     angle = 30,
     length = 2 * E ^ 2,
   }, %)
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 example = extrude(exampleSketch, length = 10)

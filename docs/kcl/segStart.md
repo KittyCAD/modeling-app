@@ -9,7 +9,7 @@ Compute the starting point of the provided line segment.
 
 
 ```js
-segStart(tag: TagIdentifier) -> [number]
+segStart(tag: TagIdentifier): [number]
 ```
 
 
@@ -17,11 +17,11 @@ segStart(tag: TagIdentifier) -> [number]
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
 
 ### Returns
 
-`[number]`
+[`[number]`](/docs/kcl/types/number)
 
 
 ### Examples
@@ -40,10 +40,7 @@ cube = startSketchOn('XY')
 fn cylinder(radius, tag) {
   return startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> circle({
-         radius = radius,
-         center = segStart(tag)
-       }, %)
+    |> circle(radius = radius, center = segStart(tag))
     |> extrude(length = radius)
 }
 

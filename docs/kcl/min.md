@@ -9,7 +9,7 @@ Compute the minimum of the given arguments.
 
 
 ```js
-min(args: [number]) -> number
+min(args: [number]): number
 ```
 
 ### Tags
@@ -21,11 +21,11 @@ min(args: [number]) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `args` | `[number]` |  | Yes |
+| `args` | [`[number]`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

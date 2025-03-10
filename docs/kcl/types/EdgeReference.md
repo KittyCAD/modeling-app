@@ -13,7 +13,7 @@ A tag or a uuid of an edge.
 
 A uuid of an edge.
 
-**Type:** `string` (`uuid`)
+**Type:** [`string`](/docs/kcl/types/string) (`uuid`)
 
 
 

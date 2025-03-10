@@ -20,7 +20,7 @@ import { getNodeFromPath } from '../queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 const eachQuad: [number, [number, number]][] = [
   [-315, [1, 1]],
@@ -334,10 +334,10 @@ describe('testing getConstraintInfo', () => {
     length = 3.14,
   }, %)
   |> line(endAbsolute = [6.14, 3.14])
-  |> xLineTo(8, %)
-  |> yLineTo(5, %)
-  |> yLine(3.14, %, $a)
-  |> xLine(3.14, %)
+  |> xLine(endAbsolute = 8)
+  |> yLine(endAbsolute = 5)
+  |> yLine(length = 3.14, tag = $a)
+  |> xLine(length = 3.14)
   |> angledLineOfXLength({
     angle = 3.14,
     length = 3.14,
@@ -431,12 +431,12 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'xLineTo',
+        'xLine(endAbsolute',
         [
           {
             type: 'horizontal',
             isConstrained: true,
-            value: 'xLineTo',
+            value: 'xLine',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
@@ -454,12 +454,12 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'yLineTo',
+        'yLine(endAbsolute',
         [
           {
             type: 'vertical',
             isConstrained: true,
-            value: 'yLineTo',
+            value: 'yLine',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
@@ -477,7 +477,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'yLine(',
+        'yLine(length',
         [
           {
             type: 'vertical',
@@ -500,7 +500,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'xLine(',
+        'xLine(length',
         [
           {
             type: 'horizontal',
@@ -683,10 +683,9 @@ describe('testing getConstraintInfo', () => {
       ],
     ])('testing %s when inputs are unconstrained', (functionName, expected) => {
       const ast = assertParse(code)
-      const sourceRange = topLevelRange(
-        code.indexOf(functionName),
-        code.indexOf(functionName) + functionName.length
-      )
+      const start = code.indexOf(functionName)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const sourceRange = topLevelRange(start, start + functionName.length)
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
@@ -708,10 +707,10 @@ describe('testing getConstraintInfo', () => {
     |> line(end = [3, 4])
     |> angledLine([3.14, 3.14], %)
     |> line(endAbsolute = [6.14, 3.14])
-    |> xLineTo(8, %)
-    |> yLineTo(5, %)
-    |> yLine(3.14, %, $a)
-    |> xLine(3.14, %)
+    |> xLine(endAbsolute = 8)
+    |> yLine(endAbsolute = 5)
+    |> yLine(length = 3.14, tag = $a)
+    |> xLine(length = 3.14)
     |> angledLineOfXLength([3.14, 3.14], %)
     |> angledLineOfYLength([30, 3], %)
     |> angledLineToX([12, 12], %)
@@ -865,10 +864,10 @@ describe('testing getConstraintInfo', () => {
     |> line(end = [3 + 0, 4 + 0])
     |> angledLine({ angle = 3.14 + 0, length = 3.14 + 0 }, %)
     |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
-    |> xLineTo(8 + 0, %)
-    |> yLineTo(5 + 0, %)
-    |> yLine(3.14 + 0, %, $a)
-    |> xLine(3.14 + 0, %)
+    |> xLine(endAbsolute = 8 + 0)
+    |> yLine(endAbsolute = 5 + 0)
+    |> yLine(length = 3.14 + 0, tag = $a)
+    |> xLine(length = 3.14 + 0)
     |> angledLineOfXLength({ angle = 3.14 + 0, length = 3.14 + 0 }, %)
     |> angledLineOfYLength({ angle = 30 + 0, length = 3 + 0 }, %)
     |> angledLineToX({ angle = 12.14 + 0, to = 12 + 0 }, %)
@@ -950,12 +949,12 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'xLineTo',
+        'xLine(endAbsolute',
         [
           {
             type: 'horizontal',
             isConstrained: true,
-            value: 'xLineTo',
+            value: 'xLine',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
@@ -973,12 +972,12 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'yLineTo',
+        'yLine(endAbsolute',
         [
           {
             type: 'vertical',
             isConstrained: true,
-            value: 'yLineTo',
+            value: 'yLine',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
             argPosition: undefined,
             pathToNode: expect.any(Array),
@@ -996,7 +995,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'yLine(',
+        'yLine(length',
         [
           {
             type: 'vertical',
@@ -1019,7 +1018,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'xLine(',
+        'xLine(length',
         [
           {
             type: 'horizontal',
@@ -1199,10 +1198,9 @@ describe('testing getConstraintInfo', () => {
       ],
     ])('testing %s when inputs are unconstrained', (functionName, expected) => {
       const ast = assertParse(code)
-      const sourceRange = topLevelRange(
-        code.indexOf(functionName),
-        code.indexOf(functionName) + functionName.length
-      )
+      const start = code.indexOf(functionName)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const sourceRange = topLevelRange(start, start + functionName.length)
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(

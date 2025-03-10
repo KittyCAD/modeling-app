@@ -1,6 +1,6 @@
 import { CommandLog, EngineCommandManager } from 'lang/std/engineConnection'
-import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
-import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
+import { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
+import { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
 import { isDesktop } from 'lib/isDesktop'
 import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
@@ -349,8 +349,19 @@ export class CoreDumpManager {
           sceneEntitiesManager?.activeSegments
         )
         if (sceneEntitiesManager?.activeSegments) {
+          // You can't structuredClone a THREE.js Group, so let's just get the userData.
           ;(clientState.scene_entities_manager as any).activeSegments =
-            structuredClone(sceneEntitiesManager.activeSegments)
+            Object.entries(sceneEntitiesManager.activeSegments).map(
+              ([id, segmentGroup]) => ({
+                segmentId: id,
+                userData:
+                  segmentGroup &&
+                  typeof segmentGroup === 'object' &&
+                  'userData' in segmentGroup
+                    ? segmentGroup.userData
+                    : null,
+              })
+            )
         }
       }
 

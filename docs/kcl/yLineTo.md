@@ -1,19 +1,19 @@
 ---
 title: "yLineTo"
-excerpt: "Draw a line parallel to the Y axis, that ends at the given Y."
+excerpt: "Draw a line parallel to the Y axis, that ends at the given Y. E.g. if the previous line ended at (1, 1), then yLineTo(4) draws a line from (1, 1) to (1, 4)"
 layout: manual
 ---
 
-Draw a line parallel to the Y axis, that ends at the given Y.
+Draw a line parallel to the Y axis, that ends at the given Y. E.g. if the previous line ended at (1, 1), then yLineTo(4) draws a line from (1, 1) to (1, 4)
 
-E.g. if the previous line ended at (1, 1), then yLineTo(4) draws a line from (1, 1) to (1, 4)
+
 
 ```js
 yLineTo(
   to: number,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 
@@ -21,13 +21,13 @@ yLineTo(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `to` | `number` |  | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `to` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples

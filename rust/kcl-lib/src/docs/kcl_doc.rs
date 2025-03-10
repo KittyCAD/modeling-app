@@ -1,0 +1,884 @@
+use std::str::FromStr;
+
+use tower_lsp::lsp_types::{
+    CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
+    MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
+};
+
+use crate::{
+    execution::annotations,
+    parsing::{
+        ast::types::{Annotation, Node, NonCodeNode, NonCodeValue, VariableKind},
+        token::NumericSuffix,
+    },
+    ModuleId,
+};
+
+pub fn walk_prelude() -> Vec<DocData> {
+    let mut visitor = CollectionVisitor::default();
+    visitor.visit_module("prelude").unwrap();
+    visitor.result
+}
+
+#[derive(Debug, Clone, Default)]
+struct CollectionVisitor {
+    name: String,
+    result: Vec<DocData>,
+    id: usize,
+}
+
+impl CollectionVisitor {
+    fn visit_module(&mut self, name: &str) -> Result<(), String> {
+        let old_name = std::mem::replace(&mut self.name, name.to_owned());
+        let source = crate::modules::read_std(name).unwrap();
+        let parsed = crate::parsing::parse_str(source, ModuleId::from_usize(self.id))
+            .parse_errs_as_err()
+            .unwrap();
+        self.id += 1;
+
+        for (i, n) in parsed.body.iter().enumerate() {
+            match n {
+                crate::parsing::ast::types::BodyItem::ImportStatement(import) if !import.visibility.is_default() => {
+                    // Only supports glob imports for now.
+                    assert!(matches!(
+                        import.selector,
+                        crate::parsing::ast::types::ImportSelector::Glob(..)
+                    ));
+                    match &import.path {
+                        crate::parsing::ast::types::ImportPath::Std { path } => {
+                            self.visit_module(&path[1])?;
+                        }
+                        p => return Err(format!("Unexpected import: `{p}`")),
+                    }
+                }
+                crate::parsing::ast::types::BodyItem::VariableDeclaration(var) if !var.visibility.is_default() => {
+                    let qual_name = if self.name == "prelude" {
+                        "std::".to_owned()
+                    } else {
+                        format!("std::{}::", self.name)
+                    };
+                    let mut dd = match var.kind {
+                        // TODO metadata for args
+                        VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual_name)),
+                        VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual_name)),
+                    };
+
+                    // FIXME this association of metadata with items is pretty flaky.
+                    if i == 0 {
+                        dd.with_meta(&parsed.non_code_meta.start_nodes, &var.outer_attrs);
+                    } else if let Some(meta) = parsed.non_code_meta.non_code_nodes.get(&(i - 1)) {
+                        dd.with_meta(meta, &var.outer_attrs);
+                    }
+
+                    self.result.push(dd);
+                }
+                crate::parsing::ast::types::BodyItem::TypeDeclaration(ty) if !ty.visibility.is_default() => {
+                    let qual_name = if self.name == "prelude" {
+                        "std::".to_owned()
+                    } else {
+                        format!("std::{}::", self.name)
+                    };
+                    let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name));
+
+                    // FIXME this association of metadata with items is pretty flaky.
+                    if i == 0 {
+                        dd.with_meta(&parsed.non_code_meta.start_nodes, &ty.outer_attrs);
+                    } else if let Some(meta) = parsed.non_code_meta.non_code_nodes.get(&(i - 1)) {
+                        dd.with_meta(meta, &ty.outer_attrs);
+                    }
+
+                    self.result.push(dd);
+                }
+                _ => {}
+            }
+        }
+
+        self.name = old_name;
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum DocData {
+    Fn(FnData),
+    Const(ConstData),
+    Ty(TyData),
+}
+
+impl DocData {
+    pub fn name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.name,
+            DocData::Const(c) => &c.name,
+            DocData::Ty(t) => &t.name,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn file_name(&self) -> String {
+        match self {
+            DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
+            // TODO might want to change this
+            DocData::Ty(t) => t.name.clone(),
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn mod_name(&self) -> String {
+        let q = match self {
+            DocData::Fn(f) => &f.qual_name,
+            DocData::Const(c) => &c.qual_name,
+            DocData::Ty(t) => {
+                if t.properties.impl_kind == annotations::Impl::Primitive {
+                    return "Primitive types".to_owned();
+                }
+                &t.qual_name
+            }
+        };
+        q[0..q.rfind("::").unwrap()].to_owned()
+    }
+
+    #[allow(dead_code)]
+    pub fn hide(&self) -> bool {
+        match self {
+            DocData::Fn(f) => f.properties.doc_hidden || f.properties.deprecated,
+            DocData::Const(c) => c.properties.doc_hidden || c.properties.deprecated,
+            DocData::Ty(t) => t.properties.doc_hidden || t.properties.deprecated,
+        }
+    }
+
+    pub fn to_completion_item(&self) -> CompletionItem {
+        match self {
+            DocData::Fn(f) => f.to_completion_item(),
+            DocData::Const(c) => c.to_completion_item(),
+            DocData::Ty(t) => t.to_completion_item(),
+        }
+    }
+
+    pub fn to_signature_help(&self) -> Option<SignatureHelp> {
+        match self {
+            DocData::Fn(f) => Some(f.to_signature_help()),
+            DocData::Const(_) => None,
+            DocData::Ty(_) => None,
+        }
+    }
+
+    fn with_meta(&mut self, meta: &[Node<NonCodeNode>], attrs: &[Node<Annotation>]) {
+        match self {
+            DocData::Fn(f) => f.with_meta(meta, attrs),
+            DocData::Const(c) => c.with_meta(meta, attrs),
+            DocData::Ty(t) => t.with_meta(meta, attrs),
+        }
+    }
+
+    #[cfg(test)]
+    fn examples(&self) -> impl Iterator<Item = &String> {
+        match self {
+            DocData::Fn(f) => f.examples.iter(),
+            DocData::Const(c) => c.examples.iter(),
+            DocData::Ty(t) => t.examples.iter(),
+        }
+        .filter_map(|(s, p)| (!p.norun).then_some(s))
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ConstData {
+    pub name: String,
+    /// The fully qualified name.
+    pub qual_name: String,
+    pub value: Option<String>,
+    pub ty: Option<String>,
+    pub properties: Properties,
+
+    /// The summary of the function.
+    pub summary: Option<String>,
+    /// The description of the function.
+    pub description: Option<String>,
+    /// Code examples.
+    /// These are tested and we know they compile and execute.
+    pub examples: Vec<(String, ExampleProperties)>,
+}
+
+impl ConstData {
+    fn from_ast(var: &crate::parsing::ast::types::VariableDeclaration, mut qual_name: String) -> Self {
+        assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Const);
+
+        let (value, ty) = match &var.declaration.init {
+            crate::parsing::ast::types::Expr::Literal(lit) => (
+                Some(lit.raw.clone()),
+                Some(match &lit.value {
+                    crate::parsing::ast::types::LiteralValue::Number { suffix, .. } => {
+                        if *suffix == NumericSuffix::None || *suffix == NumericSuffix::Count {
+                            "number".to_owned()
+                        } else {
+                            format!("number({suffix})")
+                        }
+                    }
+                    crate::parsing::ast::types::LiteralValue::String { .. } => "string".to_owned(),
+                    crate::parsing::ast::types::LiteralValue::Bool { .. } => "boolean".to_owned(),
+                }),
+            ),
+            _ => (None, None),
+        };
+
+        let name = var.declaration.id.name.clone();
+        qual_name.push_str(&name);
+        ConstData {
+            name,
+            qual_name,
+            value,
+            // TODO use type decl when we have them.
+            ty,
+            properties: Properties {
+                exported: !var.visibility.is_default(),
+                deprecated: false,
+                doc_hidden: false,
+                impl_kind: annotations::Impl::Kcl,
+            },
+            summary: None,
+            description: None,
+            examples: Vec::new(),
+        }
+    }
+
+    fn short_docs(&self) -> Option<String> {
+        match (&self.summary, &self.description) {
+            (None, None) => None,
+            (None, Some(d)) | (Some(d), None) => Some(d.clone()),
+            (Some(s), Some(d)) => Some(format!("{s}\n\n{d}")),
+        }
+    }
+
+    fn to_completion_item(&self) -> CompletionItem {
+        let mut detail = self.qual_name.clone();
+        if let Some(ty) = &self.ty {
+            detail.push_str(": ");
+            detail.push_str(ty);
+        }
+        CompletionItem {
+            label: self.name.clone(),
+            label_details: Some(CompletionItemLabelDetails {
+                detail: self.value.clone(),
+                description: None,
+            }),
+            kind: Some(CompletionItemKind::CONSTANT),
+            detail: Some(detail),
+            documentation: self.short_docs().map(|s| {
+                Documentation::MarkupContent(MarkupContent {
+                    kind: MarkupKind::Markdown,
+                    value: s,
+                })
+            }),
+            deprecated: Some(self.properties.deprecated),
+            preselect: None,
+            sort_text: None,
+            filter_text: None,
+            insert_text: None,
+            insert_text_format: None,
+            insert_text_mode: None,
+            text_edit: None,
+            additional_text_edits: None,
+            command: None,
+            commit_characters: None,
+            data: None,
+            tags: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct FnData {
+    /// The name of the function.
+    pub name: String,
+    /// The fully qualified name.
+    pub qual_name: String,
+    /// The args of the function.
+    pub args: Vec<ArgData>,
+    /// The return value of the function.
+    pub return_type: Option<String>,
+    pub properties: Properties,
+
+    /// The summary of the function.
+    pub summary: Option<String>,
+    /// The description of the function.
+    pub description: Option<String>,
+    /// Code examples.
+    /// These are tested and we know they compile and execute.
+    pub examples: Vec<(String, ExampleProperties)>,
+}
+
+impl FnData {
+    fn from_ast(var: &crate::parsing::ast::types::VariableDeclaration, mut qual_name: String) -> Self {
+        assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Fn);
+        let crate::parsing::ast::types::Expr::FunctionExpression(expr) = &var.declaration.init else {
+            unreachable!();
+        };
+        let name = var.declaration.id.name.clone();
+        qual_name.push_str(&name);
+        FnData {
+            name,
+            qual_name,
+            args: expr.params.iter().map(ArgData::from_ast).collect(),
+            return_type: expr.return_type.as_ref().map(|t| t.recast(&Default::default(), 0)),
+            properties: Properties {
+                exported: !var.visibility.is_default(),
+                deprecated: false,
+                doc_hidden: false,
+                impl_kind: annotations::Impl::Kcl,
+            },
+            summary: None,
+            description: None,
+            examples: Vec::new(),
+        }
+    }
+
+    fn short_docs(&self) -> Option<String> {
+        match (&self.summary, &self.description) {
+            (None, None) => None,
+            (None, Some(d)) | (Some(d), None) => Some(d.clone()),
+            (Some(s), Some(d)) => Some(format!("{s}\n\n{d}")),
+        }
+    }
+
+    pub fn fn_signature(&self) -> String {
+        let mut signature = String::new();
+
+        signature.push('(');
+        for (i, arg) in self.args.iter().enumerate() {
+            if i > 0 {
+                signature.push_str(", ");
+            }
+            match &arg.kind {
+                ArgKind::Special => signature.push_str(&format!("@{}", arg.name)),
+                ArgKind::Labelled(false) => signature.push_str(&arg.name),
+                ArgKind::Labelled(true) => signature.push_str(&format!("{}?", arg.name)),
+            }
+            if let Some(ty) = &arg.ty {
+                signature.push_str(&format!(": {ty}"));
+            }
+        }
+        signature.push(')');
+        if let Some(ty) = &self.return_type {
+            signature.push_str(&format!(": {ty}"));
+        }
+
+        signature
+    }
+
+    fn to_completion_item(&self) -> CompletionItem {
+        CompletionItem {
+            label: self.name.clone(),
+            label_details: Some(CompletionItemLabelDetails {
+                detail: Some(self.fn_signature()),
+                description: None,
+            }),
+            kind: Some(CompletionItemKind::FUNCTION),
+            detail: Some(self.qual_name.clone()),
+            documentation: self.short_docs().map(|s| {
+                Documentation::MarkupContent(MarkupContent {
+                    kind: MarkupKind::Markdown,
+                    value: s,
+                })
+            }),
+            deprecated: Some(self.properties.deprecated),
+            preselect: None,
+            sort_text: None,
+            filter_text: None,
+            insert_text: Some(self.to_autocomplete_snippet()),
+            insert_text_format: Some(InsertTextFormat::SNIPPET),
+            insert_text_mode: None,
+            text_edit: None,
+            additional_text_edits: None,
+            command: None,
+            commit_characters: None,
+            data: None,
+            tags: None,
+        }
+    }
+
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn to_autocomplete_snippet(&self) -> String {
+        if self.name == "loft" {
+            return "loft([${0:sketch000}, ${1:sketch001}])${}".to_owned();
+        } else if self.name == "hole" {
+            return "hole(${0:holeSketch}, ${1:%})${}".to_owned();
+        }
+        let mut args = Vec::new();
+        let mut index = 0;
+        for arg in self.args.iter() {
+            if let Some((i, arg_str)) = arg.get_autocomplete_snippet(index) {
+                index = i + 1;
+                args.push(arg_str);
+            }
+        }
+        // We end with ${} so you can jump to the end of the snippet.
+        // After the last argument.
+        format!("{}({})${{}}", self.name, args.join(", "))
+    }
+
+    fn to_signature_help(&self) -> SignatureHelp {
+        // TODO Fill this in based on the current position of the cursor.
+        let active_parameter = None;
+
+        SignatureHelp {
+            signatures: vec![SignatureInformation {
+                label: self.name.clone(),
+                documentation: self.short_docs().map(|s| {
+                    Documentation::MarkupContent(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: s,
+                    })
+                }),
+                parameters: Some(self.args.iter().map(|arg| arg.to_param_info()).collect()),
+                active_parameter,
+            }],
+            active_signature: Some(0),
+            active_parameter,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Properties {
+    pub deprecated: bool,
+    pub doc_hidden: bool,
+    #[allow(dead_code)]
+    pub exported: bool,
+    pub impl_kind: annotations::Impl,
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone)]
+pub struct ExampleProperties {
+    pub norun: bool,
+    pub inline: bool,
+}
+
+#[derive(Debug, Clone)]
+pub struct ArgData {
+    /// The name of the argument.
+    pub name: String,
+    /// The type of the argument.
+    pub ty: Option<String>,
+    /// If the argument is required.
+    pub kind: ArgKind,
+    /// Additional information that could be used instead of the type's description.
+    /// This is helpful if the type is really basic, like "u32" -- that won't tell the user much about
+    /// how this argument is meant to be used.
+    pub docs: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum ArgKind {
+    Special,
+    // Parameter is whether the arg is optional.
+    // TODO should store default value if present
+    Labelled(bool),
+}
+
+impl ArgData {
+    fn from_ast(arg: &crate::parsing::ast::types::Parameter) -> Self {
+        ArgData {
+            name: arg.identifier.name.clone(),
+            ty: arg.type_.as_ref().map(|t| t.recast(&Default::default(), 0)),
+            // Doc comments are not yet supported on parameters.
+            docs: None,
+            kind: if arg.labeled {
+                ArgKind::Labelled(arg.optional())
+            } else {
+                ArgKind::Special
+            },
+        }
+    }
+
+    fn _with_meta(&mut self, _meta: &[Node<NonCodeNode>]) {
+        // TODO use comments for docs (we can't currently get the comments for an argument)
+    }
+
+    pub fn get_autocomplete_snippet(&self, index: usize) -> Option<(usize, String)> {
+        match &self.ty {
+            Some(s)
+                if [
+                    "Sketch",
+                    "SketchSet",
+                    "Solid",
+                    "SolidSet",
+                    "SketchSurface",
+                    "SketchOrSurface",
+                ]
+                .contains(&&**s) =>
+            {
+                Some((index, format!("${{{}:{}}}", index, "%")))
+            }
+            _ => None,
+        }
+    }
+
+    fn to_param_info(&self) -> ParameterInformation {
+        ParameterInformation {
+            label: ParameterLabel::Simple(self.name.clone()),
+            documentation: self.docs.as_ref().map(|docs| {
+                Documentation::MarkupContent(MarkupContent {
+                    kind: MarkupKind::Markdown,
+                    value: docs.clone(),
+                })
+            }),
+        }
+    }
+}
+
+impl ArgKind {
+    #[allow(dead_code)]
+    pub fn required(self) -> bool {
+        match self {
+            ArgKind::Special => true,
+            ArgKind::Labelled(opt) => !opt,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct TyData {
+    /// The name of the function.
+    pub name: String,
+    /// The fully qualified name.
+    pub qual_name: String,
+    pub properties: Properties,
+
+    /// The summary of the function.
+    pub summary: Option<String>,
+    /// The description of the function.
+    pub description: Option<String>,
+    /// Code examples.
+    /// These are tested and we know they compile and execute.
+    pub examples: Vec<(String, ExampleProperties)>,
+}
+
+impl TyData {
+    fn from_ast(ty: &crate::parsing::ast::types::TypeDeclaration, mut qual_name: String) -> Self {
+        let name = ty.name.name.clone();
+        qual_name.push_str(&name);
+        TyData {
+            name,
+            qual_name,
+            properties: Properties {
+                exported: !ty.visibility.is_default(),
+                deprecated: false,
+                doc_hidden: false,
+                impl_kind: annotations::Impl::Kcl,
+            },
+            summary: None,
+            description: None,
+            examples: Vec::new(),
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn qual_name(&self) -> &str {
+        if self.properties.impl_kind == annotations::Impl::Primitive {
+            &self.name
+        } else {
+            &self.qual_name
+        }
+    }
+
+    fn short_docs(&self) -> Option<String> {
+        match (&self.summary, &self.description) {
+            (None, None) => None,
+            (None, Some(d)) | (Some(d), None) => Some(d.clone()),
+            (Some(s), Some(d)) => Some(format!("{s}\n\n{d}")),
+        }
+    }
+
+    fn to_completion_item(&self) -> CompletionItem {
+        CompletionItem {
+            label: self.name.clone(),
+            label_details: None,
+            kind: Some(CompletionItemKind::FUNCTION),
+            detail: Some(self.qual_name().to_owned()),
+            documentation: self.short_docs().map(|s| {
+                Documentation::MarkupContent(MarkupContent {
+                    kind: MarkupKind::Markdown,
+                    value: s,
+                })
+            }),
+            deprecated: Some(self.properties.deprecated),
+            preselect: None,
+            sort_text: None,
+            filter_text: None,
+            insert_text: Some(self.name.clone()),
+            insert_text_format: Some(InsertTextFormat::SNIPPET),
+            insert_text_mode: None,
+            text_edit: None,
+            additional_text_edits: None,
+            command: None,
+            commit_characters: None,
+            data: None,
+            tags: None,
+        }
+    }
+}
+
+trait ApplyMeta {
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        examples: Vec<(String, ExampleProperties)>,
+    );
+    fn deprecated(&mut self, deprecated: bool);
+    fn doc_hidden(&mut self, doc_hidden: bool);
+    fn impl_kind(&mut self, impl_kind: annotations::Impl);
+
+    fn with_meta(&mut self, meta: &[Node<NonCodeNode>], attrs: &[Node<Annotation>]) {
+        for attr in attrs {
+            if let Annotation {
+                name: None,
+                properties: Some(props),
+                ..
+            } = &attr.inner
+            {
+                for p in props {
+                    match &*p.key.name {
+                        annotations::IMPL => {
+                            if let Some(s) = p.value.ident_name() {
+                                self.impl_kind(annotations::Impl::from_str(s).unwrap());
+                            }
+                        }
+                        "deprecated" => {
+                            if let Some(b) = p.value.literal_bool() {
+                                self.deprecated(b);
+                            }
+                        }
+                        "doc_hidden" => {
+                            if let Some(b) = p.value.literal_bool() {
+                                self.doc_hidden(b);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+        let mut comments = Vec::new();
+        for m in meta {
+            match &m.value {
+                NonCodeValue::BlockComment { value, .. } | NonCodeValue::NewLineBlockComment { value, .. } => {
+                    comments.push(value)
+                }
+                _ => {}
+            }
+        }
+
+        let mut summary = None;
+        let mut description = None;
+        let mut example: Option<(String, ExampleProperties)> = None;
+        let mut examples = Vec::new();
+        for l in comments.into_iter().filter(|l| l.starts_with('/')).map(|l| {
+            if let Some(ll) = l.strip_prefix("/ ") {
+                ll
+            } else {
+                &l[1..]
+            }
+        }) {
+            if description.is_none() && summary.is_none() {
+                summary = Some(l.to_owned());
+                continue;
+            }
+            if description.is_none() {
+                if l.is_empty() {
+                    description = Some(String::new());
+                } else {
+                    description = summary;
+                    summary = None;
+                    let d = description.as_mut().unwrap();
+                    d.push_str(l);
+                    d.push('\n');
+                }
+                continue;
+            }
+            #[allow(clippy::manual_strip)]
+            if l.starts_with("```") {
+                if let Some((e, p)) = example {
+                    if p.inline {
+                        description.as_mut().unwrap().push_str("```\n");
+                    }
+
+                    examples.push((e.trim().to_owned(), p));
+                    example = None;
+                } else {
+                    let args = l[3..].split(',');
+                    let mut inline = false;
+                    let mut norun = false;
+                    for a in args {
+                        match a.trim() {
+                            "inline" => inline = true,
+                            "norun" | "no_run" => norun = true,
+                            _ => {}
+                        }
+                    }
+                    example = Some((String::new(), ExampleProperties { norun, inline }));
+
+                    if inline {
+                        description.as_mut().unwrap().push_str("```js\n");
+                    }
+                }
+                continue;
+            }
+            if let Some((e, p)) = &mut example {
+                e.push_str(l);
+                e.push('\n');
+                if !p.inline {
+                    continue;
+                }
+            }
+            match &mut description {
+                Some(d) => {
+                    d.push_str(l);
+                    d.push('\n');
+                }
+                None => unreachable!(),
+            }
+        }
+        assert!(example.is_none());
+        if let Some(d) = &mut description {
+            if d.is_empty() {
+                description = None;
+            }
+        }
+
+        self.apply_docs(
+            summary.map(|s| s.trim().to_owned()),
+            description.map(|s| s.trim().to_owned()),
+            examples,
+        );
+    }
+}
+
+impl ApplyMeta for ConstData {
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        examples: Vec<(String, ExampleProperties)>,
+    ) {
+        self.summary = summary;
+        self.description = description;
+        self.examples = examples;
+    }
+
+    fn deprecated(&mut self, deprecated: bool) {
+        self.properties.deprecated = deprecated;
+    }
+
+    fn doc_hidden(&mut self, doc_hidden: bool) {
+        self.properties.doc_hidden = doc_hidden;
+    }
+
+    fn impl_kind(&mut self, _impl_kind: annotations::Impl) {}
+}
+
+impl ApplyMeta for FnData {
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        examples: Vec<(String, ExampleProperties)>,
+    ) {
+        self.summary = summary;
+        self.description = description;
+        self.examples = examples;
+    }
+
+    fn deprecated(&mut self, deprecated: bool) {
+        self.properties.deprecated = deprecated;
+    }
+
+    fn doc_hidden(&mut self, doc_hidden: bool) {
+        self.properties.doc_hidden = doc_hidden;
+    }
+
+    fn impl_kind(&mut self, impl_kind: annotations::Impl) {
+        self.properties.impl_kind = impl_kind;
+    }
+}
+
+impl ApplyMeta for TyData {
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        examples: Vec<(String, ExampleProperties)>,
+    ) {
+        self.summary = summary;
+        self.description = description;
+        self.examples = examples;
+    }
+
+    fn deprecated(&mut self, deprecated: bool) {
+        self.properties.deprecated = deprecated;
+    }
+
+    fn doc_hidden(&mut self, doc_hidden: bool) {
+        self.properties.doc_hidden = doc_hidden;
+    }
+
+    fn impl_kind(&mut self, impl_kind: annotations::Impl) {
+        self.properties.impl_kind = impl_kind;
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn smoke() {
+        let result = walk_prelude();
+        for d in result {
+            if let DocData::Const(d) = d {
+                if d.name == "PI" {
+                    assert!(d.value.unwrap().starts_with('3'));
+                    assert_eq!(d.ty, Some("number".to_owned()));
+                    assert_eq!(d.qual_name, "std::math::PI");
+                    assert!(d.summary.is_some());
+                    assert!(!d.examples.is_empty());
+                    return;
+                }
+            }
+        }
+        panic!("didn't find PI");
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
+    async fn test_examples() -> miette::Result<()> {
+        let std = walk_prelude();
+        for d in std {
+            for (i, eg) in d.examples().enumerate() {
+                let result =
+                    match crate::test_server::execute_and_snapshot(eg, crate::settings::types::UnitLength::Mm, None)
+                        .await
+                    {
+                        Err(crate::errors::ExecError::Kcl(e)) => {
+                            return Err(miette::Report::new(crate::errors::Report {
+                                error: e.error,
+                                filename: format!("{}{i}", d.name()),
+                                kcl_source: eg.to_string(),
+                            }));
+                        }
+                        Err(other_err) => panic!("{}", other_err),
+                        Ok(img) => img,
+                    };
+                twenty_twenty::assert_image(
+                    format!("tests/outputs/serial_test_example_{}{i}.png", d.file_name()),
+                    &result,
+                    0.99,
+                );
+            }
+        }
+
+        Ok(())
+    }
+}

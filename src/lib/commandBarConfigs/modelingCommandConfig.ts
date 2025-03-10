@@ -314,6 +314,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         inputType: 'text',
         required: false,
+        hidden: true,
       },
       selection: {
         inputType: 'selection',
@@ -465,6 +466,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         inputType: 'text',
         required: false,
+        hidden: true,
       },
       plane: {
         inputType: 'selection',
@@ -492,6 +494,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         inputType: 'text',
         required: false,
+        hidden: true,
       },
       revolutions: {
         inputType: 'kcl',
@@ -713,6 +716,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         inputType: 'text',
         required: false,
+        hidden: true,
       },
       color: {
         inputType: 'options',

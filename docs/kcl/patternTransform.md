@@ -40,7 +40,7 @@ patternTransform(
   instances: integer,
   transform: FunctionSource,
   useOriginal?: bool,
-) -> [Solid]
+): [Solid]
 ```
 
 
@@ -51,7 +51,7 @@ patternTransform(
 | `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) to duplicate | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `transform` | `FunctionSource` | How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples. | Yes |
-| `useOriginal` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
+| `useOriginal` | [`bool`](/docs/kcl/types/bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 
@@ -68,7 +68,7 @@ fn transform(id) {
 
 // Sketch 4 cylinders.
 sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 2 }, %)
+  |> circle(center = [0, 0], radius = 2)
   |> extrude(length = 5)
   |> patternTransform(instances = 4, transform = transform)
 ```
@@ -84,7 +84,7 @@ fn transform(id) {
 }
 
 sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 2 }, %)
+  |> circle(center = [0, 0], radius = 2)
   |> extrude(length = 5)
   |> patternTransform(instances = 4, transform = transform)
 ```
@@ -184,7 +184,7 @@ fn transform(replicaId) {
 fn layer() {
   return startSketchOn("XY")
     // or some other plane idk
-    |> circle({ center = [0, 0], radius = 1 }, %, $tag1)
+    |> circle(center = [0, 0], radius = 1, tag = $tag1)
     |> extrude(length = h)
 }
 // The vase is 100 layers tall.

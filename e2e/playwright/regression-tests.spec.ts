@@ -20,7 +20,8 @@ test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
       localStorage.setItem(
         'persistCode',
         `sketch2 = startSketchOn("XY")
-  sketch001 = startSketchAt([-0, -0])
+  sketch001 = startSketchOn("XY")
+    |> startProfileAt([-0, -0], %)
     |> line(end = [0, 0])
     |> line(end = [-4.84, -5.29])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -248,7 +249,7 @@ extrude001 = extrude(sketch001, length = 50)
           `exampleSketch = startSketchOn("XZ")
       |> startProfileAt([0, 0], %)
       |> angledLine({ angle: 50, length: 45 }, %)
-      |> yLineTo(0, %)
+      |> yLine(endAbsolute = 0)
       |> close()
       |>
 
@@ -304,7 +305,7 @@ extrude001 = extrude(sketch001, length = 50)
         .toContainText(`exampleSketch = startSketchOn("XZ")
       |> startProfileAt([0, 0], %)
       |> angledLine({ angle: 50, length: 45 }, %)
-      |> yLineTo(0, %)
+      |> yLine(endAbsolute = 0)
       |> close()
 
       thing: "blah"`)
@@ -316,7 +317,7 @@ extrude001 = extrude(sketch001, length = 50)
   test(
     'when engine fails export we handle the failure and alert the user',
     { tag: '@skipLocalEngine' },
-    async ({ scene, page, homePage }) => {
+    async ({ scene, page, homePage, cmdBar }) => {
       const u = await getUtils(page)
       await page.addInitScript(
         async ({ code }) => {
@@ -329,15 +330,9 @@ extrude001 = extrude(sketch001, length = 50)
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
-      await u.waitForPageLoad()
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
-
-      // expect zero errors in guter
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
 
       // export the model
       const exportButton = page.getByTestId('export-pane-button')
@@ -361,7 +356,6 @@ extrude001 = extrude(sketch001, length = 50)
       // Find the toast.
       // Look out for the toast message
       const exportingToastMessage = page.getByText(`Exporting...`)
-      const errorToastMessage = page.getByText(`Error while exporting`)
 
       const engineErrorToastMessage = page.getByText(`Nothing to export`)
       await expect(engineErrorToastMessage).toBeVisible()
@@ -375,7 +369,6 @@ extrude001 = extrude(sketch001, length = 50)
       await page.waitForTimeout(2000)
 
       // Expect the toast to be gone
-      await expect(errorToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       // Now add in code that works.
@@ -383,7 +376,7 @@ extrude001 = extrude(sketch001, length = 50)
       await page.keyboard.press('End')
       await page.keyboard.press('Enter')
 
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       // Now try exporting
 
@@ -406,7 +399,6 @@ extrude001 = extrude(sketch001, length = 50)
 
       // Expect it to succeed.
       await expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 })
-      await expect(errorToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
@@ -660,6 +652,50 @@ extrude001 = extrude(sketch001, length = 50)
 
       // After animation completes, we should see the sketching toolbar
       await expect.poll(toolBarMode).toEqual('sketching')
+    })
+  })
+
+  test(`Delete via feature tree then open code pane, never crash`, async ({
+    homePage,
+    toolbar,
+    editor,
+    context,
+    page,
+    scene,
+    cmdBar,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'test-sample')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        `x = 5
+plane001 = offsetPlane(XZ, offset = x)
+plane002 = offsetPlane(XZ, offset = -2 * x)`
+      )
+    })
+    await homePage.openProject('test-sample')
+    await scene.waitForExecutionDone()
+    await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
+    const operationButton = await toolbar.getFeatureTreeOperation(
+      'Offset Plane',
+      1
+    )
+
+    await test.step('Delete offset plane via feature tree selection', async () => {
+      await expect(operationButton.last()).toBeVisible({ timeout: 10_000 })
+      await editor.closePane()
+      await operationButton.first().click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+    })
+
+    await test.step(`Open the code pane, don't crash`, async () => {
+      await editor.openPane()
+      await expect(page.getByText('unexpected error')).not.toBeVisible()
+      await editor.expectEditor.toContain(`x = 5`)
+      await editor.expectEditor.toContain(`plane001`)
+      await editor.expectEditor.not.toContain(`plane002`)
     })
   })
 })

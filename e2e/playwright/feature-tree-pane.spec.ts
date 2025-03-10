@@ -8,7 +8,7 @@ const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(x) {
 export fn triangle() {
   return startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
-    |> xLine(10, %)
+    |> xLine(length = 10)
     |> line(end = [-10, -5])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
@@ -28,7 +28,7 @@ plane001 = offsetPlane('XY', offset = 10)
 sketch002 = startSketchOn(plane001)
   |> startProfileAt([-20, 0], %)
   |> line(end = [5, -15])
-  |> xLine(-10, %)
+  |> xLine(length = -10)
   |> line(endAbsolute = [-40, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
@@ -50,13 +50,13 @@ const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn('XZ')
   |> close(%)
 extrude001 = extrude(sketch001, length = 10)
 sketch002 = startSketchOn(extrude001, rectangleSegmentB001)
-  |> circle({
+  |> circle(
        center = [-1, 2],
        radius = .5
-     }, %)
+     )
 plane001 = offsetPlane('XZ', offset = -5)
 sketch003 = startSketchOn(plane001)
-  |> circle({ center = [0, 0], radius = 5 }, %)
+  |> circle(center = [0, 0], radius = 5)
 `
 
 test.describe('Feature Tree pane', () => {
@@ -201,7 +201,7 @@ test.describe('Feature Tree pane', () => {
         await toolbar.exitSketchBtn.click()
       })
 
-      await test.step('On an offset plane should *not* work', async () => {
+      await test.step('On an offset plane should work', async () => {
         // Tooltip is getting in the way of clicking, so I'm first closing the pane
         await toolbar.closeFeatureTreePane()
         await (await toolbar.getFeatureTreeOperation('Sketch', 2)).dblclick()
@@ -212,13 +212,7 @@ test.describe('Feature Tree pane', () => {
         })
         await expect(
           toolbar.exitSketchBtn,
-          'We should not be in sketch mode now'
-        ).not.toBeVisible()
-        await expect(
-          page.getByText(
-            'Editing sketches on faces or offset planes through the feature tree is not yet supported'
-          ),
-          'We should see a toast message about this'
+          'We should be in sketch mode now'
         ).toBeVisible()
       })
     }
@@ -234,11 +228,11 @@ test.describe('Feature Tree pane', () => {
   }) => {
     const initialInput = '23'
     const initialCode = `sketch001 = startSketchOn('XZ')
-      |> circle({ center = [0, 0], radius = 5 }, %)
+      |> circle(center = [0, 0], radius = 5)
       renamedExtrude = extrude(sketch001, length = ${initialInput})`
     const newConstantName = 'distance001'
     const expectedCode = `sketch001 = startSketchOn('XZ')
-      |> circle({ center = [0, 0], radius = 5 }, %)
+      |> circle(center = [0, 0], radius = 5)
       ${newConstantName} = 23
       renamedExtrude = extrude(sketch001, length = ${newConstantName})`
 
@@ -392,6 +386,54 @@ test.describe('Feature Tree pane', () => {
         diagnostics: [],
         activeLines: [expectedCode],
       })
+    })
+  })
+
+  test(`Delete sketch on offset plane and all profiles from feature tree`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const beforeKclCode = `plane001 = offsetPlane('XY', offset = 5)
+sketch001 = startSketchOn(plane001)
+profile001 = circle(sketch001, center = [0, 20], radius = 12)
+profile002 = startProfileAt([0, 7.25], sketch001)
+  |> xLine(length = 13.3)
+profile003 = startProfileAt([0, -4.93], sketch001)
+  |> line(endAbsolute = [-5.56, 0])`
+    await context.folderSetupFn(async (dir) => {
+      const testProject = join(dir, 'test-sample')
+      await fsp.mkdir(testProject, { recursive: true })
+      await fsp.writeFile(join(testProject, 'main.kcl'), beforeKclCode, 'utf-8')
+    })
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 650, y: 250 }
+    const sketchColor: [number, number, number] = [149, 149, 149]
+    const planeColor: [number, number, number] = [74, 74, 74]
+
+    await homePage.openProject('test-sample')
+    // FIXME: @lf94 has a better way to verify execution completion, in a PR rn
+    await scene.waitForExecutionDone()
+
+    await test.step(`Verify we see the sketch`, async () => {
+      await scene.expectPixelColor(sketchColor, testPoint, 10)
+    })
+
+    await test.step('Delete sketch via feature tree selection', async () => {
+      const operationButton = await toolbar.getFeatureTreeOperation('Sketch', 0)
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.expectPixelColor(planeColor, testPoint, 10)
+    })
+
+    await test.step(`Verify the code changed`, async () => {
+      await editor.expectEditor.toContain('plane001 =')
+      await editor.expectEditor.not.toContain('sketch001 =')
+      await editor.expectEditor.not.toContain('profile002 = ')
     })
   })
 })

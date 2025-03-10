@@ -12,7 +12,7 @@ Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 hole(
   holeSketch: SketchSet,
   sketch: Sketch,
-) -> Sketch
+): Sketch
 ```
 
 
@@ -21,11 +21,11 @@ hole(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `holeSketch` | [`SketchSet`](/docs/kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples
@@ -37,8 +37,8 @@ exampleSketch = startSketchOn(XY)
   |> line(end = [5, 0])
   |> line(end = [0, -5])
   |> close()
-  |> hole(circle({ center = [1, 1], radius = .25 }, %), %)
-  |> hole(circle({ center = [1, 4], radius = .25 }, %), %)
+  |> hole(circle(center = [1, 1], radius = .25), %)
+  |> hole(circle(center = [1, 4], radius = .25), %)
 
 example = extrude(exampleSketch, length = 1)
 ```
@@ -57,7 +57,7 @@ fn squareHoleSketch() {
 }
 
 exampleSketch = startSketchOn(-XZ)
-  |> circle({ center = [0, 0], radius = 3 }, %)
+  |> circle(center = [0, 0], radius = 3)
   |> hole(squareHoleSketch(), %)
 example = extrude(exampleSketch, length = 1)
 ```

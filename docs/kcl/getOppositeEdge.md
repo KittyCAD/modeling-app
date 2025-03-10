@@ -9,7 +9,7 @@ Get the opposite edge to the edge given.
 
 
 ```js
-getOppositeEdge(tag: TagIdentifier) -> Uuid
+getOppositeEdge(tag: TagIdentifier): Uuid
 ```
 
 
@@ -17,7 +17,7 @@ getOppositeEdge(tag: TagIdentifier) -> Uuid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
 
 ### Returns
 

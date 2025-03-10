@@ -12,7 +12,7 @@ Create a helix on a cylinder.
 helixRevolutions(
   data: HelixRevolutionsData,
   solid: Solid,
-) -> Solid
+): Solid
 ```
 
 
@@ -21,18 +21,18 @@ helixRevolutions(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`HelixRevolutionsData`](/docs/kcl/types/HelixRevolutionsData) | Data for helix revolutions. | Yes |
-| `solid` | [`Solid`](/docs/kcl/types/Solid) | A solid is a collection of extrude surfaces. | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) |  | Yes |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid)
 
 
 ### Examples
 
 ```js
 part001 = startSketchOn('XY')
-  |> circle({ center = [5, 5], radius = 10 }, %)
+  |> circle(center = [5, 5], radius = 10)
   |> extrude(length = 10)
   |> helixRevolutions({
        angleStart = 0,

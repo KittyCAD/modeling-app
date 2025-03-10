@@ -15,8 +15,8 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `x` |`number`|  | No |
-| `y` |`number`|  | No |
-| `z` |`number`|  | No |
+| `x` |[`number`](/docs/kcl/types/number)|  | No |
+| `y` |[`number`](/docs/kcl/types/number)|  | No |
+| `z` |[`number`](/docs/kcl/types/number)|  | No |
 
 

@@ -1,0 +1,59 @@
+cnr := "cargo nextest run"
+cita := "cargo insta test --accept"
+
+# Run the same lint checks we run in CI.
+lint:
+    cargo clippy --workspace --all-targets --tests --all-features --examples --benches -- -D warnings
+
+# Run the stdlib docs generation
+redo-kcl-stdlib-docs-no-imgs:
+    EXPECTORATE=overwrite {{cnr}} -p kcl-lib docs::gen_std_tests::test_generate_stdlib
+
+# Generate the stdlib image artifacts
+# Then run the stdlib docs generation
+redo-kcl-stdlib-docs:
+    TWENTY_TWENTY=overwrite {{cnr}} -p kcl-lib --no-fail-fast -- kcl_test_example
+    EXPECTORATE=overwrite {{cnr}} -p kcl-lib --no-fail-fast -- docs::gen_std_tests::test_generate_stdlib
+
+# Copy a test KCL file from executor tests into a new simulation test.
+copy-exec-test-into-sim-test test_name:
+    mkdir -p kcl-lib/tests/{{test_name}}
+    cp kcl-lib/e2e/executor/inputs/{{test_name}}.kcl kcl-lib/tests/{{test_name}}/input.kcl
+    zoo kcl fmt -w kcl-lib/tests/{{test_name}}/input.kcl
+    just new-sim-test {{test_name}}
+
+# Create a new, empty KCL deterministic simulation test case.
+new-sim-test test_name render_to_png="true":
+    mkdir kcl-lib/tests/{{test_name}}
+    touch kcl-lib/tests/{{test_name}}/input.kcl
+    # Add the various tests for this new test case.
+    cat kcl-lib/tests/simtest.tmpl | sed "s/TEST_NAME_HERE/{{test_name}}/" | sed "s/RENDER_TO_PNG/{{render_to_png}}/" >> kcl-lib/src/simulation_tests.rs
+
+# Run a KCL deterministic simulation test case and accept output.
+run-sim-test test_name:
+    # Run all the tests for the first time, in the right order.
+    {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::parse
+    {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::unparse
+    TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
+
+overwrite-sim-test test_name:
+    EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::parse
+    EXPECTORATE=overwrite {{cita}} -p kcl-lib --no-quiet -- simulation_tests::{{test_name}}::unparse
+    TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib --no-quiet -- tests::{{test_name}}::kcl_test_execute
+
+test:
+    export RUST_BRACKTRACE="full" && cargo nextest run --workspace --no-fail-fast
+
+bump-kcl-crate-versions bump='patch':
+    # First build the kcl-bumper tool.
+    cargo build -p kcl-bumper
+    ./target/debug/kcl-bumper --bump {{bump}}
+
+publish-kcl version:
+    git tag kcl-{{version}}
+    cargo publish -p kcl-derive-docs
+    cargo publish -p kcl-lib
+    cargo publish -p kcl-test-server
+    # We push the tag at the end of publish since pushing the tag
+    # will trigger CI to release the kcl python bindings.
+    git push origin kcl-{{version}}

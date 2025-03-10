@@ -29,6 +29,7 @@ export const kclHighlight = styleTags({
   'ObjectProperty/PropertyName': t.definition(t.propertyName),
   'LabeledArgument/ArgumentLabel': t.definition(t.propertyName),
   TagDeclarator: t.tagName,
+  PrimitiveType: t.typeName,
   '( )': t.paren,
   '{ }': t.brace,
   '[ ]': t.bracket,

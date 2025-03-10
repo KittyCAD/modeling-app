@@ -20,6 +20,7 @@ statement[@isGroup=Statement] {
   ImportStatement { kw<"import"> ImportItems ImportFrom String } |
   FunctionDeclaration { kw<"export">? kw<"fn"> VariableDefinition Equals? ParamList Arrow? Body } |
   VariableDeclaration { kw<"export">? (kw<"var"> | kw<"let"> | kw<"const">)? VariableDefinition Equals expression } |
+  TypeDeclaration { kw<"export">? kw<"type"> identifier } |
   ReturnStatement { kw<"return"> expression } |
   ExpressionStatement { expression } |
   Annotation { AnnotationName AnnotationList? }
@@ -76,7 +77,7 @@ ArgumentList { "(" commaSep<LabeledArgument | expression> ")" }
 type[@isGroup=Type] {
   @specialize[@name=PrimitiveType]<
     identifier,
-    "string" | "number" | "bool" | "sketch" | "sketch_surface" | "solid"
+    "bool" | "number" | "string" | "tag" | "Sketch" | "SketchSurface" | "Solid" | "Plane"
   > |
   ArrayType { type !member "[" "]" } |
   ObjectType { "{" commaSep<ObjectProperty { PropertyName ":" type }> "}" }

@@ -18,9 +18,10 @@ import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import { isArray, toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
-import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
-import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
-import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
+import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 
 /**
  * A setting that can be set at the user or project level
@@ -153,32 +154,54 @@ export function createSettings() {
         defaultValue: '264.5',
         description: 'The hue of the primary theme color for the app',
         validate: (v) => Number(v) >= 0 && Number(v) < 360,
-        Component: ({ value, updateValue }) => (
-          <div className="flex item-center gap-4 px-2 m-0 py-0">
-            <div
-              className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
-              style={{
-                backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) ${value})`,
-              }}
-            />
-            <input
-              type="range"
-              onChange={(e) => updateValue(e.currentTarget.value)}
-              value={value}
-              min={0}
-              max={259}
-              step={1}
-              className="block flex-1"
-            />
-          </div>
-        ),
+        Component: ({ value, updateValue }) => {
+          const preview = (e: React.SyntheticEvent) =>
+            e.isTrusted &&
+            'value' in e.currentTarget &&
+            document.documentElement.style.setProperty(
+              `--primary-hue`,
+              String(e.currentTarget.value)
+            )
+          const save = (e: React.SyntheticEvent) =>
+            e.isTrusted &&
+            'value' in e.currentTarget &&
+            e.currentTarget.value &&
+            updateValue(String(e.currentTarget.value))
+          return (
+            <div className="flex item-center gap-4 px-2 m-0 py-0">
+              <div
+                className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
+                style={{
+                  backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) var(--primary-hue))`,
+                }}
+              />
+              <input
+                type="range"
+                onInput={preview}
+                onMouseUp={save}
+                onKeyUp={save}
+                onPointerUp={save}
+                defaultValue={value}
+                min={0}
+                max={259}
+                step={1}
+                className="block flex-1"
+              />
+            </div>
+          )
+        },
       }),
-      enableSSAO: new Setting<boolean>({
-        defaultValue: true,
-        description:
-          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+      /**
+       * Whether to show the debug panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showDebugPanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the debug panel, a development tool',
         validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
       /**
        * Stream resource saving behavior toggle
@@ -263,6 +286,11 @@ export function createSettings() {
           )
         },
       }),
+      namedViews: new Setting<{ [key in string]: NamedView }>({
+        defaultValue: {},
+        validate: (v) => true,
+        hideOnLevel: 'user',
+      }),
     },
     /**
      * Settings that affect the behavior while modeling.
@@ -290,6 +318,13 @@ export function createSettings() {
                 ],
             })),
         },
+      }),
+      enableSSAO: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+        validate: (v) => typeof v === 'boolean',
+        hideOnPlatform: 'both', //for now
       }),
       /**
        * The controls for how to navigate the 3D view
@@ -428,18 +463,6 @@ export function createSettings() {
           inputType: 'boolean',
         },
         hideOnLevel: 'project',
-      }),
-      /**
-       * Whether to show the debug panel, which lets you see
-       * various states of the app to aid in development
-       */
-      showDebugPanel: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
       }),
       /**
        * TODO: This setting is not yet implemented.

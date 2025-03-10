@@ -9,7 +9,7 @@ Round a number to the nearest integer.
 
 
 ```js
-round(num: number) -> number
+round(num: number): number
 ```
 
 ### Tags
@@ -21,11 +21,11 @@ round(num: number) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number` |  | Yes |
+| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples
@@ -35,7 +35,7 @@ sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [12, 10])
   |> line(end = [round(7.02986), 0])
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 extrude001 = extrude(sketch001, length = 5)

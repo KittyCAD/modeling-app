@@ -10,9 +10,14 @@ import { AxisNames, VIEW_NAMES_SEMANTIC } from 'lib/constants'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useMemo } from 'react'
 import { sceneInfra } from 'lib/singletons'
+import { useSettings } from 'machines/appMachine'
 
 export function useViewControlMenuItems() {
-  const { send: modelingSend } = useModelingContext()
+  const { state: modelingState, send: modelingSend } = useModelingContext()
+  const settings = useSettings()
+  const shouldLockView =
+    modelingState.matches('Sketch') &&
+    !settings.app.allowOrbitInSketchMode.current
   const menuItems = useMemo(
     () => [
       ...Object.entries(VIEW_NAMES_SEMANTIC).map(([axisName, axisSemantic]) => (
@@ -23,6 +28,7 @@ export function useViewControlMenuItems() {
               .updateCameraToAxis(axisName as AxisNames)
               .catch(reportRejection)
           }}
+          disabled={shouldLockView}
         >
           {axisSemantic} view
         </ContextMenuItem>
@@ -32,6 +38,7 @@ export function useViewControlMenuItems() {
         onClick={() => {
           sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
         }}
+        disabled={shouldLockView}
       >
         Reset view
       </ContextMenuItem>,
@@ -39,13 +46,14 @@ export function useViewControlMenuItems() {
         onClick={() => {
           modelingSend({ type: 'Center camera on selection' })
         }}
+        disabled={shouldLockView}
       >
         Center view on selection
       </ContextMenuItem>,
       <ContextMenuDivider />,
       <ContextMenuItemRefresh />,
     ],
-    [VIEW_NAMES_SEMANTIC]
+    [VIEW_NAMES_SEMANTIC, shouldLockView]
   )
   return menuItems
 }

@@ -1,6 +1,0 @@
-@settings(defaultLengthUnit = in)
-
-
-// Use the same units as in the main importing file.
-startSketchOn('XZ')
-  |> circle({ center = [0, 2], radius = 1 }, %)

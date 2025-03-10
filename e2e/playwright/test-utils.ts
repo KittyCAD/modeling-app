@@ -28,6 +28,9 @@ import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { isErrorWhitelisted } from './lib/console-error-whitelist'
 import { isArray } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
+import { DeepPartial } from 'lib/types'
+import { Configuration } from 'lang/wasm'
+import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -894,19 +897,19 @@ export async function setup(
     {
       token: secrets.token,
       settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({
+      settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
           app: {
-            ...TEST_SETTINGS.projects,
-            projectDirectory: TEST_SETTINGS.app.projectDirectory,
-            onboardingStatus: 'dismissed',
+            ...TEST_SETTINGS.project,
+            project_directory: TEST_SETTINGS.app?.project_directory,
+            onboarding_status: 'dismissed',
             theme: 'dark',
           },
-        } as Partial<SaveSettingsPayload>,
+        },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.app.projectDirectory,
+      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.app?.project_directory || '',
       PERSIST_MODELING_CONTEXT,
     }
   )
@@ -942,7 +945,7 @@ export async function setupElectron({
   testInfo: TestInfo
   folderSetupFn?: (projectDirName: string) => Promise<void>
   cleanProjectDir?: boolean
-  appSettings?: Partial<SaveSettingsPayload>
+  appSettings?: DeepPartial<Settings>
   viewport: {
     width: number
     height: number
@@ -1001,7 +1004,7 @@ export async function setupElectron({
 
   if (cleanProjectDir) {
     const tempSettingsFilePath = path.join(projectDirName, SETTINGS_FILE_NAME)
-    const settingsOverrides = TOML.stringify(
+    const settingsOverrides = settingsToToml(
       appSettings
         ? {
             settings: {
@@ -1009,7 +1012,7 @@ export async function setupElectron({
               ...appSettings,
               app: {
                 ...TEST_SETTINGS.app,
-                projectDirectory: projectDirName,
+                project_directory: projectDirName,
                 ...appSettings.app,
               },
             },
@@ -1019,7 +1022,7 @@ export async function setupElectron({
               ...TEST_SETTINGS,
               app: {
                 ...TEST_SETTINGS.app,
-                projectDirectory: projectDirName,
+                project_directory: projectDirName,
               },
             },
           }
@@ -1113,7 +1116,7 @@ export async function createProject({
 }
 
 export function executorInputPath(fileName: string): string {
-  return path.join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
+  return path.join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName)
 }
 
 export async function doAndWaitForImageDiff(
@@ -1212,4 +1215,12 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
       return lines.length
     })
     .toBe(lines)
+}
+
+export function settingsToToml(settings: DeepPartial<Configuration>) {
+  return TOML.stringify(settings as any)
+}
+
+export function tomlToSettings(toml: string): DeepPartial<Configuration> {
+  return TOML.parse(toml)
 }

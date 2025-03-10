@@ -19,8 +19,8 @@ import {
   TOKEN_FILE_NAME,
 } from './constants'
 import { DeepPartial } from './types'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
 export async function renameProjectDirectory(
   projectPath: string,

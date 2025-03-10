@@ -1,0 +1,65 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "declaration": {
+        "end": 19,
+        "id": {
+          "end": 3,
+          "name": "val",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "end": 14,
+                "name": "y",
+                "start": 13,
+                "type": "Identifier"
+              },
+              "arg": {
+                "end": 18,
+                "name": "z",
+                "start": 17,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            }
+          ],
+          "callee": {
+            "end": 9,
+            "name": "foo",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "end": 19,
+          "start": 6,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "end": 11,
+            "name": "x",
+            "start": 10,
+            "type": "Identifier",
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 19,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 19,
+  "start": 0
+}

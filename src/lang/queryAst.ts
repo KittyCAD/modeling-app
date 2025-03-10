@@ -37,12 +37,13 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err, Reason } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { findKwArg } from './util'
-import { codeRefFromRange } from './std/artifactGraph'
-import { FunctionExpression } from 'wasm-lib/kcl/bindings/FunctionExpression'
-import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
+import { codeRefFromRange, getPlaneFromArtifact } from './std/artifactGraph'
+import { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
+import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+import { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 
 export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
 export const UNLABELED_ARG = 'unlabeled first arg'
@@ -176,6 +177,7 @@ type KCLNode = Node<
   | ImportStatement
   | VariableDeclaration
   | VariableDeclarator
+  | TypeDeclaration
   | ReturnStatement
 >
 

@@ -1,19 +1,19 @@
 ---
 title: "angledLineOfXLength"
-excerpt: "Create a line segment from the current 2-dimensional sketch origin"
+excerpt: "Create a line segment from the current 2-dimensional sketch origin along some angle (in degrees) for some relative length in the 'x' dimension."
 layout: manual
 ---
 
-Create a line segment from the current 2-dimensional sketch origin
+Create a line segment from the current 2-dimensional sketch origin along some angle (in degrees) for some relative length in the 'x' dimension.
 
-along some angle (in degrees) for some relative length in the 'x' dimension.
+
 
 ```js
 angledLineOfXLength(
   data: AngledLineData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 
@@ -22,12 +22,12 @@ angledLineOfXLength(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`AngledLineData`](/docs/kcl/types/AngledLineData) | Data to draw an angled line. | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples

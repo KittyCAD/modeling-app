@@ -12,10 +12,10 @@ profile001 = startProfileAt([57.81, 250.51], sketch001)
   |> close()
 extrude001 = extrude(profile001, length = 200)
 sketch002 = startSketchOn('XZ')
-  |> startProfileAt([-73.64, -42.89], %)
-  |> xLine(173.71, %)
-  |> line(end = [-22.12, -94.4])
-  |> xLine(-156.98, %)
+  |> startProfileAt([-114, 85.52], %)
+  |> xLine(length = 265.36)
+  |> line(end = [33.17, -261.22])
+  |> xLine(length = -297.25)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(sketch002, length = 50)
@@ -62,8 +62,8 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
         await homePage.goToModelingScene()
         await scene.waitForExecutionDone()
 
-        const body1CapCoords = { x: 571, y: 351 }
-        const greenCheckCoords = { x: 565, y: 345 }
+        const body1CapCoords = { x: 571, y: 311 }
+        const greenCheckCoords = { x: 565, y: 305 }
         const body2WallCoords = { x: 609, y: 153 }
         const [clickBody1Cap] = scene.makeMouseHelpers(
           body1CapCoords.x,
@@ -88,7 +88,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           await scene.expectPixelColor(yellow, body1CapCoords, 20)
           await editor.expectState({
             highlightedCode: '',
-            activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
+            activeLines: ['|>startProfileAt([-114,85.52],%)'],
             diagnostics: [],
           })
         })
@@ -157,7 +157,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     await homePage.goToModelingScene()
     await scene.waitForExecutionDone()
 
-    const body1CapCoords = { x: 571, y: 351 }
+    const body1CapCoords = { x: 571, y: 311 }
     const [clickBody1Cap] = scene.makeMouseHelpers(
       body1CapCoords.x,
       body1CapCoords.y
@@ -176,7 +176,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
 
       await editor.expectState({
         highlightedCode: '',
-        activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
+        activeLines: ['|>startProfileAt([-114,85.52],%)'],
         diagnostics: [],
       })
     })
@@ -204,7 +204,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     page,
     scene,
   }) => {
-    const body1CapCoords = { x: 571, y: 351 }
+    const body1CapCoords = { x: 571, y: 311 }
 
     await context.addInitScript((file) => {
       localStorage.setItem('persistCode', file)
@@ -263,7 +263,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     page,
     scene,
   }) => {
-    const body1CapCoords = { x: 571, y: 351 }
+    const body1CapCoords = { x: 571, y: 311 }
     const body2WallCoords = { x: 620, y: 152 }
     const [clickBody1Cap] = scene.makeMouseHelpers(
       body1CapCoords.x,
@@ -299,7 +299,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       // Hold shift and select second body
       await editor.expectState({
         highlightedCode: '',
-        activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
+        activeLines: ['|>startProfileAt([-114,85.52],%)'],
         diagnostics: [],
       })
       await page.keyboard.down('Shift')
@@ -310,7 +310,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           'line(end=[121.13,56.63],tag=$seg02)extrude(profile001,length=200)',
         activeLines: [
           '|>line(end=[121.13,56.63],tag=$seg02)',
-          '|>startProfileAt([-73.64,-42.89],%)',
+          '|>startProfileAt([-114,85.52],%)',
         ],
         diagnostics: [],
       })

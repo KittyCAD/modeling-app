@@ -12,7 +12,7 @@ Compute the four quadrant arctangent of Y and X (in radians).
 atan2(
   y: number,
   x: number,
-) -> number
+): number
 ```
 
 ### Tags
@@ -24,12 +24,12 @@ atan2(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `y` | `number` |  | Yes |
-| `x` | `number` |  | Yes |
+| `y` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `x` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples
@@ -41,7 +41,7 @@ sketch001 = startSketchOn('XZ')
        angle = toDegrees(atan2(1.25, 2)),
        length = 20
      }, %)
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 extrude001 = extrude(sketch001, length = 5)

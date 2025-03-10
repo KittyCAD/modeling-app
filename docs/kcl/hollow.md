@@ -12,7 +12,7 @@ Remove volume from a 3-dimensional shape such that a wall of the provided thickn
 hollow(
   thickness: number,
   solid: Solid,
-) -> Solid
+): Solid
 ```
 
 
@@ -20,12 +20,12 @@ hollow(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `thickness` | `number` |  | Yes |
-| `solid` | [`Solid`](/docs/kcl/types/Solid) | A solid is a collection of extrude surfaces. | Yes |
+| `thickness` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) |  | Yes |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid)
 
 
 ### Examples
@@ -70,17 +70,11 @@ case = startSketchOn('-XZ')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
-  |> circle({
-       center = [size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 hollow(0.5, case)

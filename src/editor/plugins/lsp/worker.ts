@@ -9,7 +9,7 @@ import init, {
   ServerConfig,
   copilot_lsp_run,
   kcl_lsp_run,
-} from 'wasm-lib/pkg/wasm_lib'
+} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import * as jsrpc from 'json-rpc-2.0'
 import {
   LspWorkerEvent,

@@ -45,7 +45,7 @@ import {
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
 import { err, reportRejection, trap } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useSettings } from 'machines/appMachine'
 

@@ -1,10 +1,6 @@
 import { CustomIconName } from 'components/CustomIcon'
-import {
-  Artifact,
-  getArtifactOfTypes,
-  getCapCodeRef,
-} from 'lang/std/artifactGraph'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { Artifact, getArtifactOfTypes } from 'lang/std/artifactGraph'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
@@ -89,8 +85,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
       codeManager.code.slice(
         operation.labeledArgs?.['length']?.sourceRange[0],
         operation.labeledArgs?.['length']?.sourceRange[1]
-      ),
-      {}
+      )
     )
     if (err(distanceResult) || 'errors' in distanceResult) {
       return baseCommand
@@ -285,8 +280,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     codeManager.code.slice(
       operation.labeledArgs.offset.sourceRange[0],
       operation.labeledArgs.offset.sourceRange[1]
-    ),
-    {}
+    )
   )
 
   if (err(distanceResult) || 'errors' in distanceResult) {
@@ -331,8 +325,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     codeManager.code.slice(
       operation.labeledArgs.revolutions.sourceRange[0],
       operation.labeledArgs.revolutions.sourceRange[1]
-    ),
-    {}
+    )
   )
   if (err(revolutions) || 'errors' in revolutions) return baseCommand
 
@@ -346,8 +339,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     codeManager.code.slice(
       operation.labeledArgs.angleStart.sourceRange[0],
       operation.labeledArgs.angleStart.sourceRange[1]
-    ),
-    {}
+    )
   )
   if (err(angleStart) || 'errors' in angleStart) return baseCommand
 
@@ -370,8 +362,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     codeManager.code.slice(
       operation.labeledArgs.radius.sourceRange[0],
       operation.labeledArgs.radius.sourceRange[1]
-    ),
-    {}
+    )
   )
   if (err(radius) || 'errors' in radius) return baseCommand
 
@@ -392,8 +383,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
     codeManager.code.slice(
       operation.labeledArgs.length.sourceRange[0],
       operation.labeledArgs.length.sourceRange[1]
-    ),
-    {}
+    )
   )
   if (err(length) || 'errors' in length) return baseCommand
 

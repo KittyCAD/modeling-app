@@ -10,7 +10,7 @@ import {
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 export type ToolTip =
   | 'lineTo'
@@ -52,14 +52,12 @@ export async function executeAst({
   engineCommandManager,
   isMock,
   usePrevMemory,
-  variables,
 }: {
   ast: Node<Program>
   path?: string
   engineCommandManager: EngineCommandManager
   isMock: boolean
   usePrevMemory?: boolean
-  variables?: VariableMap
   isInterrupted?: boolean
 }): Promise<{
   logs: string[]
@@ -69,7 +67,7 @@ export async function executeAst({
 }> {
   try {
     const execState = await (isMock
-      ? executeMock(ast, usePrevMemory, path, variables)
+      ? executeMock(ast, usePrevMemory, path)
       : executeWithEngine(ast, engineCommandManager, path))
 
     await engineCommandManager.waitForAllCommands()

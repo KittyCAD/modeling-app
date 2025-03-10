@@ -7,9 +7,10 @@ import {
   PathToNode,
   Program,
 } from './wasm'
-import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from './queryAst'
+import { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 
 function moreNodePathFromSourceRange(
   node: Node<
@@ -17,6 +18,7 @@ function moreNodePathFromSourceRange(
     | ImportStatement
     | ExpressionStatement
     | VariableDeclaration
+    | TypeDeclaration
     | ReturnStatement
   >,
   sourceRange: SourceRange,

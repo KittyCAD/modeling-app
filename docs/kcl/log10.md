@@ -9,7 +9,7 @@ Compute the base 10 logarithm of the number.
 
 
 ```js
-log10(num: number) -> number
+log10(num: number): number
 ```
 
 ### Tags
@@ -21,11 +21,11 @@ log10(num: number) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number` |  | Yes |
+| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

@@ -11,7 +11,7 @@ Return the value of `pi`. Archimedes’ constant (π).
 **DEPRECATED** use the constant PI
 
 ```js
-pi() -> number
+pi(): number
 ```
 
 ### Tags
@@ -22,7 +22,7 @@ pi() -> number
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples
@@ -31,10 +31,7 @@ pi() -> number
 circumference = 70
 
 exampleSketch = startSketchOn("XZ")
-  |> circle({
-       center = [0, 0],
-       radius = circumference / (2 * pi())
-     }, %)
+  |> circle(center = [0, 0], radius = circumference / (2 * pi()))
 
 example = extrude(exampleSketch, length = 5)
 ```

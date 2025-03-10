@@ -1,12 +1,10 @@
 ---
 title: "patternLinear3d"
-excerpt: "Repeat a 3-dimensional solid along a linear path, with a dynamic amount"
+excerpt: "Repeat a 3-dimensional solid along a linear path, with a dynamic amount of distance between each repetition, some specified number of times."
 layout: manual
 ---
 
-Repeat a 3-dimensional solid along a linear path, with a dynamic amount
-
-of distance between each repetition, some specified number of times.
+Repeat a 3-dimensional solid along a linear path, with a dynamic amount of distance between each repetition, some specified number of times.
 
 ///
 
@@ -17,7 +15,7 @@ patternLinear3d(
   distance: number,
   axis: [number],
   useOriginal?: bool,
-) -> [Solid]
+): [Solid]
 ```
 
 
@@ -27,9 +25,9 @@ patternLinear3d(
 |----------|------|-------------|----------|
 | `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) to duplicate | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
-| `distance` | `number` | Distance between each repetition. Also known as 'spacing'. | Yes |
-| `axis` | `[number]` | The axis of the pattern. A 2D vector. | Yes |
-| `useOriginal` | `bool` | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
+| `distance` | [`number`](/docs/kcl/types/number) | Distance between each repetition. Also known as 'spacing'. | Yes |
+| `axis` | [`[number]`](/docs/kcl/types/number) | The axis of the pattern. A 2D vector. | Yes |
+| `useOriginal` | [`bool`](/docs/kcl/types/bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 
@@ -64,17 +62,11 @@ case = startSketchOn('XY')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
-  |> circle({
-       center = [size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
   // We pass in the "case" here since we want to pattern the whole sketch.
@@ -101,10 +93,7 @@ case = startSketchOn('XY')
   |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
-  |> circle({
-       center = [-size / 2, -size / 2],
-       radius = 25
-     }, %)
+  |> circle(center = [-size / 2, -size / 2], radius = 25)
   |> extrude(length = 50)
 
 // We pass in `thing1` here with `useOriginal` since we want to pattern just this object on the face.
