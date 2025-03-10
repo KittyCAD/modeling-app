@@ -1812,6 +1812,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-directory-test-macro"
+version = "0.1.46"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.96",
+]
+
+[[package]]
 name = "kcl-language-server"
 version = "0.2.47"
 dependencies = [
@@ -1882,6 +1891,7 @@ dependencies = [
  "itertools 0.13.0",
  "js-sys",
  "kcl-derive-docs",
+ "kcl-directory-test-macro",
  "kittycad",
  "kittycad-modeling-cmds",
  "lazy_static",
