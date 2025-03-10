@@ -136,25 +136,21 @@ jobs:
       run: cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
       continue-on-error: true
     - name: Use correct Rust toolchain
-      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true')  }}
+      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true' || steps.download-wasm.outcome == 'failure')  }}
       shell: bash
       run: |
         cp --update=none rust/rust-toolchain.toml ./ || true
     - name: Install rust
-      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true')  }}
+      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true' || steps.download-wasm.outcome == 'failure') }}
       uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
         cache: false # Configured below.
     - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
+      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true' || steps.download-wasm.outcome == 'failure') }}
       with:
         tool: wasm-pack
-    - name: Cache Wasm (because rust diff)
-      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true') }}
-      uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: './rust'
-    - name: OR Cache Wasm (because wasm cache failed)
-      if: ${{ needs.conditions.outputs.should-run == 'true' && steps.download-wasm.outcome == 'failure' }}
+    - name: Rust Cache
+      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true' || steps.download-wasm.outcome == 'failure') }}
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './rust'
@@ -181,12 +177,8 @@ jobs:
         sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
         cat /tmp/vector.toml
         ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
-    - name: Build Wasm (because rust diff)
-      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true') }}
-      shell: bash
-      run: yarn build:wasm
-    - name: OR Build Wasm (because wasm cache failed)
-      if: ${{ needs.conditions.outputs.should-run == 'true' && steps.download-wasm.outcome == 'failure' }}
+    - name: Build Wasm
+      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true' || steps.download-wasm.outcome == 'failure') }}
       shell: bash
       run: yarn build:wasm
     - name: build web
