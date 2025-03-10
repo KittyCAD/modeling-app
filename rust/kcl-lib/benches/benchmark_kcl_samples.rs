@@ -64,7 +64,9 @@ fn run_benchmarks(c: &mut Criterion) {
 
         // Create a benchmark group for this directory
         let mut group = c.benchmark_group(&dir_name);
-        group.sample_size(10);
+        group
+            .sample_size(10)
+            .measurement_time(std::time::Duration::from_secs(1)); // Short measurement time to keep it from running in parallel
 
         let program = kcl_lib::Program::parse_no_errs(&input_content).unwrap();
 
