@@ -110,10 +110,10 @@ const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
 const canReadWriteDirectory = async (
   path: string
-): Promise<{ value: boolean; error: unknown }> => {
+): Promise<{ value: boolean; error: unknown } | Error> => {
   const isDirectory = await statIsDirectory(path)
   if (!isDirectory) {
-    throw new Error('path is not a directory. Do not send a file path.')
+    return new Error('path is not a directory. Do not send a file path.')
   }
 
   // bitwise OR to check read and write permissions
