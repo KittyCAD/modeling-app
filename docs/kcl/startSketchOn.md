@@ -137,9 +137,9 @@ a1 = startSketchOn({
      })
   |> startProfileAt([0, 0], %)
   |> line(end = [100.0, 0])
-  |> yLine(-100.0, %)
-  |> xLine(-100.0, %)
-  |> yLine(100.0, %)
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 3.14)
 ```

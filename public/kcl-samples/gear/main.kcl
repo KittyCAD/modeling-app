@@ -95,9 +95,9 @@ keyWay = startSketchOn(body, 'END')
        holeRadius * cos(startAngle),
        holeRadius * sin(startAngle)
      ], %)
-  |> xLine(keywayDepth, %)
-  |> yLine(-keywayWidth, %)
-  |> xLine(-keywayDepth, %)
+  |> xLine(length = keywayDepth)
+  |> yLine(length = -keywayWidth)
+  |> xLine(length = -keywayDepth)
   |> arc({
        angleEnd = 180,
        angleStart = -1 * 180 / PI * startAngle + 360,

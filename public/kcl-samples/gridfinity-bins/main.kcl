@@ -30,10 +30,10 @@ height = firstStep + secondStep + thirdStep
 fn face(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([binBaseLength + binTol, 0], %)
-    |> yLine(height, %)
-    |> xLine(-binBaseLength, %)
+    |> yLine(length = height)
+    |> xLine(length = -binBaseLength)
     |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
-    |> yLine(-secondStep, %)
+    |> yLine(length = -secondStep)
     |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
     |> close()
   return faceSketch
@@ -91,7 +91,7 @@ singleBinFill = startSketchOn("XY")
      ], %)
   |> line(end = [binLength - (binBaseLength * 2), 0], tag = $line000)
   |> line(end = [0, binLength - (binBaseLength * 2)], tag = $line001)
-  |> xLineTo(profileStartX(%), %, $line002)
+  |> xLine(endAbsolute = profileStartX(%), tag = $line002)
   |> close(tag = $line003)
   |> extrude(length = height)
   |> fillet(
@@ -165,9 +165,9 @@ binFill = patternLinear3d(
 // create the top of the bin
 binTop = startSketchOn(offsetPlane("XY", offset = height))
   |> startProfileAt([0, 0], %)
-  |> xLine((binLength + 2 * binTol) * countBinWidth, %, $line010)
-  |> yLine((binLength + 2 * binTol) * countBinLength, %, $line011)
-  |> xLineTo(profileStartX(%), %, $line012)
+  |> xLine(length = (binLength + 2 * binTol) * countBinWidth, tag = $line010)
+  |> yLine(length = (binLength + 2 * binTol) * countBinLength, tag = $line011)
+  |> xLine(endAbsolute = profileStartX(%), tag = $line012)
   |> close(tag = $line013)
   |> extrude(length = binHeight * countBinHeight)
   |> fillet(

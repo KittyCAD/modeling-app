@@ -239,7 +239,7 @@ description: Artifact commands 3d-boaty.kcl
     "cmdId": "[uuid]",
     "range": [
       653,
-      667,
+      673,
       3
     ],
     "command": {
@@ -259,8 +259,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      675,
-      699,
+      681,
+      705,
       3
     ],
     "command": {
@@ -280,8 +280,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      707,
-      760,
+      713,
+      766,
       3
     ],
     "command": {
@@ -301,8 +301,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      768,
-      793,
+      774,
+      799,
       3
     ],
     "command": {
@@ -322,8 +322,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      801,
-      815,
+      807,
+      827,
       3
     ],
     "command": {
@@ -343,8 +343,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      823,
-      847,
+      835,
+      859,
       3
     ],
     "command": {
@@ -364,8 +364,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      855,
-      907,
+      867,
+      919,
       3
     ],
     "command": {
@@ -385,8 +385,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      915,
-      967,
+      927,
+      979,
       3
     ],
     "command": {
@@ -406,8 +406,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      975,
-      1000,
+      987,
+      1012,
       3
     ],
     "command": {
@@ -427,8 +427,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1008,
-      1032,
+      1020,
+      1044,
       3
     ],
     "command": {
@@ -448,8 +448,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1040,
-      1093,
+      1052,
+      1105,
       3
     ],
     "command": {
@@ -469,8 +469,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1101,
-      1126,
+      1113,
+      1138,
       3
     ],
     "command": {
@@ -490,8 +490,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1134,
-      1161,
+      1146,
+      1173,
       3
     ],
     "command": {
@@ -511,8 +511,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1169,
-      1221,
+      1181,
+      1233,
       3
     ],
     "command": {
@@ -532,8 +532,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1229,
-      1264,
+      1241,
+      1276,
       3
     ],
     "command": {
@@ -553,8 +553,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -565,8 +565,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -576,8 +576,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -596,8 +596,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -610,8 +610,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -621,8 +621,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -633,8 +633,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -646,8 +646,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -660,8 +660,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -674,8 +674,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -688,8 +688,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -702,8 +702,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -716,8 +716,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -730,8 +730,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -744,8 +744,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -758,8 +758,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -772,8 +772,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -786,8 +786,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -800,8 +800,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -814,8 +814,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -828,8 +828,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -842,8 +842,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -856,8 +856,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -870,8 +870,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -884,8 +884,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -898,8 +898,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -912,8 +912,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -926,8 +926,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -940,8 +940,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -954,8 +954,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -968,8 +968,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -982,8 +982,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -996,8 +996,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1010,8 +1010,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1024,8 +1024,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1038,8 +1038,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1052,8 +1052,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1066,8 +1066,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1080,8 +1080,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1094,8 +1094,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1108,8 +1108,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1122,8 +1122,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1136,8 +1136,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1150,8 +1150,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1164,8 +1164,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1178,8 +1178,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1192,8 +1192,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -1389,7 +1389,7 @@ description: Artifact commands 3d-boaty.kcl
     "cmdId": "[uuid]",
     "range": [
       653,
-      667,
+      673,
       3
     ],
     "command": {
@@ -1409,8 +1409,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      675,
-      699,
+      681,
+      705,
       3
     ],
     "command": {
@@ -1430,8 +1430,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      707,
-      760,
+      713,
+      766,
       3
     ],
     "command": {
@@ -1451,8 +1451,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      768,
-      793,
+      774,
+      799,
       3
     ],
     "command": {
@@ -1472,8 +1472,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      801,
-      815,
+      807,
+      827,
       3
     ],
     "command": {
@@ -1493,8 +1493,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      823,
-      847,
+      835,
+      859,
       3
     ],
     "command": {
@@ -1514,8 +1514,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      855,
-      907,
+      867,
+      919,
       3
     ],
     "command": {
@@ -1535,8 +1535,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      915,
-      967,
+      927,
+      979,
       3
     ],
     "command": {
@@ -1556,8 +1556,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      975,
-      1000,
+      987,
+      1012,
       3
     ],
     "command": {
@@ -1577,8 +1577,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1008,
-      1032,
+      1020,
+      1044,
       3
     ],
     "command": {
@@ -1598,8 +1598,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1040,
-      1093,
+      1052,
+      1105,
       3
     ],
     "command": {
@@ -1619,8 +1619,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1101,
-      1126,
+      1113,
+      1138,
       3
     ],
     "command": {
@@ -1640,8 +1640,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1134,
-      1161,
+      1146,
+      1173,
       3
     ],
     "command": {
@@ -1661,8 +1661,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1169,
-      1221,
+      1181,
+      1233,
       3
     ],
     "command": {
@@ -1682,8 +1682,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1229,
-      1264,
+      1241,
+      1276,
       3
     ],
     "command": {
@@ -1703,8 +1703,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -1715,8 +1715,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -1726,8 +1726,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1746,8 +1746,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1760,8 +1760,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1771,8 +1771,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1783,8 +1783,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1796,8 +1796,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1810,8 +1810,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1824,8 +1824,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1838,8 +1838,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1852,8 +1852,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1866,8 +1866,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1880,8 +1880,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1894,8 +1894,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1908,8 +1908,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1922,8 +1922,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1936,8 +1936,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1950,8 +1950,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1964,8 +1964,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1978,8 +1978,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -1992,8 +1992,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2006,8 +2006,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2020,8 +2020,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2034,8 +2034,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2048,8 +2048,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2062,8 +2062,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2076,8 +2076,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2090,8 +2090,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2104,8 +2104,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2118,8 +2118,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2132,8 +2132,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2146,8 +2146,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2160,8 +2160,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2174,8 +2174,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2188,8 +2188,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2202,8 +2202,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2216,8 +2216,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2230,8 +2230,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2244,8 +2244,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2258,8 +2258,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2272,8 +2272,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2286,8 +2286,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2300,8 +2300,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2314,8 +2314,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2328,8 +2328,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2342,8 +2342,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -2356,8 +2356,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1485,
-      1531,
+      1497,
+      1543,
       3
     ],
     "command": {
@@ -2373,8 +2373,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1534,
-      1581,
+      1546,
+      1593,
       3
     ],
     "command": {
@@ -2591,7 +2591,7 @@ description: Artifact commands 3d-boaty.kcl
     "cmdId": "[uuid]",
     "range": [
       653,
-      667,
+      673,
       3
     ],
     "command": {
@@ -2611,8 +2611,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      675,
-      699,
+      681,
+      705,
       3
     ],
     "command": {
@@ -2632,8 +2632,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      707,
-      760,
+      713,
+      766,
       3
     ],
     "command": {
@@ -2653,8 +2653,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      768,
-      793,
+      774,
+      799,
       3
     ],
     "command": {
@@ -2674,8 +2674,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      801,
-      815,
+      807,
+      827,
       3
     ],
     "command": {
@@ -2695,8 +2695,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      823,
-      847,
+      835,
+      859,
       3
     ],
     "command": {
@@ -2716,8 +2716,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      855,
-      907,
+      867,
+      919,
       3
     ],
     "command": {
@@ -2737,8 +2737,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      915,
-      967,
+      927,
+      979,
       3
     ],
     "command": {
@@ -2758,8 +2758,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      975,
-      1000,
+      987,
+      1012,
       3
     ],
     "command": {
@@ -2779,8 +2779,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1008,
-      1032,
+      1020,
+      1044,
       3
     ],
     "command": {
@@ -2800,8 +2800,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1040,
-      1093,
+      1052,
+      1105,
       3
     ],
     "command": {
@@ -2821,8 +2821,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1101,
-      1126,
+      1113,
+      1138,
       3
     ],
     "command": {
@@ -2842,8 +2842,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1134,
-      1161,
+      1146,
+      1173,
       3
     ],
     "command": {
@@ -2863,8 +2863,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1169,
-      1221,
+      1181,
+      1233,
       3
     ],
     "command": {
@@ -2884,8 +2884,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1229,
-      1264,
+      1241,
+      1276,
       3
     ],
     "command": {
@@ -2905,8 +2905,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -2917,8 +2917,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -2928,8 +2928,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -2948,8 +2948,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -2962,8 +2962,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -2973,8 +2973,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -2985,8 +2985,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -2998,8 +2998,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3012,8 +3012,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3026,8 +3026,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3040,8 +3040,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3054,8 +3054,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3068,8 +3068,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3082,8 +3082,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3096,8 +3096,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3110,8 +3110,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3124,8 +3124,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3138,8 +3138,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3152,8 +3152,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3166,8 +3166,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3180,8 +3180,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3194,8 +3194,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3208,8 +3208,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3222,8 +3222,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3236,8 +3236,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3250,8 +3250,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3264,8 +3264,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3278,8 +3278,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3292,8 +3292,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3306,8 +3306,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3320,8 +3320,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3334,8 +3334,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3348,8 +3348,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3362,8 +3362,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3376,8 +3376,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3390,8 +3390,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3404,8 +3404,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3418,8 +3418,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3432,8 +3432,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3446,8 +3446,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3460,8 +3460,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3474,8 +3474,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3488,8 +3488,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3502,8 +3502,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3516,8 +3516,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3530,8 +3530,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3544,8 +3544,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -3712,7 +3712,7 @@ description: Artifact commands 3d-boaty.kcl
     "cmdId": "[uuid]",
     "range": [
       653,
-      667,
+      673,
       3
     ],
     "command": {
@@ -3732,8 +3732,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      675,
-      699,
+      681,
+      705,
       3
     ],
     "command": {
@@ -3753,8 +3753,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      707,
-      760,
+      713,
+      766,
       3
     ],
     "command": {
@@ -3774,8 +3774,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      768,
-      793,
+      774,
+      799,
       3
     ],
     "command": {
@@ -3795,8 +3795,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      801,
-      815,
+      807,
+      827,
       3
     ],
     "command": {
@@ -3816,8 +3816,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      823,
-      847,
+      835,
+      859,
       3
     ],
     "command": {
@@ -3837,8 +3837,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      855,
-      907,
+      867,
+      919,
       3
     ],
     "command": {
@@ -3858,8 +3858,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      915,
-      967,
+      927,
+      979,
       3
     ],
     "command": {
@@ -3879,8 +3879,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      975,
-      1000,
+      987,
+      1012,
       3
     ],
     "command": {
@@ -3900,8 +3900,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1008,
-      1032,
+      1020,
+      1044,
       3
     ],
     "command": {
@@ -3921,8 +3921,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1040,
-      1093,
+      1052,
+      1105,
       3
     ],
     "command": {
@@ -3942,8 +3942,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1101,
-      1126,
+      1113,
+      1138,
       3
     ],
     "command": {
@@ -3963,8 +3963,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1134,
-      1161,
+      1146,
+      1173,
       3
     ],
     "command": {
@@ -3984,8 +3984,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1169,
-      1221,
+      1181,
+      1233,
       3
     ],
     "command": {
@@ -4005,8 +4005,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1229,
-      1264,
+      1241,
+      1276,
       3
     ],
     "command": {
@@ -4026,8 +4026,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -4038,8 +4038,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -4049,8 +4049,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4069,8 +4069,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4083,8 +4083,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4094,8 +4094,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4106,8 +4106,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4119,8 +4119,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4133,8 +4133,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4147,8 +4147,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4161,8 +4161,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4175,8 +4175,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4189,8 +4189,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4203,8 +4203,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4217,8 +4217,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4231,8 +4231,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4245,8 +4245,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4259,8 +4259,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4273,8 +4273,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4287,8 +4287,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4301,8 +4301,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4315,8 +4315,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4329,8 +4329,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4343,8 +4343,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4357,8 +4357,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4371,8 +4371,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4385,8 +4385,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4399,8 +4399,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4413,8 +4413,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4427,8 +4427,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4441,8 +4441,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4455,8 +4455,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4469,8 +4469,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4483,8 +4483,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4497,8 +4497,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4511,8 +4511,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4525,8 +4525,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4539,8 +4539,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4553,8 +4553,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4567,8 +4567,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4581,8 +4581,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4595,8 +4595,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4609,8 +4609,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4623,8 +4623,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4637,8 +4637,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4651,8 +4651,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4665,8 +4665,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -4679,8 +4679,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1485,
-      1531,
+      1497,
+      1543,
       3
     ],
     "command": {
@@ -4696,8 +4696,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1534,
-      1581,
+      1546,
+      1593,
       3
     ],
     "command": {
@@ -4914,7 +4914,7 @@ description: Artifact commands 3d-boaty.kcl
     "cmdId": "[uuid]",
     "range": [
       653,
-      667,
+      673,
       3
     ],
     "command": {
@@ -4934,8 +4934,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      675,
-      699,
+      681,
+      705,
       3
     ],
     "command": {
@@ -4955,8 +4955,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      707,
-      760,
+      713,
+      766,
       3
     ],
     "command": {
@@ -4976,8 +4976,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      768,
-      793,
+      774,
+      799,
       3
     ],
     "command": {
@@ -4997,8 +4997,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      801,
-      815,
+      807,
+      827,
       3
     ],
     "command": {
@@ -5018,8 +5018,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      823,
-      847,
+      835,
+      859,
       3
     ],
     "command": {
@@ -5039,8 +5039,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      855,
-      907,
+      867,
+      919,
       3
     ],
     "command": {
@@ -5060,8 +5060,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      915,
-      967,
+      927,
+      979,
       3
     ],
     "command": {
@@ -5081,8 +5081,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      975,
-      1000,
+      987,
+      1012,
       3
     ],
     "command": {
@@ -5102,8 +5102,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1008,
-      1032,
+      1020,
+      1044,
       3
     ],
     "command": {
@@ -5123,8 +5123,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1040,
-      1093,
+      1052,
+      1105,
       3
     ],
     "command": {
@@ -5144,8 +5144,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1101,
-      1126,
+      1113,
+      1138,
       3
     ],
     "command": {
@@ -5165,8 +5165,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1134,
-      1161,
+      1146,
+      1173,
       3
     ],
     "command": {
@@ -5186,8 +5186,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1169,
-      1221,
+      1181,
+      1233,
       3
     ],
     "command": {
@@ -5207,8 +5207,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1229,
-      1264,
+      1241,
+      1276,
       3
     ],
     "command": {
@@ -5228,8 +5228,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -5240,8 +5240,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -5251,8 +5251,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5271,8 +5271,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5285,8 +5285,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5296,8 +5296,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5308,8 +5308,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5321,8 +5321,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5335,8 +5335,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5349,8 +5349,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5363,8 +5363,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5377,8 +5377,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5391,8 +5391,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5405,8 +5405,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5419,8 +5419,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5433,8 +5433,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5447,8 +5447,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5461,8 +5461,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5475,8 +5475,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5489,8 +5489,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5503,8 +5503,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5517,8 +5517,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5531,8 +5531,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5545,8 +5545,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5559,8 +5559,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5573,8 +5573,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5587,8 +5587,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5601,8 +5601,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5615,8 +5615,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5629,8 +5629,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5643,8 +5643,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5657,8 +5657,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5671,8 +5671,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5685,8 +5685,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5699,8 +5699,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5713,8 +5713,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5727,8 +5727,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5741,8 +5741,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5755,8 +5755,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5769,8 +5769,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5783,8 +5783,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5797,8 +5797,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5811,8 +5811,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5825,8 +5825,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5839,8 +5839,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5853,8 +5853,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -5867,8 +5867,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1405,
+      1379,
+      1417,
       3
     ],
     "command": {
@@ -6035,7 +6035,7 @@ description: Artifact commands 3d-boaty.kcl
     "cmdId": "[uuid]",
     "range": [
       653,
-      667,
+      673,
       3
     ],
     "command": {
@@ -6055,8 +6055,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      675,
-      699,
+      681,
+      705,
       3
     ],
     "command": {
@@ -6076,8 +6076,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      707,
-      760,
+      713,
+      766,
       3
     ],
     "command": {
@@ -6097,8 +6097,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      768,
-      793,
+      774,
+      799,
       3
     ],
     "command": {
@@ -6118,8 +6118,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      801,
-      815,
+      807,
+      827,
       3
     ],
     "command": {
@@ -6139,8 +6139,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      823,
-      847,
+      835,
+      859,
       3
     ],
     "command": {
@@ -6160,8 +6160,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      855,
-      907,
+      867,
+      919,
       3
     ],
     "command": {
@@ -6181,8 +6181,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      915,
-      967,
+      927,
+      979,
       3
     ],
     "command": {
@@ -6202,8 +6202,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      975,
-      1000,
+      987,
+      1012,
       3
     ],
     "command": {
@@ -6223,8 +6223,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1008,
-      1032,
+      1020,
+      1044,
       3
     ],
     "command": {
@@ -6244,8 +6244,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1040,
-      1093,
+      1052,
+      1105,
       3
     ],
     "command": {
@@ -6265,8 +6265,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1101,
-      1126,
+      1113,
+      1138,
       3
     ],
     "command": {
@@ -6286,8 +6286,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1134,
-      1161,
+      1146,
+      1173,
       3
     ],
     "command": {
@@ -6307,8 +6307,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1169,
-      1221,
+      1181,
+      1233,
       3
     ],
     "command": {
@@ -6328,8 +6328,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1229,
-      1264,
+      1241,
+      1276,
       3
     ],
     "command": {
@@ -6349,8 +6349,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -6361,8 +6361,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1272,
-      1279,
+      1284,
+      1291,
       3
     ],
     "command": {
@@ -6372,8 +6372,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6392,8 +6392,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6406,8 +6406,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6417,8 +6417,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6429,8 +6429,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6442,8 +6442,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6456,8 +6456,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6470,8 +6470,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6484,8 +6484,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6498,8 +6498,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6512,8 +6512,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6526,8 +6526,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6540,8 +6540,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6554,8 +6554,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6568,8 +6568,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6582,8 +6582,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6596,8 +6596,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6610,8 +6610,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6624,8 +6624,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6638,8 +6638,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6652,8 +6652,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6666,8 +6666,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6680,8 +6680,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6694,8 +6694,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6708,8 +6708,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6722,8 +6722,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6736,8 +6736,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6750,8 +6750,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6764,8 +6764,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6778,8 +6778,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6792,8 +6792,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6806,8 +6806,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6820,8 +6820,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6834,8 +6834,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6848,8 +6848,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6862,8 +6862,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6876,8 +6876,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6890,8 +6890,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6904,8 +6904,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6918,8 +6918,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6932,8 +6932,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6946,8 +6946,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6960,8 +6960,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6974,8 +6974,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -6988,8 +6988,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1443,
-      1482,
+      1455,
+      1494,
       3
     ],
     "command": {
@@ -7002,8 +7002,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1485,
-      1531,
+      1497,
+      1543,
       3
     ],
     "command": {
@@ -7019,8 +7019,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1534,
-      1581,
+      1546,
+      1593,
       3
     ],
     "command": {
@@ -7083,8 +7083,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1697,
+      1685,
+      1709,
       3
     ],
     "command": {
@@ -7103,8 +7103,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1697,
+      1685,
+      1709,
       3
     ],
     "command": {
@@ -7114,8 +7114,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1697,
+      1685,
+      1709,
       3
     ],
     "command": {
@@ -7131,8 +7131,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7151,8 +7151,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7162,8 +7162,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7179,8 +7179,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7200,8 +7200,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7221,8 +7221,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7242,8 +7242,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7263,8 +7263,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7284,8 +7284,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7305,8 +7305,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7317,8 +7317,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7337,8 +7337,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7351,8 +7351,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7362,8 +7362,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7374,8 +7374,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7387,8 +7387,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7401,8 +7401,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7415,8 +7415,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7429,8 +7429,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7443,8 +7443,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7457,8 +7457,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7471,8 +7471,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7485,8 +7485,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7499,8 +7499,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7513,8 +7513,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7527,8 +7527,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7541,8 +7541,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1937,
-      1961,
+      1949,
+      1973,
       3
     ],
     "command": {
@@ -7555,8 +7555,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1697,
+      1685,
+      1709,
       3
     ],
     "command": {
@@ -7575,8 +7575,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1697,
+      1685,
+      1709,
       3
     ],
     "command": {
@@ -7586,8 +7586,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1697,
+      1685,
+      1709,
       3
     ],
     "command": {
@@ -7603,8 +7603,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7623,8 +7623,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7634,8 +7634,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7651,8 +7651,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7672,8 +7672,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7693,8 +7693,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7714,8 +7714,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7735,8 +7735,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7756,8 +7756,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7777,8 +7777,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -7789,8 +7789,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7809,8 +7809,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7823,8 +7823,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7834,8 +7834,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7846,8 +7846,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7859,8 +7859,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7873,8 +7873,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7887,8 +7887,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7901,8 +7901,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7915,8 +7915,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7929,8 +7929,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7943,8 +7943,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7957,8 +7957,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7971,8 +7971,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7985,8 +7985,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -7999,8 +7999,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -8013,8 +8013,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2003,
-      2027,
+      2015,
+      2039,
       3
     ],
     "command": {
@@ -8074,8 +8074,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2111,
-      2138,
+      2123,
+      2150,
       3
     ],
     "command": {
@@ -8094,8 +8094,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2111,
-      2138,
+      2123,
+      2150,
       3
     ],
     "command": {
@@ -8105,8 +8105,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2111,
-      2138,
+      2123,
+      2150,
       3
     ],
     "command": {
@@ -8122,8 +8122,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2146,
-      2168,
+      2158,
+      2180,
       3
     ],
     "command": {
@@ -8143,8 +8143,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2176,
-      2198,
+      2188,
+      2210,
       3
     ],
     "command": {
@@ -8164,8 +8164,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2206,
-      2228,
+      2218,
+      2240,
       3
     ],
     "command": {
@@ -8185,8 +8185,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2236,
-      2259,
+      2248,
+      2271,
       3
     ],
     "command": {
@@ -8206,8 +8206,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2267,
-      2290,
+      2279,
+      2302,
       3
     ],
     "command": {
@@ -8227,8 +8227,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2298,
-      2333,
+      2310,
+      2345,
       3
     ],
     "command": {
@@ -8248,8 +8248,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2341,
-      2348,
+      2353,
+      2360,
       3
     ],
     "command": {
@@ -8260,8 +8260,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2341,
-      2348,
+      2353,
+      2360,
       3
     ],
     "command": {
@@ -8271,8 +8271,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2356,
-      2420,
+      2368,
+      2432,
       3
     ],
     "command": {
@@ -8344,8 +8344,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8364,8 +8364,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8378,8 +8378,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8389,8 +8389,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8401,8 +8401,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8414,8 +8414,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8428,8 +8428,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8442,8 +8442,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8456,8 +8456,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8470,8 +8470,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8484,8 +8484,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8498,8 +8498,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8512,8 +8512,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8526,8 +8526,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8540,8 +8540,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8554,8 +8554,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8568,8 +8568,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8582,8 +8582,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8602,8 +8602,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8616,8 +8616,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8627,8 +8627,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8639,8 +8639,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8652,8 +8652,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8666,8 +8666,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8680,8 +8680,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8694,8 +8694,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8708,8 +8708,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8722,8 +8722,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8736,8 +8736,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8750,8 +8750,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8764,8 +8764,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8778,8 +8778,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8792,8 +8792,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8806,8 +8806,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8820,8 +8820,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8840,8 +8840,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8854,8 +8854,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8865,8 +8865,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8877,8 +8877,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8890,8 +8890,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8904,8 +8904,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8918,8 +8918,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8932,8 +8932,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8946,8 +8946,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8960,8 +8960,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8974,8 +8974,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -8988,8 +8988,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -9002,8 +9002,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -9016,8 +9016,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -9030,8 +9030,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -9044,8 +9044,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2535,
+      2523,
+      2547,
       3
     ],
     "command": {
@@ -9105,8 +9105,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2620,
-      2649,
+      2632,
+      2661,
       3
     ],
     "command": {
@@ -9125,8 +9125,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2620,
-      2649,
+      2632,
+      2661,
       3
     ],
     "command": {
@@ -9136,8 +9136,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2620,
-      2649,
+      2632,
+      2661,
       3
     ],
     "command": {
@@ -9153,8 +9153,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2657,
-      2680,
+      2669,
+      2692,
       3
     ],
     "command": {
@@ -9174,8 +9174,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2688,
-      2713,
+      2700,
+      2725,
       3
     ],
     "command": {
@@ -9195,8 +9195,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2721,
-      2745,
+      2733,
+      2757,
       3
     ],
     "command": {
@@ -9216,8 +9216,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2753,
-      2777,
+      2765,
+      2789,
       3
     ],
     "command": {
@@ -9237,8 +9237,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2785,
-      2807,
+      2797,
+      2819,
       3
     ],
     "command": {
@@ -9258,8 +9258,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2815,
-      2850,
+      2827,
+      2862,
       3
     ],
     "command": {
@@ -9279,8 +9279,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2858,
-      2865,
+      2870,
+      2877,
       3
     ],
     "command": {
@@ -9291,8 +9291,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2858,
-      2865,
+      2870,
+      2877,
       3
     ],
     "command": {
@@ -9302,8 +9302,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2873,
-      2939,
+      2885,
+      2951,
       3
     ],
     "command": {
@@ -9346,8 +9346,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9366,8 +9366,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9380,8 +9380,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9391,8 +9391,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9403,8 +9403,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9416,8 +9416,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9430,8 +9430,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9444,8 +9444,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9458,8 +9458,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9472,8 +9472,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9486,8 +9486,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9500,8 +9500,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9514,8 +9514,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9528,8 +9528,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9542,8 +9542,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9556,8 +9556,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9570,8 +9570,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9584,8 +9584,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9604,8 +9604,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9618,8 +9618,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9629,8 +9629,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9641,8 +9641,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9654,8 +9654,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9668,8 +9668,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9682,8 +9682,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9696,8 +9696,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9710,8 +9710,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9724,8 +9724,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9738,8 +9738,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9752,8 +9752,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9766,8 +9766,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9780,8 +9780,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9794,8 +9794,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9808,8 +9808,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3035,
-      3059,
+      3047,
+      3071,
       3
     ],
     "command": {
@@ -9822,8 +9822,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3682,
-      3717,
+      3712,
+      3747,
       3
     ],
     "command": {
@@ -9851,8 +9851,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3682,
-      3717,
+      3712,
+      3747,
       3
     ],
     "command": {
@@ -9869,8 +9869,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3140,
-      3167,
+      3152,
+      3179,
       3
     ],
     "command": {
@@ -9889,8 +9889,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3140,
-      3167,
+      3152,
+      3179,
       3
     ],
     "command": {
@@ -9900,8 +9900,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3140,
-      3167,
+      3152,
+      3179,
       3
     ],
     "command": {
@@ -9917,8 +9917,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3175,
-      3188,
+      3187,
+      3206,
       3
     ],
     "command": {
@@ -9938,8 +9938,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3196,
-      3286,
+      3214,
+      3304,
       3
     ],
     "command": {
@@ -9967,8 +9967,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3748,
-      3779,
+      3778,
+      3809,
       3
     ],
     "command": {
@@ -9996,8 +9996,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3748,
-      3779,
+      3778,
+      3809,
       3
     ],
     "command": {
@@ -10014,8 +10014,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3386,
-      3419,
+      3404,
+      3437,
       3
     ],
     "command": {
@@ -10034,8 +10034,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3386,
-      3419,
+      3404,
+      3437,
       3
     ],
     "command": {
@@ -10045,8 +10045,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3386,
-      3419,
+      3404,
+      3437,
       3
     ],
     "command": {
@@ -10062,8 +10062,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3427,
-      3440,
+      3445,
+      3464,
       3
     ],
     "command": {
@@ -10083,8 +10083,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3448,
-      3470,
+      3472,
+      3494,
       3
     ],
     "command": {
@@ -10104,8 +10104,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3478,
-      3501,
+      3502,
+      3525,
       3
     ],
     "command": {
@@ -10125,8 +10125,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3509,
-      3523,
+      3533,
+      3553,
       3
     ],
     "command": {
@@ -10146,8 +10146,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3531,
-      3555,
+      3561,
+      3585,
       3
     ],
     "command": {
@@ -10167,8 +10167,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3563,
-      3586,
+      3593,
+      3616,
       3
     ],
     "command": {
@@ -10188,8 +10188,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3594,
-      3601,
+      3624,
+      3631,
       3
     ],
     "command": {
@@ -10200,8 +10200,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3594,
-      3601,
+      3624,
+      3631,
       3
     ],
     "command": {
@@ -10211,8 +10211,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10226,8 +10226,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10238,8 +10238,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10251,8 +10251,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10265,8 +10265,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10279,8 +10279,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10293,8 +10293,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10307,8 +10307,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10321,8 +10321,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10335,8 +10335,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10349,8 +10349,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10363,8 +10363,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10377,8 +10377,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10391,8 +10391,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10405,8 +10405,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10419,8 +10419,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10433,8 +10433,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10447,8 +10447,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3682,
-      3717,
+      3712,
+      3747,
       3
     ],
     "command": {
@@ -10476,8 +10476,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3682,
-      3717,
+      3712,
+      3747,
       3
     ],
     "command": {
@@ -10494,8 +10494,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3140,
-      3167,
+      3152,
+      3179,
       3
     ],
     "command": {
@@ -10514,8 +10514,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3140,
-      3167,
+      3152,
+      3179,
       3
     ],
     "command": {
@@ -10525,8 +10525,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3140,
-      3167,
+      3152,
+      3179,
       3
     ],
     "command": {
@@ -10542,8 +10542,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3175,
-      3188,
+      3187,
+      3206,
       3
     ],
     "command": {
@@ -10563,8 +10563,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3196,
-      3286,
+      3214,
+      3304,
       3
     ],
     "command": {
@@ -10592,8 +10592,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3748,
-      3779,
+      3778,
+      3809,
       3
     ],
     "command": {
@@ -10621,8 +10621,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3748,
-      3779,
+      3778,
+      3809,
       3
     ],
     "command": {
@@ -10639,8 +10639,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3386,
-      3419,
+      3404,
+      3437,
       3
     ],
     "command": {
@@ -10659,8 +10659,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3386,
-      3419,
+      3404,
+      3437,
       3
     ],
     "command": {
@@ -10670,8 +10670,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3386,
-      3419,
+      3404,
+      3437,
       3
     ],
     "command": {
@@ -10687,8 +10687,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3427,
-      3440,
+      3445,
+      3464,
       3
     ],
     "command": {
@@ -10708,8 +10708,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3448,
-      3470,
+      3472,
+      3494,
       3
     ],
     "command": {
@@ -10729,8 +10729,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3478,
-      3501,
+      3502,
+      3525,
       3
     ],
     "command": {
@@ -10750,8 +10750,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3509,
-      3523,
+      3533,
+      3553,
       3
     ],
     "command": {
@@ -10771,8 +10771,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3531,
-      3555,
+      3561,
+      3585,
       3
     ],
     "command": {
@@ -10792,8 +10792,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3563,
-      3586,
+      3593,
+      3616,
       3
     ],
     "command": {
@@ -10813,8 +10813,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3594,
-      3601,
+      3624,
+      3631,
       3
     ],
     "command": {
@@ -10825,8 +10825,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3594,
-      3601,
+      3624,
+      3631,
       3
     ],
     "command": {
@@ -10836,8 +10836,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10851,8 +10851,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10863,8 +10863,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10876,8 +10876,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10890,8 +10890,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10904,8 +10904,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10918,8 +10918,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10932,8 +10932,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10946,8 +10946,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10960,8 +10960,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10974,8 +10974,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -10988,8 +10988,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -11002,8 +11002,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -11016,8 +11016,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -11030,8 +11030,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -11044,8 +11044,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -11058,8 +11058,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3791,
-      3818,
+      3821,
+      3848,
       3
     ],
     "command": {
@@ -11124,8 +11124,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1697,
+      1685,
+      1709,
       3
     ],
     "command": {
@@ -11137,8 +11137,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -11150,8 +11150,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1697,
+      1685,
+      1709,
       3
     ],
     "command": {
@@ -11163,8 +11163,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1835,
+      1717,
+      1847,
       3
     ],
     "command": {
@@ -11176,8 +11176,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2111,
-      2138,
+      2123,
+      2150,
       3
     ],
     "command": {
@@ -11189,8 +11189,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2620,
-      2649,
+      2632,
+      2661,
       3
     ],
     "command": {
@@ -11202,8 +11202,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3140,
-      3167,
+      3152,
+      3179,
       3
     ],
     "command": {
@@ -11215,8 +11215,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3386,
-      3419,
+      3404,
+      3437,
       3
     ],
     "command": {
@@ -11228,8 +11228,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3140,
-      3167,
+      3152,
+      3179,
       3
     ],
     "command": {
@@ -11241,8 +11241,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3386,
-      3419,
+      3404,
+      3437,
       3
     ],
     "command": {

@@ -37,10 +37,10 @@ lipHeight = lipStep1 + lipStep2 + lipStep3 + lipStep4 + lipStep5
 fn face(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([binBaseLength + binTol, 0], %)
-    |> yLine(height, %)
-    |> xLine(-binBaseLength, %)
+    |> yLine(length = height)
+    |> xLine(length = -binBaseLength)
     |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
-    |> yLine(-secondStep, %)
+    |> yLine(length = -secondStep)
     |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
     |> close()
   return faceSketch
@@ -98,7 +98,7 @@ singleBinFill = startSketchOn("XY")
      ], %)
   |> line(end = [binLength - (binBaseLength * 2), 0], tag = $line000)
   |> line(end = [0, binLength - (binBaseLength * 2)], tag = $line001)
-  |> xLineTo(profileStartX(%), %, $line002)
+  |> xLine(endAbsolute = profileStartX(%), tag = $line002)
   |> close(tag = $line003)
   |> extrude(length = height)
   |> fillet(
@@ -172,9 +172,9 @@ binFill = patternLinear3d(
 //
 binTop = startSketchOn(offsetPlane("XY", offset = height))
   |> startProfileAt([0, 0], %)
-  |> xLine((binLength + 2 * binTol) * countBinWidth, %, $line010)
-  |> yLine((binLength + 2 * binTol) * countBinLength, %, $line011)
-  |> xLineTo(profileStartX(%), %, $line012)
+  |> xLine(length = (binLength + 2 * binTol) * countBinWidth, tag = $line010)
+  |> yLine(length = (binLength + 2 * binTol) * countBinLength, tag = $line011)
+  |> xLine(endAbsolute = profileStartX(%), tag = $line012)
   |> close(tag = $line013)
   |> extrude(length = binHeight * countBinHeight)
   |> fillet(
@@ -192,7 +192,7 @@ binTop = startSketchOn(offsetPlane("XY", offset = height))
 fn lipFace(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([0, 0], %)
-    // |> yLine(lipHeight, %, $line100)
+    // |> yLine(length = lipHeight, tag = $line100)
     |> line(end = [0.0, 5.792893], tag = $line000)
     |> arc({
          angleStart = 180.0,
@@ -201,9 +201,9 @@ fn lipFace(plane) {
        }, %, $arc000)
     // |> angledLineOfYLength({ angle: -45, length: lipStep5 }, %)
     |> line(end = [1.046447, -1.046447], tag = $line001)
-    |> yLine(-lipStep4, %)
+    |> yLine(length = -lipStep4)
     |> angledLineOfYLength({ angle = -45, length = lipStep3 }, %)
-    |> yLine(-lipStep2, %)
+    |> yLine(length = -lipStep2)
     |> angledLineOfYLength({ angle = -135, length = lipStep1 }, %)
     |> close()
   return faceSketch

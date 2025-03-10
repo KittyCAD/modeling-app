@@ -4321,18 +4321,7 @@ description: Variables in memory after executing gear.kcl
           "id": "[uuid]",
           "sourceRange": [
             2703,
-            2724,
-            0
-          ],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [
             2730,
-            2752,
             0
           ],
           "tag": null,
@@ -4342,8 +4331,8 @@ description: Variables in memory after executing gear.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2758,
-            2780,
+            2736,
+            2764,
             0
           ],
           "tag": null,
@@ -4353,8 +4342,19 @@ description: Variables in memory after executing gear.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2912,
-            3021,
+            2770,
+            2798,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            2930,
+            3039,
             0
           ],
           "tag": null,
@@ -4370,30 +4370,30 @@ description: Variables in memory after executing gear.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2703,
-                2724,
-                0
-              ]
-            },
-            "from": [
-              0.9922,
-              0.125
-            ],
-            "tag": null,
-            "to": [
-              1.1172,
-              0.125
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
                 2730,
-                2752,
+                0
+              ]
+            },
+            "from": [
+              0.9922,
+              0.125
+            ],
+            "tag": null,
+            "to": [
+              1.1172,
+              0.125
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                2736,
+                2764,
                 0
               ]
             },
@@ -4415,8 +4415,8 @@ description: Variables in memory after executing gear.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2758,
-                2780,
+                2770,
+                2798,
                 0
               ]
             },
@@ -4438,8 +4438,8 @@ description: Variables in memory after executing gear.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2786,
-                2906,
+                2804,
+                2924,
                 0
               ]
             },
@@ -4467,8 +4467,8 @@ description: Variables in memory after executing gear.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2912,
-                3021,
+                2930,
+                3039,
                 0
               ]
             },
@@ -4496,8 +4496,8 @@ description: Variables in memory after executing gear.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3027,
-                3034,
+                3045,
+                3052,
                 0
               ]
             },
