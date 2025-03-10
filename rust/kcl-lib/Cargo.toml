@@ -14,6 +14,11 @@ exclude = ["tests/*", "benches/*", "examples/*", "e2e/*", "bindings/*", "fuzz/*"
 [lib]
 bench = false
 
+[[bin]]
+name = "kcl-lib-bin"
+path = "src/main.rs"
+bench = false
+
 [dependencies]
 anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
