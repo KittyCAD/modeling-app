@@ -100,6 +100,7 @@ export const fileLoader: LoaderFunction = async (
       directory_count: 0,
       metadata: null,
       default_file: projectPath,
+      readWriteAccess: true,
     }
 
     const maybeProjectInfo = isDesktop()
@@ -145,6 +146,7 @@ export const fileLoader: LoaderFunction = async (
     directory_count: 0,
     kcl_file_count: 1,
     metadata: null,
+    readWriteAccess: true,
   }
 
   // Fire off the event to load the project settings

@@ -33,9 +33,9 @@ const Home = () => {
   const { state, send } = useProjectsContext()
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
-  const [readWriteProjectDir, setReadWriteProjectDir] = useState({
+  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{value: boolean, error: unknown}>({
     value: true,
-    error: undefined,
+    error: undefined
   })
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
@@ -131,6 +131,18 @@ const Home = () => {
       data: { name: project.name || '' },
     })
   }
+  /** Type narrowing function of unknown error to a string */
+  function errorMessage(error: unknown): string {
+    if (error != undefined && error instanceof Error) {
+      return error.message
+    } else if (error && typeof error === 'object') {
+      return JSON.stringify(error)
+    } else if (typeof error === 'string') {
+      return error
+    } else {
+      return 'Unknown error'
+    }
+}
 
   return (
     <div className="relative flex flex-col h-screen overflow-hidden" ref={ref}>
@@ -230,7 +242,7 @@ const Home = () => {
             <section>
               <div className="flex items-center select-none">
                 <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm grow">
-                  <p className="">{readWriteProjectDir.error.message}</p>
+                  <p className="">{errorMessage(readWriteProjectDir.error)}</p>
                   <Link
                     data-testid="project-directory-settings-link"
                     to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}

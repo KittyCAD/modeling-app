@@ -9,7 +9,6 @@ export const projectsMachine = setup({
       projects: Project[]
       defaultProjectName: string
       defaultDirectory: string
-      lastProjectActions: {}
       hasListedProjects: boolean
     },
     events: {} as
@@ -66,11 +65,6 @@ export const projectsMachine = setup({
         'output' in event && isArray(event.output)
           ? event.output
           : context.projects,
-    }),
-    markProjectAsDeleted: assign({
-      lastProjectActions: ({ context, event }) => {
-        console.log(context, event)
-      },
     }),
     setHasListedProjects: assign({
       hasListedProjects: () => true,
@@ -273,11 +267,7 @@ export const projectsMachine = setup({
         },
         onDone: [
           {
-            actions: [
-              'toastSuccess',
-              'markProjectAsDeleted',
-              'navigateToProjectIfNeeded',
-            ],
+            actions: ['toastSuccess', 'navigateToProjectIfNeeded'],
             target: '#Home machine.Reading projects',
           },
         ],
