@@ -2211,4 +2211,43 @@ a = foo()
         let result = parse_execute(program).await;
         assert!(result.unwrap_err().to_string().contains("return"));
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn load_all_modules() {
+        let mut universe = HashMap::<String, NodeRef<'_, Program>>::new();
+
+        // program a.kcl
+        let programa = r#"
+a = 1
+"#;
+        let programa = crate::parsing::parse_str(&programa, ModuleId::default())
+            .parse_errs_as_err()
+            .unwrap();
+        universe.insert("a.kcl".to_owned(), (&programa).into());
+
+        // program b.kcl
+        let programb = r#"
+import 'a.kcl' as x
+"#;
+        let programb = crate::parsing::parse_str(&programb, ModuleId::default())
+            .parse_errs_as_err()
+            .unwrap();
+        universe.insert("b.kcl".to_owned(), (&programb).into());
+
+        // program c.kcl
+        let programc = r#"
+import 'a.kcl'
+"#;
+        let programc = crate::parsing::parse_str(&programc, ModuleId::default())
+            .parse_errs_as_err()
+            .unwrap();
+        universe.insert("c.kcl".to_owned(), (&programc).into());
+
+        // ok we have all the "files" loaded, let's do a sort and concurrent
+        // run here.
+
+        for modules in crate::walk::import_graph(universe).into_iter() {
+            //
+        }
+    }
 }
