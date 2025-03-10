@@ -1,0 +1,70 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "end": 26,
+      "expression": {
+        "arguments": [
+          {
+            "type": "LabeledArg",
+            "label": {
+              "end": 16,
+              "name": "endAbsolute",
+              "start": 5,
+              "type": "Identifier"
+            },
+            "arg": {
+              "elements": [
+                {
+                  "end": 21,
+                  "raw": "0",
+                  "start": 20,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
+                },
+                {
+                  "end": 24,
+                  "raw": "1",
+                  "start": 23,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                }
+              ],
+              "end": 25,
+              "start": 19,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            }
+          }
+        ],
+        "callee": {
+          "end": 4,
+          "name": "line",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "end": 26,
+        "start": 0,
+        "type": "CallExpressionKw",
+        "type": "CallExpressionKw",
+        "unlabeled": null
+      },
+      "start": 0,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
+    }
+  ],
+  "end": 26,
+  "start": 0
+}

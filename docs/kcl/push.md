@@ -12,7 +12,7 @@ Returns a new array with the element appended.
 push(
   array: [KclValue],
   elem: KclValue,
-) -> KclValue
+): KclValue
 ```
 
 

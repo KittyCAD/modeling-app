@@ -1,0 +1,218 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed poop_chute.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "-YZ"
+        },
+        "sourceRange": [
+          196,
+          201,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      182,
+      202,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "angle": {
+              "type": "Number",
+              "value": 90.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "axis": {
+              "type": "Object",
+              "value": {
+                "custom": {
+                  "type": "Object",
+                  "value": {
+                    "axis": {
+                      "type": "Array",
+                      "value": [
+                        {
+                          "type": "Number",
+                          "value": 1.0,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
+                        },
+                        {
+                          "type": "Number",
+                          "value": 0.0,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "origin": {
+                      "type": "Array",
+                      "value": [
+                        {
+                          "type": "Number",
+                          "value": 0.0,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
+                        },
+                        {
+                          "type": "Number",
+                          "value": 5.5000001,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "sourceRange": [
+          885,
+          1003,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1005,
+          1014,
+          0
+        ]
+      }
+    },
+    "name": "revolve",
+    "sourceRange": [
+      877,
+      1015,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "-YZ"
+        },
+        "sourceRange": [
+          1043,
+          1048,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      1029,
+      1049,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 1.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          1736,
+          1756,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      1719,
+      1757,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
+  }
+]

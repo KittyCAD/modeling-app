@@ -10,7 +10,7 @@ import {
 import { TransformInfo } from 'lang/std/stdTypes'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 
 export function horzVertInfo(
   selectionRanges: Selections,

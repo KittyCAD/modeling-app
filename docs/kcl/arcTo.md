@@ -1,10 +1,10 @@
 ---
 title: "arcTo"
-excerpt: "Draw a 3 point arc."
+excerpt: "Draw a three point arc."
 layout: manual
 ---
 
-Draw a 3 point arc.
+Draw a three point arc.
 
 The arc is constructed such that the start point is the current position of the sketch and two more points defined as the end and interior point. The interior point is placed between the start point and end point. The radius of the arc will be controlled by how far the interior point is placed from the start and end.
 
@@ -13,7 +13,7 @@ arcTo(
   data: ArcToData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 
@@ -22,12 +22,12 @@ arcTo(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`ArcToData`](/docs/kcl/types/ArcToData) | Data to draw a three point arc (arcTo). | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples

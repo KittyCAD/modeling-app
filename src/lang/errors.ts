@@ -1,8 +1,5 @@
-import {
-  KclError,
-  KclError as RustKclError,
-} from '../wasm-lib/kcl/bindings/KclError'
-import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
+import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
 import { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
 import { posToOffset } from '@kittycad/codemirror-lsp-client'
 import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
@@ -15,8 +12,8 @@ import {
   isTopLevelModule,
   SourceRange,
 } from 'lang/wasm'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
-import { ModulePath } from 'wasm-lib/kcl/bindings/ModulePath'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
@@ -159,7 +156,7 @@ export class KCLTypeError extends KCLError {
   }
 }
 
-export class KCLUnimplementedError extends KCLError {
+export class KCLIoError extends KCLError {
   constructor(
     msg: string,
     sourceRange: SourceRange,
@@ -169,7 +166,7 @@ export class KCLUnimplementedError extends KCLError {
     filenames: { [x: number]: ModulePath | undefined }
   ) {
     super(
-      'unimplemented',
+      'io',
       msg,
       sourceRange,
       operations,
@@ -177,7 +174,7 @@ export class KCLUnimplementedError extends KCLError {
       artifactGraph,
       filenames
     )
-    Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
+    Object.setPrototypeOf(this, KCLIoError.prototype)
   }
 }
 

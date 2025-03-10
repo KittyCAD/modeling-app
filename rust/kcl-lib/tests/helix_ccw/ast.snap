@@ -1,0 +1,260 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing helix_ccw.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 198,
+          "id": {
+            "end": 7,
+            "name": "part001",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 28,
+                    "raw": "'XY'",
+                    "start": 24,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "XY"
+                  }
+                ],
+                "callee": {
+                  "end": 23,
+                  "name": "startSketchOn",
+                  "start": 10,
+                  "type": "Identifier"
+                },
+                "end": 29,
+                "start": 10,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 48,
+                      "name": "center",
+                      "start": 42,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 53,
+                          "raw": "5",
+                          "start": 52,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 56,
+                          "raw": "5",
+                          "start": 55,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 57,
+                      "start": 51,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 65,
+                      "name": "radius",
+                      "start": 59,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 70,
+                      "raw": "10",
+                      "start": 68,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 10.0,
+                        "suffix": "None"
+                      }
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 41,
+                  "name": "circle",
+                  "start": 35,
+                  "type": "Identifier"
+                },
+                "end": 71,
+                "start": 35,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 91,
+                      "name": "length",
+                      "start": 85,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 96,
+                      "raw": "10",
+                      "start": 94,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 10.0,
+                        "suffix": "None"
+                      }
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 84,
+                  "name": "extrude",
+                  "start": 77,
+                  "type": "Identifier"
+                },
+                "end": 97,
+                "start": 77,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 194,
+                    "properties": [
+                      {
+                        "end": 145,
+                        "key": {
+                          "end": 140,
+                          "name": "revolutions",
+                          "start": 129,
+                          "type": "Identifier"
+                        },
+                        "start": 129,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "end": 145,
+                          "raw": "16",
+                          "start": 143,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 16.0,
+                            "suffix": "None"
+                          }
+                        }
+                      },
+                      {
+                        "end": 168,
+                        "key": {
+                          "end": 164,
+                          "name": "angleStart",
+                          "start": 154,
+                          "type": "Identifier"
+                        },
+                        "start": 154,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "end": 168,
+                          "raw": "0",
+                          "start": 167,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      },
+                      {
+                        "end": 187,
+                        "key": {
+                          "end": 180,
+                          "name": "ccw",
+                          "start": 177,
+                          "type": "Identifier"
+                        },
+                        "start": 177,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "end": 187,
+                          "raw": "true",
+                          "start": 183,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": true
+                        }
+                      }
+                    ],
+                    "start": 120,
+                    "type": "ObjectExpression",
+                    "type": "ObjectExpression"
+                  },
+                  {
+                    "end": 197,
+                    "start": 196,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 119,
+                  "name": "helixRevolutions",
+                  "start": 103,
+                  "type": "Identifier"
+                },
+                "end": 198,
+                "start": 103,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 198,
+            "start": 10,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 198,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 199,
+    "start": 0
+  }
+}

@@ -1,6 +1,6 @@
 import { getNodeFromPath } from 'lang/queryAst'
 import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   Program,
   VariableDeclarator,
@@ -16,7 +16,7 @@ import {
 } from '../wasm'
 import { err } from 'lib/trap'
 import { findKwArgAny } from 'lang/util'
-import { ARG_END, ARG_END_ABSOLUTE } from './sketch'
+import { ARG_END, ARG_END_ABSOLUTE, DETERMINING_ARGS } from './sketch'
 
 export function getSketchSegmentFromPathToNode(
   sketch: Sketch,
@@ -93,11 +93,12 @@ export function isSketchVariablesLinked(
   and will keep checking the second arguments recursively until it runs out of variable declarations
   to check or it finds a match.
   that way it can find fn calls that are linked to each other through variables eg:
-  const part001 = startSketchAt([0, 0])
-    |> xLineTo(1.69, %)
+  const part001 = startSketchOn('XY')
+    |> startProfileAt([0, 0],%)
+    |> xLine(endAbsolute = 1.69)
     |> line(end = [myVar, 0.38]) // ❗️ <- cursor in this fn call (the primary)
     |> line(end = [0.41, baz])
-    |> xLine(0.91, %)
+    |> xLine(length = 0.91)
     |> angledLine([37, 2], %)
   const yo = line(end = [myVar, 0.38], tag = part001)
     |> line(end = [1, 1])
@@ -134,7 +135,7 @@ export function isSketchVariablesLinked(
       case 'CallExpression':
         return firstCallExp?.arguments[1]
       case 'CallExpressionKw':
-        return findKwArgAny([ARG_END, ARG_END_ABSOLUTE], firstCallExp)
+        return findKwArgAny(DETERMINING_ARGS, firstCallExp)
     }
   })()
   if (!secondArg || secondArg?.type !== 'Identifier') return false

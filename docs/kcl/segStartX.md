@@ -9,7 +9,7 @@ Compute the starting point of the provided line segment along the 'x' axis.
 
 
 ```js
-segStartX(tag: TagIdentifier) -> number
+segStartX(tag: TagIdentifier): number
 ```
 
 
@@ -17,11 +17,11 @@ segStartX(tag: TagIdentifier) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

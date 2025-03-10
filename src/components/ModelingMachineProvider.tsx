@@ -98,7 +98,7 @@ import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   getFaceCodeRef,
   getPathsFromArtifact,
@@ -132,13 +132,14 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const {
-    app: { theme, enableSSAO, allowOrbitInSketchMode },
+    app: { theme, allowOrbitInSketchMode },
     modeling: {
       defaultUnit,
       cameraProjection,
       highlightEdges,
       showScaleGrid,
       cameraOrbit,
+      enableSSAO,
     },
   } = useSettings()
   const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
@@ -666,6 +667,13 @@ export const ModelingMachineProvider = ({
           if (event.data?.forceNewSketch) return false
           if (artifactIsPlaneWithPaths(selectionRanges)) {
             return true
+          } else if (selectionRanges.graphSelections[0]?.artifact) {
+            // See if the selection is "close enough" to be coerced to the plane later
+            const maybePlane = getPlaneFromArtifact(
+              selectionRanges.graphSelections[0].artifact,
+              engineCommandManager.artifactGraph
+            )
+            return !err(maybePlane)
           }
           if (
             isCursorInFunctionDefinition(

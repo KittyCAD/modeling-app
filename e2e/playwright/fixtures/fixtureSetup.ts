@@ -12,9 +12,10 @@ import { CmdBarFixture } from './cmdBarFixture'
 import { EditorFixture } from './editorFixture'
 import { ToolbarFixture } from './toolbarFixture'
 import { SceneFixture } from './sceneFixture'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { HomePageFixture } from './homePageFixture'
 import { unsafeTypedKeys } from 'lib/utils'
+import { DeepPartial } from 'lib/types'
+import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -45,7 +46,7 @@ export class AuthenticatedApp {
   }
   getInputFile = (fileName: string) => {
     return fsp.readFile(
-      join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName),
+      join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName),
       'utf-8'
     )
   }
@@ -85,7 +86,7 @@ export class AuthenticatedTronApp {
       fixtures: Partial<Fixtures>
       folderSetupFn?: (projectDirName: string) => Promise<void>
       cleanProjectDir?: boolean
-      appSettings?: Partial<SaveSettingsPayload>
+      appSettings?: DeepPartial<Settings>
     } = { fixtures: {} }
   ) {
     const { electronApp, page, context, dir } = await setupElectron({

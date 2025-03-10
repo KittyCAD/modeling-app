@@ -1,0 +1,153 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 29,
+          "id": {
+            "end": 6,
+            "name": "add",
+            "start": 3,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 27,
+                    "left": {
+                      "end": 23,
+                      "name": "x",
+                      "start": 22,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 27,
+                      "raw": "1",
+                      "start": 26,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 22,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 27,
+                  "start": 15,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 29,
+              "start": 11
+            },
+            "end": 29,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 9,
+                  "name": "x",
+                  "start": 8,
+                  "type": "Identifier"
+                },
+                "labeled": false
+              }
+            ],
+            "start": 6,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 3,
+          "type": "VariableDeclarator"
+        },
+        "end": 29,
+        "kind": "fn",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 47,
+          "id": {
+            "end": 34,
+            "name": "two",
+            "start": 31,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 42,
+                  "name": "x",
+                  "start": 41,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 46,
+                  "raw": "1",
+                  "start": 45,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "callee": {
+              "end": 40,
+              "name": "add",
+              "start": 37,
+              "type": "Identifier"
+            },
+            "end": 47,
+            "start": 37,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
+          },
+          "start": 31,
+          "type": "VariableDeclarator"
+        },
+        "end": 47,
+        "kind": "const",
+        "start": 31,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 48,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 31,
+            "start": 29,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

@@ -23,9 +23,9 @@ Angles and radius with an optional tag.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angleStart` |`number` (**maximum:** 360.0) (**minimum:** -360.0)| The start angle. | No |
-| `angleEnd` |`number` (**maximum:** 360.0) (**minimum:** -360.0)| The end angle. | No |
-| `radius` |`number`| The radius. | No |
+| `angleStart` |[`number`](/docs/kcl/types/number) (**maximum:** 360.0) (**minimum:** -360.0)| The start angle. | No |
+| `angleEnd` |[`number`](/docs/kcl/types/number) (**maximum:** 360.0) (**minimum:** -360.0)| The end angle. | No |
+| `radius` |[`number`](/docs/kcl/types/number)| The radius. | No |
 
 
 ----
@@ -43,7 +43,7 @@ Center, to and radius with an optional tag.
 |----------|------|-------------|----------|
 | `center` |`[number, number]`| The center. | No |
 | `to` |`[number, number]`| The to point. | No |
-| `radius` |`number`| The radius. | No |
+| `radius` |[`number`](/docs/kcl/types/number)| The radius. | No |
 
 
 ----

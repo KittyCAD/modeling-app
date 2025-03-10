@@ -15,7 +15,7 @@ For example, if the current project uses inches, this function will return `36`.
 We merely provide these functions for convenience and readability, as `10 * yd()` is more readable that your intent is "I want 10 yards" than `10 * 914.4`, if the project settings are in millimeters.
 
 ```js
-yd() -> number
+yd(): number
 ```
 
 ### Tags
@@ -26,7 +26,7 @@ yd() -> number
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

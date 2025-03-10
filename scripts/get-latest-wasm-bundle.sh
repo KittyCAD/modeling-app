@@ -18,7 +18,7 @@ if [ -z "$RUN_ID" ]; then
   exit 1
 fi
 
-gh run download $RUN_ID --repo $REPO_OWNER/$REPO_NAME --name $ARTIFACT_NAME --dir ./src/wasm-lib/pkg
+gh run download $RUN_ID --repo $REPO_OWNER/$REPO_NAME --name $ARTIFACT_NAME --dir ./rust/kcl-wasm-lib/pkg
 
-cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
 echo "latest wasm copied to public folder"

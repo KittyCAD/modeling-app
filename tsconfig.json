@@ -9,6 +9,7 @@
       "@kittycad/codemirror-lang-kcl": [
         "../packages/codemirror-lang-kcl/src/index.ts"
       ],
+      "@rust/*": ["../rust/*"],
       "/*": ["src/*"]
     },
     "types": [
@@ -35,7 +36,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "packages", "*.ts"],
-  "exclude": ["node_modules", "./*.grammar", "vite.config.ts"],
+  "include": ["src", "e2e", "packages", "*.ts", "rust"],
+  "exclude": ["node_modules", "./*.grammar", "vite.config.ts", ".vscode-test"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

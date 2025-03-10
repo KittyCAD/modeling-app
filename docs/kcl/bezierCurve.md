@@ -1,19 +1,19 @@
 ---
 title: "bezierCurve"
-excerpt: "Draw a smooth, continuous, curved line segment from the current origin to"
+excerpt: "Draw a smooth, continuous, curved line segment from the current origin to the desired (x, y), using a number of control points to shape the curve's shape."
 layout: manual
 ---
 
-Draw a smooth, continuous, curved line segment from the current origin to
+Draw a smooth, continuous, curved line segment from the current origin to the desired (x, y), using a number of control points to shape the curve's shape.
 
-the desired (x, y), using a number of control points to shape the curve's shape.
+
 
 ```js
 bezierCurve(
   data: BezierData,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 
@@ -22,12 +22,12 @@ bezierCurve(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`BezierData`](/docs/kcl/types/BezierData) | Data to draw a bezier curve. | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples

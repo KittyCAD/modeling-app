@@ -9,7 +9,7 @@ Get the previous adjacent edge to the edge given.
 
 
 ```js
-getPreviousAdjacentEdge(tag: TagIdentifier) -> Uuid
+getPreviousAdjacentEdge(tag: TagIdentifier): Uuid
 ```
 
 
@@ -17,7 +17,7 @@ getPreviousAdjacentEdge(tag: TagIdentifier) -> Uuid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
 
 ### Returns
 

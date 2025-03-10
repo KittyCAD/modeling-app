@@ -1,0 +1,1920 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands i_shape.kcl
+---
+[
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "edge_lines_visible",
+      "hidden": false
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      399,
+      416,
+      0
+    ],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      422,
+      459,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      422,
+      459,
+      0
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      422,
+      459,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 5.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      465,
+      505,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 63.4,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      511,
+      569,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 5.0,
+          "y": 5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      575,
+      611,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 20.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      617,
+      676,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": -5.0,
+          "y": 5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      682,
+      747,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -12.8,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      753,
+      812,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": -5.0,
+          "y": 5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      818,
+      876,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 62.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      882,
+      940,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 5.0,
+          "y": 5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      946,
+      988,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 5.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      994,
+      1052,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 5.0,
+          "y": 5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1058,
+      1094,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 18.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1100,
+      1159,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": -5.0,
+          "y": 5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1165,
+      1234,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -44.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1240,
+      1300,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": -5.0,
+          "y": -5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1306,
+      1345,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": -18.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1351,
+      1410,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 5.0,
+          "y": -5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1416,
+      1458,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 5.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1464,
+      1523,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 5.0,
+          "y": -5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1529,
+      1590,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": -62.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1596,
+      1656,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": -5.0,
+          "y": -5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1662,
+      1792,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -16.6,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1798,
+      1858,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": -5.0,
+          "y": -5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1864,
+      1903,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": -20.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1909,
+      1968,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 5.0,
+          "y": -5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1974,
+      1982,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1974,
+      1982,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1992,
+      2009,
+      0
+    ],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2015,
+      2040,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2015,
+      2040,
+      0
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2015,
+      2040,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2046,
+      2065,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2071,
+      2129,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 5.0,
+          "y": 5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2135,
+      2177,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 15.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2183,
+      2242,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": -5.0,
+          "y": 5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2248,
+      2268,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2274,
+      2334,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": -5.0,
+          "y": -5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2340,
+      2385,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": -15.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2391,
+      2450,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 5.0,
+          "y": -5.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2456,
+      2464,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2456,
+      2464,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2490,
+      2504,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2490,
+      2504,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 3.0,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2510,
+      2531,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  }
+]

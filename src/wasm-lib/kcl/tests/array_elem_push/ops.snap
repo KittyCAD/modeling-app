@@ -1,6 +1,0 @@
----
-source: kcl/src/simulation_tests.rs
-description: Operations executed array_elem_push.kcl
-snapshot_kind: text
----
-[]

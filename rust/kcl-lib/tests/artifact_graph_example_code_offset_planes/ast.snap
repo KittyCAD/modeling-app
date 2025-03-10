@@ -1,0 +1,365 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing artifact_graph_example_code_offset_planes.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 47,
+          "id": {
+            "end": 14,
+            "name": "offsetPlane001",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 41,
+                  "name": "offset",
+                  "start": 35,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 46,
+                  "raw": "20",
+                  "start": 44,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 20.0,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "callee": {
+              "end": 28,
+              "name": "offsetPlane",
+              "start": 17,
+              "type": "Identifier"
+            },
+            "end": 47,
+            "start": 17,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 33,
+              "raw": "\"XY\"",
+              "start": 29,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "XY"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 47,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 96,
+          "id": {
+            "end": 62,
+            "name": "offsetPlane002",
+            "start": 48,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 89,
+                  "name": "offset",
+                  "start": 83,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "argument": {
+                    "end": 95,
+                    "raw": "50",
+                    "start": 93,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 50.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "end": 95,
+                  "operator": "-",
+                  "start": 92,
+                  "type": "UnaryExpression",
+                  "type": "UnaryExpression"
+                }
+              }
+            ],
+            "callee": {
+              "end": 76,
+              "name": "offsetPlane",
+              "start": 65,
+              "type": "Identifier"
+            },
+            "end": 96,
+            "start": 65,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 81,
+              "raw": "\"XZ\"",
+              "start": 77,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "XZ"
+            }
+          },
+          "start": 48,
+          "type": "VariableDeclarator"
+        },
+        "end": 96,
+        "kind": "const",
+        "start": 48,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 144,
+          "id": {
+            "end": 111,
+            "name": "offsetPlane003",
+            "start": 97,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 138,
+                  "name": "offset",
+                  "start": 132,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 143,
+                  "raw": "10",
+                  "start": 141,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 10.0,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "callee": {
+              "end": 125,
+              "name": "offsetPlane",
+              "start": 114,
+              "type": "Identifier"
+            },
+            "end": 144,
+            "start": 114,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 130,
+              "raw": "\"YZ\"",
+              "start": 126,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "YZ"
+            }
+          },
+          "start": 97,
+          "type": "VariableDeclarator"
+        },
+        "end": 144,
+        "kind": "const",
+        "start": 97,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 249,
+          "id": {
+            "end": 155,
+            "name": "sketch002",
+            "start": 146,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 186,
+                    "name": "offsetPlane001",
+                    "start": 172,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 171,
+                  "name": "startSketchOn",
+                  "start": 158,
+                  "type": "Identifier"
+                },
+                "end": 187,
+                "start": 158,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 210,
+                        "raw": "0",
+                        "start": 209,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 213,
+                        "raw": "0",
+                        "start": 212,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 214,
+                    "start": 208,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 217,
+                    "start": 216,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 207,
+                  "name": "startProfileAt",
+                  "start": 193,
+                  "type": "Identifier"
+                },
+                "end": 218,
+                "start": 193,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 232,
+                      "name": "end",
+                      "start": 229,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 240,
+                          "raw": "6.78",
+                          "start": 236,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 6.78,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 247,
+                          "raw": "15.01",
+                          "start": 242,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 15.01,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 248,
+                      "start": 235,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 228,
+                  "name": "line",
+                  "start": 224,
+                  "type": "Identifier"
+                },
+                "end": 249,
+                "start": 224,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 249,
+            "start": 158,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 146,
+          "type": "VariableDeclarator"
+        },
+        "end": 249,
+        "kind": "const",
+        "start": 146,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 250,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "2": [
+          {
+            "end": 146,
+            "start": 144,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

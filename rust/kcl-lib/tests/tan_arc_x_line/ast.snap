@@ -1,0 +1,609 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing tan_arc_x_line.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 10,
+          "id": {
+            "end": 6,
+            "name": "startX",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 10,
+            "raw": "0",
+            "start": 9,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.0,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 10,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 21,
+          "id": {
+            "end": 17,
+            "name": "startY",
+            "start": 11,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 21,
+            "raw": "0",
+            "start": 20,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.0,
+              "suffix": "None"
+            }
+          },
+          "start": 11,
+          "type": "VariableDeclarator"
+        },
+        "end": 21,
+        "kind": "const",
+        "start": 11,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 39,
+          "id": {
+            "end": 33,
+            "name": "angleOffset",
+            "start": 22,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 39,
+            "raw": "135",
+            "start": 36,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 135.0,
+              "suffix": "None"
+            }
+          },
+          "start": 22,
+          "type": "VariableDeclarator"
+        },
+        "end": 39,
+        "kind": "const",
+        "start": 22,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 45,
+          "id": {
+            "end": 41,
+            "name": "r",
+            "start": 40,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 45,
+            "raw": "1",
+            "start": 44,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 1.0,
+              "suffix": "None"
+            }
+          },
+          "start": 40,
+          "type": "VariableDeclarator"
+        },
+        "end": 45,
+        "kind": "const",
+        "start": 40,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 62,
+          "id": {
+            "end": 56,
+            "name": "angleStart",
+            "start": 46,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 62,
+            "raw": "110",
+            "start": 59,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 110.0,
+              "suffix": "None"
+            }
+          },
+          "start": 46,
+          "type": "VariableDeclarator"
+        },
+        "end": 62,
+        "kind": "const",
+        "start": 46,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 465,
+        "expression": {
+          "body": [
+            {
+              "arguments": [
+                {
+                  "end": 82,
+                  "raw": "'XY'",
+                  "start": 78,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": "XY"
+                }
+              ],
+              "callee": {
+                "end": 77,
+                "name": "startSketchOn",
+                "start": 64,
+                "type": "Identifier"
+              },
+              "end": 83,
+              "start": 64,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "elements": [
+                    {
+                      "end": 111,
+                      "name": "startX",
+                      "start": 105,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    {
+                      "end": 119,
+                      "name": "startY",
+                      "start": 113,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  ],
+                  "end": 120,
+                  "start": 104,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                },
+                {
+                  "end": 123,
+                  "start": 122,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "end": 103,
+                "name": "startProfileAt",
+                "start": 89,
+                "type": "Identifier"
+              },
+              "end": 124,
+              "start": 89,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "end": 181,
+                  "properties": [
+                    {
+                      "end": 161,
+                      "key": {
+                        "end": 148,
+                        "name": "angle",
+                        "start": 143,
+                        "type": "Identifier"
+                      },
+                      "start": 143,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 161,
+                        "name": "angleStart",
+                        "start": 151,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    },
+                    {
+                      "end": 179,
+                      "key": {
+                        "end": 169,
+                        "name": "length",
+                        "start": 163,
+                        "type": "Identifier"
+                      },
+                      "start": 163,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 179,
+                        "raw": ".000001",
+                        "start": 172,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.000001,
+                          "suffix": "None"
+                        }
+                      }
+                    }
+                  ],
+                  "start": 141,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                },
+                {
+                  "end": 184,
+                  "start": 183,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "end": 140,
+                "name": "angledLine",
+                "start": 130,
+                "type": "Identifier"
+              },
+              "end": 185,
+              "start": 130,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "end": 241,
+                  "properties": [
+                    {
+                      "end": 227,
+                      "key": {
+                        "end": 213,
+                        "name": "offset",
+                        "start": 207,
+                        "type": "Identifier"
+                      },
+                      "start": 207,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 227,
+                        "name": "angleOffset",
+                        "start": 216,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    },
+                    {
+                      "end": 239,
+                      "key": {
+                        "end": 235,
+                        "name": "radius",
+                        "start": 229,
+                        "type": "Identifier"
+                      },
+                      "start": 229,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 239,
+                        "name": "r",
+                        "start": 238,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
+                  ],
+                  "start": 205,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                },
+                {
+                  "end": 244,
+                  "start": 243,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                },
+                {
+                  "end": 251,
+                  "start": 246,
+                  "type": "TagDeclarator",
+                  "type": "TagDeclarator",
+                  "value": "arc1"
+                }
+              ],
+              "callee": {
+                "end": 204,
+                "name": "tangentialArc",
+                "start": 191,
+                "type": "Identifier"
+              },
+              "end": 252,
+              "start": 191,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "end": 333,
+                  "properties": [
+                    {
+                      "end": 301,
+                      "key": {
+                        "end": 287,
+                        "name": "offset",
+                        "start": 281,
+                        "type": "Identifier"
+                      },
+                      "start": 281,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 301,
+                        "name": "angleOffset",
+                        "start": 290,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    },
+                    {
+                      "end": 326,
+                      "key": {
+                        "end": 316,
+                        "name": "radius",
+                        "start": 310,
+                        "type": "Identifier"
+                      },
+                      "start": 310,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 326,
+                        "left": {
+                          "end": 322,
+                          "raw": "0.5",
+                          "start": 319,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.5,
+                            "suffix": "None"
+                          }
+                        },
+                        "operator": "*",
+                        "right": {
+                          "end": 326,
+                          "name": "r",
+                          "start": 325,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "start": 319,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      }
+                    }
+                  ],
+                  "start": 272,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                },
+                {
+                  "end": 336,
+                  "start": 335,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                },
+                {
+                  "end": 343,
+                  "start": 338,
+                  "type": "TagDeclarator",
+                  "type": "TagDeclarator",
+                  "value": "arc2"
+                }
+              ],
+              "callee": {
+                "end": 271,
+                "name": "tangentialArc",
+                "start": 258,
+                "type": "Identifier"
+              },
+              "end": 344,
+              "start": 258,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "end": 426,
+                  "properties": [
+                    {
+                      "end": 394,
+                      "key": {
+                        "end": 379,
+                        "name": "offset",
+                        "start": 373,
+                        "type": "Identifier"
+                      },
+                      "start": 373,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "argument": {
+                          "end": 394,
+                          "name": "angleOffset",
+                          "start": 383,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "end": 394,
+                        "operator": "-",
+                        "start": 382,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    },
+                    {
+                      "end": 419,
+                      "key": {
+                        "end": 409,
+                        "name": "radius",
+                        "start": 403,
+                        "type": "Identifier"
+                      },
+                      "start": 403,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 419,
+                        "left": {
+                          "end": 415,
+                          "raw": "0.5",
+                          "start": 412,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.5,
+                            "suffix": "None"
+                          }
+                        },
+                        "operator": "*",
+                        "right": {
+                          "end": 419,
+                          "name": "r",
+                          "start": 418,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "start": 412,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      }
+                    }
+                  ],
+                  "start": 364,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                },
+                {
+                  "end": 429,
+                  "start": 428,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                },
+                {
+                  "end": 436,
+                  "start": 431,
+                  "type": "TagDeclarator",
+                  "type": "TagDeclarator",
+                  "value": "arc3"
+                }
+              ],
+              "callee": {
+                "end": 363,
+                "name": "tangentialArc",
+                "start": 350,
+                "type": "Identifier"
+              },
+              "end": 437,
+              "start": 350,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 460,
+                    "name": "endAbsolute",
+                    "start": 449,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 464,
+                    "raw": "1",
+                    "start": 463,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
+                  }
+                }
+              ],
+              "callee": {
+                "end": 448,
+                "name": "xLine",
+                "start": 443,
+                "type": "Identifier"
+              },
+              "end": 465,
+              "start": 443,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
+            }
+          ],
+          "end": 465,
+          "start": 64,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 64,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 466,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "4": [
+          {
+            "end": 64,
+            "start": 62,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

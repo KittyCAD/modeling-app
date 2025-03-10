@@ -1,0 +1,105 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed pipe_as_arg.kcl
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "double",
+    "functionSourceRange": [
+      404,
+      426,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      479,
+      488,
+      0
+    ]
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "cube",
+    "functionSourceRange": [
+      7,
+      393,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      465,
+      497,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          191,
+          193,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      177,
+      194,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 400.0,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": [
+          384,
+          390,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      367,
+      391,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  }
+]

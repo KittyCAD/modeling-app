@@ -1,15 +1,15 @@
 ---
 title: "profileStartY"
-excerpt: "Extract the provided 2-dimensional sketch's profile's origin's 'y'"
+excerpt: "Extract the provided 2-dimensional sketch's profile's origin's 'y' value."
 layout: manual
 ---
 
-Extract the provided 2-dimensional sketch's profile's origin's 'y'
+Extract the provided 2-dimensional sketch's profile's origin's 'y' value.
 
-value.
+
 
 ```js
-profileStartY(sketch: Sketch) -> number
+profileStartY(sketch: Sketch): number
 ```
 
 
@@ -17,11 +17,11 @@ profileStartY(sketch: Sketch) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

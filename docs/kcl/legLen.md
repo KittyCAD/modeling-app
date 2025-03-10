@@ -12,7 +12,7 @@ Compute the length of the given leg.
 legLen(
   hypotenuse: number,
   leg: number,
-) -> number
+): number
 ```
 
 ### Tags
@@ -24,12 +24,12 @@ legLen(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `hypotenuse` | `number` |  | Yes |
-| `leg` | `number` |  | Yes |
+| `hypotenuse` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `leg` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples

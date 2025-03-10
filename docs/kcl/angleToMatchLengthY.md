@@ -13,7 +13,7 @@ angleToMatchLengthY(
   tag: TagIdentifier,
   to: number,
   sketch: Sketch,
-) -> number
+): number
 ```
 
 
@@ -21,13 +21,13 @@ angleToMatchLengthY(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
-| `to` | `number` |  | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
+| `to` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples
@@ -40,7 +40,7 @@ sketch001 = startSketchOn('XZ')
        angle = angleToMatchLengthY(seg01, 15, %),
        length = 5
      }, %)
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 extrusion = extrude(sketch001, length = 5)

@@ -1,0 +1,265 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed socket-head-cap-screw.kcl
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "cos",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      655,
+      673,
+      0
+    ]
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "capScrew",
+    "functionSourceRange": [
+      861,
+      2274,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      2276,
+      2335,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
+        "sourceRange": [
+          971,
+          975,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      957,
+      976,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 0.19,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          1162,
+          1175,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      1128,
+      1176,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        1136,
+        1151,
+        0
+      ]
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1273,
+          1282,
+          0
+        ]
+      },
+      "tag": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": [
+          1284,
+          1289,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      1259,
+      1290,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -0.14250000000000002,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": [
+          2033,
+          2051,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      1998,
+      2052,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        2006,
+        2022,
+        0
+      ]
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          2088,
+          2097,
+          0
+        ]
+      },
+      "tag": {
+        "value": {
+          "type": "String",
+          "value": "start"
+        },
+        "sourceRange": [
+          2099,
+          2106,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      2074,
+      2107,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          2246,
+          2252,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      2212,
+      2253,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        2220,
+        2235,
+        0
+      ]
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  }
+]

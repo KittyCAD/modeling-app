@@ -31,10 +31,10 @@ profile002 = startProfileAt([-321.34, 361.76], sketch002)
   |> close()
 extrude002 = extrude(profile002, length = 500)
 sketch005 = startSketchOn(extrude002, 'END')
-profile006 = circle({
+profile006 = circle(sketch005,
   center = [-292.57, 302.55],
   radius = 25.89
-}, sketch005)
+)
 sketch004 = startSketchOn(extrude001, seg02)
 profile005 = startProfileAt([36.1, 174.49], sketch004)
   |> angledLine([0, 22.33], %, $rectangleSegmentA003)
@@ -61,10 +61,10 @@ profile003 = startProfileAt([-115.59, 439.4], sketch003)
      ], %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-profile004 = circle({
+profile004 = circle(sketch003,
   center = [-88.54, 209.41],
   radius = 42.72
-}, sketch003)
+)
 `
   const ___artifactGraph = new Map([
     [
@@ -1195,15 +1195,13 @@ profile004 = circle({
     async (_name, { snippet, artifactDetails }) => {
       const ast = assertParse(MY_CODE)
       const lineIndex = MY_CODE.indexOf(snippet)
-      const path = getNodePathFromSourceRange(ast, [
-        lineIndex,
-        lineIndex + snippet.length,
-        0,
-      ])
+      expect(lineIndex).toBeGreaterThanOrEqual(0)
+      const end = lineIndex + snippet.length
+      const path = getNodePathFromSourceRange(ast, [lineIndex, end, 0])
       const selections: Selection[] = [
         {
           codeRef: {
-            range: [lineIndex + snippet.length, lineIndex + snippet.length, 0],
+            range: [end, end, 0],
             pathToNode: path,
           },
         },

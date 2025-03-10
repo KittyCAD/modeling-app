@@ -1,5 +1,5 @@
 import { DeepPartial } from 'lib/types'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import {
   configurationToSettingsPayload,
   getAllCurrentSettings,

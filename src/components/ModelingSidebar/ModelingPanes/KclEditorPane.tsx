@@ -96,11 +96,15 @@ export const KclEditorPane = () => {
       return
     }
 
-    editorManager.editorView.dispatch({
-      selection: lastSelectionEvent.codeMirrorSelection,
-      annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
-      scrollIntoView: lastSelectionEvent.scrollIntoView,
-    })
+    try {
+      editorManager.editorView.dispatch({
+        selection: lastSelectionEvent.codeMirrorSelection,
+        annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
+        scrollIntoView: lastSelectionEvent.scrollIntoView,
+      })
+    } catch (e) {
+      console.error('Error setting selection', e)
+    }
   }, [editorIsMounted, lastSelectionEvent])
 
   const textWrapping = context.textEditor.textWrapping

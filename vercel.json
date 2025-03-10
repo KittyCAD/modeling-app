@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "headers": [
+    {
+      "source": "/",
+      "missing": [
+        {
+          "type": "host",
+          "value": "app.zoo.dev"
+        }
+      ],
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
+  ]
+}

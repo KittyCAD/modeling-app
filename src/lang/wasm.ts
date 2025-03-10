@@ -26,81 +26,81 @@ import {
 } from 'lib/wasm_lib_wrapper'
 
 import { KCLError } from './errors'
-import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
-import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
-import { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
-import type { Program } from '../wasm-lib/kcl/bindings/Program'
+import { Discovered } from '@rust/kcl-lib/bindings/Discovered'
+import { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { CoreDumpInfo } from 'wasm-lib/kcl/bindings/CoreDumpInfo'
+import { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { TEST } from 'env'
 import { err, Reason } from 'lib/trap'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
-import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-import { ExecOutcome as RustExecOutcome } from 'wasm-lib/kcl/bindings/ExecOutcome'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
-import { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { Sketch } from '@rust/kcl-lib/bindings/Sketch'
+import { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
-import { Operation } from 'wasm-lib/kcl/bindings/Operation'
-import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
-import { Artifact as RustArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-import { ArtifactId } from 'wasm-lib/kcl/bindings/Artifact'
-import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
-import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
+import { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
+import { Artifact as RustArtifact } from '@rust/kcl-lib/bindings/Artifact'
+import { ArtifactId } from '@rust/kcl-lib/bindings/Artifact'
+import { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
+import { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
 import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
-import { MetaSettings } from 'wasm-lib/kcl/bindings/MetaSettings'
-import { UnitAngle, UnitLength } from 'wasm-lib/kcl/bindings/ModelingCmd'
-import { UnitLen } from 'wasm-lib/kcl/bindings/UnitLen'
-import { UnitAngle as UnitAng } from 'wasm-lib/kcl/bindings/UnitAngle'
-import { ModulePath } from 'wasm-lib/kcl/bindings/ModulePath'
+import { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
+import { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
+import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
+import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
+import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
-export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
-export type { ArtifactId } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Cap as CapArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { CodeRef } from 'wasm-lib/kcl/bindings/Artifact'
-export type { EdgeCut } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Path as PathArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Plane as PlaneArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Segment as SegmentArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Solid2d as Solid2dArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Sweep as SweepArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { SweepEdge } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Wall as WallArtifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-export type { Program } from '../wasm-lib/kcl/bindings/Program'
-export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
-export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
-export type { ObjectProperty } from '../wasm-lib/kcl/bindings/ObjectProperty'
-export type { MemberExpression } from '../wasm-lib/kcl/bindings/MemberExpression'
-export type { PipeExpression } from '../wasm-lib/kcl/bindings/PipeExpression'
-export type { VariableDeclaration } from '../wasm-lib/kcl/bindings/VariableDeclaration'
-export type { Parameter } from '../wasm-lib/kcl/bindings/Parameter'
-export type { PipeSubstitution } from '../wasm-lib/kcl/bindings/PipeSubstitution'
-export type { Identifier } from '../wasm-lib/kcl/bindings/Identifier'
-export type { UnaryExpression } from '../wasm-lib/kcl/bindings/UnaryExpression'
-export type { BinaryExpression } from '../wasm-lib/kcl/bindings/BinaryExpression'
-export type { ReturnStatement } from '../wasm-lib/kcl/bindings/ReturnStatement'
-export type { ExpressionStatement } from '../wasm-lib/kcl/bindings/ExpressionStatement'
-export type { CallExpression } from '../wasm-lib/kcl/bindings/CallExpression'
-export type { CallExpressionKw } from '../wasm-lib/kcl/bindings/CallExpressionKw'
-export type { LabeledArg } from '../wasm-lib/kcl/bindings/LabeledArg'
-export type { VariableDeclarator } from '../wasm-lib/kcl/bindings/VariableDeclarator'
-export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
-export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
-export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
-export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
-export type { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
-export type { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
+export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
+export type { ArtifactId } from '@rust/kcl-lib/bindings/Artifact'
+export type { Cap as CapArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { CodeRef } from '@rust/kcl-lib/bindings/Artifact'
+export type { EdgeCut } from '@rust/kcl-lib/bindings/Artifact'
+export type { Path as PathArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { Plane as PlaneArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { Segment as SegmentArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { Solid2d as Solid2dArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { Sweep as SweepArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { SweepEdge } from '@rust/kcl-lib/bindings/Artifact'
+export type { Wall as WallArtifact } from '@rust/kcl-lib/bindings/Artifact'
+export type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+export type { Program } from '@rust/kcl-lib/bindings/Program'
+export type { Expr } from '@rust/kcl-lib/bindings/Expr'
+export type { ObjectExpression } from '@rust/kcl-lib/bindings/ObjectExpression'
+export type { ObjectProperty } from '@rust/kcl-lib/bindings/ObjectProperty'
+export type { MemberExpression } from '@rust/kcl-lib/bindings/MemberExpression'
+export type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
+export type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
+export type { Parameter } from '@rust/kcl-lib/bindings/Parameter'
+export type { PipeSubstitution } from '@rust/kcl-lib/bindings/PipeSubstitution'
+export type { Identifier } from '@rust/kcl-lib/bindings/Identifier'
+export type { UnaryExpression } from '@rust/kcl-lib/bindings/UnaryExpression'
+export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
+export type { ReturnStatement } from '@rust/kcl-lib/bindings/ReturnStatement'
+export type { ExpressionStatement } from '@rust/kcl-lib/bindings/ExpressionStatement'
+export type { CallExpression } from '@rust/kcl-lib/bindings/CallExpression'
+export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
+export type { LabeledArg } from '@rust/kcl-lib/bindings/LabeledArg'
+export type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
+export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
+export type { Literal } from '@rust/kcl-lib/bindings/Literal'
+export type { LiteralValue } from '@rust/kcl-lib/bindings/LiteralValue'
+export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
+export type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+export type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 
 export type SyntaxType =
   | 'Program'
@@ -124,11 +124,11 @@ export type SyntaxType =
   | 'NonCodeNode'
   | 'UnaryExpression'
 
-export type { Path } from '../wasm-lib/kcl/bindings/Path'
-export type { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-export type { Solid } from '../wasm-lib/kcl/bindings/Solid'
-export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
-export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
+export type { Path } from '@rust/kcl-lib/bindings/Path'
+export type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
+export type { Solid } from '@rust/kcl-lib/bindings/Solid'
+export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 
 /**
  * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
@@ -174,10 +174,10 @@ export const wasmUrl = () => {
   // just do /wasm_lib_bg.wasm. In particular, the issue arises when the path
   // is used from within worker.ts.
   const fullUrl = document.location.protocol.includes('http')
-    ? document.location.origin + '/wasm_lib_bg.wasm'
+    ? document.location.origin + '/kcl_wasm_lib_bg.wasm'
     : document.location.protocol +
       document.location.pathname.split('/').slice(0, -1).join('/') +
-      '/wasm_lib_bg.wasm'
+      '/kcl_wasm_lib_bg.wasm'
 
   return fullUrl
 }
@@ -418,13 +418,9 @@ export function sketchFromKclValue(
 export const executeMock = async (
   node: Node<Program>,
   usePrevMemory?: boolean,
-  path?: string,
-  variables?: { [key in string]?: KclValue }
+  path?: string
 ): Promise<ExecState> => {
   try {
-    if (!variables) {
-      variables = {}
-    }
     if (usePrevMemory === undefined) {
       usePrevMemory = true
     }
@@ -433,7 +429,6 @@ export const executeMock = async (
       path,
       JSON.stringify({ settings: await jsAppSettings() }),
       usePrevMemory,
-      JSON.stringify(variables),
       fileSystemManager
     )
     return mockExecStateFromRust(execOutcome)
@@ -481,7 +476,6 @@ const jsAppSettings = async () => {
 }
 
 const errFromErrWithOutputs = (e: any): KCLError => {
-  console.log(e)
   const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
   return new KCLError(
     parsed.error.kind,

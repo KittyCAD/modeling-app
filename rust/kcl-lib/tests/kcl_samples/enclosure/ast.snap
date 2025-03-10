@@ -1,0 +1,5082 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing enclosure.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 129,
+          "id": {
+            "end": 123,
+            "name": "length",
+            "start": 117,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 129,
+            "raw": "175",
+            "start": 126,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 175.0,
+              "suffix": "None"
+            }
+          },
+          "start": 117,
+          "type": "VariableDeclarator"
+        },
+        "end": 129,
+        "kind": "const",
+        "start": 117,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 141,
+          "id": {
+            "end": 135,
+            "name": "width",
+            "start": 130,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 141,
+            "raw": "125",
+            "start": 138,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 125.0,
+              "suffix": "None"
+            }
+          },
+          "start": 130,
+          "type": "VariableDeclarator"
+        },
+        "end": 141,
+        "kind": "const",
+        "start": 130,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 153,
+          "id": {
+            "end": 148,
+            "name": "height",
+            "start": 142,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 153,
+            "raw": "70",
+            "start": 151,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 70.0,
+              "suffix": "None"
+            }
+          },
+          "start": 142,
+          "type": "VariableDeclarator"
+        },
+        "end": 153,
+        "kind": "const",
+        "start": 142,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 171,
+          "id": {
+            "end": 167,
+            "name": "wallThickness",
+            "start": 154,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 171,
+            "raw": "3",
+            "start": 170,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 3.0,
+              "suffix": "None"
+            }
+          },
+          "start": 154,
+          "type": "VariableDeclarator"
+        },
+        "end": 171,
+        "kind": "const",
+        "start": 154,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 183,
+          "id": {
+            "end": 179,
+            "name": "holeDia",
+            "start": 172,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 183,
+            "raw": "4",
+            "start": 182,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 4.0,
+              "suffix": "None"
+            }
+          },
+          "start": 172,
+          "type": "VariableDeclarator"
+        },
+        "end": 183,
+        "kind": "const",
+        "start": 172,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 685,
+          "id": {
+            "end": 240,
+            "name": "sketch001",
+            "start": 231,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 261,
+                    "raw": "'XY'",
+                    "start": 257,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "XY"
+                  }
+                ],
+                "callee": {
+                  "end": 256,
+                  "name": "startSketchOn",
+                  "start": 243,
+                  "type": "Identifier"
+                },
+                "end": 262,
+                "start": 243,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 285,
+                        "raw": "0",
+                        "start": 284,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 288,
+                        "raw": "0",
+                        "start": 287,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 289,
+                    "start": 283,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 292,
+                    "start": 291,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 282,
+                  "name": "startProfileAt",
+                  "start": 268,
+                  "type": "Identifier"
+                },
+                "end": 293,
+                "start": 268,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 312,
+                        "raw": "0",
+                        "start": 311,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 319,
+                        "name": "width",
+                        "start": 314,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "end": 320,
+                    "start": 310,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 323,
+                    "start": 322,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 346,
+                    "start": 325,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentA001"
+                  }
+                ],
+                "callee": {
+                  "end": 309,
+                  "name": "angledLine",
+                  "start": 299,
+                  "type": "Identifier"
+                },
+                "end": 347,
+                "start": 299,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 406,
+                        "left": {
+                          "arguments": [
+                            {
+                              "end": 400,
+                              "name": "rectangleSegmentA001",
+                              "start": 380,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 379,
+                            "name": "segAng",
+                            "start": 373,
+                            "type": "Identifier"
+                          },
+                          "end": 401,
+                          "start": 373,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        "operator": "+",
+                        "right": {
+                          "end": 406,
+                          "raw": "90",
+                          "start": 404,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "start": 373,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      {
+                        "end": 421,
+                        "name": "length",
+                        "start": 415,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "end": 428,
+                    "start": 364,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 431,
+                    "start": 430,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 454,
+                    "start": 433,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentB001"
+                  }
+                ],
+                "callee": {
+                  "end": 363,
+                  "name": "angledLine",
+                  "start": 353,
+                  "type": "Identifier"
+                },
+                "end": 455,
+                "start": 353,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "arguments": [
+                          {
+                            "end": 508,
+                            "name": "rectangleSegmentA001",
+                            "start": 488,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 487,
+                          "name": "segAng",
+                          "start": 481,
+                          "type": "Identifier"
+                        },
+                        "end": 509,
+                        "start": 481,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      {
+                        "argument": {
+                          "arguments": [
+                            {
+                              "end": 546,
+                              "name": "rectangleSegmentA001",
+                              "start": 526,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 525,
+                            "name": "segLen",
+                            "start": 519,
+                            "type": "Identifier"
+                          },
+                          "end": 547,
+                          "start": 519,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        "end": 547,
+                        "operator": "-",
+                        "start": 518,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    ],
+                    "end": 554,
+                    "start": 472,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 557,
+                    "start": 556,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 580,
+                    "start": 559,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentC001"
+                  }
+                ],
+                "callee": {
+                  "end": 471,
+                  "name": "angledLine",
+                  "start": 461,
+                  "type": "Identifier"
+                },
+                "end": 581,
+                "start": 461,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 603,
+                      "name": "endAbsolute",
+                      "start": 592,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 622,
+                              "start": 621,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 620,
+                            "name": "profileStartX",
+                            "start": 607,
+                            "type": "Identifier"
+                          },
+                          "end": 623,
+                          "start": 607,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 640,
+                              "start": 639,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 638,
+                            "name": "profileStartY",
+                            "start": 625,
+                            "type": "Identifier"
+                          },
+                          "end": 641,
+                          "start": 625,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 642,
+                      "start": 606,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 647,
+                      "name": "tag",
+                      "start": 644,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 671,
+                      "start": 650,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentD001"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 591,
+                  "name": "line",
+                  "start": 587,
+                  "type": "Identifier"
+                },
+                "end": 672,
+                "start": 587,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "end": 683,
+                  "name": "close",
+                  "start": 678,
+                  "type": "Identifier"
+                },
+                "end": 685,
+                "start": 678,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 685,
+            "start": 243,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 231,
+          "type": "VariableDeclarator"
+        },
+        "end": 685,
+        "kind": "const",
+        "start": 231,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1261,
+          "id": {
+            "end": 696,
+            "name": "extrude001",
+            "start": 686,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 724,
+                      "name": "length",
+                      "start": 718,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 733,
+                      "name": "height",
+                      "start": 727,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 706,
+                  "name": "extrude",
+                  "start": 699,
+                  "type": "Identifier"
+                },
+                "end": 734,
+                "start": 699,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "end": 716,
+                  "name": "sketch001",
+                  "start": 707,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 761,
+                      "name": "radius",
+                      "start": 755,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 781,
+                      "left": {
+                        "end": 777,
+                        "name": "wallThickness",
+                        "start": 764,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "end": 781,
+                        "raw": "4",
+                        "start": 780,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 4.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 764,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 794,
+                      "name": "tags",
+                      "start": 790,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 848,
+                              "name": "rectangleSegmentA001",
+                              "start": 828,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 827,
+                            "name": "getNextAdjacentEdge",
+                            "start": 808,
+                            "type": "Identifier"
+                          },
+                          "end": 849,
+                          "start": 808,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 900,
+                              "name": "rectangleSegmentB001",
+                              "start": 880,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 879,
+                            "name": "getNextAdjacentEdge",
+                            "start": 860,
+                            "type": "Identifier"
+                          },
+                          "end": 901,
+                          "start": 860,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 952,
+                              "name": "rectangleSegmentC001",
+                              "start": 932,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 931,
+                            "name": "getNextAdjacentEdge",
+                            "start": 912,
+                            "type": "Identifier"
+                          },
+                          "end": 953,
+                          "start": 912,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1004,
+                              "name": "rectangleSegmentD001",
+                              "start": 984,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 983,
+                            "name": "getNextAdjacentEdge",
+                            "start": 964,
+                            "type": "Identifier"
+                          },
+                          "end": 1005,
+                          "start": 964,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 1014,
+                      "start": 797,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 746,
+                  "name": "fillet",
+                  "start": 740,
+                  "type": "Identifier"
+                },
+                "end": 1021,
+                "start": 740,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1119,
+                      "name": "faces",
+                      "start": 1114,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1128,
+                          "raw": "\"end\"",
+                          "start": 1123,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": "end"
+                        }
+                      ],
+                      "end": 1129,
+                      "start": 1122,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1147,
+                      "name": "thickness",
+                      "start": 1138,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1163,
+                      "name": "wallThickness",
+                      "start": 1150,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1105,
+                  "name": "shell",
+                  "start": 1100,
+                  "type": "Identifier"
+                },
+                "end": 1170,
+                "start": 1100,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 1261,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "end": 1094,
+                    "start": 1023,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "Apply a shell to the enclosure base to create the internal storage",
+                      "style": "line"
+                    }
+                  }
+                ],
+                "2": [
+                  {
+                    "end": 1261,
+                    "start": 1170,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "Define a function to create the internal structure to secure a fastener at each corner",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
+            "start": 699,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 686,
+          "type": "VariableDeclarator"
+        },
+        "end": 1261,
+        "kind": "const",
+        "start": 686,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1927,
+          "id": {
+            "end": 1276,
+            "name": "function001",
+            "start": 1265,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "declaration": {
+                    "end": 1512,
+                    "id": {
+                      "end": 1350,
+                      "name": "plane001",
+                      "start": 1342,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "end": 1512,
+                      "properties": [
+                        {
+                          "end": 1508,
+                          "key": {
+                            "end": 1364,
+                            "name": "plane",
+                            "start": 1359,
+                            "type": "Identifier"
+                          },
+                          "start": 1359,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "end": 1508,
+                            "properties": [
+                              {
+                                "end": 1409,
+                                "key": {
+                                  "end": 1381,
+                                  "name": "origin",
+                                  "start": 1375,
+                                  "type": "Identifier"
+                                },
+                                "start": 1375,
+                                "type": "ObjectProperty",
+                                "value": {
+                                  "elements": [
+                                    {
+                                      "end": 1388,
+                                      "raw": "0.0",
+                                      "start": 1385,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    {
+                                      "end": 1393,
+                                      "raw": "0.0",
+                                      "start": 1390,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    {
+                                      "end": 1408,
+                                      "name": "wallThickness",
+                                      "start": 1395,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    }
+                                  ],
+                                  "end": 1409,
+                                  "start": 1384,
+                                  "type": "ArrayExpression",
+                                  "type": "ArrayExpression"
+                                }
+                              },
+                              {
+                                "end": 1440,
+                                "key": {
+                                  "end": 1422,
+                                  "name": "xAxis",
+                                  "start": 1417,
+                                  "type": "Identifier"
+                                },
+                                "start": 1417,
+                                "type": "ObjectProperty",
+                                "value": {
+                                  "elements": [
+                                    {
+                                      "end": 1429,
+                                      "raw": "1.0",
+                                      "start": 1426,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    {
+                                      "end": 1434,
+                                      "raw": "0.0",
+                                      "start": 1431,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    {
+                                      "end": 1439,
+                                      "raw": "0.0",
+                                      "start": 1436,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    }
+                                  ],
+                                  "end": 1440,
+                                  "start": 1425,
+                                  "type": "ArrayExpression",
+                                  "type": "ArrayExpression"
+                                }
+                              },
+                              {
+                                "end": 1471,
+                                "key": {
+                                  "end": 1453,
+                                  "name": "yAxis",
+                                  "start": 1448,
+                                  "type": "Identifier"
+                                },
+                                "start": 1448,
+                                "type": "ObjectProperty",
+                                "value": {
+                                  "elements": [
+                                    {
+                                      "end": 1460,
+                                      "raw": "0.0",
+                                      "start": 1457,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    {
+                                      "end": 1465,
+                                      "raw": "1.0",
+                                      "start": 1462,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    {
+                                      "end": 1470,
+                                      "raw": "0.0",
+                                      "start": 1467,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    }
+                                  ],
+                                  "end": 1471,
+                                  "start": 1456,
+                                  "type": "ArrayExpression",
+                                  "type": "ArrayExpression"
+                                }
+                              },
+                              {
+                                "end": 1502,
+                                "key": {
+                                  "end": 1484,
+                                  "name": "zAxis",
+                                  "start": 1479,
+                                  "type": "Identifier"
+                                },
+                                "start": 1479,
+                                "type": "ObjectProperty",
+                                "value": {
+                                  "elements": [
+                                    {
+                                      "end": 1491,
+                                      "raw": "0.0",
+                                      "start": 1488,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    {
+                                      "end": 1496,
+                                      "raw": "0.0",
+                                      "start": 1493,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    {
+                                      "end": 1501,
+                                      "raw": "1.0",
+                                      "start": 1498,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    }
+                                  ],
+                                  "end": 1502,
+                                  "start": 1487,
+                                  "type": "ArrayExpression",
+                                  "type": "ArrayExpression"
+                                }
+                              }
+                            ],
+                            "start": 1367,
+                            "type": "ObjectExpression",
+                            "type": "ObjectExpression"
+                          }
+                        }
+                      ],
+                      "start": 1353,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    "start": 1342,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1512,
+                  "kind": "const",
+                  "start": 1342,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "declaration": {
+                    "end": 1837,
+                    "id": {
+                      "end": 1582,
+                      "name": "sketch002",
+                      "start": 1573,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 1607,
+                              "name": "plane001",
+                              "start": 1599,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1598,
+                            "name": "startSketchOn",
+                            "start": 1585,
+                            "type": "Identifier"
+                          },
+                          "end": 1608,
+                          "start": 1585,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1639,
+                                "name": "center",
+                                "start": 1633,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "computed": false,
+                                    "end": 1657,
+                                    "object": {
+                                      "end": 1654,
+                                      "name": "originStart",
+                                      "start": 1643,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "end": 1656,
+                                      "raw": "0",
+                                      "start": 1655,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 1643,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "computed": false,
+                                    "end": 1673,
+                                    "object": {
+                                      "end": 1670,
+                                      "name": "originStart",
+                                      "start": 1659,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "end": 1672,
+                                      "raw": "1",
+                                      "start": 1671,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 1659,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  }
+                                ],
+                                "end": 1674,
+                                "start": 1642,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1691,
+                                "name": "radius",
+                                "start": 1685,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1717,
+                                "left": {
+                                  "end": 1701,
+                                  "name": "holeDia",
+                                  "start": 1694,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 1717,
+                                  "name": "wallThickness",
+                                  "start": 1704,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 1694,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 1622,
+                            "name": "circle",
+                            "start": 1616,
+                            "type": "Identifier"
+                          },
+                          "end": 1726,
+                          "start": 1616,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "arguments": [
+                                {
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "end": 1762,
+                                    "name": "center",
+                                    "start": 1756,
+                                    "type": "Identifier"
+                                  },
+                                  "arg": {
+                                    "elements": [
+                                      {
+                                        "computed": false,
+                                        "end": 1780,
+                                        "object": {
+                                          "end": 1777,
+                                          "name": "originStart",
+                                          "start": 1766,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "property": {
+                                          "end": 1779,
+                                          "raw": "0",
+                                          "start": 1778,
+                                          "type": "Literal",
+                                          "type": "Literal",
+                                          "value": {
+                                            "value": 0.0,
+                                            "suffix": "None"
+                                          }
+                                        },
+                                        "start": 1766,
+                                        "type": "MemberExpression",
+                                        "type": "MemberExpression"
+                                      },
+                                      {
+                                        "computed": false,
+                                        "end": 1796,
+                                        "object": {
+                                          "end": 1793,
+                                          "name": "originStart",
+                                          "start": 1782,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "property": {
+                                          "end": 1795,
+                                          "raw": "1",
+                                          "start": 1794,
+                                          "type": "Literal",
+                                          "type": "Literal",
+                                          "value": {
+                                            "value": 1.0,
+                                            "suffix": "None"
+                                          }
+                                        },
+                                        "start": 1782,
+                                        "type": "MemberExpression",
+                                        "type": "MemberExpression"
+                                      }
+                                    ],
+                                    "end": 1797,
+                                    "start": 1765,
+                                    "type": "ArrayExpression",
+                                    "type": "ArrayExpression"
+                                  }
+                                },
+                                {
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "end": 1814,
+                                    "name": "radius",
+                                    "start": 1808,
+                                    "type": "Identifier"
+                                  },
+                                  "arg": {
+                                    "end": 1824,
+                                    "name": "holeDia",
+                                    "start": 1817,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "callee": {
+                                "end": 1745,
+                                "name": "circle",
+                                "start": 1739,
+                                "type": "Identifier"
+                              },
+                              "end": 1833,
+                              "start": 1739,
+                              "type": "CallExpressionKw",
+                              "type": "CallExpressionKw",
+                              "unlabeled": null
+                            },
+                            {
+                              "end": 1836,
+                              "start": 1835,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1738,
+                            "name": "hole",
+                            "start": 1734,
+                            "type": "Identifier"
+                          },
+                          "end": 1837,
+                          "start": 1734,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 1837,
+                      "start": 1585,
+                      "type": "PipeExpression",
+                      "type": "PipeExpression"
+                    },
+                    "start": 1573,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1837,
+                  "kind": "const",
+                  "start": 1573,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "declaration": {
+                    "end": 1904,
+                    "id": {
+                      "end": 1850,
+                      "name": "extrude002",
+                      "start": 1840,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "end": 1878,
+                            "name": "length",
+                            "start": 1872,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "end": 1903,
+                            "left": {
+                              "end": 1887,
+                              "name": "height",
+                              "start": 1881,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "operator": "-",
+                            "right": {
+                              "end": 1903,
+                              "name": "wallThickness",
+                              "start": 1890,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "start": 1881,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "end": 1860,
+                        "name": "extrude",
+                        "start": 1853,
+                        "type": "Identifier"
+                      },
+                      "end": 1904,
+                      "start": 1853,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "end": 1870,
+                        "name": "sketch002",
+                        "start": 1861,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    },
+                    "start": 1840,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1904,
+                  "kind": "const",
+                  "start": 1840,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "argument": {
+                    "end": 1925,
+                    "name": "extrude002",
+                    "start": 1915,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "end": 1925,
+                  "start": 1908,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 1927,
+              "nonCodeMeta": {
+                "nonCodeNodes": {
+                  "0": [
+                    {
+                      "end": 1570,
+                      "start": 1514,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLineBlockComment",
+                        "value": "Create a pillar with a fasterner hole at the center",
+                        "style": "line"
+                      }
+                    }
+                  ],
+                  "2": [
+                    {
+                      "end": 1908,
+                      "start": 1904,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ]
+                },
+                "startNodes": [
+                  {
+                    "end": 1340,
+                    "start": 1291,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "Create a plane to sketch on shell interior",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "start": 1291
+            },
+            "end": 1927,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 1288,
+                  "name": "originStart",
+                  "start": 1277,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 1276,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 1265,
+          "type": "VariableDeclarator"
+        },
+        "end": 1927,
+        "kind": "fn",
+        "start": 1262,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 2050,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "end": 2016,
+                  "left": {
+                    "end": 2006,
+                    "left": {
+                      "end": 2002,
+                      "name": "wallThickness",
+                      "start": 1989,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "end": 2006,
+                      "raw": "3",
+                      "start": 2005,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 3.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 1989,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 2016,
+                    "name": "holeDia",
+                    "start": 2009,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 1989,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                {
+                  "end": 2047,
+                  "left": {
+                    "end": 2037,
+                    "left": {
+                      "end": 2033,
+                      "name": "wallThickness",
+                      "start": 2020,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "end": 2037,
+                      "raw": "3",
+                      "start": 2036,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 3.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 2020,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 2047,
+                    "name": "holeDia",
+                    "start": 2040,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 2020,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              ],
+              "end": 2049,
+              "start": 1985,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            }
+          ],
+          "callee": {
+            "end": 1984,
+            "name": "function001",
+            "start": 1973,
+            "type": "Identifier"
+          },
+          "end": 2050,
+          "start": 1973,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1973,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 2139,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "end": 2094,
+                  "left": {
+                    "end": 2084,
+                    "left": {
+                      "end": 2080,
+                      "name": "wallThickness",
+                      "start": 2067,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "end": 2084,
+                      "raw": "3",
+                      "start": 2083,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 3.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 2067,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 2094,
+                    "name": "holeDia",
+                    "start": 2087,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 2067,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                {
+                  "end": 2135,
+                  "left": {
+                    "end": 2104,
+                    "name": "length",
+                    "start": 2098,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "-",
+                  "right": {
+                    "end": 2135,
+                    "left": {
+                      "end": 2125,
+                      "left": {
+                        "end": 2121,
+                        "name": "wallThickness",
+                        "start": 2108,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "end": 2125,
+                        "raw": "3",
+                        "start": 2124,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 2108,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 2135,
+                      "name": "holeDia",
+                      "start": 2128,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 2108,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "start": 2098,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              ],
+              "end": 2138,
+              "start": 2063,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            }
+          ],
+          "callee": {
+            "end": 2062,
+            "name": "function001",
+            "start": 2051,
+            "type": "Identifier"
+          },
+          "end": 2139,
+          "start": 2051,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 2051,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 2227,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "end": 2192,
+                  "left": {
+                    "end": 2161,
+                    "name": "width",
+                    "start": 2156,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "-",
+                  "right": {
+                    "end": 2192,
+                    "left": {
+                      "end": 2182,
+                      "left": {
+                        "end": 2178,
+                        "name": "wallThickness",
+                        "start": 2165,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "end": 2182,
+                        "raw": "3",
+                        "start": 2181,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 2165,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 2192,
+                      "name": "holeDia",
+                      "start": 2185,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 2165,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "start": 2156,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                {
+                  "end": 2224,
+                  "left": {
+                    "end": 2214,
+                    "left": {
+                      "end": 2210,
+                      "name": "wallThickness",
+                      "start": 2197,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "end": 2214,
+                      "raw": "3",
+                      "start": 2213,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 3.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 2197,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 2224,
+                    "name": "holeDia",
+                    "start": 2217,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 2197,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              ],
+              "end": 2226,
+              "start": 2152,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            }
+          ],
+          "callee": {
+            "end": 2151,
+            "name": "function001",
+            "start": 2140,
+            "type": "Identifier"
+          },
+          "end": 2227,
+          "start": 2140,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 2140,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 2326,
+        "expression": {
+          "arguments": [
+            {
+              "elements": [
+                {
+                  "end": 2280,
+                  "left": {
+                    "end": 2249,
+                    "name": "width",
+                    "start": 2244,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "-",
+                  "right": {
+                    "end": 2280,
+                    "left": {
+                      "end": 2270,
+                      "left": {
+                        "end": 2266,
+                        "name": "wallThickness",
+                        "start": 2253,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "end": 2270,
+                        "raw": "3",
+                        "start": 2269,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 2253,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 2280,
+                      "name": "holeDia",
+                      "start": 2273,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 2253,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "start": 2244,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                {
+                  "end": 2322,
+                  "left": {
+                    "end": 2291,
+                    "name": "length",
+                    "start": 2285,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "-",
+                  "right": {
+                    "end": 2322,
+                    "left": {
+                      "end": 2312,
+                      "left": {
+                        "end": 2308,
+                        "name": "wallThickness",
+                        "start": 2295,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "end": 2312,
+                        "raw": "3",
+                        "start": 2311,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 2295,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 2322,
+                      "name": "holeDia",
+                      "start": 2315,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 2295,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "start": 2285,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              ],
+              "end": 2325,
+              "start": 2240,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            }
+          ],
+          "callee": {
+            "end": 2239,
+            "name": "function001",
+            "start": 2228,
+            "type": "Identifier"
+          },
+          "end": 2326,
+          "start": 2228,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 2228,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "declaration": {
+          "end": 3539,
+          "id": {
+            "end": 2378,
+            "name": "sketch003",
+            "start": 2369,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 2399,
+                    "raw": "'XY'",
+                    "start": 2395,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "XY"
+                  }
+                ],
+                "callee": {
+                  "end": 2394,
+                  "name": "startSketchOn",
+                  "start": 2381,
+                  "type": "Identifier"
+                },
+                "end": 2400,
+                "start": 2381,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 2433,
+                        "left": {
+                          "end": 2427,
+                          "name": "width",
+                          "start": 2422,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "operator": "*",
+                        "right": {
+                          "end": 2433,
+                          "raw": "1.2",
+                          "start": 2430,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.2,
+                            "suffix": "None"
+                          }
+                        },
+                        "start": 2422,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      {
+                        "end": 2436,
+                        "raw": "0",
+                        "start": 2435,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 2437,
+                    "start": 2421,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 2440,
+                    "start": 2439,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 2420,
+                  "name": "startProfileAt",
+                  "start": 2406,
+                  "type": "Identifier"
+                },
+                "end": 2441,
+                "start": 2406,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 2460,
+                        "raw": "0",
+                        "start": 2459,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 2467,
+                        "name": "width",
+                        "start": 2462,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "end": 2468,
+                    "start": 2458,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 2471,
+                    "start": 2470,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 2494,
+                    "start": 2473,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentA002"
+                  }
+                ],
+                "callee": {
+                  "end": 2457,
+                  "name": "angledLine",
+                  "start": 2447,
+                  "type": "Identifier"
+                },
+                "end": 2495,
+                "start": 2447,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 2554,
+                        "left": {
+                          "arguments": [
+                            {
+                              "end": 2548,
+                              "name": "rectangleSegmentA001",
+                              "start": 2528,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2527,
+                            "name": "segAng",
+                            "start": 2521,
+                            "type": "Identifier"
+                          },
+                          "end": 2549,
+                          "start": 2521,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        "operator": "+",
+                        "right": {
+                          "end": 2554,
+                          "raw": "90",
+                          "start": 2552,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "start": 2521,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      {
+                        "end": 2569,
+                        "name": "length",
+                        "start": 2563,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "end": 2576,
+                    "start": 2512,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 2579,
+                    "start": 2578,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 2602,
+                    "start": 2581,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentB002"
+                  }
+                ],
+                "callee": {
+                  "end": 2511,
+                  "name": "angledLine",
+                  "start": 2501,
+                  "type": "Identifier"
+                },
+                "end": 2603,
+                "start": 2501,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "arguments": [
+                          {
+                            "end": 2656,
+                            "name": "rectangleSegmentA001",
+                            "start": 2636,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 2635,
+                          "name": "segAng",
+                          "start": 2629,
+                          "type": "Identifier"
+                        },
+                        "end": 2657,
+                        "start": 2629,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      {
+                        "argument": {
+                          "arguments": [
+                            {
+                              "end": 2694,
+                              "name": "rectangleSegmentA001",
+                              "start": 2674,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2673,
+                            "name": "segLen",
+                            "start": 2667,
+                            "type": "Identifier"
+                          },
+                          "end": 2695,
+                          "start": 2667,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        "end": 2695,
+                        "operator": "-",
+                        "start": 2666,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    ],
+                    "end": 2702,
+                    "start": 2620,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 2705,
+                    "start": 2704,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 2728,
+                    "start": 2707,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentC002"
+                  }
+                ],
+                "callee": {
+                  "end": 2619,
+                  "name": "angledLine",
+                  "start": 2609,
+                  "type": "Identifier"
+                },
+                "end": 2729,
+                "start": 2609,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2751,
+                      "name": "endAbsolute",
+                      "start": 2740,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 2770,
+                              "start": 2769,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2768,
+                            "name": "profileStartX",
+                            "start": 2755,
+                            "type": "Identifier"
+                          },
+                          "end": 2771,
+                          "start": 2755,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 2788,
+                              "start": 2787,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2786,
+                            "name": "profileStartY",
+                            "start": 2773,
+                            "type": "Identifier"
+                          },
+                          "end": 2789,
+                          "start": 2773,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 2790,
+                      "start": 2754,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2795,
+                      "name": "tag",
+                      "start": 2792,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2819,
+                      "start": 2798,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentD002"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2739,
+                  "name": "line",
+                  "start": 2735,
+                  "type": "Identifier"
+                },
+                "end": 2820,
+                "start": 2735,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "end": 2831,
+                  "name": "close",
+                  "start": 2826,
+                  "type": "Identifier"
+                },
+                "end": 2833,
+                "start": 2826,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 2865,
+                          "name": "center",
+                          "start": 2859,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 2920,
+                              "left": {
+                                "end": 2910,
+                                "left": {
+                                  "end": 2890,
+                                  "left": {
+                                    "end": 2884,
+                                    "name": "width",
+                                    "start": 2879,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 2890,
+                                    "raw": "1.2",
+                                    "start": 2887,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.2,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 2879,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 2910,
+                                  "left": {
+                                    "end": 2906,
+                                    "name": "wallThickness",
+                                    "start": 2893,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 2910,
+                                    "raw": "3",
+                                    "start": 2909,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 2893,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "start": 2879,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 2920,
+                                "name": "holeDia",
+                                "start": 2913,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 2879,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 2958,
+                              "left": {
+                                "end": 2948,
+                                "left": {
+                                  "end": 2944,
+                                  "name": "wallThickness",
+                                  "start": 2931,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 2948,
+                                  "raw": "3",
+                                  "start": 2947,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 2931,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 2958,
+                                "name": "holeDia",
+                                "start": 2951,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 2931,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 2967,
+                          "start": 2868,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 2982,
+                          "name": "radius",
+                          "start": 2976,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 2992,
+                          "name": "holeDia",
+                          "start": 2985,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 2850,
+                      "name": "circle",
+                      "start": 2844,
+                      "type": "Identifier"
+                    },
+                    "end": 2999,
+                    "start": 2844,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  },
+                  {
+                    "end": 3002,
+                    "start": 3001,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 2843,
+                  "name": "hole",
+                  "start": 2839,
+                  "type": "Identifier"
+                },
+                "end": 3003,
+                "start": 2839,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 3035,
+                          "name": "center",
+                          "start": 3029,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 3090,
+                              "left": {
+                                "end": 3080,
+                                "left": {
+                                  "end": 3060,
+                                  "left": {
+                                    "end": 3054,
+                                    "name": "width",
+                                    "start": 3049,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 3060,
+                                    "raw": "1.2",
+                                    "start": 3057,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.2,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 3049,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 3080,
+                                  "left": {
+                                    "end": 3076,
+                                    "name": "wallThickness",
+                                    "start": 3063,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 3080,
+                                    "raw": "3",
+                                    "start": 3079,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 3063,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "start": 3049,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 3090,
+                                "name": "holeDia",
+                                "start": 3083,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 3049,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 3138,
+                              "left": {
+                                "end": 3107,
+                                "name": "length",
+                                "start": 3101,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 3138,
+                                "left": {
+                                  "end": 3128,
+                                  "left": {
+                                    "end": 3124,
+                                    "name": "wallThickness",
+                                    "start": 3111,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 3128,
+                                    "raw": "3",
+                                    "start": 3127,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 3111,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 3138,
+                                  "name": "holeDia",
+                                  "start": 3131,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 3111,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 3101,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 3148,
+                          "start": 3038,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 3163,
+                          "name": "radius",
+                          "start": 3157,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 3173,
+                          "name": "holeDia",
+                          "start": 3166,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 3020,
+                      "name": "circle",
+                      "start": 3014,
+                      "type": "Identifier"
+                    },
+                    "end": 3180,
+                    "start": 3014,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  },
+                  {
+                    "end": 3183,
+                    "start": 3182,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 3013,
+                  "name": "hole",
+                  "start": 3009,
+                  "type": "Identifier"
+                },
+                "end": 3184,
+                "start": 3009,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 3216,
+                          "name": "center",
+                          "start": 3210,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 3272,
+                              "left": {
+                                "end": 3241,
+                                "left": {
+                                  "end": 3235,
+                                  "name": "width",
+                                  "start": 3230,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 3241,
+                                  "raw": "2.2",
+                                  "start": 3238,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.2,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 3230,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 3272,
+                                "left": {
+                                  "end": 3262,
+                                  "left": {
+                                    "end": 3258,
+                                    "name": "wallThickness",
+                                    "start": 3245,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 3262,
+                                    "raw": "3",
+                                    "start": 3261,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 3245,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 3272,
+                                  "name": "holeDia",
+                                  "start": 3265,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 3245,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 3230,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 3311,
+                              "left": {
+                                "end": 3301,
+                                "left": {
+                                  "end": 3297,
+                                  "name": "wallThickness",
+                                  "start": 3284,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 3301,
+                                  "raw": "3",
+                                  "start": 3300,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 3284,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 3311,
+                                "name": "holeDia",
+                                "start": 3304,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 3284,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 3320,
+                          "start": 3219,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 3335,
+                          "name": "radius",
+                          "start": 3329,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 3345,
+                          "name": "holeDia",
+                          "start": 3338,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 3201,
+                      "name": "circle",
+                      "start": 3195,
+                      "type": "Identifier"
+                    },
+                    "end": 3352,
+                    "start": 3195,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  },
+                  {
+                    "end": 3355,
+                    "start": 3354,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 3194,
+                  "name": "hole",
+                  "start": 3190,
+                  "type": "Identifier"
+                },
+                "end": 3356,
+                "start": 3190,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 3388,
+                          "name": "center",
+                          "start": 3382,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 3444,
+                              "left": {
+                                "end": 3413,
+                                "left": {
+                                  "end": 3407,
+                                  "name": "width",
+                                  "start": 3402,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 3413,
+                                  "raw": "2.2",
+                                  "start": 3410,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.2,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 3402,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 3444,
+                                "left": {
+                                  "end": 3434,
+                                  "left": {
+                                    "end": 3430,
+                                    "name": "wallThickness",
+                                    "start": 3417,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 3434,
+                                    "raw": "3",
+                                    "start": 3433,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 3417,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 3444,
+                                  "name": "holeDia",
+                                  "start": 3437,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 3417,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 3402,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 3493,
+                              "left": {
+                                "end": 3462,
+                                "name": "length",
+                                "start": 3456,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 3493,
+                                "left": {
+                                  "end": 3483,
+                                  "left": {
+                                    "end": 3479,
+                                    "name": "wallThickness",
+                                    "start": 3466,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 3483,
+                                    "raw": "3",
+                                    "start": 3482,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 3466,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 3493,
+                                  "name": "holeDia",
+                                  "start": 3486,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 3466,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 3456,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 3503,
+                          "start": 3391,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 3518,
+                          "name": "radius",
+                          "start": 3512,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 3528,
+                          "name": "holeDia",
+                          "start": 3521,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 3373,
+                      "name": "circle",
+                      "start": 3367,
+                      "type": "Identifier"
+                    },
+                    "end": 3535,
+                    "start": 3367,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  },
+                  {
+                    "end": 3538,
+                    "start": 3537,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 3366,
+                  "name": "hole",
+                  "start": 3362,
+                  "type": "Identifier"
+                },
+                "end": 3539,
+                "start": 3362,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 3539,
+            "start": 2381,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 2369,
+          "type": "VariableDeclarator"
+        },
+        "end": 3539,
+        "kind": "const",
+        "start": 2369,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 3924,
+          "id": {
+            "end": 3550,
+            "name": "extrude003",
+            "start": 3540,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3578,
+                      "name": "length",
+                      "start": 3572,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 3594,
+                      "name": "wallThickness",
+                      "start": 3581,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 3560,
+                  "name": "extrude",
+                  "start": 3553,
+                  "type": "Identifier"
+                },
+                "end": 3595,
+                "start": 3553,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "end": 3570,
+                  "name": "sketch003",
+                  "start": 3561,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3622,
+                      "name": "radius",
+                      "start": 3616,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 3642,
+                      "left": {
+                        "end": 3638,
+                        "name": "wallThickness",
+                        "start": 3625,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "end": 3642,
+                        "raw": "4",
+                        "start": 3641,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 4.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 3625,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3655,
+                      "name": "tags",
+                      "start": 3651,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 3709,
+                              "name": "rectangleSegmentA002",
+                              "start": 3689,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 3688,
+                            "name": "getNextAdjacentEdge",
+                            "start": 3669,
+                            "type": "Identifier"
+                          },
+                          "end": 3710,
+                          "start": 3669,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 3761,
+                              "name": "rectangleSegmentB002",
+                              "start": 3741,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 3740,
+                            "name": "getNextAdjacentEdge",
+                            "start": 3721,
+                            "type": "Identifier"
+                          },
+                          "end": 3762,
+                          "start": 3721,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 3813,
+                              "name": "rectangleSegmentC002",
+                              "start": 3793,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 3792,
+                            "name": "getNextAdjacentEdge",
+                            "start": 3773,
+                            "type": "Identifier"
+                          },
+                          "end": 3814,
+                          "start": 3773,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 3865,
+                              "name": "rectangleSegmentD002",
+                              "start": 3845,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 3844,
+                            "name": "getNextAdjacentEdge",
+                            "start": 3825,
+                            "type": "Identifier"
+                          },
+                          "end": 3866,
+                          "start": 3825,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 3875,
+                      "start": 3658,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 3607,
+                  "name": "fillet",
+                  "start": 3601,
+                  "type": "Identifier"
+                },
+                "end": 3882,
+                "start": 3601,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 3924,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "end": 3924,
+                    "start": 3882,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "Define lid inner and sealing surfaces",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
+            "start": 3553,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 3540,
+          "type": "VariableDeclarator"
+        },
+        "end": 3924,
+        "kind": "const",
+        "start": 3540,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 5265,
+          "id": {
+            "end": 3934,
+            "name": "sketch004",
+            "start": 3925,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 3961,
+                    "name": "extrude003",
+                    "start": 3951,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  {
+                    "end": 3968,
+                    "raw": "'END'",
+                    "start": 3963,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "END"
+                  }
+                ],
+                "callee": {
+                  "end": 3950,
+                  "name": "startSketchOn",
+                  "start": 3937,
+                  "type": "Identifier"
+                },
+                "end": 3969,
+                "start": 3937,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 4026,
+                        "left": {
+                          "end": 4010,
+                          "left": {
+                            "end": 4004,
+                            "name": "width",
+                            "start": 3999,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "*",
+                          "right": {
+                            "end": 4010,
+                            "raw": "1.2",
+                            "start": 4007,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 1.2,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 3999,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "operator": "+",
+                        "right": {
+                          "end": 4026,
+                          "name": "wallThickness",
+                          "start": 4013,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "start": 3999,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      {
+                        "end": 4048,
+                        "name": "wallThickness",
+                        "start": 4035,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "end": 4055,
+                    "start": 3990,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 4058,
+                    "start": 4057,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 3989,
+                  "name": "startProfileAt",
+                  "start": 3975,
+                  "type": "Identifier"
+                },
+                "end": 4059,
+                "start": 3975,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 4078,
+                        "raw": "0",
+                        "start": 4077,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 4106,
+                        "left": {
+                          "end": 4085,
+                          "name": "width",
+                          "start": 4080,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "operator": "-",
+                        "right": {
+                          "end": 4106,
+                          "left": {
+                            "end": 4090,
+                            "raw": "2",
+                            "start": 4089,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "operator": "*",
+                          "right": {
+                            "end": 4106,
+                            "name": "wallThickness",
+                            "start": 4093,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 4089,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "start": 4080,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      }
+                    ],
+                    "end": 4108,
+                    "start": 4076,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 4111,
+                    "start": 4110,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 4134,
+                    "start": 4113,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentA003"
+                  }
+                ],
+                "callee": {
+                  "end": 4075,
+                  "name": "angledLine",
+                  "start": 4065,
+                  "type": "Identifier"
+                },
+                "end": 4135,
+                "start": 4065,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 4194,
+                        "left": {
+                          "arguments": [
+                            {
+                              "end": 4188,
+                              "name": "rectangleSegmentA003",
+                              "start": 4168,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 4167,
+                            "name": "segAng",
+                            "start": 4161,
+                            "type": "Identifier"
+                          },
+                          "end": 4189,
+                          "start": 4161,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        "operator": "+",
+                        "right": {
+                          "end": 4194,
+                          "raw": "90",
+                          "start": 4192,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "start": 4161,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      {
+                        "end": 4230,
+                        "left": {
+                          "end": 4209,
+                          "name": "length",
+                          "start": 4203,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "operator": "-",
+                        "right": {
+                          "end": 4230,
+                          "left": {
+                            "end": 4214,
+                            "raw": "2",
+                            "start": 4213,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "operator": "*",
+                          "right": {
+                            "end": 4230,
+                            "name": "wallThickness",
+                            "start": 4217,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 4213,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "start": 4203,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      }
+                    ],
+                    "end": 4238,
+                    "start": 4152,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 4241,
+                    "start": 4240,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 4264,
+                    "start": 4243,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentB003"
+                  }
+                ],
+                "callee": {
+                  "end": 4151,
+                  "name": "angledLine",
+                  "start": 4141,
+                  "type": "Identifier"
+                },
+                "end": 4265,
+                "start": 4141,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "arguments": [
+                          {
+                            "end": 4318,
+                            "name": "rectangleSegmentA003",
+                            "start": 4298,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 4297,
+                          "name": "segAng",
+                          "start": 4291,
+                          "type": "Identifier"
+                        },
+                        "end": 4319,
+                        "start": 4291,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      {
+                        "argument": {
+                          "arguments": [
+                            {
+                              "end": 4356,
+                              "name": "rectangleSegmentA003",
+                              "start": 4336,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 4335,
+                            "name": "segLen",
+                            "start": 4329,
+                            "type": "Identifier"
+                          },
+                          "end": 4357,
+                          "start": 4329,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        "end": 4357,
+                        "operator": "-",
+                        "start": 4328,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    ],
+                    "end": 4364,
+                    "start": 4282,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 4367,
+                    "start": 4366,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 4390,
+                    "start": 4369,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentC003"
+                  }
+                ],
+                "callee": {
+                  "end": 4281,
+                  "name": "angledLine",
+                  "start": 4271,
+                  "type": "Identifier"
+                },
+                "end": 4391,
+                "start": 4271,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 4413,
+                      "name": "endAbsolute",
+                      "start": 4402,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 4432,
+                              "start": 4431,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 4430,
+                            "name": "profileStartX",
+                            "start": 4417,
+                            "type": "Identifier"
+                          },
+                          "end": 4433,
+                          "start": 4417,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 4450,
+                              "start": 4449,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 4448,
+                            "name": "profileStartY",
+                            "start": 4435,
+                            "type": "Identifier"
+                          },
+                          "end": 4451,
+                          "start": 4435,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 4452,
+                      "start": 4416,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 4457,
+                      "name": "tag",
+                      "start": 4454,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 4481,
+                      "start": 4460,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentD003"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 4401,
+                  "name": "line",
+                  "start": 4397,
+                  "type": "Identifier"
+                },
+                "end": 4482,
+                "start": 4397,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "end": 4493,
+                  "name": "close",
+                  "start": 4488,
+                  "type": "Identifier"
+                },
+                "end": 4495,
+                "start": 4488,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 4527,
+                          "name": "center",
+                          "start": 4521,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 4582,
+                              "left": {
+                                "end": 4572,
+                                "left": {
+                                  "end": 4552,
+                                  "left": {
+                                    "end": 4546,
+                                    "name": "width",
+                                    "start": 4541,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 4552,
+                                    "raw": "1.2",
+                                    "start": 4549,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.2,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 4541,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 4572,
+                                  "left": {
+                                    "end": 4568,
+                                    "name": "wallThickness",
+                                    "start": 4555,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 4572,
+                                    "raw": "3",
+                                    "start": 4571,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 4555,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "start": 4541,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 4582,
+                                "name": "holeDia",
+                                "start": 4575,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 4541,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 4620,
+                              "left": {
+                                "end": 4610,
+                                "left": {
+                                  "end": 4606,
+                                  "name": "wallThickness",
+                                  "start": 4593,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 4610,
+                                  "raw": "3",
+                                  "start": 4609,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 4593,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 4620,
+                                "name": "holeDia",
+                                "start": 4613,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 4593,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 4629,
+                          "start": 4530,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 4644,
+                          "name": "radius",
+                          "start": 4638,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 4670,
+                          "left": {
+                            "end": 4654,
+                            "name": "holeDia",
+                            "start": 4647,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 4670,
+                            "name": "wallThickness",
+                            "start": 4657,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 4647,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 4512,
+                      "name": "circle",
+                      "start": 4506,
+                      "type": "Identifier"
+                    },
+                    "end": 4677,
+                    "start": 4506,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  },
+                  {
+                    "end": 4680,
+                    "start": 4679,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 4505,
+                  "name": "hole",
+                  "start": 4501,
+                  "type": "Identifier"
+                },
+                "end": 4681,
+                "start": 4501,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 4713,
+                          "name": "center",
+                          "start": 4707,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 4768,
+                              "left": {
+                                "end": 4758,
+                                "left": {
+                                  "end": 4738,
+                                  "left": {
+                                    "end": 4732,
+                                    "name": "width",
+                                    "start": 4727,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 4738,
+                                    "raw": "1.2",
+                                    "start": 4735,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.2,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 4727,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 4758,
+                                  "left": {
+                                    "end": 4754,
+                                    "name": "wallThickness",
+                                    "start": 4741,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 4758,
+                                    "raw": "3",
+                                    "start": 4757,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 4741,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "start": 4727,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 4768,
+                                "name": "holeDia",
+                                "start": 4761,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 4727,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 4816,
+                              "left": {
+                                "end": 4785,
+                                "name": "length",
+                                "start": 4779,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 4816,
+                                "left": {
+                                  "end": 4806,
+                                  "left": {
+                                    "end": 4802,
+                                    "name": "wallThickness",
+                                    "start": 4789,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 4806,
+                                    "raw": "3",
+                                    "start": 4805,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 4789,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 4816,
+                                  "name": "holeDia",
+                                  "start": 4809,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 4789,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 4779,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 4826,
+                          "start": 4716,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 4841,
+                          "name": "radius",
+                          "start": 4835,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 4867,
+                          "left": {
+                            "end": 4851,
+                            "name": "holeDia",
+                            "start": 4844,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 4867,
+                            "name": "wallThickness",
+                            "start": 4854,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 4844,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 4698,
+                      "name": "circle",
+                      "start": 4692,
+                      "type": "Identifier"
+                    },
+                    "end": 4874,
+                    "start": 4692,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  },
+                  {
+                    "end": 4877,
+                    "start": 4876,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 4691,
+                  "name": "hole",
+                  "start": 4687,
+                  "type": "Identifier"
+                },
+                "end": 4878,
+                "start": 4687,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 4910,
+                          "name": "center",
+                          "start": 4904,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 4966,
+                              "left": {
+                                "end": 4935,
+                                "left": {
+                                  "end": 4929,
+                                  "name": "width",
+                                  "start": 4924,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 4935,
+                                  "raw": "2.2",
+                                  "start": 4932,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.2,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 4924,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 4966,
+                                "left": {
+                                  "end": 4956,
+                                  "left": {
+                                    "end": 4952,
+                                    "name": "wallThickness",
+                                    "start": 4939,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 4956,
+                                    "raw": "3",
+                                    "start": 4955,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 4939,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 4966,
+                                  "name": "holeDia",
+                                  "start": 4959,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 4939,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 4924,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 5005,
+                              "left": {
+                                "end": 4995,
+                                "left": {
+                                  "end": 4991,
+                                  "name": "wallThickness",
+                                  "start": 4978,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 4995,
+                                  "raw": "3",
+                                  "start": 4994,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 4978,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 5005,
+                                "name": "holeDia",
+                                "start": 4998,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 4978,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 5014,
+                          "start": 4913,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 5029,
+                          "name": "radius",
+                          "start": 5023,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 5055,
+                          "left": {
+                            "end": 5039,
+                            "name": "holeDia",
+                            "start": 5032,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 5055,
+                            "name": "wallThickness",
+                            "start": 5042,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 5032,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 4895,
+                      "name": "circle",
+                      "start": 4889,
+                      "type": "Identifier"
+                    },
+                    "end": 5062,
+                    "start": 4889,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  },
+                  {
+                    "end": 5065,
+                    "start": 5064,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 4888,
+                  "name": "hole",
+                  "start": 4884,
+                  "type": "Identifier"
+                },
+                "end": 5066,
+                "start": 4884,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 5098,
+                          "name": "center",
+                          "start": 5092,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "elements": [
+                            {
+                              "end": 5154,
+                              "left": {
+                                "end": 5123,
+                                "left": {
+                                  "end": 5117,
+                                  "name": "width",
+                                  "start": 5112,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 5123,
+                                  "raw": "2.2",
+                                  "start": 5120,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.2,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 5112,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 5154,
+                                "left": {
+                                  "end": 5144,
+                                  "left": {
+                                    "end": 5140,
+                                    "name": "wallThickness",
+                                    "start": 5127,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 5144,
+                                    "raw": "3",
+                                    "start": 5143,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 5127,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 5154,
+                                  "name": "holeDia",
+                                  "start": 5147,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 5127,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 5112,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 5203,
+                              "left": {
+                                "end": 5172,
+                                "name": "length",
+                                "start": 5166,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "-",
+                              "right": {
+                                "end": 5203,
+                                "left": {
+                                  "end": 5193,
+                                  "left": {
+                                    "end": 5189,
+                                    "name": "wallThickness",
+                                    "start": 5176,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 5193,
+                                    "raw": "3",
+                                    "start": 5192,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 5176,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "end": 5203,
+                                  "name": "holeDia",
+                                  "start": 5196,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 5176,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 5166,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 5213,
+                          "start": 5101,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 5228,
+                          "name": "radius",
+                          "start": 5222,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 5254,
+                          "left": {
+                            "end": 5238,
+                            "name": "holeDia",
+                            "start": 5231,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 5254,
+                            "name": "wallThickness",
+                            "start": 5241,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 5231,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 5083,
+                      "name": "circle",
+                      "start": 5077,
+                      "type": "Identifier"
+                    },
+                    "end": 5261,
+                    "start": 5077,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": null
+                  },
+                  {
+                    "end": 5264,
+                    "start": 5263,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 5076,
+                  "name": "hole",
+                  "start": 5072,
+                  "type": "Identifier"
+                },
+                "end": 5265,
+                "start": 5072,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 5265,
+            "start": 3937,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 3925,
+          "type": "VariableDeclarator"
+        },
+        "end": 5265,
+        "kind": "const",
+        "start": 3925,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 5608,
+          "id": {
+            "end": 5276,
+            "name": "extrude004",
+            "start": 5266,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 5304,
+                      "name": "length",
+                      "start": 5298,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 5320,
+                      "name": "wallThickness",
+                      "start": 5307,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 5286,
+                  "name": "extrude",
+                  "start": 5279,
+                  "type": "Identifier"
+                },
+                "end": 5321,
+                "start": 5279,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "end": 5296,
+                  "name": "sketch004",
+                  "start": 5287,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 5348,
+                      "name": "radius",
+                      "start": 5342,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 5368,
+                      "left": {
+                        "end": 5364,
+                        "name": "wallThickness",
+                        "start": 5351,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "end": 5368,
+                        "raw": "3",
+                        "start": 5367,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 5351,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 5381,
+                      "name": "tags",
+                      "start": 5377,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 5435,
+                              "name": "rectangleSegmentA003",
+                              "start": 5415,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 5414,
+                            "name": "getNextAdjacentEdge",
+                            "start": 5395,
+                            "type": "Identifier"
+                          },
+                          "end": 5436,
+                          "start": 5395,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 5487,
+                              "name": "rectangleSegmentB003",
+                              "start": 5467,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 5466,
+                            "name": "getNextAdjacentEdge",
+                            "start": 5447,
+                            "type": "Identifier"
+                          },
+                          "end": 5488,
+                          "start": 5447,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 5539,
+                              "name": "rectangleSegmentC003",
+                              "start": 5519,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 5518,
+                            "name": "getNextAdjacentEdge",
+                            "start": 5499,
+                            "type": "Identifier"
+                          },
+                          "end": 5540,
+                          "start": 5499,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 5591,
+                              "name": "rectangleSegmentD003",
+                              "start": 5571,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 5570,
+                            "name": "getNextAdjacentEdge",
+                            "start": 5551,
+                            "type": "Identifier"
+                          },
+                          "end": 5592,
+                          "start": 5551,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 5601,
+                      "start": 5384,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 5333,
+                  "name": "fillet",
+                  "start": 5327,
+                  "type": "Identifier"
+                },
+                "end": 5608,
+                "start": 5327,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 5608,
+            "start": 5279,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 5266,
+          "type": "VariableDeclarator"
+        },
+        "end": 5608,
+        "kind": "const",
+        "start": 5266,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 5609,
+    "innerAttrs": [
+      {
+        "end": 115,
+        "name": {
+          "end": 91,
+          "name": "settings",
+          "start": 83,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 114,
+            "key": {
+              "end": 109,
+              "name": "defaultLengthUnit",
+              "start": 92,
+              "type": "Identifier"
+            },
+            "start": 92,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 114,
+              "name": "mm",
+              "start": 112,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 82,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "4": [
+          {
+            "end": 230,
+            "start": 183,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Model a box with base enclosure dimensions",
+              "style": "line"
+            }
+          }
+        ],
+        "7": [
+          {
+            "end": 1972,
+            "start": 1927,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Place the internal pillar at each corner",
+              "style": "line"
+            }
+          }
+        ],
+        "11": [
+          {
+            "end": 2368,
+            "start": 2326,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Define lid position and outer surface",
+              "style": "line"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 12,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Enclosure",
+            "style": "line"
+          }
+        },
+        {
+          "end": 67,
+          "start": 13,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "An enclosure body and sealing lid for storing items",
+            "style": "line"
+          }
+        },
+        {
+          "end": 69,
+          "start": 67,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 81,
+          "start": 69,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Set units",
+            "style": "line"
+          }
+        },
+        {
+          "end": 117,
+          "start": 115,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

@@ -1,0 +1,84 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "declaration": {
+        "end": 48,
+        "id": {
+          "end": 2,
+          "name": "sg",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": [
+            {
+              "arguments": [
+                {
+                  "end": 21,
+                  "name": "XY",
+                  "start": 19,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "callee": {
+                "end": 18,
+                "name": "startSketchOn",
+                "start": 5,
+                "type": "Identifier"
+              },
+              "end": 22,
+              "start": 5,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "end": 44,
+                  "name": "pos",
+                  "start": 41,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                {
+                  "end": 47,
+                  "start": 46,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "end": 40,
+                "name": "startProfileAt",
+                "start": 26,
+                "type": "Identifier"
+              },
+              "end": 48,
+              "start": 26,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            }
+          ],
+          "end": 48,
+          "start": 5,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 48,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 48,
+  "start": 0
+}

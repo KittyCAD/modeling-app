@@ -14,7 +14,7 @@ Revolve occurs around a local sketch axis rather than a global axis.
 revolve(
   data: RevolveData,
   sketch: Sketch,
-) -> Solid
+): Solid
 ```
 
 
@@ -23,11 +23,11 @@ revolve(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`RevolveData`](/docs/kcl/types/RevolveData) | Data for revolution surfaces. | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid)
 
 
 ### Examples
@@ -51,7 +51,7 @@ part001 = startSketchOn('XY')
 ```js
 // A donut shape.
 sketch001 = startSketchOn('XY')
-  |> circle({ center = [15, 0], radius = 5 }, %)
+  |> circle(center = [15, 0], radius = 5)
   |> revolve({ angle = 360, axis = 'y' }, %)
 ```
 
@@ -106,7 +106,7 @@ box = startSketchOn('XY')
   |> extrude(length = 20)
 
 sketch001 = startSketchOn(box, "END")
-  |> circle({ center = [10, 10], radius = 4 }, %)
+  |> circle(center = [10, 10], radius = 4)
   |> revolve({ angle = -90, axis = 'y' }, %)
 ```
 
@@ -122,7 +122,7 @@ box = startSketchOn('XY')
   |> extrude(length = 20)
 
 sketch001 = startSketchOn(box, "END")
-  |> circle({ center = [10, 10], radius = 4 }, %)
+  |> circle(center = [10, 10], radius = 4)
   |> revolve({
        angle = 90,
        axis = getOppositeEdge(revolveAxis)
@@ -141,7 +141,7 @@ box = startSketchOn('XY')
   |> extrude(length = 20)
 
 sketch001 = startSketchOn(box, "END")
-  |> circle({ center = [10, 10], radius = 4 }, %)
+  |> circle(center = [10, 10], radius = 4)
   |> revolve({
        angle = 90,
        axis = getOppositeEdge(revolveAxis),

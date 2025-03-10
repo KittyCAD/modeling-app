@@ -14,7 +14,7 @@ import {
   getOppositeTheme,
   darkModeMatcher,
 } from 'lib/theme'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
@@ -1447,11 +1447,17 @@ export class EngineCommandManager extends EventTarget {
     commandId: string
   }
   settings: SettingsViaQueryString
-  width: number = 1337
-  height: number = 1337
+
+  streamDimensions = {
+    // Random defaults that are overwritten pretty much immediately
+    width: 1337,
+    height: 1337,
+  }
+
+  elVideo: HTMLVideoElement | null = null
 
   /**
-   * Export intent traxcks the intent of the export. If it is null there is no
+   * Export intent tracks the intent of the export. If it is null there is no
    * export in progress. Otherwise it is an enum value of the intent.
    * Another export cannot be started if one is already in progress.
    */
@@ -1554,15 +1560,14 @@ export class EngineCommandManager extends EventTarget {
       return
     }
 
-    this.width = width
-    this.height = height
+    this.streamDimensions = {
+      width,
+      height,
+    }
 
     // If we already have an engine connection, just need to resize the stream.
     if (this.engineConnection) {
-      this.handleResize({
-        streamWidth: width,
-        streamHeight: height,
-      })
+      this.handleResize(this.streamDimensions)
       return
     }
 
@@ -1858,27 +1863,22 @@ export class EngineCommandManager extends EventTarget {
     return
   }
 
-  handleResize({
-    streamWidth,
-    streamHeight,
-  }: {
-    streamWidth: number
-    streamHeight: number
-  }) {
+  handleResize({ width, height }: { width: number; height: number }) {
     if (!this.engineConnection?.isReady()) {
       return
     }
 
-    this.width = streamWidth
-    this.height = streamHeight
+    this.streamDimensions = {
+      width,
+      height,
+    }
 
     const resizeCmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
         type: 'reconfigure_stream',
-        width: streamWidth,
-        height: streamHeight,
+        ...this.streamDimensions,
         fps: 60,
       },
     }

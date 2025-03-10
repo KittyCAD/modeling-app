@@ -11,7 +11,7 @@ Convert a number to an integer.
 DEPRECATED use floor(), ceil(), or round().
 
 ```js
-int(num: number) -> number
+int(num: number): number
 ```
 
 ### Tags
@@ -23,11 +23,11 @@ int(num: number) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number` |  | Yes |
+| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples
@@ -37,7 +37,7 @@ n = int(ceil(5 / 2))
 assertEqual(n, 3, 0.0001, "5/2 = 2.5, rounded up makes 3")
 // Draw n cylinders.
 startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 2 }, %)
+  |> circle(center = [0, 0], radius = 2)
   |> extrude(length = 5)
   |> patternTransform(
        instances = n,

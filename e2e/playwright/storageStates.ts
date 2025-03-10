@@ -1,70 +1,74 @@
+import { MouseControlType } from '@rust/kcl-lib/bindings/MouseControlType'
+import { Settings } from '@rust/kcl-lib/bindings/Settings'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
+import { DeepPartial } from 'lib/types'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 
 export const IS_PLAYWRIGHT_KEY = 'playwright'
 
 export const TEST_SETTINGS_KEY = '/settings.toml'
-export const TEST_SETTINGS = {
+export const TEST_SETTINGS: DeepPartial<Settings> = {
   app: {
     theme: Themes.Dark,
-    onboardingStatus: 'dismissed',
-    projectDirectory: '',
-    enableSSAO: false,
+    onboarding_status: 'dismissed',
+    project_directory: '',
+    show_debug_panel: true,
   },
   modeling: {
-    defaultUnit: 'in',
-    mouseControls: 'Zoo',
-    cameraProjection: 'perspective',
-    showDebugPanel: true,
+    enable_ssao: false,
+    base_unit: 'in',
+    mouse_controls: 'zoo',
+    camera_projection: 'perspective',
   },
-  projects: {
-    defaultProjectName: 'project-$nnn',
+  project: {
+    default_project_name: 'project-$nnn',
   },
-  textEditor: {
-    textWrapping: true,
+  text_editor: {
+    text_wrapping: true,
   },
-} satisfies Partial<SaveSettingsPayload>
+}
 
-export const TEST_SETTINGS_ONBOARDING_USER_MENU = {
+export const TEST_SETTINGS_ONBOARDING_USER_MENU: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboardingStatus: onboardingPaths.USER_MENU },
-} satisfies Partial<SaveSettingsPayload>
+  app: { ...TEST_SETTINGS.app, onboarding_status: onboardingPaths.USER_MENU },
+}
 
-export const TEST_SETTINGS_ONBOARDING_EXPORT = {
+export const TEST_SETTINGS_ONBOARDING_EXPORT: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboardingStatus: onboardingPaths.EXPORT },
-} satisfies Partial<SaveSettingsPayload>
+  app: { ...TEST_SETTINGS.app, onboarding_status: onboardingPaths.EXPORT },
+}
 
-export const TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING = {
+export const TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING: DeepPartial<Settings> =
+  {
+    ...TEST_SETTINGS,
+    app: {
+      ...TEST_SETTINGS.app,
+      onboarding_status: onboardingPaths.PARAMETRIC_MODELING,
+    },
+  }
+
+export const TEST_SETTINGS_ONBOARDING_START: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
-  app: {
-    ...TEST_SETTINGS.app,
-    onboardingStatus: onboardingPaths.PARAMETRIC_MODELING,
-  },
-} satisfies Partial<SaveSettingsPayload>
+  app: { ...TEST_SETTINGS.app, onboarding_status: '' },
+}
 
-export const TEST_SETTINGS_ONBOARDING_START = {
-  ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboardingStatus: '' },
-} satisfies Partial<SaveSettingsPayload>
-
-export const TEST_SETTINGS_DEFAULT_THEME = {
+export const TEST_SETTINGS_DEFAULT_THEME: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
   app: { ...TEST_SETTINGS.app, theme: Themes.System },
-} satisfies Partial<SaveSettingsPayload>
+}
 
 export const TEST_SETTINGS_CORRUPTED = {
   app: {
     theme: Themes.Dark,
     onboardingStatus: 'dismissed',
     projectDirectory: 123 as any,
+    showDebugPanel: true,
   },
   modeling: {
     defaultUnit: 'invalid' as any,
     mouseControls: `() => alert('hack the planet')` as any,
     cameraProjection: 'perspective',
-    showDebugPanel: true,
   },
   projects: {
     defaultProjectName: false as any,
@@ -79,9 +83,9 @@ export const TEST_CODE_GIZMO = `part001 = startSketchOn('XZ')
 |> line(end = [7.13, 4 + 0])
 |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
 |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
-|> xLineTo(29 + 0, %)
-|> yLine(-3.14 + 0, %, $a)
-|> xLine(1.63, %)
+|> xLine(endAbsolute = 29 + 0)
+|> yLine(length = -3.14 + 0, tag = $a)
+|> xLine(length = 1.63)
 |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
 |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
 |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
@@ -146,7 +150,7 @@ sketch001 = startSketchOn(box, revolveAxis)
 
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([0.0, 0.0], %)
-  |> xLine(0.0, %)
+  |> xLine(length = 0.0)
   |> close()
 
 `

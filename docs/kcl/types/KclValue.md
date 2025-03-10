@@ -24,7 +24,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Uuid`|  | No |
-| `value` |`string`|  | No |
+| `value` |[`string`](/docs/kcl/types/string)|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
@@ -58,7 +58,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Number`|  | No |
-| `value` |`number`|  | No |
+| `value` |[`number`](/docs/kcl/types/number)|  | No |
 | `ty` |[`NumericType`](/docs/kcl/types/NumericType)|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
@@ -76,7 +76,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `String`|  | No |
-| `value` |`string`|  | No |
+| `value` |[`string`](/docs/kcl/types/string)|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
@@ -92,7 +92,7 @@ Any KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `Array`|  | No |
+| `type` |enum: `MixedArray`|  | No |
 | `value` |`[` [`KclValue`](/docs/kcl/types/KclValue) `]`|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
@@ -127,7 +127,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`TagIdentifier`](/docs/kcl/types#tag-identifier)|  | No |
-| `value` |`string`|  | No |
+| `value` |[`string`](/docs/kcl/types/string)|  | No |
 | `info` |[`TagEngineInfo`](/docs/kcl/types/TagEngineInfo)|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
@@ -145,7 +145,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
-| `value` |`string`|  | No |
+| `value` |[`string`](/docs/kcl/types/string)|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
@@ -164,7 +164,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Plane`](/docs/kcl/types/Plane)|  | No |
-| `value` |[`Plane`](/docs/kcl/types/Plane)| A plane. | No |
+| `value` |[`Plane`](/docs/kcl/types/Plane)|  | No |
 
 
 ----
@@ -196,7 +196,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Sketch`](/docs/kcl/types/Sketch)|  | No |
-| `value` |[`Sketch`](/docs/kcl/types/Sketch)| A sketch is a collection of paths. | No |
+| `value` |[`Sketch`](/docs/kcl/types/Sketch)|  | No |
 
 
 ----
@@ -228,7 +228,7 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Solid`](/docs/kcl/types/Solid)|  | No |
-| `value` |[`Solid`](/docs/kcl/types/Solid)| A solid is a collection of extrude surfaces. | No |
+| `value` |[`Solid`](/docs/kcl/types/Solid)|  | No |
 
 
 ----
@@ -277,8 +277,8 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`ImportedGeometry`](/docs/kcl/types/ImportedGeometry)|  | No |
-| `id` |`string`| The ID of the imported geometry. | No |
-| `value` |`[` `string` `]`| The original file paths. | No |
+| `id` |[`string`](/docs/kcl/types/string)| The ID of the imported geometry. | No |
+| `value` |`[` [`string`](/docs/kcl/types/string) `]`| The original file paths. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
@@ -312,6 +312,22 @@ Data for an imported geometry.
 |----------|------|-------------|----------|
 | `type` |enum: `Module`|  | No |
 | `value` |[`ModuleId`](/docs/kcl/types/ModuleId)| Identifier of a source file.  Uses a u32 to keep the size small. | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Type`|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 

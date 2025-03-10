@@ -13,7 +13,7 @@ translate(
   solid: Solid,
   translate: [number],
   global?: bool,
-) -> Solid
+): Solid
 ```
 
 
@@ -22,12 +22,12 @@ translate(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl/types/Solid) | The solid to move. | Yes |
-| `translate` | `[number]` | The amount to move the solid in all three axes. | Yes |
-| `global` | `bool` | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
+| `translate` | [`[number]`](/docs/kcl/types/number) | The amount to move the solid in all three axes. | Yes |
+| `global` | [`bool`](/docs/kcl/types/bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid)
 
 
 ### Examples
@@ -47,10 +47,10 @@ sweepPath = startSketchOn('XZ')
 
 // Create a hole for the pipe.
 pipeHole = startSketchOn('XY')
-  |> circle({ center = [0, 0], radius = 1.5 }, %)
+  |> circle(center = [0, 0], radius = 1.5)
 
 sweepSketch = startSketchOn('XY')
-  |> circle({ center = [0, 0], radius = 2 }, %)
+  |> circle(center = [0, 0], radius = 2)
   |> hole(pipeHole, %)
   |> sweep(path = sweepPath)
   |> translate(translate = [1.0, 1.0, 2.5])

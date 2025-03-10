@@ -5,7 +5,7 @@ import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { ReactNode } from 'react'
 import { MachineManager } from 'components/MachineManagerProvider'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Artifact } from 'lang/std/artifactGraph'
 import { CommandBarContext } from 'machines/commandBarMachine'
 type Icon = CustomIconName
@@ -119,6 +119,8 @@ export type CommandArgumentConfig<
         machineContext?: C
       ) => boolean)
   warningMessage?: string
+  /** If `true`, arg is used as passed-through data, never for user input */
+  hidden?: boolean
   skip?: boolean
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
@@ -233,6 +235,8 @@ export type CommandArgument<
         commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
         machineContext?: ContextFrom<T>
       ) => boolean)
+  /** If `true`, arg is used as passed-through data, never for user input */
+  hidden?: boolean
   skip?: boolean
   machineActor?: Actor<T>
   warningMessage?: string

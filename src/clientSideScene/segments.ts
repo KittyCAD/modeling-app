@@ -71,7 +71,7 @@ import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
 import { sceneInfra } from 'lib/singletons'
 import { Selections } from 'lib/selections'
-import { calculate_circle_from_3_points } from 'wasm-lib/pkg/wasm_lib'
+import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { commandBarActor } from 'machines/commandBarMachine'
 
 interface CreateSegmentArgs {

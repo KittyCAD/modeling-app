@@ -9,7 +9,7 @@ test.describe('integrations tests', () => {
   test(
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@electron' },
-    async ({ page, context, homePage, scene, editor, toolbar }) => {
+    async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -32,9 +32,10 @@ test.describe('integrations tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        await scene.waitForExecutionDone()
       })
       await test.step('enter sketch mode', async () => {
+        await scene.connectionEstablished()
+        await scene.settled(cmdBar)
         await clickObj()
         await scene.moveNoWhere()
         await editor.expectState({
@@ -61,7 +62,9 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
-        await scene.waitForExecutionDone()
+
+        await scene.settled(cmdBar)
+
         await clickObj()
         await scene.moveNoWhere()
         await editor.expectState({
@@ -107,7 +110,7 @@ test.describe('when using the file tree to', () => {
 
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclCube)
@@ -245,7 +248,7 @@ test.describe('when using the file tree to', () => {
       await createProject({ name: 'project-000', page })
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclCube)
@@ -283,7 +286,7 @@ test.describe('when using the file tree to', () => {
 
       // Create a small file
       const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
         'utf-8'
       )
       // pasted into main.kcl
@@ -297,7 +300,7 @@ test.describe('when using the file tree to', () => {
       await expect(legoFile).toBeVisible({ timeout: 60_000 })
       await legoFile.click()
       const kclLego = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/lego.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/lego.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclLego)

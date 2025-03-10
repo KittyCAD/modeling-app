@@ -1,0 +1,27 @@
+[package]
+name = "kcl-to-core"
+description = "Utility methods to convert kcl to engine core executable tests"
+version = "0.1.46"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
+publish = false
+
+[lib]
+
+[[bin]]
+name = "kcl-to-core"
+path = "src/tool.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+indexmap = { workspace = true }
+kcl-lib = { path = "../kcl-lib" }
+kittycad = { workspace = true, features = ["clap"] }
+kittycad-modeling-cmds = { workspace = true }
+tokio = { workspace = true, features = ["full", "time", "rt", "tracing"] }
+uuid = { workspace = true }
+
+[lints]
+workspace = true

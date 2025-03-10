@@ -1,0 +1,46 @@
+[package]
+name = "kcl-wasm-lib"
+version = "0.1.46"
+edition = "2021"
+repository = "https://github.com/KittyCAD/modeling-app"
+rust-version = "1.83"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+bson = { version = "2.13.0", features = ["uuid-1", "chrono"] }
+console_error_panic_hook = "0.1.7"
+data-encoding = "2.6.0"
+futures = "0.3.31"
+# Enable the feature in a transitive dependency.
+getrandom = { version = "0.2", features = ["js"] }
+gloo-utils = "0.2.0"
+js-sys = "0.3.72"
+kcl-lib = { path = "../kcl-lib" }
+kittycad = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["sync"] }
+toml = "0.8.19"
+tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
+uuid = { workspace = true, features = ["v4", "js", "serde"] }
+wasm-bindgen = "0.2.99"
+wasm-bindgen-futures = { version = "0.4.49", features = ["futures-core-03-stream"] }
+wasm-streams = "0.4.2"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies.web-sys]
+version = "0.3.76"
+features = [
+  "console",
+  "HtmlTextAreaElement",
+  "ReadableStream",
+  "WritableStream",
+]
+
+[features]
+dhat-heap = ["kcl-lib/dhat-heap"]
+
+# Local development only. Placeholder to speed up development cycle
+#[package.metadata.wasm-pack.profile.release]
+#wasm-opt = false

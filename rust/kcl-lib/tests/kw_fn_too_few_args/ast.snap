@@ -1,0 +1,157 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing kw_fn_too_few_args.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 31,
+          "id": {
+            "end": 6,
+            "name": "add",
+            "start": 3,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 29,
+                    "left": {
+                      "end": 25,
+                      "name": "x",
+                      "start": 24,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 29,
+                      "name": "y",
+                      "start": 28,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 24,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 29,
+                  "start": 17,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 31,
+              "start": 13
+            },
+            "end": 31,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 8,
+                  "name": "x",
+                  "start": 7,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 11,
+                  "name": "y",
+                  "start": 10,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 6,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 3,
+          "type": "VariableDeclarator"
+        },
+        "end": 31,
+        "kind": "fn",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 51,
+          "id": {
+            "end": 38,
+            "name": "three",
+            "start": 33,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 46,
+                  "name": "x",
+                  "start": 45,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 50,
+                  "raw": "1",
+                  "start": 49,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "callee": {
+              "end": 44,
+              "name": "add",
+              "start": 41,
+              "type": "Identifier"
+            },
+            "end": 51,
+            "start": 41,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
+          },
+          "start": 33,
+          "type": "VariableDeclarator"
+        },
+        "end": 51,
+        "kind": "const",
+        "start": 33,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 52,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 33,
+            "start": 31,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

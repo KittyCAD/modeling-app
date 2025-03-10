@@ -1,19 +1,19 @@
 ---
 title: "xLineTo"
-excerpt: "Draw a line parallel to the X axis, that ends at the given X."
+excerpt: "Draw a line parallel to the X axis, that ends at the given X. E.g. if the previous line ended at (1, 1), then xLineTo(4) draws a line from (1, 1) to (4, 1)"
 layout: manual
 ---
 
-Draw a line parallel to the X axis, that ends at the given X.
+Draw a line parallel to the X axis, that ends at the given X. E.g. if the previous line ended at (1, 1), then xLineTo(4) draws a line from (1, 1) to (4, 1)
 
-E.g. if the previous line ended at (1, 1), then xLineTo(4) draws a line from (1, 1) to (4, 1)
+
 
 ```js
 xLineTo(
   to: number,
   sketch: Sketch,
   tag?: TagDeclarator,
-) -> Sketch
+): Sketch
 ```
 
 
@@ -21,13 +21,13 @@ xLineTo(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `to` | `number` |  | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `to` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples

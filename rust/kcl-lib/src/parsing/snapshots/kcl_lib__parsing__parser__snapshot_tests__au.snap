@@ -1,0 +1,167 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "declaration": {
+        "end": 106,
+        "id": {
+          "end": 14,
+          "name": "cylinder",
+          "start": 6,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": [
+            {
+              "arguments": [
+                {
+                  "end": 35,
+                  "raw": "'XY'",
+                  "start": 31,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": "XY"
+                }
+              ],
+              "callee": {
+                "end": 30,
+                "name": "startSketchOn",
+                "start": 17,
+                "type": "Identifier"
+              },
+              "end": 36,
+              "start": 17,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 57,
+                    "name": "center",
+                    "start": 51,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "elements": [
+                      {
+                        "end": 61,
+                        "raw": "0",
+                        "start": 60,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 64,
+                        "raw": "0",
+                        "start": 63,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 65,
+                    "start": 59,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 73,
+                    "name": "radius",
+                    "start": 67,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 77,
+                    "raw": "22",
+                    "start": 75,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 22.0,
+                      "suffix": "None"
+                    }
+                  }
+                }
+              ],
+              "callee": {
+                "end": 50,
+                "name": "circle",
+                "start": 44,
+                "type": "Identifier"
+              },
+              "end": 78,
+              "start": 44,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 100,
+                    "name": "length",
+                    "start": 94,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 105,
+                    "raw": "14",
+                    "start": 103,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 14.0,
+                      "suffix": "None"
+                    }
+                  }
+                }
+              ],
+              "callee": {
+                "end": 93,
+                "name": "extrude",
+                "start": 86,
+                "type": "Identifier"
+              },
+              "end": 106,
+              "start": 86,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
+            }
+          ],
+          "end": 106,
+          "start": 17,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
+      "end": 106,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 107,
+  "start": 0
+}

@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Step file 80-20-rail.kcl
+extension: step
+snapshot_kind: binary
+---

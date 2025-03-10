@@ -4,6 +4,7 @@
       "project": "./tsconfig.json"
     },
     "plugins": [
+      "react-perf",
       "css-modules",
       "jest",
       "jsx-a11y",

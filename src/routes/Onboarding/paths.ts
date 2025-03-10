@@ -1,4 +1,4 @@
-import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
+import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 
 export const onboardingPaths: Record<string, OnboardingStatus> = {
   INDEX: '/',

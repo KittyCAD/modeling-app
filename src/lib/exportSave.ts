@@ -1,5 +1,5 @@
 import { isDesktop } from './isDesktop'
-import { deserialize_files } from '../wasm-lib/pkg/wasm_lib'
+import { deserialize_files } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { browserSaveFile } from './browserSaveFile'
 
 import JSZip from 'jszip'

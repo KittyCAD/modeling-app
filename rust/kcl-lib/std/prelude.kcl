@@ -1,0 +1,250 @@
+@no_std
+
+// Note that everything in the prelude is treated as exported.
+
+export import * from "std::math"
+
+/// A number
+///
+/// May be signed or unsigned, an integer or decimal value.
+///
+/// You may see a number type with units, e.g., `number(mm)`. These are currently experimental.
+@(impl = primitive)
+export type number(unit)
+
+/// A boolean value.
+///
+/// `true` or `false`
+@(impl = primitive)
+export type bool
+
+/// A sequence of characters
+///
+/// Strings may be delimited using either single or double quotes.
+///
+/// ```kcl,norun
+/// "hello,"
+/// 'world!'
+/// ```
+@(impl = primitive)
+export type string
+
+/// Tags are used to give a name (tag) to a specific path.
+///
+/// ### Tag Declaration
+///
+/// The syntax for declaring a tag is `$myTag` you would use it in the following
+/// way:
+///
+/// ```norun,inline
+/// startSketchOn('XZ')
+///   |> startProfileAt(origin, %)
+///   |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
+///   |> angledLine({
+///        angle = segAng(rectangleSegmentA001) - 90,
+///        length = 196.99,
+///      }, %, $rectangleSegmentB001)
+///   |> angledLine({
+///        angle = segAng(rectangleSegmentA001),
+///        length = -segLen(rectangleSegmentA001),
+///      }, %, $rectangleSegmentC001)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// ```
+///
+/// ### Tag Identifier
+///
+/// As per the example above you can use the tag identifier to get a reference to the 
+/// tagged object. The syntax for this is `myTag`.
+/// 
+/// In the example above we use the tag identifier to get the angle of the segment
+/// `segAng(rectangleSegmentA001, %)`.
+///
+/// ### Tag Scope
+///
+/// Tags are scoped globally if in the root context meaning in this example you can 
+/// use the tag `rectangleSegmentA001` in any function or expression in the file.
+///
+/// However if the code was written like this:
+///
+/// ```norun,inline
+/// fn rect(origin) {
+///   return startSketchOn('XZ')
+///     |> startProfileAt(origin, %)
+///     |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
+///     |> angledLine({
+///          angle = segAng(rectangleSegmentA001) - 90,
+///          length = 196.99
+///        }, %, $rectangleSegmentB001)
+///     |> angledLine({
+///          angle = segAng(rectangleSegmentA001),
+///          length = -segLen(rectangleSegmentA001)
+///        }, %, $rectangleSegmentC001)
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+/// }
+/// 
+/// rect([0, 0])
+/// rect([20, 0])
+/// ```
+///
+/// Those tags would only be available in the `rect` function and not globally.
+///
+/// However you likely want to use those tags somewhere outside the `rect` function.
+///
+/// Tags are accessible through the sketch group they are declared in.
+/// For example the following code works.
+///
+/// ```norun,inline
+/// fn rect(origin) {
+///   return startSketchOn('XZ')
+///     |> startProfileAt(origin, %)
+///     |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
+///     |> angledLine({
+///          angle = segAng(rectangleSegmentA001) - 90,
+///          length = 196.99
+///        }, %, $rectangleSegmentB001)
+///     |> angledLine({
+///          angle = segAng(rectangleSegmentA001),
+///          length = -segLen(rectangleSegmentA001)
+///        }, %, $rectangleSegmentC001)
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+/// }
+/// 
+/// rect([0, 0])
+/// myRect = rect([20, 0])
+/// 
+/// myRect
+///   |> extrude(10, %)
+///   |> fillet(
+///        radius = 0.5,
+///        tags = [myRect.tags.rectangleSegmentA001]
+///      )
+/// ```
+///
+/// See how we use the tag `rectangleSegmentA001` in the `fillet` function outside
+/// the `rect` function. This is because the `rect` function is returning the
+/// sketch group that contains the tags.
+@(impl = primitive)
+export type tag
+
+/// A plane.
+@(impl = std_rust)
+export type Plane
+
+/// A sketch is a collection of paths.
+///
+/// When you define a sketch to a variable like:
+///
+/// ```kcl,inline
+/// mySketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+/// ```
+///
+/// The `mySketch` variable will be an executed `Sketch` object. Executed being past
+/// tense, because the engine has already executed the commands to create the sketch.
+///
+/// The previous sketch commands will never be executed again, in this case.
+///
+/// If you would like to encapsulate the commands to create the sketch any time you call it,
+/// you can use a function.
+///
+/// ```kcl,inline
+/// fn createSketch() {
+///    return startSketchOn('XY')
+///         |> startProfileAt([-12, 12], %)
+///         |> line(end = [24, 0])
+///         |> line(end = [0, -24])
+///         |> line(end = [-24, 0])
+///         |> close()
+/// }
+/// ```
+///
+/// Now, every time you call `createSketch()`, the commands will be
+/// executed and a new sketch will be created.
+///
+/// When you assign the result of `createSketch()` to a variable (`mySketch = createSketch()`), you are assigning
+/// the executed sketch to that variable. Meaning that the sketch `mySketch` will not be executed
+/// again.
+///
+/// You can still execute _new_ commands on the sketch like `extrude`, `revolve`, `loft`, etc. and
+/// the sketch will be updated.
+@(impl = std_rust)
+export type Sketch
+
+/// A solid is a collection of extrude surfaces.
+///
+/// When you define a solid to a variable like:
+///
+/// ```kcl,inline
+/// myPart = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+/// ```
+///
+/// The `myPart` variable will be an executed `Solid` object. Executed being past
+/// tense, because the engine has already executed the commands to create the solid.
+///
+/// The previous solid commands will never be executed again, in this case.
+///
+/// If you would like to encapsulate the commands to create the solid any time you call it,
+/// you can use a function.
+///
+/// ```kcl,inline
+/// fn createPart() {
+///    return startSketchOn('XY')
+///         |> startProfileAt([-12, 12], %)
+///         |> line(end = [24, 0])
+///         |> line(end = [0, -24])
+///         |> line(end = [-24, 0])
+///         |> close()
+///         |> extrude(length = 6)
+/// }
+/// ```
+///
+/// Now, every time you call `createPart()`, the commands will be
+/// executed and a new solid will be created.
+///
+/// When you assign the result of `createPart()` to a variable (`myPart = createPart()`), you are assigning
+/// the executed solid to that variable. Meaning that the solid `myPart` will not be executed
+/// again.
+///
+/// You can still execute _new_ commands on the solid like `shell`, `fillet`, `chamfer`, etc.
+/// and the solid will be updated.
+@(impl = std_rust)
+export type Solid
+
+export ZERO = 0
+export QUARTER_TURN = 90deg
+export HALF_TURN = 180deg
+export THREE_QUARTER_TURN = 270deg
+
+export XY = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 },
+}: Plane
+
+export XZ = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+  zAxis = { x = 0, y = -1, z = 0 },
+}: Plane
+
+export YZ = {
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 0, y = 1, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+  zAxis = { x = 1, y = 0, z = 0 },
+}: Plane
