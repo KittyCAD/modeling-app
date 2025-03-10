@@ -183,9 +183,6 @@ const ProjectsContextDesktop = ({
   }, [searchParams, setSearchParams])
   const { onProjectOpen } = useLspContext()
   const settings = useSettings()
-
-  console.log()
-
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectPaths, projectsDir } = useProjectsLoader([
     projectsLoaderTrigger,
@@ -437,7 +434,6 @@ const ProjectsContextDesktop = ({
       // ignore all signals during initialization because it is ambiguous. Once those signals settle
       // you can actually start listening to real signals.
       // If someone creates folders or files during initialization we ignore those events!
-      console.log('okay?')
       if (!actor.getSnapshot().context.hasListedProjects) {
         return
       }
