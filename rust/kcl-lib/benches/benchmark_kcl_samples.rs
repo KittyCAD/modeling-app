@@ -38,7 +38,7 @@ fn find_main_kcl_file(dir_path: &Path) -> PathBuf {
 
 fn run_benchmarks(c: &mut Criterion) {
     // Specify the base directory containing benchmark subdirectories
-    let base_dir = std::path::Path::new(&std::env::var("CARGO_MANIFEST_DIR").unwrap()).join("../../public/kcl-samples");
+    let base_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../public/kcl-samples");
 
     if !base_dir.exists() || !base_dir.is_dir() {
         panic!("Invalid base directory: {}", base_dir.display());
