@@ -70,6 +70,7 @@ ts-rs = { version = "10.1.0", features = [
     "no-serde-warnings",
     "serde-json-impl",
 ] }
+tynm = "0.1.10"
 url = { version = "2.5.4", features = ["serde"] }
 uuid = { workspace = true, features = ["v4", "js", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }

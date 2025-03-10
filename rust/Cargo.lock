@@ -1917,6 +1917,7 @@ dependencies = [
  "tower-lsp",
  "ts-rs",
  "twenty-twenty",
+ "tynm",
  "url",
  "uuid",
  "validator",
@@ -4240,6 +4241,15 @@ dependencies = [
  "image",
  "image-compare",
  "uuid",
+]
+
+[[package]]
+name = "tynm"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bd30d05e69d1478e13fe3e7a853409cfec82cebc2cf9b8d613b3c6b0081781ed"
+dependencies = [
+ "nom",
 ]
 
 [[package]]
