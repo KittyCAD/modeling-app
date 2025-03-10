@@ -46,6 +46,7 @@ jobs:
         with:
           cwd: "rust"
           defaultFeatures: true
+          package: "kcl-lib"
           # Needed. The name of the branch to compare with. This default uses the branch which is being pulled against
           branchName: ${{ github.base_ref }}
         env:
