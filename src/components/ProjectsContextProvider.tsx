@@ -429,6 +429,13 @@ const ProjectsContextDesktop = ({
 
   useFileSystemWatcher(
     async () => {
+
+      // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
+      // This means while the application initialize and Chokidar initializes you cannot tell if
+      // a directory or file is actually created or they are buggy signals. This means you must
+      // ignore all signals during initialization because it is ambiguous. Once those signals settle
+      // you can actually start listening to real signals.
+      // If someone creates folders or files during initialization we ignore those events!
       if (!actor.getSnapshot().context.hasListedProjects) {
         return
       }
