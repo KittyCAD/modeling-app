@@ -5,6 +5,9 @@ version = "0.1.47"
 edition = "2021"
 license = "MIT"
 
+[lib]
+bench = false
+
 [dependencies]
 anyhow = "1.0.95"
 hyper = { version = "0.14.29", features = ["http1", "server", "tcp"] }

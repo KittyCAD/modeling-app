@@ -8,6 +8,7 @@ repository = "https://github.com/kittycad/modeling-app"
 [lib]
 name = "kcl"
 crate-type = ["cdylib"]
+bench = false
 
 [dependencies]
 anyhow = { workspace = true }

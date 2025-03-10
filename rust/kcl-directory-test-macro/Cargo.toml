@@ -8,6 +8,7 @@ repository = "https://github.com/KittyCAD/modeling-app"
 
 [lib]
 proc-macro = true
+bench = false
 
 [dependencies]
 proc-macro2 = "1"
