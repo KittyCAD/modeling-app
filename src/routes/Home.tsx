@@ -33,9 +33,12 @@ const Home = () => {
   const { state, send } = useProjectsContext()
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
-  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{value: boolean, error: unknown}>({
+  const [readWriteProjectDir, setReadWriteProjectDir] = useState<{
+    value: boolean
+    error: unknown
+  }>({
     value: true,
-    error: undefined
+    error: undefined,
   })
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
@@ -142,7 +145,7 @@ const Home = () => {
     } else {
       return 'Unknown error'
     }
-}
+  }
 
   return (
     <div className="relative flex flex-col h-screen overflow-hidden" ref={ref}>

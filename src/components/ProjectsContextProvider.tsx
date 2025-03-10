@@ -184,6 +184,8 @@ const ProjectsContextDesktop = ({
   const { onProjectOpen } = useLspContext()
   const settings = useSettings()
 
+  console.log()
+
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectPaths, projectsDir } = useProjectsLoader([
     projectsLoaderTrigger,
@@ -435,6 +437,7 @@ const ProjectsContextDesktop = ({
       // ignore all signals during initialization because it is ambiguous. Once those signals settle
       // you can actually start listening to real signals.
       // If someone creates folders or files during initialization we ignore those events!
+      console.log('okay?')
       if (!actor.getSnapshot().context.hasListedProjects) {
         return
       }
@@ -444,9 +447,11 @@ const ProjectsContextDesktop = ({
   )
 
   // Gotcha: Triggers listProjects() on chokidar changes
+  // Gotcha: Load the projects when the projectDirectory changes.
+  const projectDirectory = settings.app.projectDirectory.current
   useEffect(() => {
     send({ type: 'Read projects', data: {} })
-  }, [projectPaths])
+  }, [projectPaths, projectDirectory])
 
   // register all project-related command palette commands
   useStateMachineCommands({
