@@ -140,7 +140,7 @@ jobs:
       if: needs.conditions.outputs.should-run == 'true'
       shell: bash
       run: |
-        set -euo pipefail
+        set -euox pipefail
         # Build wasm if this is a scheduled run, there are Rust changes, or
         # downloading from the wasm cache failed.
         if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
