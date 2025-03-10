@@ -17,17 +17,17 @@ macro_rules! println {
     }
 }
 
-#[allow(unused_macros)]
-macro_rules! eprintln {
-    ($($rest:tt)*) => {
-        #[cfg(feature = "disable-println")]
-        {
-            let _ = format!($($rest)*);
-        }
-        #[cfg(not(feature = "disable-println"))]
-        std::eprintln!($($rest)*)
-    }
-}
+// #[allow(unused_macros)]
+// macro_rules! eprintln {
+//     ($($rest:tt)*) => {
+//         #[cfg(feature = "disable-println")]
+//         {
+//             let _ = format!($($rest)*);
+//         }
+//         #[cfg(not(feature = "disable-println"))]
+//         std::eprintln!($($rest)*)
+//     }
+// }
 
 #[allow(unused_macros)]
 macro_rules! print {

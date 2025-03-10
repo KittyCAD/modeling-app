@@ -14,11 +14,14 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    errors::{KclError, KclErrorDetails}, execution::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface}, parsing::ast::types::TagNode, std::{
+    errors::{KclError, KclErrorDetails},
+    execution::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
+    parsing::ast::types::TagNode,
+    std::{
         sketch::NEW_TAG_KW,
         utils::{calculate_circle_center, distance},
         Args,
-    }
+    },
 };
 
 /// A sketch surface or a sketch.

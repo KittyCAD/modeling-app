@@ -349,23 +349,6 @@ Data for an imported geometry.
 
 ----
 
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `type` |enum: `Tombstone`|  | No |
-| `value` |`null`|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
-
-
-----
-
 
 
 

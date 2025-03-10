@@ -677,14 +677,6 @@ mod get_tangential_arc_to_info_tests {
     }
 
     #[test]
-<<<<<<< HEAD
-=======
-    fn test_unique_count() {
-        assert_eq!(unique_count([1, 2, 2, 3, 2].iter()), 3);
-    }
-
-    #[test]
->>>>>>> 97ab2eda5 (Make tag identifiers monotonic)
     fn test_basic_case() {
         let result = get_tangential_arc_to_info(TangentialArcInfoInput {
             tan_previous_point: [0.0, -5.0],
