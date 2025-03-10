@@ -155,6 +155,9 @@ export async function listProjects(
   // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
   const entries = await window.electron.readdir(projectDir)
 
+  const { value: canReadWriteProjectDirectory } =
+    await window.electron.canReadWriteDirectory(projectDir)
+
   for (let entry of entries) {
     // Skip directories that start with a dot
     if (entry.startsWith('.')) {
@@ -172,8 +175,11 @@ export async function listProjects(
 
     const project = await getProjectInfo(projectPath)
 
-    // maybe a bug, DO this ONLY if the working directory cannot be access
-    if (project.kcl_file_count === 0 && project.readWriteAccess) {
+    if (
+      project.kcl_file_count === 0 &&
+      project.readWriteAccess &&
+      canReadWriteProjectDirectory
+    ) {
       continue
     }
 
