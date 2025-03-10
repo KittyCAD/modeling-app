@@ -1234,7 +1234,7 @@ export const modelingMachine = setup({
       const varName = varDec.node.declaration.id.name
       const sg = sketchFromKclValue(kclManager.variables[varName], varName)
       if (err(sg)) return
-      const lastSegment = sg.paths[sg.paths.length - 1]
+      const lastSegment = sg.paths[sg.paths.length - 1] || sg.start
       const to = lastSegment.to
 
       const { group, updater } = sceneEntitiesManager.drawDashedLine({

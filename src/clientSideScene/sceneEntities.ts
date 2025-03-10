@@ -1942,7 +1942,7 @@ export class SceneEntities {
         p2,
         p3,
       },
-      fnName: 'arcTo' as ToolTip,
+      fnName: 'arcTo',
       pathToNode: sketchEntryNodePath,
     })
 
@@ -2104,7 +2104,7 @@ export class SceneEntities {
       },
     })
     return {
-      updatedEntryNodePath: sketchEntryNodePath,
+      updatedEntryNodePath: mod.pathToNode,
       updatedSketchNodePaths: sketchNodePaths,
       expressionIndexToDelete: -1, // No need to delete any expression
     }

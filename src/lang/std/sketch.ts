@@ -1637,8 +1637,28 @@ export const arcTo: SketchLineHelper = {
     if (spliceBetween) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       pipe.body.splice(callIndex + 1, 0, newLine)
-    } else {
+    } else if (pipe.type === 'PipeExpression') {
       pipe.body.push(newLine)
+    } else {
+      const nodeMeta2 = getNodeFromPath<VariableDeclarator>(
+        _node,
+        pathToNode,
+        'VariableDeclarator'
+      )
+      if (err(nodeMeta2)) return nodeMeta2
+      const { node: varDec } = nodeMeta2
+      varDec.init = createPipeExpression([varDec.init, newLine])
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([key, _]) => key === 'init') + 1
+          ),
+          ['body', 'PipeExpression'],
+          [1, 'CallExpression'],
+        ],
+      }
     }
 
     return {
