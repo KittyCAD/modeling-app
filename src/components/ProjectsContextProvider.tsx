@@ -137,6 +137,7 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
         projects: [],
         defaultProjectName: settings.projects.defaultProjectName.current,
         defaultDirectory: settings.app.projectDirectory.current,
+        hasListedProjects: false,
       },
     }
   )
@@ -187,22 +188,6 @@ const ProjectsContextDesktop = ({
   const { projectPaths, projectsDir } = useProjectsLoader([
     projectsLoaderTrigger,
   ])
-
-  // KEVIN: LIST PROJECTS INVOKED
-  // Re-read projects listing if the projectDir has any updates.
-  // Kevin: we already watch projectsDir
-  useFileSystemWatcher(
-    async (eventType, path) => {
-      console.log("[kevin] INVOKE LISTPROJECTS(callback);", eventType, path)
-      // KEVIN: invocation
-      if (!window.LISTED_PROJECTS) {
-        return
-      }
-      return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
-    },
-    projectsDir ? [projectsDir] : [],
-    'nice'
-  )
 
   const [state, send, actor] = useMachine(
     projectsMachine.provide({
@@ -322,9 +307,6 @@ const ProjectsContextDesktop = ({
       },
       actors: {
         readProjects: fromPromise(() => {
-          var a = new Error()
-          console.log("[kevin] readProjects(callback)")
-          console.log("[kevin] readProjects(callback) error", a.stack)
           return listProjects()
         }),
         createProject: fromPromise(async ({ input }) => {
@@ -440,14 +422,25 @@ const ProjectsContextDesktop = ({
         projects: projectPaths,
         defaultProjectName: settings.projects.defaultProjectName.current,
         defaultDirectory: settings.app.projectDirectory.current,
+        hasListedProjects: false,
       },
     }
   )
 
-  // KEVIN: LIST PROJECTS INVOKED
-  /* useEffect(() => {
-   *   send({ type: 'Read projects', data: {} })
-   * }, [projectPaths]) */
+  useFileSystemWatcher(
+    async () => {
+      if (!actor.getSnapshot().context.hasListedProjects) {
+        return
+      }
+      return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
+    },
+    projectsDir ? [projectsDir] : []
+  )
+
+  // Gotcha: Triggers listProjects() on chokidar changes
+  useEffect(() => {
+    send({ type: 'Read projects', data: {} })
+  }, [projectPaths])
 
   // register all project-related command palette commands
   useStateMachineCommands({

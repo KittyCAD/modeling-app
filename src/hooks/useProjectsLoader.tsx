@@ -5,7 +5,8 @@ import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
 import { Project } from 'lib/project'
 import { isDesktop } from 'lib/isDesktop'
 
-// KEVIN: LIST PROJECTS INVOKED
+// Gotcha: This should be ported to the ProjectMachine and keep track of
+// projectDirs and projectPaths in the context when it internally calls listProjects
 // Hook uses [number] to give users familiarity. It is meant to mimic a
 // dependency array, but is intended to only ever be used with 1 value.
 export const useProjectsLoader = (deps?: [number]) => {
@@ -30,12 +31,9 @@ export const useProjectsLoader = (deps?: [number]) => {
 
       if (projectsDir) {
         const _projectPaths = await listProjects(configuration)
-        /* console.log('[kevin] final paths', JSON.parse(JSON.stringify(_projectPaths))) */
         setProjectPaths(_projectPaths)
       }
     })().catch(trap)
-
-    console.log("[kevin] [deps] [project dir]", deps, projectsDir)
   }, deps ?? [])
 
   return {

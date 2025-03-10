@@ -33,7 +33,10 @@ const Home = () => {
   const { state, send } = useProjectsContext()
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
-  const [readWriteProjectDir, setReadWriteProjectDir] = useState({value: true, error: undefined})
+  const [readWriteProjectDir, setReadWriteProjectDir] = useState({
+    value: true,
+    error: undefined,
+  })
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery((argDefaultValues) => {
@@ -68,19 +71,6 @@ const Home = () => {
   )
   const ref = useRef<HTMLDivElement>(null)
 
-  // Kevin: This is already covered in ProjectsContextProvider.tsx
-  // // Re-read projects listing if the projectDir has any updates.
-  // useFileSystemWatcher(
-  //   // Kevin: we already watch projectsDir
-  //   async () => {
-  //     console.log('[kevin]', projectsLoaderTrigger,'Project Dir Path', projectsDir)
-  //     setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
-  //   },
-  //   // Gotcha: For each folder in the projectsDir it will call listProjects
-  //   // If you have 6 folders, you call listProjects 6 times for the same computed value
-  //   projectsDir ? [projectsDir] : [],
-  // )
-
   const projects = state?.context.projects ?? []
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(projects)
@@ -101,9 +91,12 @@ const Home = () => {
 
     // Must be a truthy string, not '' or null or undefined
     if (settings.app.projectDirectory.current) {
-      window.electron.canReadWriteDirectory(settings.app.projectDirectory.current).then((res)=>{
-        setReadWriteProjectDir(res)
-      }).catch(reportRejection)
+      window.electron
+        .canReadWriteDirectory(settings.app.projectDirectory.current)
+        .then((res) => {
+          setReadWriteProjectDir(res)
+        })
+        .catch(reportRejection)
     }
   }, [
     settings.app.projectDirectory.current,
@@ -233,23 +226,22 @@ const Home = () => {
             </Link>
             .
           </p>
-          { !readWriteProjectDir.value &&
-
+          {!readWriteProjectDir.value && (
             <section>
               <div className="flex items-center select-none">
                 <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm grow">
                   <p className="">{readWriteProjectDir.error.message}</p>
-                    <Link
-              data-testid="project-directory-settings-link"
-              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-              className="py-1 text-white underline underline-offset-2 text-sm"
-            >
+                  <Link
+                    data-testid="project-directory-settings-link"
+                    to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+                    className="py-1 text-white underline underline-offset-2 text-sm"
+                  >
                     Change Project Directory
-            </Link>
-            </div>
-          </div>
-        </section>
-          }
+                  </Link>
+                </div>
+              </div>
+            </section>
+          )}
         </section>
         <section
           data-testid="home-section"

@@ -127,14 +127,13 @@ export async function createNewProjectDirectory(
     kcl_file_count: 1,
     directory_count: 0,
     // If the mkdir did not crash you have readWriteAccess
-    readWriteAccess: true
+    readWriteAccess: true,
   }
 }
 
 export async function listProjects(
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
-  console.count("[kevin] listProjects counter")
   // Make sure we have wasm initialized.
   const initializedResult = await initPromise
   if (err(initializedResult)) {
@@ -155,8 +154,6 @@ export async function listProjects(
 
   // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
   const entries = await window.electron.readdir(projectDir)
-
-  // detect symlink inifinite ls
 
   for (let entry of entries) {
     // Skip directories that start with a dot
@@ -184,9 +181,6 @@ export async function listProjects(
     projects.push(project)
   }
 
-  console.log('[kevin][return value] listProjects(callback);', JSON.parse(JSON.stringify(projects)))
-  console.count('[kevin][counter] listProjects(callback);')
-  window.LISTED_PROJECTS = true
   return projects
 }
 
@@ -201,7 +195,10 @@ const IMPORT_FILE_EXTENSIONS = [
 const isRelevantFile = (filename: string): boolean =>
   IMPORT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
 
-const collectAllFilesRecursiveFrom = async (path: string, canReadWritePath: boolean) => {
+const collectAllFilesRecursiveFrom = async (
+  path: string,
+  canReadWritePath: boolean
+) => {
   // Make sure the filesystem object exists.
   try {
     await window.electron.stat(path)
@@ -256,7 +253,10 @@ const collectAllFilesRecursiveFrom = async (path: string, canReadWritePath: bool
     const isEDir = await window.electron.statIsDirectory(ePath)
 
     if (isEDir) {
-      const subChildren = await collectAllFilesRecursiveFrom(ePath, canReadWritePath)
+      const subChildren = await collectAllFilesRecursiveFrom(
+        ePath,
+        canReadWritePath
+      )
       children.push(subChildren)
     } else {
       if (!isRelevantFile(ePath)) {
@@ -373,11 +373,15 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   }
 
   // Detect the projectPath has read write permission
-  const {value: canReadWriteProjectPath} = await window.electron.canReadWriteDirectory(projectPath)
+  const { value: canReadWriteProjectPath } =
+    await window.electron.canReadWriteDirectory(projectPath)
   const metadata = await window.electron.stat(projectPath)
 
   // Return walked early if canReadWriteProjectPath is false
-  let walked = await collectAllFilesRecursiveFrom(projectPath, canReadWriteProjectPath)
+  let walked = await collectAllFilesRecursiveFrom(
+    projectPath,
+    canReadWriteProjectPath
+  )
 
   // If the projectPath does not have read write permissions, the default_file is empty string
   let default_file = ''
@@ -402,7 +406,7 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
-    readWriteAccess: canReadWriteProjectPath
+    readWriteAccess: canReadWriteProjectPath,
   }
 
   // Populate the number of KCL files in the project.

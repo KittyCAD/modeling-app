@@ -86,8 +86,16 @@ function ProjectCard({
     >
       <Link
         data-testid="project-link"
-        to={ project.readWriteAccess ? `${PATHS.FILE}/${encodeURIComponent(project.default_file)}` : ''}
-        className={`flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 min-h-[5em] divide-y divide-primary/40 dark:divide-chalkboard-80  ${project.readWriteAccess ? 'group-hover:!divide-primary group-hover:!hue-rotate-0' : 'cursor-not-allowed'}`}
+        to={
+          project.readWriteAccess
+            ? `${PATHS.FILE}/${encodeURIComponent(project.default_file)}`
+            : ''
+        }
+        className={`flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 min-h-[5em] divide-y divide-primary/40 dark:divide-chalkboard-80  ${
+          project.readWriteAccess
+            ? 'group-hover:!divide-primary group-hover:!hue-rotate-0'
+            : 'cursor-not-allowed'
+        }`}
       >
         <div className="h-36 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm">
           {imageUrl && (
@@ -116,19 +124,21 @@ function ProjectCard({
               {project.name?.replace(FILE_EXT, '')}
             </h3>
           )}
-          {project.readWriteAccess && <span className="px-2 text-chalkboard-60 text-xs">
-            <span data-testid="project-file-count">{numberOfFiles}</span> file
-            {numberOfFiles === 1 ? '' : 's'}{' '}
-            {numberOfFolders > 0 && (
-              <>
-                {'/ '}
-                <span data-testid="project-folder-count">
-                  {numberOfFolders}
-                </span>{' '}
-                folder{numberOfFolders === 1 ? '' : 's'}
-              </>
-            )}
-          </span>}
+          {project.readWriteAccess && (
+            <span className="px-2 text-chalkboard-60 text-xs">
+              <span data-testid="project-file-count">{numberOfFiles}</span> file
+              {numberOfFiles === 1 ? '' : 's'}{' '}
+              {numberOfFolders > 0 && (
+                <>
+                  {'/ '}
+                  <span data-testid="project-folder-count">
+                    {numberOfFolders}
+                  </span>{' '}
+                  folder{numberOfFolders === 1 ? '' : 's'}
+                </>
+              )}
+            </span>
+          )}
           <span className="px-2 text-chalkboard-60 text-xs">
             Edited{' '}
             <span data-testid="project-edit-date">
