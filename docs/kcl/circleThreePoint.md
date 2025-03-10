@@ -23,15 +23,15 @@ circleThreePoint(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `p1` | `[number]` | 1st point to derive the circle. | Yes |
-| `p2` | `[number]` | 2nd point to derive the circle. | Yes |
-| `p3` | `[number]` | 3rd point to derive the circle. | Yes |
+| `p1` | [`[number]`](/docs/kcl/types/number) | 1st point to derive the circle. | Yes |
+| `p2` | [`[number]`](/docs/kcl/types/number) | 2nd point to derive the circle. | Yes |
+| `p3` | [`[number]`](/docs/kcl/types/number) | 3rd point to derive the circle. | Yes |
 | `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Identifier for the circle to reference elsewhere. | No |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Identifier for the circle to reference elsewhere. | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples

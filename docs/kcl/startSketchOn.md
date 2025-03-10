@@ -29,7 +29,7 @@ startSketchOn(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`SketchData`](/docs/kcl/types/SketchData) | Data for start sketch on. You can start a sketch on a plane or an solid. | Yes |
-| `tag` | [`FaceTag`](/docs/kcl/types/FaceTag) | A tag for a face. | No |
+| [`tag`](/docs/kcl/types/tag) | [`FaceTag`](/docs/kcl/types/FaceTag) | A tag for a face. | No |
 
 ### Returns
 
@@ -137,9 +137,9 @@ a1 = startSketchOn({
      })
   |> startProfileAt([0, 0], %)
   |> line(end = [100.0, 0])
-  |> yLine(-100.0, %)
-  |> xLine(-100.0, %)
-  |> yLine(100.0, %)
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 3.14)
 ```

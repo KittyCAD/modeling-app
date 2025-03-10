@@ -16,9 +16,9 @@ Data for helix revolutions.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `revolutions` |`number`| Number of revolutions. | No |
-| `angleStart` |`number`| Start angle (in degrees). | No |
+| `revolutions` |[`number`](/docs/kcl/types/number)| Number of revolutions. | No |
+| `angleStart` |[`number`](/docs/kcl/types/number)| Start angle (in degrees). | No |
 | `ccw` |`boolean`| Is the helix rotation counter clockwise? The default is `false`. | No |
-| `length` |`number`| Length of the helix. If this argument is not provided, the height of the solid is used. | No |
+| `length` |[`number`](/docs/kcl/types/number)| Length of the helix. If this argument is not provided, the height of the solid is used. | No |
 
 

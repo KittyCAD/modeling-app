@@ -5,7 +5,7 @@ layout: manual
 ---
 
 
-**Type:** `string` (`uuid`)
+**Type:** [`string`](/docs/kcl/types/string) (`uuid`)
 
 
 

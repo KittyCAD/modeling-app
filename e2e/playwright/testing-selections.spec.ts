@@ -75,7 +75,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
-    |> xLine(${commonPoints.num1}, %)`)
+    |> xLine(length = ${commonPoints.num1})`)
 
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
@@ -83,17 +83,17 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
       .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
-    |> xLine(${commonPoints.num1}, %)
-    |> yLine(${commonPoints.num1 + 0.01}, %)`)
+    |> xLine(length = ${commonPoints.num1})
+    |> yLine(length = ${commonPoints.num1 + 0.01})`)
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
-    |> xLine(${commonPoints.num1}, %)
-    |> yLine(${commonPoints.num1 + 0.01}, %)
-    |> xLine(${commonPoints.num2 * -1}, %)`)
+    |> xLine(length = ${commonPoints.num1})
+    |> yLine(length = ${commonPoints.num1 + 0.01})
+    |> xLine(length = ${commonPoints.num2 * -1})`)
 
     // deselect line tool
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
@@ -158,7 +158,9 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
 
       // check the same selection again by putting cursor in code first then selecting axis
       await test.step(`Same selection but code selection then axis`, async () => {
-        await page.getByText(`  |> xLine(${commonPoints.num2 * -1}, %)`).click()
+        await page
+          .getByText(`  |> xLine(length = ${commonPoints.num2 * -1})`)
+          .click()
         await page.keyboard.down('Shift')
         await constrainButton.click()
         await expect(absXButton).toBeDisabled()
@@ -182,7 +184,9 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
         process.platform === 'linux' ? 'Control' : 'Meta'
       )
       await page.waitForTimeout(100)
-      await page.getByText(`  |> xLine(${commonPoints.num2 * -1}, %)`).click()
+      await page
+        .getByText(`  |> xLine(length = ${commonPoints.num2 * -1})`)
+        .click()
 
       await expect(page.locator('.cm-cursor')).toHaveCount(2)
       await page.waitForTimeout(500)
@@ -537,9 +541,9 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
   |> line(end = [7.13, 4 + 0])
   |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
   |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
-  |> xLineTo(29 + 0, %)
-  |> yLine(-3.14 + 0, %, $a)
-  |> xLine(1.63, %)
+  |> xLine(endAbsolute = 29 + 0)
+  |> yLine(length = -3.14 + 0, tag = $a)
+  |> xLine(length = 1.63)
   |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 }, %)
   |> angledLineOfYLength({ angle = 30, length = 3 + 0 }, %)
   |> angledLineToX({ angle = 22.14 + 0, to = 12 }, %)

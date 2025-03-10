@@ -21,13 +21,13 @@ tangentialArcToRelative(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `delta` | `[number]` |  | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `delta` | [`[number]`](/docs/kcl/types/number) |  | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples

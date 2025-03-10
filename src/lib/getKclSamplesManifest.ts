@@ -1,4 +1,4 @@
-import { KCL_SAMPLES_MANIFEST_URLS } from './constants'
+import { KCL_SAMPLES_MANIFEST_URL } from './constants'
 import { isDesktop } from './isDesktop'
 
 export type KclSamplesManifestItem = {
@@ -10,22 +10,15 @@ export type KclSamplesManifestItem = {
 }
 
 export async function getKclSamplesManifest() {
-  let response = await fetch(KCL_SAMPLES_MANIFEST_URLS.remote)
+  const response = await fetch(
+    (isDesktop() ? '.' : '') + KCL_SAMPLES_MANIFEST_URL
+  )
   if (!response.ok) {
-    console.warn(
-      'Failed to fetch latest remote KCL samples manifest, falling back to local:',
+    console.error(
+      'Failed to fetch bundled KCL samples manifest:',
       response.statusText
     )
-    response = await fetch(
-      (isDesktop() ? '.' : '') + KCL_SAMPLES_MANIFEST_URLS.localFallback
-    )
-    if (!response.ok) {
-      console.error(
-        'Failed to fetch fallback KCL samples manifest:',
-        response.statusText
-      )
-      return []
-    }
+    return []
   }
   return response.json().then((manifest) => {
     return manifest as KclSamplesManifestItem[]

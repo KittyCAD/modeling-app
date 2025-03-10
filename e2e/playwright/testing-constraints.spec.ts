@@ -18,7 +18,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
-  |> xLine(-20, %)
+  |> xLine(length = -20)
 `
       )
     })
@@ -57,7 +57,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       .click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine([90, length001], %)  |> xLine(-20, %)`
+      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine([90, length001], %)  |> xLine(length = -20)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -89,9 +89,9 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     |> line(end = [41.19, 58.97 + 5])
   part002 = startSketchOn('XZ')
     |> startProfileAt([299.05, 120], %)
-    |> xLine(-385.34, %, $seg_what)
-    |> yLine(-170.06, %)
-    |> xLine(segLen(seg_what), %)
+    |> xLine(length = -385.34, tag = $seg_what)
+    |> yLine(length = -170.06)
+    |> xLine(length = segLen(seg_what))
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
       )
     })
@@ -153,9 +153,9 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
-        |> xLine(-425.34, %, $seg_what)
-        |> yLine(-264.06, %)
-        |> xLine(segLen(seg_what), %)
+        |> xLine(length = -425.34, tag = $seg_what)
+        |> yLine(length = -264.06)
+        |> xLine(length = segLen(seg_what))
         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
 
@@ -285,9 +285,9 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
-        |> xLine(-425.34, %, $seg_what)
-        |> yLine(-264.06, %)
-        |> xLine(segLen(seg_what), %)
+        |> xLine(length = -425.34, tag = $seg_what)
+        |> yLine(length = -264.06)
+        |> xLine(length = segLen(seg_what))
         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
@@ -395,9 +395,9 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
-        |> xLine(-425.34, %, $seg_what)
-        |> yLine(-264.06, %)
-        |> xLine(segLen(seg_what), %)
+        |> xLine(length = -425.34, tag = $seg_what)
+        |> yLine(length = -264.06)
+        |> xLine(length = segLen(seg_what))
         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
@@ -508,9 +508,9 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
-        |> xLine(-425.34, %, $seg_what)
-        |> yLine(-264.06, %)
-        |> xLine(segLen(seg_what), %)
+        |> xLine(length = -425.34, tag = $seg_what)
+        |> yLine(length = -264.06)
+        |> xLine(length = segLen(seg_what))
         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
@@ -610,9 +610,9 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
-        |> xLine(-425.34, %, $seg_what)
-        |> yLine(-264.06, %)
-        |> xLine(segLen(seg_what), %)
+        |> xLine(length = -425.34, tag = $seg_what)
+        |> yLine(length = -264.06)
+        |> xLine(length = segLen(seg_what))
         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
@@ -696,9 +696,9 @@ part001 = startSketchOn('XZ')
   |> line(end = [51.19, 48.97])
 part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
-  |> xLine(-425.34, %, $seg_what)
-  |> yLine(-264.06, %)
-  |> xLine(segLen(seg_what), %)
+  |> xLine(length = -425.34, tag = $seg_what)
+  |> yLine(length = -264.06)
+  |> xLine(length = segLen(seg_what))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
@@ -748,16 +748,16 @@ part002 = startSketchOn('XZ')
       {
         constraintName: 'Vertical',
         codeAfter: [
-          `|> yLine(130.4, %)`,
-          `|> yLine(77.79, %)`,
-          `|> yLine(48.97, %)`,
+          `|> yLine(length = 130.4)`,
+          `|> yLine(length = 77.79)`,
+          `|> yLine(length = 48.97)`,
         ],
       },
       {
         codeAfter: [
-          `|> xLine(74.36, %)`,
-          `|> xLine(9.16, %)`,
-          `|> xLine(51.19, %)`,
+          `|> xLine(length = 74.36)`,
+          `|> xLine(length = 9.16)`,
+          `|> xLine(length = 51.19)`,
         ],
         constraintName: 'Horizontal',
       },
@@ -776,9 +776,9 @@ part002 = startSketchOn('XZ')
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
-        |> xLine(-425.34, %, $seg_what)
-        |> yLine(-264.06, %)
-        |> xLine(segLen(seg_what), %)
+        |> xLine(length = -425.34, tag = $seg_what)
+        |> yLine(length = -264.06)
+        |> xLine(length = segLen(seg_what))
         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
@@ -876,9 +876,9 @@ part002 = startSketchOn('XZ')
         |> line(end = [9.16, 77.79])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
-        |> xLine(-425.34, %, $seg_what)
-        |> yLine(-264.06, %)
-        |> xLine(segLen(seg_what), %)
+        |> xLine(length = -425.34, tag = $seg_what)
+        |> yLine(length = -264.06)
+        |> xLine(length = segLen(seg_what))
         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
@@ -957,9 +957,9 @@ part002 = startSketchOn('XZ')
         |> line(end = [9.16, 77.79])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
-        |> xLine(-425.34, %, $seg_what)
-        |> yLine(-264.06, %)
-        |> xLine(segLen(seg_what), %)
+        |> xLine(length = -425.34, tag = $seg_what)
+        |> yLine(length = -264.06)
+        |> xLine(length = segLen(seg_what))
         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
@@ -1061,7 +1061,7 @@ part002 = startSketchOn('XZ')
 
       await pollEditorLinesSelectedLength(page, 1)
       let activeLinesContent = await page.locator('.cm-activeLine').all()
-      await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
+      await expect(activeLinesContent[0]).toHaveText(`|> xLine(length = 3.13)`)
 
       // Wait for code editor to settle.
       await page.waitForTimeout(2000)
@@ -1105,7 +1105,9 @@ part002 = startSketchOn('XZ')
 
       await pollEditorLinesSelectedLength(page, 1)
       activeLinesContent = await page.locator('.cm-activeLine').all()
-      await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
+      await expect(activeLinesContent[0]).toHaveText(
+        `|> xLine(length = length001)`
+      )
 
       // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
       await expect(page.getByTestId('segment-overlay')).toHaveCount(2)

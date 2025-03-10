@@ -6,7 +6,8 @@ use crate::parsing::{
         CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression,
         IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-        PipeExpression, Program, TagDeclarator, Type, UnaryExpression, VariableDeclaration, VariableKind,
+        PipeExpression, Program, TagDeclarator, Type, TypeDeclaration, UnaryExpression, VariableDeclaration,
+        VariableKind,
     },
     token::NumericSuffix,
     PIPE_OPERATOR,
@@ -48,6 +49,7 @@ impl Program {
                     BodyItem::VariableDeclaration(variable_declaration) => {
                         variable_declaration.recast(options, indentation_level)
                     }
+                    BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(),
                     BodyItem::ReturnStatement(return_statement) => {
                         format!(
                             "{}return {}",
@@ -414,6 +416,28 @@ impl VariableDeclaration {
     }
 }
 
+impl TypeDeclaration {
+    pub fn recast(&self) -> String {
+        let vis = match self.visibility {
+            ItemVisibility::Default => String::new(),
+            ItemVisibility::Export => "export ".to_owned(),
+        };
+
+        let mut arg_str = String::new();
+        if let Some(args) = &self.args {
+            arg_str.push('(');
+            for a in args {
+                if arg_str.len() > 1 {
+                    arg_str.push_str(", ");
+                }
+                arg_str.push_str(&a.name);
+            }
+            arg_str.push(')');
+        }
+        format!("{}type {}{}", vis, self.name.name, arg_str)
+    }
+}
+
 // Used by TS.
 pub fn format_number(value: f64, suffix: NumericSuffix) -> String {
     format!("{value}{suffix}")
@@ -426,7 +450,7 @@ impl Literal {
                 if self.raw.contains('.') && value.fract() == 0.0 {
                     format!("{value:?}{suffix}")
                 } else {
-                    format!("{}{suffix}", self.raw)
+                    self.raw.clone()
                 }
             }
             LiteralValue::String(ref s) => {
@@ -941,9 +965,9 @@ d = 1
 fn rect(x, y, w, h) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
-    |> xLine(w, %)
-    |> yLine(h, %)
-    |> xLine(-w, %)
+    |> xLine(length = w)
+    |> yLine(length = h)
+    |> xLine(length = -w)
     |> close()
     |> extrude(d, %)
 }
@@ -961,11 +985,11 @@ fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
 fn crosshair(x, y) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
-    |> yLine(1, %)
-    |> yLine(-2, %)
-    |> yLine(1, %)
-    |> xLine(1, %)
-    |> xLine(-2, %)
+    |> yLine(length = 1)
+    |> yLine(length = -2)
+    |> yLine(length = 1)
+    |> xLine(length = 1)
+    |> xLine(length = -2)
 }
 
 fn z(z_x, z_y) {
@@ -1516,7 +1540,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      ), %)
   |> extrude(-thk, %)
-  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10ft)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1633,7 +1657,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2,
      ), %)
   |> extrude(-thk, %)
-  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10ft)
 "#
         );
     }
@@ -2268,6 +2292,19 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
+    }
+
+    #[test]
+    fn recast_types() {
+        let some_program_string = r#"type foo
+
+// A comment
+@(impl = primitive)
+export type bar(unit, baz)
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
     }
 
     #[test]

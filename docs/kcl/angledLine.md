@@ -22,12 +22,12 @@ angledLine(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`AngledLineData`](/docs/kcl/types/AngledLineData) | Data to draw an angled line. | Yes |
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch)
 
 
 ### Examples
@@ -35,10 +35,10 @@ angledLine(
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> yLineTo(15, %)
+  |> yLine(endAbsolute = 15)
   |> angledLine({ angle = 30, length = 15 }, %)
   |> line(end = [8, -10])
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 example = extrude(exampleSketch, length = 10)

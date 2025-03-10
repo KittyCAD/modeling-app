@@ -24,12 +24,12 @@ sweep(
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | The sketch that should be swept in space | Yes |
 | `path` | [`SweepPath`](/docs/kcl/types/SweepPath) | The path to sweep the sketch along | Yes |
-| `sectional` | `bool` | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
-| `tolerance` | `number` | Tolerance for this operation | No |
+| `sectional` | [`bool`](/docs/kcl/types/bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
+| `tolerance` | [`number`](/docs/kcl/types/number) | Tolerance for this operation | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid)
 
 
 ### Examples

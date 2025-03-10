@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/generate-website-docs.yml
       - 'docs/**'
+      - 'public/kcl-samples/**'
   pull_request:
     paths:
       - .github/workflows/generate-website-docs.yml
@@ -42,6 +43,14 @@ jobs:
           # move new
           mv -f docs/kcl/*.md documentation/content/pages/docs/kcl/
           mv -f docs/kcl/types documentation/content/pages/docs/kcl/
+      - name: move kcl-samples
+        shell: bash
+        run: |
+          mkdir -p documentation/content/pages/docs/kcl-samples
+          # cleanup old
+          rm -rf documentation/content/pages/docs/kcl-samples/*
+          # move new
+          mv -f public/kcl-samples/* documentation/content/pages/docs/kcl-samples/
       - name: commit the changes in the docs repo
         shell: bash
         run: |

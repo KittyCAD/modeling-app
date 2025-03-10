@@ -1,0 +1,688 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing pipe-with-bend.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 249,
+          "id": {
+            "end": 244,
+            "name": "innerDiameter",
+            "start": 231,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 249,
+            "raw": "10",
+            "start": 247,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 10.0,
+              "suffix": "None"
+            }
+          },
+          "start": 231,
+          "type": "VariableDeclarator"
+        },
+        "end": 249,
+        "kind": "const",
+        "start": 231,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 268,
+          "id": {
+            "end": 263,
+            "name": "outerDiameter",
+            "start": 250,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 268,
+            "raw": "20",
+            "start": 266,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 20.0,
+              "suffix": "None"
+            }
+          },
+          "start": 250,
+          "type": "VariableDeclarator"
+        },
+        "end": 268,
+        "kind": "const",
+        "start": 250,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 284,
+          "id": {
+            "end": 279,
+            "name": "bendRadius",
+            "start": 269,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 284,
+            "raw": "30",
+            "start": 282,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 30.0,
+              "suffix": "None"
+            }
+          },
+          "start": 269,
+          "type": "VariableDeclarator"
+        },
+        "end": 284,
+        "kind": "const",
+        "start": 269,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 299,
+          "id": {
+            "end": 294,
+            "name": "bendAngle",
+            "start": 285,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 299,
+            "raw": "90",
+            "start": 297,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 90.0,
+              "suffix": "None"
+            }
+          },
+          "start": 285,
+          "type": "VariableDeclarator"
+        },
+        "end": 299,
+        "kind": "const",
+        "start": 285,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 369,
+          "id": {
+            "end": 347,
+            "name": "sketch000",
+            "start": 338,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 368,
+                "raw": "\"XZ\"",
+                "start": 364,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "XZ"
+              }
+            ],
+            "callee": {
+              "end": 363,
+              "name": "startSketchOn",
+              "start": 350,
+              "type": "Identifier"
+            },
+            "end": 369,
+            "start": 350,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 338,
+          "type": "VariableDeclarator"
+        },
+        "end": 369,
+        "kind": "const",
+        "start": 338,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 508,
+          "id": {
+            "end": 426,
+            "name": "outerProfile",
+            "start": 414,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 458,
+                  "name": "center",
+                  "start": 452,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 472,
+                      "name": "bendRadius",
+                      "start": 462,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    {
+                      "end": 475,
+                      "raw": "0",
+                      "start": 474,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 476,
+                  "start": 461,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 486,
+                  "name": "radius",
+                  "start": 480,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 506,
+                  "left": {
+                    "end": 502,
+                    "name": "outerDiameter",
+                    "start": 489,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 506,
+                    "raw": "2",
+                    "start": 505,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 489,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              }
+            ],
+            "callee": {
+              "end": 435,
+              "name": "circle",
+              "start": 429,
+              "type": "Identifier"
+            },
+            "end": 508,
+            "start": 429,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 448,
+              "name": "sketch000",
+              "start": 439,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 414,
+          "type": "VariableDeclarator"
+        },
+        "end": 508,
+        "kind": "const",
+        "start": 414,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 647,
+          "id": {
+            "end": 565,
+            "name": "innerProfile",
+            "start": 553,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 597,
+                  "name": "center",
+                  "start": 591,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 611,
+                      "name": "bendRadius",
+                      "start": 601,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    {
+                      "end": 614,
+                      "raw": "0",
+                      "start": 613,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 615,
+                  "start": 600,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 625,
+                  "name": "radius",
+                  "start": 619,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 645,
+                  "left": {
+                    "end": 641,
+                    "name": "innerDiameter",
+                    "start": 628,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "end": 645,
+                    "raw": "2",
+                    "start": 644,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 628,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              }
+            ],
+            "callee": {
+              "end": 574,
+              "name": "circle",
+              "start": 568,
+              "type": "Identifier"
+            },
+            "end": 647,
+            "start": 568,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 587,
+              "name": "sketch000",
+              "start": 578,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 553,
+          "type": "VariableDeclarator"
+        },
+        "end": 647,
+        "kind": "const",
+        "start": 553,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 786,
+          "id": {
+            "end": 694,
+            "name": "pipeProfile",
+            "start": 683,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "end": 709,
+                "name": "outerProfile",
+                "start": 697,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 732,
+                    "name": "innerProfile",
+                    "start": 720,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  {
+                    "end": 735,
+                    "start": 734,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 719,
+                  "name": "hole",
+                  "start": 715,
+                  "type": "Identifier"
+                },
+                "end": 736,
+                "start": 715,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 786,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "end": 786,
+                    "start": 736,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "revolve the pipe profile at the desired angle",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
+            "start": 697,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 683,
+          "type": "VariableDeclarator"
+        },
+        "end": 786,
+        "kind": "const",
+        "start": 683,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 849,
+          "id": {
+            "end": 791,
+            "name": "pipe",
+            "start": 787,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 835,
+                "properties": [
+                  {
+                    "end": 814,
+                    "key": {
+                      "end": 808,
+                      "name": "axis",
+                      "start": 804,
+                      "type": "Identifier"
+                    },
+                    "start": 804,
+                    "type": "ObjectProperty",
+                    "value": {
+                      "end": 814,
+                      "raw": "\"Y\"",
+                      "start": 811,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "Y"
+                    }
+                  },
+                  {
+                    "end": 833,
+                    "key": {
+                      "end": 821,
+                      "name": "angle",
+                      "start": 816,
+                      "type": "Identifier"
+                    },
+                    "start": 816,
+                    "type": "ObjectProperty",
+                    "value": {
+                      "end": 833,
+                      "name": "bendAngle",
+                      "start": 824,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "start": 802,
+                "type": "ObjectExpression",
+                "type": "ObjectExpression"
+              },
+              {
+                "end": 848,
+                "name": "pipeProfile",
+                "start": 837,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "end": 801,
+              "name": "revolve",
+              "start": 794,
+              "type": "Identifier"
+            },
+            "end": 849,
+            "start": 794,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 787,
+          "type": "VariableDeclarator"
+        },
+        "end": 849,
+        "kind": "const",
+        "start": 787,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 850,
+    "innerAttrs": [
+      {
+        "end": 209,
+        "name": {
+          "end": 185,
+          "name": "settings",
+          "start": 177,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 208,
+            "key": {
+              "end": 203,
+              "name": "defaultLengthUnit",
+              "start": 186,
+              "type": "Identifier"
+            },
+            "start": 186,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 208,
+              "name": "in",
+              "start": 206,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 176,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "3": [
+          {
+            "end": 337,
+            "start": 299,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create a sketch in the 'XZ' plane",
+              "style": "line"
+            }
+          }
+        ],
+        "4": [
+          {
+            "end": 413,
+            "start": 369,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create a profile for the outer diameter",
+              "style": "line"
+            }
+          }
+        ],
+        "5": [
+          {
+            "end": 552,
+            "start": 508,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create a profile for the inner diameter",
+              "style": "line"
+            }
+          }
+        ],
+        "6": [
+          {
+            "end": 682,
+            "start": 647,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "create the profile of the pipe",
+              "style": "line"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 17,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Pipe with bend",
+            "style": "line"
+          }
+        },
+        {
+          "end": 161,
+          "start": 18,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.",
+            "style": "line"
+          }
+        },
+        {
+          "end": 163,
+          "start": 161,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 175,
+          "start": 163,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Set units",
+            "style": "line"
+          }
+        },
+        {
+          "end": 211,
+          "start": 209,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 230,
+          "start": 211,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Define constants",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

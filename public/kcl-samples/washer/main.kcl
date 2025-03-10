@@ -1,0 +1,30 @@
+// Washer
+// A small, typically disk-shaped component with a hole in the middle, used in a wide range of applications, primarily in conjunction with fasteners like bolts and screws. Washers distribute the load of a fastener across a broader area. This is especially important when the fastening surface is soft or uneven, as it helps to prevent damage to the surface and ensures the load is evenly distributed, reducing the risk of the fastener becoming loose over time.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define constants in inches (in)
+innerDiameter = 0.203
+outerDiameter = 0.438
+thicknessMax = 0.038
+thicknessMin = 0.024
+
+// Write a function that defines the washer and extrude it.
+fn washer(plane, innerDia, outerDia, thk) {
+  // Define the sketch of the washer
+  washerSketch = startSketchOn(plane)
+    |> circle(
+         center = [0, 0],
+         radius = outerDia / 2
+       )
+    |> hole(circle(
+         center = [0, 0],
+         radius = innerDia / 2
+       ), %)
+
+  washer = extrude(washerSketch, length = thk)
+  return washer
+}
+
+washer('XY', innerDiameter, outerDiameter, thicknessMax)

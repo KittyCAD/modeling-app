@@ -23,13 +23,13 @@ chamfer(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl/types/Solid) | The solid whose edges should be chamfered | Yes |
-| `length` | `number` | The length of the chamfer | Yes |
+| `length` | [`number`](/docs/kcl/types/number) | The length of the chamfer | Yes |
 | `tags` | [`[EdgeReference]`](/docs/kcl/types/EdgeReference) | The paths you want to chamfer | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this chamfer | No |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this chamfer | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid)
 
 
 ### Examples

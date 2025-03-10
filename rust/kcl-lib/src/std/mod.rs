@@ -73,9 +73,7 @@ lazy_static! {
         Box::new(crate::std::shapes::CircleThreePoint),
         Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::Line),
-        Box::new(crate::std::sketch::XLineTo),
         Box::new(crate::std::sketch::XLine),
-        Box::new(crate::std::sketch::YLineTo),
         Box::new(crate::std::sketch::YLine),
         Box::new(crate::std::sketch::AngledLineToX),
         Box::new(crate::std::sketch::AngledLineToY),
@@ -198,6 +196,24 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("math", "tan") => (
             |e, a| Box::pin(crate::std::math::tan(e, a)),
             StdFnProps::default("std::math::tan"),
+        ),
+        _ => unreachable!(),
+    }
+}
+
+pub(crate) fn std_ty(path: &str, fn_name: &str) -> (crate::execution::PrimitiveType, StdFnProps) {
+    match (path, fn_name) {
+        ("prelude", "Sketch") => (
+            crate::execution::PrimitiveType::Sketch,
+            StdFnProps::default("std::Sketch"),
+        ),
+        ("prelude", "Solid") => (
+            crate::execution::PrimitiveType::Solid,
+            StdFnProps::default("std::Solid"),
+        ),
+        ("prelude", "Plane") => (
+            crate::execution::PrimitiveType::Plane,
+            StdFnProps::default("std::Plane"),
         ),
         _ => unreachable!(),
     }

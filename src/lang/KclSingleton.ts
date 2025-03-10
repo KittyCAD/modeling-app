@@ -452,7 +452,7 @@ export class KclManager {
 
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(ast: Program = this._ast) {
+  async executeAstMock(ast: Program) {
     await this.ensureWasmInit()
 
     const newCode = recast(ast)
@@ -462,6 +462,8 @@ export class KclManager {
     }
     const newAst = await this.safeParse(newCode)
     if (!newAst) {
+      // By clearning the AST we indicate to our callers that there was an issue with execution and
+      // the pre-execution state should be restored.
       this.clearAst()
       return
     }
@@ -474,10 +476,6 @@ export class KclManager {
     })
 
     this._logs = logs
-    this.addDiagnostics(kclErrorsToDiagnostics(errors))
-    // Add warnings and non-fatal errors
-    this.addDiagnostics(complilationErrorsToDiagnostics(execState.errors))
-
     this._execState = execState
     this._variables = execState.variables
     if (!errors.length) {
@@ -494,6 +492,8 @@ export class KclManager {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {
+      // By clearning the AST we indicate to our callers that there was an issue with execution and
+      // the pre-execution state should be restored.
       this.clearAst()
       return
     }

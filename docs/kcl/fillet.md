@@ -24,14 +24,14 @@ fillet(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl/types/Solid) | The solid whose edges should be filletted | Yes |
-| `radius` | `number` | The radius of the fillet | Yes |
+| `radius` | [`number`](/docs/kcl/types/number) | The radius of the fillet | Yes |
 | `tags` | [`[EdgeReference]`](/docs/kcl/types/EdgeReference) | The paths you want to fillet | Yes |
-| `tolerance` | `number` | The tolerance for this fillet | No |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this fillet | No |
+| `tolerance` | [`number`](/docs/kcl/types/number) | The tolerance for this fillet | No |
+| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this fillet | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid)
 
 
 ### Examples

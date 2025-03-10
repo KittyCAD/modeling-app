@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing array_range_expr.kcl
 ---
 {
@@ -48,7 +48,7 @@ description: Variables in memory after executing array_range_expr.kcl
     ]
   },
   "r1": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",
@@ -147,7 +147,7 @@ description: Variables in memory after executing array_range_expr.kcl
     ]
   },
   "r2": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",
@@ -246,7 +246,7 @@ description: Variables in memory after executing array_range_expr.kcl
     ]
   },
   "r3": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",
@@ -362,7 +362,7 @@ description: Variables in memory after executing array_range_expr.kcl
     ]
   },
   "r4": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",

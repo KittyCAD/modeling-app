@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed tag_can_be_proxied_through_parameter.kcl
-snapshot_kind: text
 ---
 [
   {

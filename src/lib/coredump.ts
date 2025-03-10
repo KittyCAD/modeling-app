@@ -349,8 +349,19 @@ export class CoreDumpManager {
           sceneEntitiesManager?.activeSegments
         )
         if (sceneEntitiesManager?.activeSegments) {
+          // You can't structuredClone a THREE.js Group, so let's just get the userData.
           ;(clientState.scene_entities_manager as any).activeSegments =
-            structuredClone(sceneEntitiesManager.activeSegments)
+            Object.entries(sceneEntitiesManager.activeSegments).map(
+              ([id, segmentGroup]) => ({
+                segmentId: id,
+                userData:
+                  segmentGroup &&
+                  typeof segmentGroup === 'object' &&
+                  'userData' in segmentGroup
+                    ? segmentGroup.userData
+                    : null,
+              })
+            )
         }
       }
 

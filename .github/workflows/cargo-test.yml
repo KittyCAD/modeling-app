@@ -5,7 +5,9 @@ on:
 
   pull_request:
   workflow_dispatch:
-permissions: read-all
+permissions:
+  contents: read
+  pull-requests: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -15,7 +17,15 @@ jobs:
     name: cargo test
     runs-on: ubuntu-latest-8-cores
     steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
       - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
       - name: Use correct Rust toolchain
         shell: bash
         run: |
@@ -40,11 +50,81 @@ jobs:
           ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
+      - name: Install just
+        uses: taiki-e/install-action@just
+      - name: Install cargo-insta
+        shell: bash
+        run: |
+          cargo install cargo-insta
       - name: Rust Cache
-        uses: Swatinem/rust-cache@v2.6.1
+        uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust
+      - name: Fetch the base branch
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch origin ${{ github.base_ref }} --depth=1
+      - name: Check for path changes
+        id: path-changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Manual runs or push should run all tests.
+          if [[ ${{ github.event_name }} != 'pull_request' ]]; then
+            echo "outside-kcl-samples=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          changed_files=$(git diff --name-only origin/${{ github.base_ref }})
+          echo "$changed_files"
+          if grep -Evq '^public/kcl-samples/|^rust/kcl-lib/tests/kcl_samples/' <<< "$changed_files" ; then
+            echo "outside-kcl-samples=true" >> $GITHUB_OUTPUT
+          else
+            echo "outside-kcl-samples=false" >> $GITHUB_OUTPUT
+          fi
+      - name: cargo test only kcl-samples
+        id: cargo-test-kcl-samples
+        if: steps.path-changes.outputs.outside-kcl-samples == 'false'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd rust
+          cargo nextest run --workspace --retries=2 --no-fail-fast --profile ci simulation_tests::kcl_samples 2>&1 | tee /tmp/github-actions.log
+        env:
+          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
+          RUST_BACKTRACE: full
+          RUST_MIN_STACK: 10485760000
+      - name: Commit differences
+        if: steps.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd rust
+          just overwrite-sim-test kcl_samples
+          git add kcl-lib/tests
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin
+          echo ${{ github.head_ref }}
+          git checkout ${{ github.head_ref }}
+          if ! git commit -m "Update kcl-samples simulation test output" ; then
+            echo "No changes to commit"
+            # This only runs if tests failed, so we should fail the step.
+            exit 1
+          fi
+          git push origin ${{ github.head_ref }}
+        env:
+          # The default is auto, and insta behaves differently in CI vs. not.
+          INSTA_UPDATE: always
+          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
+          # Configure nextest when it's run by insta (via just).
+          NEXTEST_PROFILE: ci
+          RUST_BACKTRACE: full
+          RUST_MIN_STACK: 10485760000
       - name: cargo test
+        if: steps.path-changes.outputs.outside-kcl-samples == 'true'
         shell: bash
         run: |-
           cd rust
@@ -53,6 +133,7 @@ jobs:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           RUST_MIN_STACK: 10485760000
       - name: Upload to codecov.io
+        if: steps.path-changes.outputs.outside-kcl-samples == 'true'
         uses: codecov/codecov-action@v5
         with:
           token: ${{secrets.CODECOV_TOKEN}}
