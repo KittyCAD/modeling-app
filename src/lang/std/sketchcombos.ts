@@ -1616,6 +1616,9 @@ function getTransformMapPath(
   if (!toolTips.includes(name)) {
     return false
   }
+  if( name === 'arcTo') {
+    return false
+  }
 
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
