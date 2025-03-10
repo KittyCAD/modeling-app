@@ -135,22 +135,35 @@ jobs:
       shell: bash
       run: cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
       continue-on-error: true
+    - name: Build WASM condition
+      id: wasm
+      if: needs.conditions.outputs.should-run == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        # Build wasm if this is a scheduled run, there are Rust changes, or
+        # downloading from the wasm cache failed.
+        if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+          echo "should-build-wasm=true" >> $GITHUB_OUTPUT
+        else
+          echo "should-build-wasm=false" >> $GITHUB_OUTPUT
+        fi
     - name: Use correct Rust toolchain
-      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true' || steps.download-wasm.outcome == 'failure')  }}
+      if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
       shell: bash
       run: |
         cp --update=none rust/rust-toolchain.toml ./ || true
     - name: Install rust
-      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true' || steps.download-wasm.outcome == 'failure') }}
+      if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
       uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
         cache: false # Configured below.
     - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
-      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true' || steps.download-wasm.outcome == 'failure') }}
+      if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
       with:
         tool: wasm-pack
     - name: Rust Cache
-      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true' || steps.download-wasm.outcome == 'failure') }}
+      if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './rust'
@@ -178,7 +191,7 @@ jobs:
         cat /tmp/vector.toml
         ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
     - name: Build Wasm
-      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true' || steps.download-wasm.outcome == 'failure') }}
+      if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
       shell: bash
       run: yarn build:wasm
     - name: build web
