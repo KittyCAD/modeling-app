@@ -4,7 +4,6 @@ import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
 import { ApiError_type } from '@kittycad/lib/dist/types/src/models'
-import { KclExpression } from 'lib/commandTypes'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -172,26 +171,16 @@ export const loftValidator = async ({
 }
 
 export const shellValidator = async ({
-  context,
   data,
 }: {
-  context: CommandBarContext
-  data: { selection?: Selections; thickness?: KclExpression }
+  data: { selection: Selections }
 }): Promise<boolean | string> => {
-  // Retrieve the thickness argument if it exists
-  const thicknessArgument = data.thickness
-    ? Number(data.thickness.valueCalculated)
-    : undefined
-  const thickness: Models['LengthUnit_type'] = thicknessArgument ?? 1e-9
-
-  // Retrieve the selection from the previous arg or this arg's data directly
-  const selection = data.selection ?? context.argumentsToSubmit['selection']
-  if (!isSelections(selection)) {
+  if (!isSelections(data.selection)) {
     return 'Unable to shell, selections are missing'
   }
 
   // No validation on the faces, filtering is done upstream and we have the dry run validation just below
-  const face_ids = selection.graphSelections.flatMap((s) =>
+  const face_ids = data.selection.graphSelections.flatMap((s) =>
     s.artifact ? s.artifact.id : []
   )
 
@@ -208,12 +197,14 @@ export const shellValidator = async ({
   }
 
   const command = async () => {
+    // TODO: figure out something better than an arbitrarily small value
+    const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 1e-9
     const DEFAULT_HOLLOW = false
     const cmdArgs = {
       face_ids,
       object_id,
       hollow: DEFAULT_HOLLOW,
-      shell_thickness: thickness,
+      shell_thickness: DEFAULT_THICKNESS,
     }
     return await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
