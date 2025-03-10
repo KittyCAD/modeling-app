@@ -51,6 +51,10 @@ fn run_benchmarks(c: &mut Criterion) {
     for dir in benchmark_dirs {
         let dir_name = dir.file_name().unwrap().to_string_lossy().to_string();
 
+        // Change the current directory to the benchmark directory.
+        // This is necessary for the kcl-lib to correctly resolve relative paths.
+        std::env::set_current_dir(&dir).unwrap();
+
         // Find main.kcl file (will panic if not found)
         let input_file = find_main_kcl_file(&dir);
 
