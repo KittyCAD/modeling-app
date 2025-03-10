@@ -1,5 +1,9 @@
 import { CustomIconName } from 'components/CustomIcon'
-import { Artifact, getArtifactOfTypes } from 'lang/std/artifactGraph'
+import {
+  Artifact,
+  getArtifactOfTypes,
+  getCapCodeRef,
+} from 'lang/std/artifactGraph'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
@@ -144,7 +148,7 @@ const prepareToEditShell: PrepareToEditCallback =
     // Build an artifact map here of eligible artifacts corresponding to our current sweep
     // that we can query in another loop later
     const sweepId = operation.unlabeledArg.value.value.artifactId
-    const candidates: { [key: string]: Selection } = {}
+    const candidates: Map<string, Selection> = new Map()
     for (const artifact of engineCommandManager.artifactGraph.values()) {
       if (
         artifact.type === 'cap' &&
@@ -158,14 +162,14 @@ const prepareToEditShell: PrepareToEditCallback =
         if (err(codeRef)) {
           return baseCommand
         }
-        candidates[artifact.subType] = {
+        candidates.set(artifact.subType, {
           artifact,
           codeRef,
-        }
+        })
       } else if (
         artifact.type === 'wall' &&
         artifact.sweepId === sweepId &&
-        artifact.type
+        artifact.segId
       ) {
         const segArtifact = getArtifactOfTypes(
           { key: artifact.segId, types: ['segment'] },
@@ -175,10 +179,10 @@ const prepareToEditShell: PrepareToEditCallback =
           return baseCommand
         }
         const { codeRef } = segArtifact
-        candidates[artifact.segId] = {
+        candidates.set(artifact.segId, {
           artifact,
           codeRef,
-        }
+        })
       }
     }
 
@@ -186,14 +190,14 @@ const prepareToEditShell: PrepareToEditCallback =
     const faceValues = operation.labeledArgs.faces.value.value
     const graphSelections: Selection[] = []
     for (const v of faceValues) {
-      if (v.type === 'String' && v.value && candidates[v.value]) {
-        graphSelections.push(candidates[v.value])
+      if (v.type === 'String' && v.value && candidates.has(v.value)) {
+        graphSelections.push(candidates.get(v.value)!)
       } else if (
         v.type === 'TagIdentifier' &&
         v.artifact_id &&
-        candidates[v.artifact_id]
+        candidates.has(v.artifact_id)
       ) {
-        graphSelections.push(candidates[v.artifact_id])
+        graphSelections.push(candidates.get(v.artifact_id)!)
       } else {
         return baseCommand
       }
@@ -204,8 +208,7 @@ const prepareToEditShell: PrepareToEditCallback =
       codeManager.code.slice(
         operation.labeledArgs?.['thickness']?.sourceRange[0],
         operation.labeledArgs?.['thickness']?.sourceRange[1]
-      ),
-      {}
+      )
     )
 
     if (err(thickness) || 'errors' in thickness) {

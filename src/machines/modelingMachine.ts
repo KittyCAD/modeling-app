@@ -2041,11 +2041,10 @@ export const modelingMachine = setup({
             JSON.stringify(extrudeLookupResult)
           )
           if (err(extrudeLookupResult)) {
-            const error = Error(
-              "Couldn't find extrude paths from getPathToExtrudeForSegmentSelection"
+            return new Error(
+              "Couldn't find extrude paths from getPathToExtrudeForSegmentSelection",
+              { cause: extrudeLookupResult }
             )
-            console.error(error)
-            return error
           }
 
           // TODO: this assumes the segment is piped directly from the sketch, with no intermediate `VariableDeclarator` between.
@@ -2055,15 +2054,20 @@ export const modelingMachine = setup({
             extrudeLookupResult.pathToExtrudeNode,
             'VariableDeclarator'
           )
+          if (err(extrudeNode)) {
+            return new Error("Couldn't find extrude node from selection", {
+              cause: extrudeNode,
+            })
+          }
           const segmentNode = getNodeFromPath<VariableDeclarator>(
             ast,
             extrudeLookupResult.pathToSegmentNode,
             'VariableDeclarator'
           )
-          if (err(extrudeNode) || err(segmentNode)) {
-            const error = new Error("Couldn't find extrude or segment")
-            console.error(error)
-            return error
+          if (err(segmentNode)) {
+            return new Error("Couldn't find segment node from selection", {
+              cause: segmentNode,
+            })
           }
           if (
             extrudeNode.node.init.type === 'CallExpression' ||
@@ -2073,18 +2077,15 @@ export const modelingMachine = setup({
           } else if (segmentNode.node.init.type === 'PipeExpression') {
             pathToExtrudeNode = extrudeLookupResult.pathToSegmentNode
           } else {
-            const error = Error(
-              "Couldn't find extrude node that was either a call expression or a pipe"
+            return new Error(
+              "Couldn't find extrude node that was either a call expression or a pipe",
+              { cause: segmentNode }
             )
-            console.error(error)
-            return error
           }
 
           const selectedArtifact = graphSelection.artifact
           if (!selectedArtifact) {
-            const error = new Error('Bad artifact')
-            console.error(error)
-            return error
+            return new Error('Bad artifact from selection')
           }
 
           // Check on the selection, and handle the wall vs cap casees
@@ -2100,17 +2101,13 @@ export const modelingMachine = setup({
             const { tag } = tagResult
             expr = createIdentifier(tag)
           } else {
-            const error = new Error('Artifact is neither a cap nor a wall')
-            console.error(error)
-            return error
+            return new Error('Artifact is neither a cap nor a wall')
           }
           faces.push(expr)
         }
 
         if (!pathToExtrudeNode) {
-          const error = new Error('No extrude found')
-          console.error(error)
-          return error
+          return new Error('No path to extrude node found')
         }
 
         const extrudeNode = getNodeFromPath<VariableDeclarator>(
@@ -2119,8 +2116,7 @@ export const modelingMachine = setup({
           'VariableDeclarator'
         )
         if (err(extrudeNode)) {
-          console.error(extrudeNode)
-          return extrudeNode
+          return new Error("Couldn't find extrude node", { cause: extrudeNode })
         }
 
         // Perform the shell op

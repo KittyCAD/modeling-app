@@ -403,7 +403,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
         // For now this post-selection arg validation works well but we might need to disable it it guards too much
-        validation: shellValidator,
+        // Update: actually it doesn't
+        // validation: shellValidator,
       },
     },
   },
