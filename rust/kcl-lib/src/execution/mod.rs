@@ -95,9 +95,26 @@ pub struct DefaultPlanes {
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagIdentifier {
     pub value: String,
-    pub info: Option<TagEngineInfo>,
+    #[serde(skip)]
+    pub info: Vec<(usize, TagEngineInfo)>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+impl TagIdentifier {
+    pub fn get_info(&self, at_epoch: usize) -> Option<&TagEngineInfo> {
+        for (e, info) in self.info.iter().rev() {
+            if *e <= at_epoch {
+                return Some(info);
+            }
+        }
+
+        None
+    }
+
+    pub fn get_cur_info(&self) -> Option<&TagEngineInfo> {
+        self.info.last().map(|i| &i.1)
+    }
 }
 
 impl Eq for TagIdentifier {}
@@ -114,7 +131,7 @@ impl std::str::FromStr for TagIdentifier {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Self {
             value: s.to_string(),
-            info: None,
+            info: Vec::new(),
             meta: Default::default(),
         })
     }

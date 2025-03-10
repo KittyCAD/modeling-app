@@ -544,6 +544,10 @@ impl Stack {
         stack
     }
 
+    pub fn current_epoch(&self) -> usize {
+        self.memory.epoch.load(Ordering::Relaxed)
+    }
+
     /// Push a new (standard KCL) stack frame on to the call stack.
     ///
     /// `parent` is the environment where the function being called is declared (not the caller's

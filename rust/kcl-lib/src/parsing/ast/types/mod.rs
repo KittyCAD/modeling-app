@@ -2149,7 +2149,7 @@ impl From<&Node<TagDeclarator>> for TagIdentifier {
     fn from(tag: &Node<TagDeclarator>) -> Self {
         TagIdentifier {
             value: tag.name.clone(),
-            info: None,
+            info: Vec::new(),
             meta: vec![Metadata {
                 source_range: tag.into(),
             }],

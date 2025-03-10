@@ -639,15 +639,18 @@ impl GetTangentialInfoFromPathsResult {
 }
 
 impl Sketch {
-    pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path) {
+    pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path, exec_state: &ExecState) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
-        tag_identifier.info = Some(TagEngineInfo {
-            id: base.geo_meta.id,
-            sketch: self.id,
-            path: Some(current_path.clone()),
-            surface: None,
-        });
+        tag_identifier.info.push((
+            exec_state.stack().current_epoch(),
+            TagEngineInfo {
+                id: base.geo_meta.id,
+                sketch: self.id,
+                path: Some(current_path.clone()),
+                surface: None,
+            },
+        ));
 
         self.tags.insert(tag.name.to_string(), tag_identifier);
     }
