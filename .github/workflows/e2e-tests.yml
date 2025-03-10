@@ -135,9 +135,16 @@ jobs:
       shell: bash
       run: cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
       continue-on-error: true
-    - name: Setup Rust
-      if: ${{ needs.conditions.outputs.should-run == 'true' }}
-      uses: dtolnay/rust-toolchain@stable
+    - name: Use correct Rust toolchain
+      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true')  }}
+      shell: bash
+      run: |
+        cp --update=none rust/rust-toolchain.toml ./ || true
+    - name: Install rust
+      if: ${{ needs.conditions.outputs.should-run == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.rust == 'true')  }}
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        cache: false # Configured below.
     - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
       with:
         tool: wasm-pack
