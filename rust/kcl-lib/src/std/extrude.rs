@@ -195,6 +195,8 @@ pub(crate) async fn do_post_extrude(
     for (curve_id, face_id) in face_infos
         .iter()
         .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
+        // TODO: change this hack to a filtering of internal faces for sweep
+        .filter(|_face_info| false)
         .filter_map(|face_info| {
             if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
                 Some((curve_id, face_id))
