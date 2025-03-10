@@ -7,61 +7,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc000",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            5600,
-            5709,
-            0
-          ]
-        },
-        "ccw": false,
-        "center": [
-          0.5,
-          5.7929
-        ],
-        "from": [
-          0.0,
-          5.7929
-        ],
-        "radius": 0.5,
-        "tag": {
-          "end": 5708,
-          "start": 5701,
-          "type": "TagDeclarator",
-          "value": "arc000"
-        },
-        "to": [
-          0.8536,
-          6.1464
-        ],
-        "type": "Arc",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          5600,
-          5709,
-          0
-        ],
-        "tag": {
-          "end": 5708,
-          "start": 5701,
-          "type": "TagDeclarator",
-          "value": "arc000"
-        },
-        "type": "extrudeArc"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -7535,55 +7480,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2649,
-                      2713,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2649,
-                    2713,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7597,55 +7493,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2719,
-                      2783,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2719,
-                    2783,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7659,55 +7506,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2789,
-                      2842,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2789,
-                    2842,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7721,55 +7519,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2848,
-                      2869,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2848,
-                    2869,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8085,55 +7834,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2649,
-                      2713,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2649,
-                    2713,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8147,55 +7847,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2719,
-                      2783,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2719,
-                    2783,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8209,55 +7860,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2789,
-                      2842,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2789,
-                    2842,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8271,55 +7873,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2848,
-                      2869,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2848,
-                    2869,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8635,55 +8188,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2649,
-                      2713,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2649,
-                    2713,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8697,55 +8201,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2719,
-                      2783,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2719,
-                    2783,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8759,55 +8214,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2789,
-                      2842,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2789,
-                    2842,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8821,55 +8227,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2848,
-                      2869,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2848,
-                    2869,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9185,55 +8542,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2649,
-                      2713,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2649,
-                    2713,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9247,55 +8555,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2719,
-                      2783,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2719,
-                    2783,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9309,55 +8568,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2789,
-                      2842,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2789,
-                    2842,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9371,55 +8581,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2848,
-                      2869,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2848,
-                    2869,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9735,55 +8896,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2649,
-                      2713,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2649,
-                    2713,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9797,55 +8909,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2719,
-                      2783,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2719,
-                    2783,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9859,55 +8922,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2789,
-                      2842,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2789,
-                    2842,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9921,55 +8935,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2848,
-                      2869,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2848,
-                    2869,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10285,55 +9250,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2649,
-                      2713,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2649,
-                    2713,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2712,
-                    "start": 2704,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10347,55 +9263,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2719,
-                      2783,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2719,
-                    2783,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2782,
-                    "start": 2774,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10409,55 +9276,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2789,
-                      2842,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2789,
-                    2842,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2841,
-                    "start": 2833,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10471,55 +9289,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2848,
-                      2869,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2848,
-                    2869,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2868,
-                    "start": 2860,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -17820,55 +16589,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line010": {
             "type": "TagIdentifier",
             "value": "line010",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4759,
-                    4831,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4830,
-                  "start": 4822,
-                  "type": "TagDeclarator",
-                  "value": "line010"
-                },
-                "to": [
-                  84.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4759,
-                  4831,
-                  0
-                ],
-                "tag": {
-                  "end": 4830,
-                  "start": 4822,
-                  "type": "TagDeclarator",
-                  "value": "line010"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -17882,55 +16602,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line011": {
             "type": "TagIdentifier",
             "value": "line011",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4837,
-                    4910,
-                    0
-                  ]
-                },
-                "from": [
-                  84.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4909,
-                  "start": 4901,
-                  "type": "TagDeclarator",
-                  "value": "line011"
-                },
-                "to": [
-                  84.0,
-                  126.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4837,
-                  4910,
-                  0
-                ],
-                "tag": {
-                  "end": 4909,
-                  "start": 4901,
-                  "type": "TagDeclarator",
-                  "value": "line011"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -17944,55 +16615,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line012": {
             "type": "TagIdentifier",
             "value": "line012",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4916,
-                    4969,
-                    0
-                  ]
-                },
-                "from": [
-                  84.0,
-                  126.0
-                ],
-                "tag": {
-                  "end": 4968,
-                  "start": 4960,
-                  "type": "TagDeclarator",
-                  "value": "line012"
-                },
-                "to": [
-                  0.0,
-                  126.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4916,
-                  4969,
-                  0
-                ],
-                "tag": {
-                  "end": 4968,
-                  "start": 4960,
-                  "type": "TagDeclarator",
-                  "value": "line012"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -18006,55 +16628,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line013": {
             "type": "TagIdentifier",
             "value": "line013",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4975,
-                    4996,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  126.0
-                ],
-                "tag": {
-                  "end": 4995,
-                  "start": 4987,
-                  "type": "TagDeclarator",
-                  "value": "line013"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4975,
-                  4996,
-                  0
-                ],
-                "tag": {
-                  "end": 4995,
-                  "start": 4987,
-                  "type": "TagDeclarator",
-                  "value": "line013"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -19443,55 +18016,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line000",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            5549,
-            5592,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 5591,
-          "start": 5583,
-          "type": "TagDeclarator",
-          "value": "line000"
-        },
-        "to": [
-          0.0,
-          5.7929
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          5549,
-          5592,
-          0
-        ],
-        "tag": {
-          "end": 5591,
-          "start": 5583,
-          "type": "TagDeclarator",
-          "value": "line000"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19506,55 +18030,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            5784,
-            5833,
-            0
-          ]
-        },
-        "from": [
-          0.8536,
-          6.1464
-        ],
-        "tag": {
-          "end": 5832,
-          "start": 5824,
-          "type": "TagDeclarator",
-          "value": "line001"
-        },
-        "to": [
-          1.9,
-          5.1
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          5784,
-          5833,
-          0
-        ],
-        "tag": {
-          "end": 5832,
-          "start": 5824,
-          "type": "TagDeclarator",
-          "value": "line001"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19569,55 +18044,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2789,
-            2842,
-            0
-          ]
-        },
-        "from": [
-          38.8,
-          38.8
-        ],
-        "tag": {
-          "end": 2841,
-          "start": 2833,
-          "type": "TagDeclarator",
-          "value": "line002"
-        },
-        "to": [
-          3.2,
-          38.8
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2789,
-          2842,
-          0
-        ],
-        "tag": {
-          "end": 2841,
-          "start": 2833,
-          "type": "TagDeclarator",
-          "value": "line002"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19632,55 +18058,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line003",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2848,
-            2869,
-            0
-          ]
-        },
-        "from": [
-          3.2,
-          38.8
-        ],
-        "tag": {
-          "end": 2868,
-          "start": 2860,
-          "type": "TagDeclarator",
-          "value": "line003"
-        },
-        "to": [
-          3.2,
-          3.2
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2848,
-          2869,
-          0
-        ],
-        "tag": {
-          "end": 2868,
-          "start": 2860,
-          "type": "TagDeclarator",
-          "value": "line003"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19695,55 +18072,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line010",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4759,
-            4831,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 4830,
-          "start": 4822,
-          "type": "TagDeclarator",
-          "value": "line010"
-        },
-        "to": [
-          84.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4759,
-          4831,
-          0
-        ],
-        "tag": {
-          "end": 4830,
-          "start": 4822,
-          "type": "TagDeclarator",
-          "value": "line010"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19758,55 +18086,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line011",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4837,
-            4910,
-            0
-          ]
-        },
-        "from": [
-          84.0,
-          0.0
-        ],
-        "tag": {
-          "end": 4909,
-          "start": 4901,
-          "type": "TagDeclarator",
-          "value": "line011"
-        },
-        "to": [
-          84.0,
-          126.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4837,
-          4910,
-          0
-        ],
-        "tag": {
-          "end": 4909,
-          "start": 4901,
-          "type": "TagDeclarator",
-          "value": "line011"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19821,55 +18100,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line012",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4916,
-            4969,
-            0
-          ]
-        },
-        "from": [
-          84.0,
-          126.0
-        ],
-        "tag": {
-          "end": 4968,
-          "start": 4960,
-          "type": "TagDeclarator",
-          "value": "line012"
-        },
-        "to": [
-          0.0,
-          126.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4916,
-          4969,
-          0
-        ],
-        "tag": {
-          "end": 4968,
-          "start": 4960,
-          "type": "TagDeclarator",
-          "value": "line012"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19884,55 +18114,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line013",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4975,
-            4996,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          126.0
-        ],
-        "tag": {
-          "end": 4995,
-          "start": 4987,
-          "type": "TagDeclarator",
-          "value": "line013"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4975,
-          4996,
-          0
-        ],
-        "tag": {
-          "end": 4995,
-          "start": 4987,
-          "type": "TagDeclarator",
-          "value": "line013"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -20321,61 +18502,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "arc000": {
               "type": "TagIdentifier",
               "value": "arc000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5600,
-                      5709,
-                      0
-                    ]
-                  },
-                  "ccw": false,
-                  "center": [
-                    0.5,
-                    5.7929
-                  ],
-                  "from": [
-                    0.0,
-                    5.7929
-                  ],
-                  "radius": 0.5,
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "to": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "type": "extrudeArc"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -20389,55 +18515,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5549,
-                      5592,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    0.0,
-                    5.7929
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -20451,55 +18528,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5784,
-                      5833,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    1.9,
-                    5.1
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -20917,61 +18945,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "arc000": {
               "type": "TagIdentifier",
               "value": "arc000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5600,
-                      5709,
-                      0
-                    ]
-                  },
-                  "ccw": false,
-                  "center": [
-                    0.5,
-                    5.7929
-                  ],
-                  "from": [
-                    0.0,
-                    5.7929
-                  ],
-                  "radius": 0.5,
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "to": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "type": "extrudeArc"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -20985,55 +18958,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5549,
-                      5592,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    0.0,
-                    5.7929
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -21047,55 +18971,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5784,
-                      5833,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    1.9,
-                    5.1
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -21518,61 +19393,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "arc000": {
               "type": "TagIdentifier",
               "value": "arc000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5600,
-                      5709,
-                      0
-                    ]
-                  },
-                  "ccw": false,
-                  "center": [
-                    0.5,
-                    5.7929
-                  ],
-                  "from": [
-                    0.0,
-                    5.7929
-                  ],
-                  "radius": 0.5,
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "to": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "type": "extrudeArc"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -21586,55 +19406,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5549,
-                      5592,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    0.0,
-                    5.7929
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -21648,55 +19419,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5784,
-                      5833,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    1.9,
-                    5.1
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -22114,61 +19836,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "arc000": {
               "type": "TagIdentifier",
               "value": "arc000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5600,
-                      5709,
-                      0
-                    ]
-                  },
-                  "ccw": false,
-                  "center": [
-                    0.5,
-                    5.7929
-                  ],
-                  "from": [
-                    0.0,
-                    5.7929
-                  ],
-                  "radius": 0.5,
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "to": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "type": "extrudeArc"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -22182,55 +19849,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5549,
-                      5592,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    0.0,
-                    5.7929
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -22244,55 +19862,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5784,
-                      5833,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    1.9,
-                    5.1
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -22777,61 +20346,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "arc000": {
               "type": "TagIdentifier",
               "value": "arc000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5600,
-                      5709,
-                      0
-                    ]
-                  },
-                  "ccw": false,
-                  "center": [
-                    0.5,
-                    5.7929
-                  ],
-                  "from": [
-                    0.0,
-                    5.7929
-                  ],
-                  "radius": 0.5,
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "to": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "type": "extrudeArc"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -22845,55 +20359,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5549,
-                      5592,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    0.0,
-                    5.7929
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -22907,55 +20372,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5784,
-                      5833,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    1.9,
-                    5.1
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -23373,61 +20789,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "arc000": {
               "type": "TagIdentifier",
               "value": "arc000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5600,
-                      5709,
-                      0
-                    ]
-                  },
-                  "ccw": false,
-                  "center": [
-                    0.5,
-                    5.7929
-                  ],
-                  "from": [
-                    0.0,
-                    5.7929
-                  ],
-                  "radius": 0.5,
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "to": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "type": "extrudeArc"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -23441,55 +20802,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5549,
-                      5592,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    0.0,
-                    5.7929
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -23503,55 +20815,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5784,
-                      5833,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    1.9,
-                    5.1
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -23995,61 +21258,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "arc000": {
             "type": "TagIdentifier",
             "value": "arc000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ]
-                },
-                "ccw": false,
-                "center": [
-                  0.5,
-                  5.7929
-                ],
-                "from": [
-                  0.0,
-                  5.7929
-                ],
-                "radius": 0.5,
-                "tag": {
-                  "end": 5708,
-                  "start": 5701,
-                  "type": "TagDeclarator",
-                  "value": "arc000"
-                },
-                "to": [
-                  0.8536,
-                  6.1464
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5600,
-                  5709,
-                  0
-                ],
-                "tag": {
-                  "end": 5708,
-                  "start": 5701,
-                  "type": "TagDeclarator",
-                  "value": "arc000"
-                },
-                "type": "extrudeArc"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -24063,55 +21271,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line000": {
             "type": "TagIdentifier",
             "value": "line000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 5591,
-                  "start": 5583,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "to": [
-                  0.0,
-                  5.7929
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5549,
-                  5592,
-                  0
-                ],
-                "tag": {
-                  "end": 5591,
-                  "start": 5583,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -24125,55 +21284,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line001": {
             "type": "TagIdentifier",
             "value": "line001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ]
-                },
-                "from": [
-                  0.8536,
-                  6.1464
-                ],
-                "tag": {
-                  "end": 5832,
-                  "start": 5824,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "to": [
-                  1.9,
-                  5.1
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5784,
-                  5833,
-                  0
-                ],
-                "tag": {
-                  "end": 5832,
-                  "start": 5824,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -24594,61 +21704,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "arc000": {
             "type": "TagIdentifier",
             "value": "arc000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ]
-                },
-                "ccw": false,
-                "center": [
-                  0.5,
-                  5.7929
-                ],
-                "from": [
-                  0.0,
-                  5.7929
-                ],
-                "radius": 0.5,
-                "tag": {
-                  "end": 5708,
-                  "start": 5701,
-                  "type": "TagDeclarator",
-                  "value": "arc000"
-                },
-                "to": [
-                  0.8536,
-                  6.1464
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5600,
-                  5709,
-                  0
-                ],
-                "tag": {
-                  "end": 5708,
-                  "start": 5701,
-                  "type": "TagDeclarator",
-                  "value": "arc000"
-                },
-                "type": "extrudeArc"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -24662,55 +21717,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line000": {
             "type": "TagIdentifier",
             "value": "line000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 5591,
-                  "start": 5583,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "to": [
-                  0.0,
-                  5.7929
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5549,
-                  5592,
-                  0
-                ],
-                "tag": {
-                  "end": 5591,
-                  "start": 5583,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -24724,55 +21730,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line001": {
             "type": "TagIdentifier",
             "value": "line001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ]
-                },
-                "from": [
-                  0.8536,
-                  6.1464
-                ],
-                "tag": {
-                  "end": 5832,
-                  "start": 5824,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "to": [
-                  1.9,
-                  5.1
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5784,
-                  5833,
-                  0
-                ],
-                "tag": {
-                  "end": 5832,
-                  "start": 5824,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -25193,61 +22150,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "arc000": {
             "type": "TagIdentifier",
             "value": "arc000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ]
-                },
-                "ccw": false,
-                "center": [
-                  0.5,
-                  5.7929
-                ],
-                "from": [
-                  0.0,
-                  5.7929
-                ],
-                "radius": 0.5,
-                "tag": {
-                  "end": 5708,
-                  "start": 5701,
-                  "type": "TagDeclarator",
-                  "value": "arc000"
-                },
-                "to": [
-                  0.8536,
-                  6.1464
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5600,
-                  5709,
-                  0
-                ],
-                "tag": {
-                  "end": 5708,
-                  "start": 5701,
-                  "type": "TagDeclarator",
-                  "value": "arc000"
-                },
-                "type": "extrudeArc"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -25261,55 +22163,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line000": {
             "type": "TagIdentifier",
             "value": "line000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 5591,
-                  "start": 5583,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "to": [
-                  0.0,
-                  5.7929
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5549,
-                  5592,
-                  0
-                ],
-                "tag": {
-                  "end": 5591,
-                  "start": 5583,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -25323,55 +22176,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line001": {
             "type": "TagIdentifier",
             "value": "line001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ]
-                },
-                "from": [
-                  0.8536,
-                  6.1464
-                ],
-                "tag": {
-                  "end": 5832,
-                  "start": 5824,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "to": [
-                  1.9,
-                  5.1
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5784,
-                  5833,
-                  0
-                ],
-                "tag": {
-                  "end": 5832,
-                  "start": 5824,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -25792,61 +22596,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "arc000": {
             "type": "TagIdentifier",
             "value": "arc000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ]
-                },
-                "ccw": false,
-                "center": [
-                  0.5,
-                  5.7929
-                ],
-                "from": [
-                  0.0,
-                  5.7929
-                ],
-                "radius": 0.5,
-                "tag": {
-                  "end": 5708,
-                  "start": 5701,
-                  "type": "TagDeclarator",
-                  "value": "arc000"
-                },
-                "to": [
-                  0.8536,
-                  6.1464
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5600,
-                  5709,
-                  0
-                ],
-                "tag": {
-                  "end": 5708,
-                  "start": 5701,
-                  "type": "TagDeclarator",
-                  "value": "arc000"
-                },
-                "type": "extrudeArc"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -25860,55 +22609,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line000": {
             "type": "TagIdentifier",
             "value": "line000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 5591,
-                  "start": 5583,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "to": [
-                  0.0,
-                  5.7929
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5549,
-                  5592,
-                  0
-                ],
-                "tag": {
-                  "end": 5591,
-                  "start": 5583,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -25922,55 +22622,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line001": {
             "type": "TagIdentifier",
             "value": "line001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ]
-                },
-                "from": [
-                  0.8536,
-                  6.1464
-                ],
-                "tag": {
-                  "end": 5832,
-                  "start": 5824,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "to": [
-                  1.9,
-                  5.1
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  5784,
-                  5833,
-                  0
-                ],
-                "tag": {
-                  "end": 5832,
-                  "start": 5824,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -26502,61 +23153,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "arc000": {
               "type": "TagIdentifier",
               "value": "arc000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5600,
-                      5709,
-                      0
-                    ]
-                  },
-                  "ccw": false,
-                  "center": [
-                    0.5,
-                    5.7929
-                  ],
-                  "from": [
-                    0.0,
-                    5.7929
-                  ],
-                  "radius": 0.5,
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "to": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "type": "extrudeArc"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -26570,55 +23166,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5549,
-                      5592,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    0.0,
-                    5.7929
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -26632,55 +23179,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5784,
-                      5833,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    1.9,
-                    5.1
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -27098,61 +23596,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "arc000": {
               "type": "TagIdentifier",
               "value": "arc000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5600,
-                      5709,
-                      0
-                    ]
-                  },
-                  "ccw": false,
-                  "center": [
-                    0.5,
-                    5.7929
-                  ],
-                  "from": [
-                    0.0,
-                    5.7929
-                  ],
-                  "radius": 0.5,
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "to": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "type": "Arc",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5600,
-                    5709,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5708,
-                    "start": 5701,
-                    "type": "TagDeclarator",
-                    "value": "arc000"
-                  },
-                  "type": "extrudeArc"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -27166,55 +23609,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5549,
-                      5592,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    0.0,
-                    5.7929
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5549,
-                    5592,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5591,
-                    "start": 5583,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -27228,55 +23622,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      5784,
-                      5833,
-                      0
-                    ]
-                  },
-                  "from": [
-                    0.8536,
-                    6.1464
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    1.9,
-                    5.1
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    5784,
-                    5833,
-                    0
-                  ],
-                  "tag": {
-                    "end": 5832,
-                    "start": 5824,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -27638,55 +23983,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line000": {
                     "type": "TagIdentifier",
                     "value": "line000",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2649,
-                            2713,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2712,
-                          "start": 2704,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "to": [
-                          38.8,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2649,
-                          2713,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2712,
-                          "start": 2704,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -27700,55 +23996,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line001": {
                     "type": "TagIdentifier",
                     "value": "line001",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2719,
-                            2783,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2782,
-                          "start": 2774,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "to": [
-                          38.8,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2719,
-                          2783,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2782,
-                          "start": 2774,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -27762,55 +24009,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line002": {
                     "type": "TagIdentifier",
                     "value": "line002",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2789,
-                            2842,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2841,
-                          "start": 2833,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "to": [
-                          3.2,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2789,
-                          2842,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2841,
-                          "start": 2833,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -27824,55 +24022,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line003": {
                     "type": "TagIdentifier",
                     "value": "line003",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2848,
-                            2869,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2868,
-                          "start": 2860,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "to": [
-                          3.2,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2848,
-                          2869,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2868,
-                          "start": 2860,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -28325,55 +24474,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line000": {
                     "type": "TagIdentifier",
                     "value": "line000",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2649,
-                            2713,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2712,
-                          "start": 2704,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "to": [
-                          38.8,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2649,
-                          2713,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2712,
-                          "start": 2704,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -28387,55 +24487,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line001": {
                     "type": "TagIdentifier",
                     "value": "line001",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2719,
-                            2783,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2782,
-                          "start": 2774,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "to": [
-                          38.8,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2719,
-                          2783,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2782,
-                          "start": 2774,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -28449,55 +24500,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line002": {
                     "type": "TagIdentifier",
                     "value": "line002",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2789,
-                            2842,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2841,
-                          "start": 2833,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "to": [
-                          3.2,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2789,
-                          2842,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2841,
-                          "start": 2833,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -28511,55 +24513,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line003": {
                     "type": "TagIdentifier",
                     "value": "line003",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2848,
-                            2869,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2868,
-                          "start": 2860,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "to": [
-                          3.2,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2848,
-                          2869,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2868,
-                          "start": 2860,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -29012,55 +24965,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line000": {
                     "type": "TagIdentifier",
                     "value": "line000",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2649,
-                            2713,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2712,
-                          "start": 2704,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "to": [
-                          38.8,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2649,
-                          2713,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2712,
-                          "start": 2704,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -29074,55 +24978,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line001": {
                     "type": "TagIdentifier",
                     "value": "line001",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2719,
-                            2783,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2782,
-                          "start": 2774,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "to": [
-                          38.8,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2719,
-                          2783,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2782,
-                          "start": 2774,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -29136,55 +24991,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line002": {
                     "type": "TagIdentifier",
                     "value": "line002",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2789,
-                            2842,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2841,
-                          "start": 2833,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "to": [
-                          3.2,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2789,
-                          2842,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2841,
-                          "start": 2833,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -29198,55 +25004,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line003": {
                     "type": "TagIdentifier",
                     "value": "line003",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2848,
-                            2869,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2868,
-                          "start": 2860,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "to": [
-                          3.2,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2848,
-                          2869,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2868,
-                          "start": 2860,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -29699,55 +25456,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line000": {
                     "type": "TagIdentifier",
                     "value": "line000",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2649,
-                            2713,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2712,
-                          "start": 2704,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "to": [
-                          38.8,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2649,
-                          2713,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2712,
-                          "start": 2704,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -29761,55 +25469,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line001": {
                     "type": "TagIdentifier",
                     "value": "line001",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2719,
-                            2783,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2782,
-                          "start": 2774,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "to": [
-                          38.8,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2719,
-                          2783,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2782,
-                          "start": 2774,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -29823,55 +25482,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line002": {
                     "type": "TagIdentifier",
                     "value": "line002",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2789,
-                            2842,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2841,
-                          "start": 2833,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "to": [
-                          3.2,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2789,
-                          2842,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2841,
-                          "start": 2833,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -29885,55 +25495,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line003": {
                     "type": "TagIdentifier",
                     "value": "line003",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2848,
-                            2869,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2868,
-                          "start": 2860,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "to": [
-                          3.2,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2848,
-                          2869,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2868,
-                          "start": 2860,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -32692,55 +28253,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line000": {
             "type": "TagIdentifier",
             "value": "line000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2649,
-                    2713,
-                    0
-                  ]
-                },
-                "from": [
-                  3.2,
-                  3.2
-                ],
-                "tag": {
-                  "end": 2712,
-                  "start": 2704,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "to": [
-                  38.8,
-                  3.2
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2649,
-                  2713,
-                  0
-                ],
-                "tag": {
-                  "end": 2712,
-                  "start": 2704,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -32754,55 +28266,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line001": {
             "type": "TagIdentifier",
             "value": "line001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2719,
-                    2783,
-                    0
-                  ]
-                },
-                "from": [
-                  38.8,
-                  3.2
-                ],
-                "tag": {
-                  "end": 2782,
-                  "start": 2774,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "to": [
-                  38.8,
-                  38.8
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2719,
-                  2783,
-                  0
-                ],
-                "tag": {
-                  "end": 2782,
-                  "start": 2774,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -32816,55 +28279,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line002": {
             "type": "TagIdentifier",
             "value": "line002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2789,
-                    2842,
-                    0
-                  ]
-                },
-                "from": [
-                  38.8,
-                  38.8
-                ],
-                "tag": {
-                  "end": 2841,
-                  "start": 2833,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "to": [
-                  3.2,
-                  38.8
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2789,
-                  2842,
-                  0
-                ],
-                "tag": {
-                  "end": 2841,
-                  "start": 2833,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -32878,55 +28292,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "line003": {
             "type": "TagIdentifier",
             "value": "line003",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2848,
-                    2869,
-                    0
-                  ]
-                },
-                "from": [
-                  3.2,
-                  38.8
-                ],
-                "tag": {
-                  "end": 2868,
-                  "start": 2860,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "to": [
-                  3.2,
-                  3.2
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2848,
-                  2869,
-                  0
-                ],
-                "tag": {
-                  "end": 2868,
-                  "start": 2860,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [

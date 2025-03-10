@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing focusrite-scarlett-mounting-bracket.kcl
 ---
 {
@@ -424,55 +424,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "edge1": {
             "type": "TagIdentifier",
             "value": "edge1",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1311,
-                    1361,
-                    0
-                  ]
-                },
-                "from": [
-                  -76.0,
-                  49.0
-                ],
-                "tag": {
-                  "end": 1360,
-                  "start": 1354,
-                  "type": "TagDeclarator",
-                  "value": "edge1"
-                },
-                "to": [
-                  -76.0,
-                  -4.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1311,
-                  1361,
-                  0
-                ],
-                "tag": {
-                  "end": 1360,
-                  "start": 1354,
-                  "type": "TagDeclarator",
-                  "value": "edge1"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -486,55 +437,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "edge2": {
             "type": "TagIdentifier",
             "value": "edge2",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1369,
-                    1418,
-                    0
-                  ]
-                },
-                "from": [
-                  -76.0,
-                  -4.0
-                ],
-                "tag": {
-                  "end": 1417,
-                  "start": 1411,
-                  "type": "TagDeclarator",
-                  "value": "edge2"
-                },
-                "to": [
-                  76.0,
-                  -4.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1369,
-                  1418,
-                  0
-                ],
-                "tag": {
-                  "end": 1417,
-                  "start": 1411,
-                  "type": "TagDeclarator",
-                  "value": "edge2"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -548,55 +450,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "edge3": {
             "type": "TagIdentifier",
             "value": "edge3",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1426,
-                    1478,
-                    0
-                  ]
-                },
-                "from": [
-                  76.0,
-                  -4.0
-                ],
-                "tag": {
-                  "end": 1477,
-                  "start": 1471,
-                  "type": "TagDeclarator",
-                  "value": "edge3"
-                },
-                "to": [
-                  76.0,
-                  49.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1426,
-                  1478,
-                  0
-                ],
-                "tag": {
-                  "end": 1477,
-                  "start": 1471,
-                  "type": "TagDeclarator",
-                  "value": "edge3"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -610,55 +463,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "edge4": {
             "type": "TagIdentifier",
             "value": "edge4",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1486,
-                    1534,
-                    0
-                  ]
-                },
-                "from": [
-                  76.0,
-                  49.0
-                ],
-                "tag": {
-                  "end": 1533,
-                  "start": 1527,
-                  "type": "TagDeclarator",
-                  "value": "edge4"
-                },
-                "to": [
-                  72.0,
-                  49.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1486,
-                  1534,
-                  0
-                ],
-                "tag": {
-                  "end": 1533,
-                  "start": 1527,
-                  "type": "TagDeclarator",
-                  "value": "edge4"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -672,55 +476,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "edge5": {
             "type": "TagIdentifier",
             "value": "edge5",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1542,
-                    1586,
-                    0
-                  ]
-                },
-                "from": [
-                  72.0,
-                  49.0
-                ],
-                "tag": {
-                  "end": 1585,
-                  "start": 1579,
-                  "type": "TagDeclarator",
-                  "value": "edge5"
-                },
-                "to": [
-                  72.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1542,
-                  1586,
-                  0
-                ],
-                "tag": {
-                  "end": 1585,
-                  "start": 1579,
-                  "type": "TagDeclarator",
-                  "value": "edge5"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -734,55 +489,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "edge6": {
             "type": "TagIdentifier",
             "value": "edge6",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1594,
-                    1639,
-                    0
-                  ]
-                },
-                "from": [
-                  72.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 1638,
-                  "start": 1632,
-                  "type": "TagDeclarator",
-                  "value": "edge6"
-                },
-                "to": [
-                  -72.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1594,
-                  1639,
-                  0
-                ],
-                "tag": {
-                  "end": 1638,
-                  "start": 1632,
-                  "type": "TagDeclarator",
-                  "value": "edge6"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -796,55 +502,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "edge7": {
             "type": "TagIdentifier",
             "value": "edge7",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1647,
-                    1696,
-                    0
-                  ]
-                },
-                "from": [
-                  -72.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 1695,
-                  "start": 1689,
-                  "type": "TagDeclarator",
-                  "value": "edge7"
-                },
-                "to": [
-                  -72.0,
-                  49.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1647,
-                  1696,
-                  0
-                ],
-                "tag": {
-                  "end": 1695,
-                  "start": 1689,
-                  "type": "TagDeclarator",
-                  "value": "edge7"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -858,55 +515,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "edge8": {
             "type": "TagIdentifier",
             "value": "edge8",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1704,
-                    1723,
-                    0
-                  ]
-                },
-                "from": [
-                  -72.0,
-                  49.0
-                ],
-                "tag": {
-                  "end": 1722,
-                  "start": 1716,
-                  "type": "TagDeclarator",
-                  "value": "edge8"
-                },
-                "to": [
-                  -76.0,
-                  49.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1704,
-                  1723,
-                  0
-                ],
-                "tag": {
-                  "end": 1722,
-                  "start": 1716,
-                  "type": "TagDeclarator",
-                  "value": "edge8"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -1635,55 +1243,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "edge1": {
           "type": "TagIdentifier",
           "value": "edge1",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1311,
-                  1361,
-                  0
-                ]
-              },
-              "from": [
-                -76.0,
-                49.0
-              ],
-              "tag": {
-                "end": 1360,
-                "start": 1354,
-                "type": "TagDeclarator",
-                "value": "edge1"
-              },
-              "to": [
-                -76.0,
-                -4.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1311,
-                1361,
-                0
-              ],
-              "tag": {
-                "end": 1360,
-                "start": 1354,
-                "type": "TagDeclarator",
-                "value": "edge1"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -1697,55 +1256,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "edge2": {
           "type": "TagIdentifier",
           "value": "edge2",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1369,
-                  1418,
-                  0
-                ]
-              },
-              "from": [
-                -76.0,
-                -4.0
-              ],
-              "tag": {
-                "end": 1417,
-                "start": 1411,
-                "type": "TagDeclarator",
-                "value": "edge2"
-              },
-              "to": [
-                76.0,
-                -4.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1369,
-                1418,
-                0
-              ],
-              "tag": {
-                "end": 1417,
-                "start": 1411,
-                "type": "TagDeclarator",
-                "value": "edge2"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -1759,55 +1269,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "edge3": {
           "type": "TagIdentifier",
           "value": "edge3",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1426,
-                  1478,
-                  0
-                ]
-              },
-              "from": [
-                76.0,
-                -4.0
-              ],
-              "tag": {
-                "end": 1477,
-                "start": 1471,
-                "type": "TagDeclarator",
-                "value": "edge3"
-              },
-              "to": [
-                76.0,
-                49.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1426,
-                1478,
-                0
-              ],
-              "tag": {
-                "end": 1477,
-                "start": 1471,
-                "type": "TagDeclarator",
-                "value": "edge3"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -1821,55 +1282,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "edge4": {
           "type": "TagIdentifier",
           "value": "edge4",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1486,
-                  1534,
-                  0
-                ]
-              },
-              "from": [
-                76.0,
-                49.0
-              ],
-              "tag": {
-                "end": 1533,
-                "start": 1527,
-                "type": "TagDeclarator",
-                "value": "edge4"
-              },
-              "to": [
-                72.0,
-                49.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1486,
-                1534,
-                0
-              ],
-              "tag": {
-                "end": 1533,
-                "start": 1527,
-                "type": "TagDeclarator",
-                "value": "edge4"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -1883,55 +1295,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "edge5": {
           "type": "TagIdentifier",
           "value": "edge5",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1542,
-                  1586,
-                  0
-                ]
-              },
-              "from": [
-                72.0,
-                49.0
-              ],
-              "tag": {
-                "end": 1585,
-                "start": 1579,
-                "type": "TagDeclarator",
-                "value": "edge5"
-              },
-              "to": [
-                72.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1542,
-                1586,
-                0
-              ],
-              "tag": {
-                "end": 1585,
-                "start": 1579,
-                "type": "TagDeclarator",
-                "value": "edge5"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -1945,55 +1308,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "edge6": {
           "type": "TagIdentifier",
           "value": "edge6",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1594,
-                  1639,
-                  0
-                ]
-              },
-              "from": [
-                72.0,
-                0.0
-              ],
-              "tag": {
-                "end": 1638,
-                "start": 1632,
-                "type": "TagDeclarator",
-                "value": "edge6"
-              },
-              "to": [
-                -72.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1594,
-                1639,
-                0
-              ],
-              "tag": {
-                "end": 1638,
-                "start": 1632,
-                "type": "TagDeclarator",
-                "value": "edge6"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -2007,55 +1321,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "edge7": {
           "type": "TagIdentifier",
           "value": "edge7",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1647,
-                  1696,
-                  0
-                ]
-              },
-              "from": [
-                -72.0,
-                0.0
-              ],
-              "tag": {
-                "end": 1695,
-                "start": 1689,
-                "type": "TagDeclarator",
-                "value": "edge7"
-              },
-              "to": [
-                -72.0,
-                49.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1647,
-                1696,
-                0
-              ],
-              "tag": {
-                "end": 1695,
-                "start": 1689,
-                "type": "TagDeclarator",
-                "value": "edge7"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -2069,55 +1334,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "edge8": {
           "type": "TagIdentifier",
           "value": "edge8",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1704,
-                  1723,
-                  0
-                ]
-              },
-              "from": [
-                -72.0,
-                49.0
-              ],
-              "tag": {
-                "end": 1722,
-                "start": 1716,
-                "type": "TagDeclarator",
-                "value": "edge8"
-              },
-              "to": [
-                -76.0,
-                49.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1704,
-                1723,
-                0
-              ],
-              "tag": {
-                "end": 1722,
-                "start": 1716,
-                "type": "TagDeclarator",
-                "value": "edge8"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -2171,55 +1387,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge1",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1311,
-            1361,
-            0
-          ]
-        },
-        "from": [
-          -76.0,
-          49.0
-        ],
-        "tag": {
-          "end": 1360,
-          "start": 1354,
-          "type": "TagDeclarator",
-          "value": "edge1"
-        },
-        "to": [
-          -76.0,
-          -4.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1311,
-          1361,
-          0
-        ],
-        "tag": {
-          "end": 1360,
-          "start": 1354,
-          "type": "TagDeclarator",
-          "value": "edge1"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2234,55 +1401,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge11",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2497,
-            2550,
-            0
-          ]
-        },
-        "from": [
-          76.0,
-          44.0
-        ],
-        "tag": {
-          "end": 2549,
-          "start": 2542,
-          "type": "TagDeclarator",
-          "value": "edge11"
-        },
-        "to": [
-          88.0,
-          35.6667
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2497,
-          2550,
-          0
-        ],
-        "tag": {
-          "end": 2549,
-          "start": 2542,
-          "type": "TagDeclarator",
-          "value": "edge11"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2297,55 +1415,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge12",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2556,
-            2606,
-            0
-          ]
-        },
-        "from": [
-          88.0,
-          35.6667
-        ],
-        "tag": {
-          "end": 2605,
-          "start": 2598,
-          "type": "TagDeclarator",
-          "value": "edge12"
-        },
-        "to": [
-          88.0,
-          19.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2556,
-          2606,
-          0
-        ],
-        "tag": {
-          "end": 2605,
-          "start": 2598,
-          "type": "TagDeclarator",
-          "value": "edge12"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2360,55 +1429,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge13",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2612,
-            2666,
-            0
-          ]
-        },
-        "from": [
-          88.0,
-          19.0
-        ],
-        "tag": {
-          "end": 2665,
-          "start": 2658,
-          "type": "TagDeclarator",
-          "value": "edge13"
-        },
-        "to": [
-          76.0,
-          10.6667
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2612,
-          2666,
-          0
-        ],
-        "tag": {
-          "end": 2665,
-          "start": 2658,
-          "type": "TagDeclarator",
-          "value": "edge13"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2423,55 +1443,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge14",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2672,
-            2692,
-            0
-          ]
-        },
-        "from": [
-          76.0,
-          10.6667
-        ],
-        "tag": {
-          "end": 2691,
-          "start": 2684,
-          "type": "TagDeclarator",
-          "value": "edge14"
-        },
-        "to": [
-          76.0,
-          44.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2672,
-          2692,
-          0
-        ],
-        "tag": {
-          "end": 2691,
-          "start": 2684,
-          "type": "TagDeclarator",
-          "value": "edge14"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2486,55 +1457,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge2",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1369,
-            1418,
-            0
-          ]
-        },
-        "from": [
-          -76.0,
-          -4.0
-        ],
-        "tag": {
-          "end": 1417,
-          "start": 1411,
-          "type": "TagDeclarator",
-          "value": "edge2"
-        },
-        "to": [
-          76.0,
-          -4.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1369,
-          1418,
-          0
-        ],
-        "tag": {
-          "end": 1417,
-          "start": 1411,
-          "type": "TagDeclarator",
-          "value": "edge2"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2549,55 +1471,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge21",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            3338,
-            3392,
-            0
-          ]
-        },
-        "from": [
-          -76.0,
-          44.0
-        ],
-        "tag": {
-          "end": 3391,
-          "start": 3384,
-          "type": "TagDeclarator",
-          "value": "edge21"
-        },
-        "to": [
-          -88.0,
-          35.6667
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          3338,
-          3392,
-          0
-        ],
-        "tag": {
-          "end": 3391,
-          "start": 3384,
-          "type": "TagDeclarator",
-          "value": "edge21"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2612,55 +1485,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge22",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            3398,
-            3448,
-            0
-          ]
-        },
-        "from": [
-          -88.0,
-          35.6667
-        ],
-        "tag": {
-          "end": 3447,
-          "start": 3440,
-          "type": "TagDeclarator",
-          "value": "edge22"
-        },
-        "to": [
-          -88.0,
-          19.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          3398,
-          3448,
-          0
-        ],
-        "tag": {
-          "end": 3447,
-          "start": 3440,
-          "type": "TagDeclarator",
-          "value": "edge22"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2675,55 +1499,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge23",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            3454,
-            3507,
-            0
-          ]
-        },
-        "from": [
-          -88.0,
-          19.0
-        ],
-        "tag": {
-          "end": 3506,
-          "start": 3499,
-          "type": "TagDeclarator",
-          "value": "edge23"
-        },
-        "to": [
-          -76.0,
-          10.6667
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          3454,
-          3507,
-          0
-        ],
-        "tag": {
-          "end": 3506,
-          "start": 3499,
-          "type": "TagDeclarator",
-          "value": "edge23"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2738,55 +1513,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge24",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            3513,
-            3533,
-            0
-          ]
-        },
-        "from": [
-          -76.0,
-          10.6667
-        ],
-        "tag": {
-          "end": 3532,
-          "start": 3525,
-          "type": "TagDeclarator",
-          "value": "edge24"
-        },
-        "to": [
-          -76.0,
-          44.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          3513,
-          3533,
-          0
-        ],
-        "tag": {
-          "end": 3532,
-          "start": 3525,
-          "type": "TagDeclarator",
-          "value": "edge24"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2801,55 +1527,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge3",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1426,
-            1478,
-            0
-          ]
-        },
-        "from": [
-          76.0,
-          -4.0
-        ],
-        "tag": {
-          "end": 1477,
-          "start": 1471,
-          "type": "TagDeclarator",
-          "value": "edge3"
-        },
-        "to": [
-          76.0,
-          49.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1426,
-          1478,
-          0
-        ],
-        "tag": {
-          "end": 1477,
-          "start": 1471,
-          "type": "TagDeclarator",
-          "value": "edge3"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2864,55 +1541,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge4",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1486,
-            1534,
-            0
-          ]
-        },
-        "from": [
-          76.0,
-          49.0
-        ],
-        "tag": {
-          "end": 1533,
-          "start": 1527,
-          "type": "TagDeclarator",
-          "value": "edge4"
-        },
-        "to": [
-          72.0,
-          49.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1486,
-          1534,
-          0
-        ],
-        "tag": {
-          "end": 1533,
-          "start": 1527,
-          "type": "TagDeclarator",
-          "value": "edge4"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2927,55 +1555,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge5",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1542,
-            1586,
-            0
-          ]
-        },
-        "from": [
-          72.0,
-          49.0
-        ],
-        "tag": {
-          "end": 1585,
-          "start": 1579,
-          "type": "TagDeclarator",
-          "value": "edge5"
-        },
-        "to": [
-          72.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1542,
-          1586,
-          0
-        ],
-        "tag": {
-          "end": 1585,
-          "start": 1579,
-          "type": "TagDeclarator",
-          "value": "edge5"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2990,55 +1569,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge6",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1594,
-            1639,
-            0
-          ]
-        },
-        "from": [
-          72.0,
-          0.0
-        ],
-        "tag": {
-          "end": 1638,
-          "start": 1632,
-          "type": "TagDeclarator",
-          "value": "edge6"
-        },
-        "to": [
-          -72.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1594,
-          1639,
-          0
-        ],
-        "tag": {
-          "end": 1638,
-          "start": 1632,
-          "type": "TagDeclarator",
-          "value": "edge6"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -3053,55 +1583,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge7",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1647,
-            1696,
-            0
-          ]
-        },
-        "from": [
-          -72.0,
-          0.0
-        ],
-        "tag": {
-          "end": 1695,
-          "start": 1689,
-          "type": "TagDeclarator",
-          "value": "edge7"
-        },
-        "to": [
-          -72.0,
-          49.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1647,
-          1696,
-          0
-        ],
-        "tag": {
-          "end": 1695,
-          "start": 1689,
-          "type": "TagDeclarator",
-          "value": "edge7"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -3116,55 +1597,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge8",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1704,
-            1723,
-            0
-          ]
-        },
-        "from": [
-          -72.0,
-          49.0
-        ],
-        "tag": {
-          "end": 1722,
-          "start": 1716,
-          "type": "TagDeclarator",
-          "value": "edge8"
-        },
-        "to": [
-          -76.0,
-          49.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1704,
-          1723,
-          0
-        ],
-        "tag": {
-          "end": 1722,
-          "start": 1716,
-          "type": "TagDeclarator",
-          "value": "edge8"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -4708,55 +3140,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge21": {
               "type": "TagIdentifier",
               "value": "edge21",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      3338,
-                      3392,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -76.0,
-                    44.0
-                  ],
-                  "tag": {
-                    "end": 3391,
-                    "start": 3384,
-                    "type": "TagDeclarator",
-                    "value": "edge21"
-                  },
-                  "to": [
-                    -88.0,
-                    35.6667
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3338,
-                    3392,
-                    0
-                  ],
-                  "tag": {
-                    "end": 3391,
-                    "start": 3384,
-                    "type": "TagDeclarator",
-                    "value": "edge21"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -4770,55 +3153,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge22": {
               "type": "TagIdentifier",
               "value": "edge22",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      3398,
-                      3448,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -88.0,
-                    35.6667
-                  ],
-                  "tag": {
-                    "end": 3447,
-                    "start": 3440,
-                    "type": "TagDeclarator",
-                    "value": "edge22"
-                  },
-                  "to": [
-                    -88.0,
-                    19.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3398,
-                    3448,
-                    0
-                  ],
-                  "tag": {
-                    "end": 3447,
-                    "start": 3440,
-                    "type": "TagDeclarator",
-                    "value": "edge22"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -4832,55 +3166,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge23": {
               "type": "TagIdentifier",
               "value": "edge23",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      3454,
-                      3507,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -88.0,
-                    19.0
-                  ],
-                  "tag": {
-                    "end": 3506,
-                    "start": 3499,
-                    "type": "TagDeclarator",
-                    "value": "edge23"
-                  },
-                  "to": [
-                    -76.0,
-                    10.6667
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3454,
-                    3507,
-                    0
-                  ],
-                  "tag": {
-                    "end": 3506,
-                    "start": 3499,
-                    "type": "TagDeclarator",
-                    "value": "edge23"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -4894,55 +3179,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge24": {
               "type": "TagIdentifier",
               "value": "edge24",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      3513,
-                      3533,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -76.0,
-                    10.6667
-                  ],
-                  "tag": {
-                    "end": 3532,
-                    "start": 3525,
-                    "type": "TagDeclarator",
-                    "value": "edge24"
-                  },
-                  "to": [
-                    -76.0,
-                    44.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3513,
-                    3533,
-                    0
-                  ],
-                  "tag": {
-                    "end": 3532,
-                    "start": 3525,
-                    "type": "TagDeclarator",
-                    "value": "edge24"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5244,55 +3480,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge21": {
               "type": "TagIdentifier",
               "value": "edge21",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      3338,
-                      3392,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -76.0,
-                    44.0
-                  ],
-                  "tag": {
-                    "end": 3391,
-                    "start": 3384,
-                    "type": "TagDeclarator",
-                    "value": "edge21"
-                  },
-                  "to": [
-                    -88.0,
-                    35.6667
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3338,
-                    3392,
-                    0
-                  ],
-                  "tag": {
-                    "end": 3391,
-                    "start": 3384,
-                    "type": "TagDeclarator",
-                    "value": "edge21"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5306,55 +3493,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge22": {
               "type": "TagIdentifier",
               "value": "edge22",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      3398,
-                      3448,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -88.0,
-                    35.6667
-                  ],
-                  "tag": {
-                    "end": 3447,
-                    "start": 3440,
-                    "type": "TagDeclarator",
-                    "value": "edge22"
-                  },
-                  "to": [
-                    -88.0,
-                    19.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3398,
-                    3448,
-                    0
-                  ],
-                  "tag": {
-                    "end": 3447,
-                    "start": 3440,
-                    "type": "TagDeclarator",
-                    "value": "edge22"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5368,55 +3506,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge23": {
               "type": "TagIdentifier",
               "value": "edge23",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      3454,
-                      3507,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -88.0,
-                    19.0
-                  ],
-                  "tag": {
-                    "end": 3506,
-                    "start": 3499,
-                    "type": "TagDeclarator",
-                    "value": "edge23"
-                  },
-                  "to": [
-                    -76.0,
-                    10.6667
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3454,
-                    3507,
-                    0
-                  ],
-                  "tag": {
-                    "end": 3506,
-                    "start": 3499,
-                    "type": "TagDeclarator",
-                    "value": "edge23"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5430,55 +3519,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge24": {
               "type": "TagIdentifier",
               "value": "edge24",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      3513,
-                      3533,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -76.0,
-                    10.6667
-                  ],
-                  "tag": {
-                    "end": 3532,
-                    "start": 3525,
-                    "type": "TagDeclarator",
-                    "value": "edge24"
-                  },
-                  "to": [
-                    -76.0,
-                    44.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3513,
-                    3533,
-                    0
-                  ],
-                  "tag": {
-                    "end": 3532,
-                    "start": 3525,
-                    "type": "TagDeclarator",
-                    "value": "edge24"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5785,55 +3825,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge11": {
               "type": "TagIdentifier",
               "value": "edge11",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2497,
-                      2550,
-                      0
-                    ]
-                  },
-                  "from": [
-                    76.0,
-                    44.0
-                  ],
-                  "tag": {
-                    "end": 2549,
-                    "start": 2542,
-                    "type": "TagDeclarator",
-                    "value": "edge11"
-                  },
-                  "to": [
-                    88.0,
-                    35.6667
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2497,
-                    2550,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2549,
-                    "start": 2542,
-                    "type": "TagDeclarator",
-                    "value": "edge11"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5847,55 +3838,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge12": {
               "type": "TagIdentifier",
               "value": "edge12",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2556,
-                      2606,
-                      0
-                    ]
-                  },
-                  "from": [
-                    88.0,
-                    35.6667
-                  ],
-                  "tag": {
-                    "end": 2605,
-                    "start": 2598,
-                    "type": "TagDeclarator",
-                    "value": "edge12"
-                  },
-                  "to": [
-                    88.0,
-                    19.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2556,
-                    2606,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2605,
-                    "start": 2598,
-                    "type": "TagDeclarator",
-                    "value": "edge12"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5909,55 +3851,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge13": {
               "type": "TagIdentifier",
               "value": "edge13",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2612,
-                      2666,
-                      0
-                    ]
-                  },
-                  "from": [
-                    88.0,
-                    19.0
-                  ],
-                  "tag": {
-                    "end": 2665,
-                    "start": 2658,
-                    "type": "TagDeclarator",
-                    "value": "edge13"
-                  },
-                  "to": [
-                    76.0,
-                    10.6667
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2612,
-                    2666,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2665,
-                    "start": 2658,
-                    "type": "TagDeclarator",
-                    "value": "edge13"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5971,55 +3864,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge14": {
               "type": "TagIdentifier",
               "value": "edge14",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2672,
-                      2692,
-                      0
-                    ]
-                  },
-                  "from": [
-                    76.0,
-                    10.6667
-                  ],
-                  "tag": {
-                    "end": 2691,
-                    "start": 2684,
-                    "type": "TagDeclarator",
-                    "value": "edge14"
-                  },
-                  "to": [
-                    76.0,
-                    44.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2672,
-                    2692,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2691,
-                    "start": 2684,
-                    "type": "TagDeclarator",
-                    "value": "edge14"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -6321,55 +4165,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge11": {
               "type": "TagIdentifier",
               "value": "edge11",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2497,
-                      2550,
-                      0
-                    ]
-                  },
-                  "from": [
-                    76.0,
-                    44.0
-                  ],
-                  "tag": {
-                    "end": 2549,
-                    "start": 2542,
-                    "type": "TagDeclarator",
-                    "value": "edge11"
-                  },
-                  "to": [
-                    88.0,
-                    35.6667
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2497,
-                    2550,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2549,
-                    "start": 2542,
-                    "type": "TagDeclarator",
-                    "value": "edge11"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -6383,55 +4178,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge12": {
               "type": "TagIdentifier",
               "value": "edge12",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2556,
-                      2606,
-                      0
-                    ]
-                  },
-                  "from": [
-                    88.0,
-                    35.6667
-                  ],
-                  "tag": {
-                    "end": 2605,
-                    "start": 2598,
-                    "type": "TagDeclarator",
-                    "value": "edge12"
-                  },
-                  "to": [
-                    88.0,
-                    19.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2556,
-                    2606,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2605,
-                    "start": 2598,
-                    "type": "TagDeclarator",
-                    "value": "edge12"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -6445,55 +4191,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge13": {
               "type": "TagIdentifier",
               "value": "edge13",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2612,
-                      2666,
-                      0
-                    ]
-                  },
-                  "from": [
-                    88.0,
-                    19.0
-                  ],
-                  "tag": {
-                    "end": 2665,
-                    "start": 2658,
-                    "type": "TagDeclarator",
-                    "value": "edge13"
-                  },
-                  "to": [
-                    76.0,
-                    10.6667
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2612,
-                    2666,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2665,
-                    "start": 2658,
-                    "type": "TagDeclarator",
-                    "value": "edge13"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -6507,55 +4204,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "edge14": {
               "type": "TagIdentifier",
               "value": "edge14",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2672,
-                      2692,
-                      0
-                    ]
-                  },
-                  "from": [
-                    76.0,
-                    10.6667
-                  ],
-                  "tag": {
-                    "end": 2691,
-                    "start": 2684,
-                    "type": "TagDeclarator",
-                    "value": "edge14"
-                  },
-                  "to": [
-                    76.0,
-                    44.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2672,
-                    2692,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2691,
-                    "start": 2684,
-                    "type": "TagDeclarator",
-                    "value": "edge14"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [

@@ -128,7 +128,6 @@ Any KCL value.
 |----------|------|-------------|----------|
 | `type` |enum: [`TagIdentifier`](/docs/kcl/types#tag-identifier)|  | No |
 | `value` |[`string`](/docs/kcl/types/string)|  | No |
-| `info` |[`TagEngineInfo`](/docs/kcl/types/TagEngineInfo)|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 

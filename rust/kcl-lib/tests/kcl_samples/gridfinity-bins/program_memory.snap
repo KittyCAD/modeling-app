@@ -7322,55 +7322,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2392,
-                      2456,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2392,
-                    2456,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7384,55 +7335,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2462,
-                      2526,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2462,
-                    2526,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7446,55 +7348,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2532,
-                      2585,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2532,
-                    2585,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7508,55 +7361,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2591,
-                      2612,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2591,
-                    2612,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7872,55 +7676,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2392,
-                      2456,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2392,
-                    2456,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7934,55 +7689,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2462,
-                      2526,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2462,
-                    2526,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7996,55 +7702,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2532,
-                      2585,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2532,
-                    2585,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8058,55 +7715,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2591,
-                      2612,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2591,
-                    2612,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8422,55 +8030,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2392,
-                      2456,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2392,
-                    2456,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8484,55 +8043,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2462,
-                      2526,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2462,
-                    2526,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8546,55 +8056,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2532,
-                      2585,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2532,
-                    2585,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8608,55 +8069,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2591,
-                      2612,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2591,
-                    2612,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8972,55 +8384,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2392,
-                      2456,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2392,
-                    2456,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9034,55 +8397,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2462,
-                      2526,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2462,
-                    2526,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9096,55 +8410,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2532,
-                      2585,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2532,
-                    2585,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9158,55 +8423,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2591,
-                      2612,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2591,
-                    2612,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9522,55 +8738,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2392,
-                      2456,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2392,
-                    2456,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9584,55 +8751,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2462,
-                      2526,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2462,
-                    2526,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9646,55 +8764,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2532,
-                      2585,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2532,
-                    2585,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9708,55 +8777,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2591,
-                      2612,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2591,
-                    2612,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10072,55 +9092,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line000": {
               "type": "TagIdentifier",
               "value": "line000",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2392,
-                      2456,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "to": [
-                    38.8,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2392,
-                    2456,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2455,
-                    "start": 2447,
-                    "type": "TagDeclarator",
-                    "value": "line000"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10134,55 +9105,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line001": {
               "type": "TagIdentifier",
               "value": "line001",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2462,
-                      2526,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    3.2
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "to": [
-                    38.8,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2462,
-                    2526,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2525,
-                    "start": 2517,
-                    "type": "TagDeclarator",
-                    "value": "line001"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10196,55 +9118,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line002": {
               "type": "TagIdentifier",
               "value": "line002",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2532,
-                      2585,
-                      0
-                    ]
-                  },
-                  "from": [
-                    38.8,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "to": [
-                    3.2,
-                    38.8
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2532,
-                    2585,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2584,
-                    "start": 2576,
-                    "type": "TagDeclarator",
-                    "value": "line002"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10258,55 +9131,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "line003": {
               "type": "TagIdentifier",
               "value": "line003",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2591,
-                      2612,
-                      0
-                    ]
-                  },
-                  "from": [
-                    3.2,
-                    38.8
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "to": [
-                    3.2,
-                    3.2
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2591,
-                    2612,
-                    0
-                  ],
-                  "tag": {
-                    "end": 2611,
-                    "start": 2603,
-                    "type": "TagDeclarator",
-                    "value": "line003"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -17607,55 +16431,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "line010": {
             "type": "TagIdentifier",
             "value": "line010",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4528,
-                    4600,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4599,
-                  "start": 4591,
-                  "type": "TagDeclarator",
-                  "value": "line010"
-                },
-                "to": [
-                  84.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4528,
-                  4600,
-                  0
-                ],
-                "tag": {
-                  "end": 4599,
-                  "start": 4591,
-                  "type": "TagDeclarator",
-                  "value": "line010"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -17669,55 +16444,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "line011": {
             "type": "TagIdentifier",
             "value": "line011",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4606,
-                    4679,
-                    0
-                  ]
-                },
-                "from": [
-                  84.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4678,
-                  "start": 4670,
-                  "type": "TagDeclarator",
-                  "value": "line011"
-                },
-                "to": [
-                  84.0,
-                  126.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4606,
-                  4679,
-                  0
-                ],
-                "tag": {
-                  "end": 4678,
-                  "start": 4670,
-                  "type": "TagDeclarator",
-                  "value": "line011"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -17731,55 +16457,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "line012": {
             "type": "TagIdentifier",
             "value": "line012",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4685,
-                    4738,
-                    0
-                  ]
-                },
-                "from": [
-                  84.0,
-                  126.0
-                ],
-                "tag": {
-                  "end": 4737,
-                  "start": 4729,
-                  "type": "TagDeclarator",
-                  "value": "line012"
-                },
-                "to": [
-                  0.0,
-                  126.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4685,
-                  4738,
-                  0
-                ],
-                "tag": {
-                  "end": 4737,
-                  "start": 4729,
-                  "type": "TagDeclarator",
-                  "value": "line012"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -17793,55 +16470,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "line013": {
             "type": "TagIdentifier",
             "value": "line013",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4744,
-                    4765,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  126.0
-                ],
-                "tag": {
-                  "end": 4764,
-                  "start": 4756,
-                  "type": "TagDeclarator",
-                  "value": "line013"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4744,
-                  4765,
-                  0
-                ],
-                "tag": {
-                  "end": 4764,
-                  "start": 4756,
-                  "type": "TagDeclarator",
-                  "value": "line013"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -19230,55 +17858,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line000",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2392,
-            2456,
-            0
-          ]
-        },
-        "from": [
-          3.2,
-          3.2
-        ],
-        "tag": {
-          "end": 2455,
-          "start": 2447,
-          "type": "TagDeclarator",
-          "value": "line000"
-        },
-        "to": [
-          38.8,
-          3.2
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2392,
-          2456,
-          0
-        ],
-        "tag": {
-          "end": 2455,
-          "start": 2447,
-          "type": "TagDeclarator",
-          "value": "line000"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19293,55 +17872,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2462,
-            2526,
-            0
-          ]
-        },
-        "from": [
-          38.8,
-          3.2
-        ],
-        "tag": {
-          "end": 2525,
-          "start": 2517,
-          "type": "TagDeclarator",
-          "value": "line001"
-        },
-        "to": [
-          38.8,
-          38.8
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2462,
-          2526,
-          0
-        ],
-        "tag": {
-          "end": 2525,
-          "start": 2517,
-          "type": "TagDeclarator",
-          "value": "line001"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19356,55 +17886,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2532,
-            2585,
-            0
-          ]
-        },
-        "from": [
-          38.8,
-          38.8
-        ],
-        "tag": {
-          "end": 2584,
-          "start": 2576,
-          "type": "TagDeclarator",
-          "value": "line002"
-        },
-        "to": [
-          3.2,
-          38.8
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2532,
-          2585,
-          0
-        ],
-        "tag": {
-          "end": 2584,
-          "start": 2576,
-          "type": "TagDeclarator",
-          "value": "line002"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19419,55 +17900,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line003",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2591,
-            2612,
-            0
-          ]
-        },
-        "from": [
-          3.2,
-          38.8
-        ],
-        "tag": {
-          "end": 2611,
-          "start": 2603,
-          "type": "TagDeclarator",
-          "value": "line003"
-        },
-        "to": [
-          3.2,
-          3.2
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2591,
-          2612,
-          0
-        ],
-        "tag": {
-          "end": 2611,
-          "start": 2603,
-          "type": "TagDeclarator",
-          "value": "line003"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19482,55 +17914,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line010",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4528,
-            4600,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 4599,
-          "start": 4591,
-          "type": "TagDeclarator",
-          "value": "line010"
-        },
-        "to": [
-          84.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4528,
-          4600,
-          0
-        ],
-        "tag": {
-          "end": 4599,
-          "start": 4591,
-          "type": "TagDeclarator",
-          "value": "line010"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19545,55 +17928,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line011",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4606,
-            4679,
-            0
-          ]
-        },
-        "from": [
-          84.0,
-          0.0
-        ],
-        "tag": {
-          "end": 4678,
-          "start": 4670,
-          "type": "TagDeclarator",
-          "value": "line011"
-        },
-        "to": [
-          84.0,
-          126.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4606,
-          4679,
-          0
-        ],
-        "tag": {
-          "end": 4678,
-          "start": 4670,
-          "type": "TagDeclarator",
-          "value": "line011"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19608,55 +17942,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line012",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4685,
-            4738,
-            0
-          ]
-        },
-        "from": [
-          84.0,
-          126.0
-        ],
-        "tag": {
-          "end": 4737,
-          "start": 4729,
-          "type": "TagDeclarator",
-          "value": "line012"
-        },
-        "to": [
-          0.0,
-          126.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4685,
-          4738,
-          0
-        ],
-        "tag": {
-          "end": 4737,
-          "start": 4729,
-          "type": "TagDeclarator",
-          "value": "line012"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -19671,55 +17956,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line013",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4744,
-            4765,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          126.0
-        ],
-        "tag": {
-          "end": 4764,
-          "start": 4756,
-          "type": "TagDeclarator",
-          "value": "line013"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4744,
-          4765,
-          0
-        ],
-        "tag": {
-          "end": 4764,
-          "start": 4756,
-          "type": "TagDeclarator",
-          "value": "line013"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -20047,55 +18283,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line000": {
                     "type": "TagIdentifier",
                     "value": "line000",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2392,
-                            2456,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2455,
-                          "start": 2447,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "to": [
-                          38.8,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2392,
-                          2456,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2455,
-                          "start": 2447,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -20109,55 +18296,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line001": {
                     "type": "TagIdentifier",
                     "value": "line001",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2462,
-                            2526,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2525,
-                          "start": 2517,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "to": [
-                          38.8,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2462,
-                          2526,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2525,
-                          "start": 2517,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -20171,55 +18309,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line002": {
                     "type": "TagIdentifier",
                     "value": "line002",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2532,
-                            2585,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2584,
-                          "start": 2576,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "to": [
-                          3.2,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2532,
-                          2585,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2584,
-                          "start": 2576,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -20233,55 +18322,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line003": {
                     "type": "TagIdentifier",
                     "value": "line003",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2591,
-                            2612,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2611,
-                          "start": 2603,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "to": [
-                          3.2,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2591,
-                          2612,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2611,
-                          "start": 2603,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -20734,55 +18774,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line000": {
                     "type": "TagIdentifier",
                     "value": "line000",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2392,
-                            2456,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2455,
-                          "start": 2447,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "to": [
-                          38.8,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2392,
-                          2456,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2455,
-                          "start": 2447,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -20796,55 +18787,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line001": {
                     "type": "TagIdentifier",
                     "value": "line001",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2462,
-                            2526,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2525,
-                          "start": 2517,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "to": [
-                          38.8,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2462,
-                          2526,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2525,
-                          "start": 2517,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -20858,55 +18800,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line002": {
                     "type": "TagIdentifier",
                     "value": "line002",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2532,
-                            2585,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2584,
-                          "start": 2576,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "to": [
-                          3.2,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2532,
-                          2585,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2584,
-                          "start": 2576,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -20920,55 +18813,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line003": {
                     "type": "TagIdentifier",
                     "value": "line003",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2591,
-                            2612,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2611,
-                          "start": 2603,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "to": [
-                          3.2,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2591,
-                          2612,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2611,
-                          "start": 2603,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -21421,55 +19265,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line000": {
                     "type": "TagIdentifier",
                     "value": "line000",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2392,
-                            2456,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2455,
-                          "start": 2447,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "to": [
-                          38.8,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2392,
-                          2456,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2455,
-                          "start": 2447,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -21483,55 +19278,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line001": {
                     "type": "TagIdentifier",
                     "value": "line001",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2462,
-                            2526,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2525,
-                          "start": 2517,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "to": [
-                          38.8,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2462,
-                          2526,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2525,
-                          "start": 2517,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -21545,55 +19291,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line002": {
                     "type": "TagIdentifier",
                     "value": "line002",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2532,
-                            2585,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2584,
-                          "start": 2576,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "to": [
-                          3.2,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2532,
-                          2585,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2584,
-                          "start": 2576,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -21607,55 +19304,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line003": {
                     "type": "TagIdentifier",
                     "value": "line003",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2591,
-                            2612,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2611,
-                          "start": 2603,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "to": [
-                          3.2,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2591,
-                          2612,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2611,
-                          "start": 2603,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -22108,55 +19756,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line000": {
                     "type": "TagIdentifier",
                     "value": "line000",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2392,
-                            2456,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2455,
-                          "start": 2447,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "to": [
-                          38.8,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2392,
-                          2456,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2455,
-                          "start": 2447,
-                          "type": "TagDeclarator",
-                          "value": "line000"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -22170,55 +19769,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line001": {
                     "type": "TagIdentifier",
                     "value": "line001",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2462,
-                            2526,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          3.2
-                        ],
-                        "tag": {
-                          "end": 2525,
-                          "start": 2517,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "to": [
-                          38.8,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2462,
-                          2526,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2525,
-                          "start": 2517,
-                          "type": "TagDeclarator",
-                          "value": "line001"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -22232,55 +19782,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line002": {
                     "type": "TagIdentifier",
                     "value": "line002",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2532,
-                            2585,
-                            0
-                          ]
-                        },
-                        "from": [
-                          38.8,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2584,
-                          "start": 2576,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "to": [
-                          3.2,
-                          38.8
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2532,
-                          2585,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2584,
-                          "start": 2576,
-                          "type": "TagDeclarator",
-                          "value": "line002"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -22294,55 +19795,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "line003": {
                     "type": "TagIdentifier",
                     "value": "line003",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            2591,
-                            2612,
-                            0
-                          ]
-                        },
-                        "from": [
-                          3.2,
-                          38.8
-                        ],
-                        "tag": {
-                          "end": 2611,
-                          "start": 2603,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "to": [
-                          3.2,
-                          3.2
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2591,
-                          2612,
-                          0
-                        ],
-                        "tag": {
-                          "end": 2611,
-                          "start": 2603,
-                          "type": "TagDeclarator",
-                          "value": "line003"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -23969,55 +21421,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "line000": {
             "type": "TagIdentifier",
             "value": "line000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2392,
-                    2456,
-                    0
-                  ]
-                },
-                "from": [
-                  3.2,
-                  3.2
-                ],
-                "tag": {
-                  "end": 2455,
-                  "start": 2447,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "to": [
-                  38.8,
-                  3.2
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2392,
-                  2456,
-                  0
-                ],
-                "tag": {
-                  "end": 2455,
-                  "start": 2447,
-                  "type": "TagDeclarator",
-                  "value": "line000"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -24031,55 +21434,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "line001": {
             "type": "TagIdentifier",
             "value": "line001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2462,
-                    2526,
-                    0
-                  ]
-                },
-                "from": [
-                  38.8,
-                  3.2
-                ],
-                "tag": {
-                  "end": 2525,
-                  "start": 2517,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "to": [
-                  38.8,
-                  38.8
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2462,
-                  2526,
-                  0
-                ],
-                "tag": {
-                  "end": 2525,
-                  "start": 2517,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -24093,55 +21447,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "line002": {
             "type": "TagIdentifier",
             "value": "line002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2532,
-                    2585,
-                    0
-                  ]
-                },
-                "from": [
-                  38.8,
-                  38.8
-                ],
-                "tag": {
-                  "end": 2584,
-                  "start": 2576,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "to": [
-                  3.2,
-                  38.8
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2532,
-                  2585,
-                  0
-                ],
-                "tag": {
-                  "end": 2584,
-                  "start": 2576,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -24155,55 +21460,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "line003": {
             "type": "TagIdentifier",
             "value": "line003",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2591,
-                    2612,
-                    0
-                  ]
-                },
-                "from": [
-                  3.2,
-                  38.8
-                ],
-                "tag": {
-                  "end": 2611,
-                  "start": 2603,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "to": [
-                  3.2,
-                  3.2
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2591,
-                  2612,
-                  0
-                ],
-                "tag": {
-                  "end": 2611,
-                  "start": 2603,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [

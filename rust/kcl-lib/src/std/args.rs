@@ -276,12 +276,13 @@ impl Args {
         tag: &'a TagIdentifier,
     ) -> Result<&'e crate::execution::TagEngineInfo, KclError> {
         if let KclValue::TagIdentifier(t) = exec_state.stack().get_from_call_stack(&tag.value, self.source_range)? {
-            Ok(t.info.as_ref().ok_or_else(|| {
+            let info = t.get_cur_info().ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Tag `{}` does not have engine info", tag.value),
                     source_ranges: vec![self.source_range],
                 })
-            })?)
+            })?;
+            Ok(info)
         } else {
             Err(KclError::Type(KclErrorDetails {
                 message: format!("Tag `{}` does not exist", tag.value),
@@ -298,7 +299,7 @@ impl Args {
     where
         'e: 'a,
     {
-        if let Some(info) = &tag.info {
+        if let Some(info) = tag.get_cur_info() {
             return Ok(info);
         }
 
@@ -313,7 +314,7 @@ impl Args {
     where
         'e: 'a,
     {
-        if let Some(info) = &tag.info {
+        if let Some(info) = tag.get_cur_info() {
             if info.surface.is_some() {
                 return Ok(info);
             }
