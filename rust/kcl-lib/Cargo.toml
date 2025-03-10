@@ -149,7 +149,7 @@ name = "executor_benchmark_criterion"
 harness = false
 
 [[bench]]
-name = "executor_kcl_samples"
+name = "benchmark_kcl_samples"
 harness = false
 
 [[test]]
