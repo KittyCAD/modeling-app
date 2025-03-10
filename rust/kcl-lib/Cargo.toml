@@ -31,7 +31,7 @@ gltf-json = "1.4.1"
 http = { workspace = true }
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 indexmap = { workspace = true, features = ["serde"] }
-itertools = "0.13.0"
+itertools = "0.14.0"
 kcl-derive-docs = { version = "0.1.44", path = "../kcl-derive-docs" }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
@@ -73,7 +73,7 @@ url = { version = "2.5.4", features = ["serde"] }
 uuid = { workspace = true, features = ["v4", "js", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
 web-time = "1.1"
-winnow = "=0.6.24"
+winnow = "=0.7.3"
 zip = { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -87,7 +87,7 @@ web-sys = { version = "0.3.76", features = ["console"] }
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 bson = { version = "2.13.0", features = ["uuid-1", "chrono"] }
 tokio = { workspace = true, features = ["full"] }
-tokio-tungstenite = { version = "0.24.0", features = [
+tokio-tungstenite = { version = "0.26.2", features = [
     "rustls-tls-native-roots",
 ] }
 tower-lsp = { workspace = true, features = ["proposed", "default"] }
@@ -115,7 +115,7 @@ image = { version = "0.25.5", default-features = false, features = ["png"] }
 insta = { version = "1.41.1", features = ["json", "filters", "redactions"] }
 miette = { version = "7.5.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
-tokio = { version = "1.41.1", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.44.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.0"
 
 [lints]
