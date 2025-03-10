@@ -212,6 +212,10 @@ impl ExecState {
         self.global.module_infos.insert(id, module_info);
     }
 
+    pub(super) fn get_module(&mut self, id: ModuleId) -> Option<&ModuleInfo> {
+        self.global.module_infos.get(&id)
+    }
+
     pub fn length_unit(&self) -> UnitLen {
         self.mod_local.settings.default_length_units
     }

@@ -144,6 +144,48 @@ impl ExecutorContext {
 
     /// Execute an AST's program.
     #[async_recursion]
+    pub(super) async fn load_all_modules<'a>(
+        &'a self,
+        modules: &mut HashMap<String, crate::parsing::ast::types::Program>,
+        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        for statement in &program.body {
+            match statement {
+                BodyItem::ImportStatement(import_stmt) => {
+                    let source_range = SourceRange::from(import_stmt);
+                    let attrs = &import_stmt.outer_attrs;
+                    let module_id = self
+                        .open_module(&import_stmt.path, attrs, exec_state, source_range)
+                        .await?;
+
+                    let Some(module) = exec_state.get_module(module_id) else {
+                        crate::log::log("we got back a module id that doesn't exist");
+                        unreachable!();
+                    };
+
+                    let progn = {
+                        // this dance is to avoid taking out a mut borrow
+                        // below on exec_state after borrowing here. As a
+                        // result, we need to clone (ugh) the program for
+                        // now.
+                        let ModuleRepr::Kcl(ref progn, _) = module.repr else {
+                            // not a kcl file, we can skip this
+                            continue;
+                        };
+                        progn.clone()
+                    };
+
+                    self.load_all_modules(modules, &progn, exec_state).await?;
+                }
+                _ => {}
+            };
+        }
+        Ok(())
+    }
+
+    /// Execute an AST's program.
+    #[async_recursion]
     pub(super) async fn exec_block<'a>(
         &'a self,
         program: NodeRef<'a, crate::parsing::ast::types::Program>,
