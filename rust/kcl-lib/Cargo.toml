@@ -11,6 +11,9 @@ keywords = ["kcl", "KittyCAD", "CAD"]
 exclude = ["tests/*", "benches/*", "examples/*", "e2e/*", "bindings/*", "fuzz/*"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+bench = false
+
 [dependencies]
 anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
@@ -138,6 +141,10 @@ required-features = ["lsp-test-util"]
 
 [[bench]]
 name = "executor_benchmark_criterion"
+harness = false
+
+[[bench]]
+name = "executor_kcl_samples"
 harness = false
 
 [[test]]
