@@ -27,7 +27,7 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
-//pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.step";
+pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.step";
 
 impl Test {
     fn new(name: &str) -> Self {
@@ -153,12 +153,9 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             }
             if export_step {
                 let step = step.unwrap();
-                // TODO FIXME: This is failing because the step file is not deterministic.
-                // But it should be, talk to @katie
-                /*assert_snapshot(test, "Step file", || {
+                assert_snapshot(test, "Step file", || {
                     insta::assert_binary_snapshot!(EXPORTED_STEP_NAME, step);
-                });*/
-                std::fs::write(test.output_dir.join("exported_step.snap.step"), step).unwrap();
+                });
             }
             let outcome = exec_state.to_wasm_outcome(env_ref);
             assert_common_snapshots(
