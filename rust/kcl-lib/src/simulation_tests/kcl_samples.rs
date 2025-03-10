@@ -1,7 +1,6 @@
 //! Run all the KCL samples in the `kcl_samples` directory.
 use std::{
     fs,
-    io::Write,
     path::{Path, PathBuf},
 };
 
@@ -48,7 +47,7 @@ async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
 }
 
 #[test]
-fn ensure_after_tests() {
+fn test_after_engine_ensure_kcl_samples_manifest_etc() {
     let tests = kcl_samples_inputs();
     let expected_outputs = kcl_samples_outputs();
 
@@ -103,7 +102,7 @@ fn ensure_after_tests() {
 }
 
 #[test]
-fn generate_manifest() {
+fn test_after_engine_generate_manifest() {
     // Generate the manifest.json
     generate_kcl_manifest(&INPUTS_DIR).unwrap();
 }
@@ -294,10 +293,7 @@ fn generate_kcl_manifest(dir: &Path) -> Result<()> {
 
     // Write the manifest.json
     let output_path = dir.join(MANIFEST_FILE);
-    let manifest_json = serde_json::to_string_pretty(&manifest)?;
-
-    let mut file = fs::File::create(output_path.clone())?;
-    file.write_all(manifest_json.as_bytes())?;
+    expectorate::assert_contents(&output_path, &serde_json::to_string_pretty(&manifest).unwrap());
 
     println!(
         "Manifest of {} items written to {}",
@@ -333,7 +329,7 @@ fn update_readme(dir: &Path, new_content: &str) -> Result<()> {
     let updated_content = format!("{}{}\n", &content[..position], new_content);
 
     // Write the modified content back to the file
-    std::fs::write(readme_path, updated_content)?;
+    expectorate::assert_contents(&readme_path, &updated_content);
 
     Ok(())
 }
