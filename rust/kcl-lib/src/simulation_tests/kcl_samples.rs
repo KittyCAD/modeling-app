@@ -80,7 +80,7 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
         )
         .unwrap();
 
-        let step_file = OUTPUTS_DIR.join(&tests.name).join("exported_step.snap.step");
+        let step_file = OUTPUTS_DIR.join(&tests.name).join(super::EXPORTED_STEP_NAME);
         if !step_file.exists() {
             panic!("Missing step for test: {}", tests.name);
         }
