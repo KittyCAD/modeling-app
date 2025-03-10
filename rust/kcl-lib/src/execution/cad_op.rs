@@ -295,7 +295,6 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Module { .. } => Self::Module {},
             KclValue::KclNone { .. } => Self::KclNone {},
             KclValue::Type { .. } => Self::Type {},
-            KclValue::Tombstone { .. } => unreachable!("Tombstone OpKclValue"),
         }
     }
 }

@@ -95,6 +95,9 @@ pub struct DefaultPlanes {
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagIdentifier {
     pub value: String,
+    // Multi-version representation of info about the tag. Kept ordered. The usize is the epoch at which the info
+    // was written. Note that there might be multiple versions of tag info from the same epoch, the version with
+    // the higher index will be the most recent.
     #[serde(skip)]
     pub info: Vec<(usize, TagEngineInfo)>,
     #[serde(skip)]
@@ -102,6 +105,7 @@ pub struct TagIdentifier {
 }
 
 impl TagIdentifier {
+    /// Get the tag info for this tag at a specified epoch.
     pub fn get_info(&self, at_epoch: usize) -> Option<&TagEngineInfo> {
         for (e, info) in self.info.iter().rev() {
             if *e <= at_epoch {
@@ -112,8 +116,22 @@ impl TagIdentifier {
         None
     }
 
+    /// Get the most recent tag info for this tag.
     pub fn get_cur_info(&self) -> Option<&TagEngineInfo> {
         self.info.last().map(|i| &i.1)
+    }
+
+    /// Add info from a different instance of this tag.
+    pub fn merge_info(&mut self, other: &TagIdentifier) {
+        assert_eq!(&self.value, &other.value);
+        'new_info: for (oe, ot) in &other.info {
+            for (e, _) in &self.info {
+                if e > oe {
+                    continue 'new_info;
+                }
+            }
+            self.info.push((*oe, ot.clone()));
+        }
     }
 }
 
@@ -979,11 +997,7 @@ mod tests {
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
     fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {
-        memory
-            .memory
-            .get_from_unchecked(name, env, SourceRange::default())
-            .unwrap()
-            .to_owned()
+        memory.memory.get_from_unchecked(name, env).unwrap().to_owned()
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1992,5 +2006,42 @@ let w = f() + f()
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(program2, true).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn read_tag_version() {
+        let ast = r#"fn bar(t) {
+  return startSketchOn(XY)
+    |> startProfileAt([0,0], %)
+    |> angledLine({
+        angle = -60,
+        length = segLen(t),
+    }, %)
+    |> line(end = [0, 0])
+    |> close()
+}
+  
+sketch = startSketchOn(XY)
+  |> startProfileAt([0,0], %)
+  |> line(end = [0, 10])
+  |> line(end = [10, 0], tag = $tag0)
+  |> line(end = [0, 0])
+
+fn foo() {
+  // tag0 tags an edge
+  return bar(tag0)
+}
+
+solid = sketch |> extrude(length = 10)
+// tag0 tags a face
+sketch2 = startSketchOn(solid, tag0)
+  |> startProfileAt([0,0], %)
+  |> line(end = [0, 1])
+  |> line(end = [1, 0])
+  |> line(end = [0, 0])
+
+foo() |> extrude(length = 1)
+"#;
+        parse_execute(ast).await.unwrap();
     }
 }

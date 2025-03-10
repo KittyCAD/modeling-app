@@ -122,7 +122,6 @@ Any KCL value.
 |----------|------|-------------|----------|
 | `type` |enum: [`TagIdentifier`](/docs/kcl/types#tag-identifier)|  | No |
 | `value` |[`string`](/docs/kcl/types/string)|  | No |
-| `info` |[`TagEngineInfo`](/docs/kcl/types/TagEngineInfo)|  | No |
 
 
 ----
@@ -334,22 +333,6 @@ Data for an imported geometry.
 |----------|------|-------------|----------|
 | `type` |enum: [`KclNone`](/docs/kcl/types/KclNone)|  | No |
 | `value` |[`KclNone`](/docs/kcl/types/KclNone)| KCL value for an optional parameter which was not given an argument. (remember, parameters are in the function declaration, arguments are in the function call/application). | No |
-
-
-----
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `type` |enum: `Tombstone`|  | No |
-| `value` |`null`|  | No |
 
 
 ----

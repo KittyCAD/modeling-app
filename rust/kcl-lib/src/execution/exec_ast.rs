@@ -1355,11 +1355,22 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     // TODO: This could probably be done in a better way, but as of now this was my only idea
     // and it works.
     match result {
-        KclValue::Sketch { value: ref mut sketch } => {
-            for (name, tag) in sketch.tags.iter() {
-                exec_state
-                    .mut_stack()
-                    .insert_or_update(name.clone(), KclValue::TagIdentifier(Box::new(tag.clone())));
+        KclValue::Sketch { value } => {
+            for (name, tag) in value.tags.iter() {
+                if exec_state.stack().cur_frame_contains(name) {
+                    exec_state.mut_stack().update(name, |v, _| {
+                        v.as_mut_tag().unwrap().merge_info(tag);
+                    });
+                } else {
+                    exec_state
+                        .mut_stack()
+                        .add(
+                            name.to_owned(),
+                            KclValue::TagIdentifier(Box::new(tag.clone())),
+                            SourceRange::default(),
+                        )
+                        .unwrap();
+                }
             }
         }
         KclValue::Solid { ref mut value } => {
@@ -1400,40 +1411,43 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         }
                     };
 
-                    exec_state
-                        .mut_stack()
-                        .insert_or_update(tag.name.clone(), KclValue::TagIdentifier(Box::new(tag_id.clone())));
-
                     // update the sketch tags.
-                    value.sketch.tags.insert(tag.name.clone(), tag_id);
+                    value.sketch.merge_tags(Some(&tag_id).into_iter());
+
+                    if exec_state.stack().cur_frame_contains(&tag.name) {
+                        exec_state.mut_stack().update(&tag.name, |v, _| {
+                            v.as_mut_tag().unwrap().merge_info(&tag_id);
+                        });
+                    } else {
+                        exec_state
+                            .mut_stack()
+                            .add(
+                                tag.name.clone(),
+                                KclValue::TagIdentifier(Box::new(tag_id)),
+                                SourceRange::default(),
+                            )
+                            .unwrap();
+                    }
                 }
             }
 
             // Find the stale sketch in memory and update it.
             if !value.sketch.tags.is_empty() {
-                let updates: Vec<_> = exec_state
+                let sketches_to_update: Vec<_> = exec_state
                     .stack()
-                    .find_all_in_current_env(|v| match v {
+                    .find_keys_in_current_env(|v| match v {
                         KclValue::Sketch { value: sk } => sk.artifact_id == value.sketch.artifact_id,
                         _ => false,
                     })
-                    .map(|(k, v)| {
-                        let mut sketch = v.as_sketch().unwrap().clone();
-                        for (tag_name, tag_id) in value.sketch.tags.iter() {
-                            sketch.tags.insert(tag_name.clone(), tag_id.clone());
-                        }
-                        (
-                            k.clone(),
-                            KclValue::Sketch {
-                                value: Box::new(sketch),
-                            },
-                        )
-                    })
+                    .cloned()
                     .collect();
 
-                updates
-                    .into_iter()
-                    .for_each(|(k, v)| exec_state.mut_stack().insert_or_update(k, v))
+                for k in sketches_to_update {
+                    exec_state.mut_stack().update(&k, |v, _| {
+                        let sketch = v.as_mut_sketch().unwrap();
+                        sketch.merge_tags(value.sketch.tags.values());
+                    });
+                }
             }
         }
         _ => {}

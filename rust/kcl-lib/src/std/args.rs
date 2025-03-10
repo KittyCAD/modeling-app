@@ -286,8 +286,10 @@ impl Args {
         exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
     ) -> Result<&'e crate::execution::TagEngineInfo, KclError> {
-        if let KclValue::TagIdentifier(t) = exec_state.stack().get_from_call_stack(&tag.value, self.source_range)? {
-            let info = t.get_cur_info().ok_or_else(|| {
+        if let (epoch, KclValue::TagIdentifier(t)) =
+            exec_state.stack().get_from_call_stack(&tag.value, self.source_range)?
+        {
+            let info = t.get_info(epoch).ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Tag `{}` does not have engine info", tag.value),
                     source_ranges: vec![self.source_range],

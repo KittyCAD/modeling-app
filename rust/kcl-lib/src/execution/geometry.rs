@@ -655,6 +655,19 @@ impl Sketch {
         self.tags.insert(tag.name.to_string(), tag_identifier);
     }
 
+    pub(crate) fn merge_tags<'a>(&mut self, tags: impl Iterator<Item = &'a TagIdentifier>) {
+        for t in tags {
+            match self.tags.get_mut(&t.value) {
+                Some(id) => {
+                    id.merge_info(t);
+                }
+                None => {
+                    self.tags.insert(t.value.clone(), t.clone());
+                }
+            }
+        }
+    }
+
     /// Get the path most recently sketched.
     pub(crate) fn latest_path(&self) -> Option<&Path> {
         self.paths.last()
