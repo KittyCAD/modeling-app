@@ -94,7 +94,7 @@ fn get_all_directories(path: &std::path::Path) -> Result<Vec<(String, String)>, 
 
 /// Sanitize directory name to create a valid Rust identifier
 fn sanitize_dir_name(name: &str) -> String {
-    let name = name.replace(|c: char| !c.is_alphanumeric() && c != '_', "_");
+    let name = name.replace(|c: char| !c.is_ascii_alphanumeric() && c != '_', "_");
     if name.chars().next().is_some_and(|c| c.is_numeric()) {
         format!("d_{}", name)
     } else {
