@@ -3,7 +3,6 @@
 //! Use the `KCL_SAMPLES_ONLY=gear` environment variable to run only a subset of
 //! the samples, in this case, all those that start with "gear".
 use std::{
-    collections::HashMap,
     fs,
     io::Write,
     path::{Path, PathBuf},
@@ -12,7 +11,6 @@ use std::{
 use anyhow::Result;
 use fnv::FnvHashSet;
 use serde::{Deserialize, Serialize};
-use tokio::task::JoinSet;
 
 use super::Test;
 
@@ -25,76 +23,37 @@ lazy_static::lazy_static! {
     static ref OUTPUTS_DIR: PathBuf = Path::new("tests/kcl_samples").to_path_buf();
 }
 
-#[test]
-fn parse() {
+#[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
+fn parse(dir_name: &str, dir_path: &Path) {
+    let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
     let write_new = matches!(
         std::env::var("INSTA_UPDATE").as_deref(),
         Ok("auto" | "always" | "new" | "unseen")
     );
-    let filter = filter_from_env();
-    let tests = kcl_samples_inputs(filter.as_deref());
-    let expected_outputs = kcl_samples_outputs(filter.as_deref());
-
-    assert!(!tests.is_empty(), "No KCL samples found");
-
-    let input_names = FnvHashSet::from_iter(tests.iter().map(|t| t.name.clone()));
-
-    for test in tests {
-        if write_new {
-            // Ensure the directory exists for new tests.
-            std::fs::create_dir_all(test.output_dir.clone()).unwrap();
-        }
-        super::parse_test(&test);
+    if write_new {
+        // Ensure the directory exists for new tests.
+        std::fs::create_dir_all(t.output_dir.clone()).unwrap();
     }
-
-    // Ensure that inputs aren't missing.
-    let missing = expected_outputs
-        .into_iter()
-        .filter(|name| !input_names.contains(name))
-        .collect::<Vec<_>>();
-    assert!(missing.is_empty(), "Expected input kcl-samples for the following. If these are no longer tests, delete the expected output directories for them in {}: {missing:?}", OUTPUTS_DIR.to_string_lossy());
+    super::parse_test(&t);
 }
 
-#[test]
-fn unparse() {
+#[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
+fn unparse(dir_name: &str, dir_path: &Path) {
     // kcl-samples don't always use correct formatting.  We don't ignore the
     // test because we want to allow the just command to work.  It's actually
     // fine when no test runs.
 }
 
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute() {
-    let filter = filter_from_env();
-    let tests = kcl_samples_inputs(filter.as_deref());
-    let expected_outputs = kcl_samples_outputs(filter.as_deref());
+#[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
+async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
+    let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
+    super::execute_test(&t, true, true).await;
+}
 
-    assert!(!tests.is_empty(), "No KCL samples found");
-
-    // Note: This is unordered.
-    let mut tasks = JoinSet::new();
-    // Mapping from task ID to test index.
-    let mut id_to_index = HashMap::new();
-    // Spawn a task for each test.
-    for (index, test) in tests.iter().cloned().enumerate() {
-        let handle = tasks.spawn(async move {
-            super::execute_test(&test, true, true).await;
-        });
-        id_to_index.insert(handle.id(), index);
-    }
-
-    // Join all the tasks and collect the failures.  We cannot just join_all
-    // because insta's error messages don't clearly indicate which test failed.
-    let mut failed = vec![None; tests.len()];
-    while let Some(result) = tasks.join_next().await {
-        let Err(err) = result else {
-            continue;
-        };
-        // When there's an error, store the test name and error message.
-        let index = *id_to_index.get(&err.id()).unwrap();
-        failed[index] = Some(format!("{}: {err}", &tests[index].name));
-    }
-    let failed = failed.into_iter().flatten().collect::<Vec<_>>();
-    assert!(failed.is_empty(), "Failed tests: {}", failed.join("\n"));
+#[test]
+fn ensure_after_tests() {
+    let tests = kcl_samples_inputs();
+    let expected_outputs = kcl_samples_outputs();
 
     // Ensure that inputs aren't missing.
     let input_names = FnvHashSet::from_iter(tests.iter().map(|t| t.name.clone()));
@@ -161,11 +120,7 @@ fn test(test_name: &str, entry_point: String) -> Test {
     }
 }
 
-fn filter_from_env() -> Option<String> {
-    std::env::var("KCL_SAMPLES_ONLY").ok().filter(|s| !s.is_empty())
-}
-
-fn kcl_samples_inputs(filter: Option<&str>) -> Vec<Test> {
+fn kcl_samples_inputs() -> Vec<Test> {
     let mut tests = Vec::new();
 
     // Collect all directory entries first and sort them by name for consistent ordering
@@ -197,11 +152,6 @@ fn kcl_samples_inputs(filter: Option<&str>) -> Vec<Test> {
             // Skip output directories.
             continue;
         }
-        if let Some(filter) = &filter {
-            if !dir_name_str.starts_with(filter) {
-                continue;
-            }
-        }
         eprintln!("Found KCL sample: {:?}", dir_name.to_string_lossy());
         // Look for the entry point inside the directory.
         let sub_dir = INPUTS_DIR.join(dir_name);
@@ -216,7 +166,7 @@ fn kcl_samples_inputs(filter: Option<&str>) -> Vec<Test> {
     tests
 }
 
-fn kcl_samples_outputs(filter: Option<&str>) -> Vec<String> {
+fn kcl_samples_outputs() -> Vec<String> {
     let mut outputs = Vec::new();
 
     for entry in OUTPUTS_DIR.read_dir().unwrap() {
@@ -233,11 +183,6 @@ fn kcl_samples_outputs(filter: Option<&str>) -> Vec<String> {
         if dir_name_str.starts_with('.') {
             // Skip hidden.
             continue;
-        }
-        if let Some(filter) = &filter {
-            if !dir_name_str.starts_with(filter) {
-                continue;
-            }
         }
 
         eprintln!("Found expected KCL sample: {:?}", &dir_name_str);
