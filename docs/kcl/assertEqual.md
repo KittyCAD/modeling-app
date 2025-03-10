@@ -22,10 +22,10 @@ assertEqual(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `left` | `number` |  | Yes |
-| `right` | `number` |  | Yes |
-| `epsilon` | `number` |  | Yes |
-| `message` | `string` |  | Yes |
+| `left` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `right` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `epsilon` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `message` | [`string`](/docs/kcl/types/string) |  | Yes |
 
 ### Returns
 

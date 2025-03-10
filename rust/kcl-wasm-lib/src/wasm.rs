@@ -68,13 +68,11 @@ pub async fn execute_mock(
     path: Option<String>,
     settings: &str,
     use_prev_memory: bool,
-    variables: &str,
     fs_manager: kcl_lib::wasm_engine::FileSystemManager,
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
     let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
-    let variables = serde_json::from_str(variables).map_err(|e| e.to_string())?;
     let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
     let mut settings: kcl_lib::ExecutorSettings = config.into();
     if let Some(path) = path {
@@ -82,7 +80,7 @@ pub async fn execute_mock(
     }
 
     let ctx = kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?;
-    match ctx.run_mock(program, use_prev_memory, variables).await {
+    match ctx.run_mock(program, use_prev_memory).await {
         // The serde-wasm-bindgen does not work here because of weird HashMap issues.
         // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
         Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),

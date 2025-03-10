@@ -158,9 +158,14 @@ export function findKwArgAnyIndex(
   labels: string[],
   call: CallExpressionKw
 ): number | undefined {
-  return call.arguments.findIndex((arg) => {
+  const index = call.arguments.findIndex((arg) => {
     return labels.includes(arg.label.name)
   })
+  if (index == -1) {
+    return undefined
+  } else {
+    return index
+  }
 }
 
 export function isAbsolute(call: CallExpressionKw): boolean {

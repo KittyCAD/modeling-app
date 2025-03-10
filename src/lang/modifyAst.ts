@@ -75,6 +75,7 @@ import {
 import { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
+import { codeManager } from 'lib/singletons'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -273,6 +274,19 @@ export function mutateKwArg(
   }
   node.arguments.push(createLabeledArg(label, val))
   return false
+}
+
+/**
+Mutates the given node by removing the labeled arguments.
+*/
+export function removeKwArgs(labels: string[], node: CallExpressionKw) {
+  for (const label of labels) {
+    const i = node.arguments.findIndex((la) => la.label.name === label)
+    if (i == -1) {
+      continue
+    }
+    node.arguments.splice(i, 1)
+  }
 }
 
 export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
@@ -1409,18 +1423,39 @@ export async function deleteFromSelection(
     ({} as any)
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
+  let deletionArtifact = selection.artifact
+
+  // Coerce sketch artifacts to their plane first
+  if (selection.artifact?.type === 'startSketchOnPlane') {
+    const planeArtifact = getArtifactOfTypes(
+      { key: selection.artifact.planeId, types: ['plane'] },
+      artifactGraph
+    )
+    if (!err(planeArtifact)) {
+      deletionArtifact = planeArtifact
+    }
+  } else if (selection.artifact?.type === 'startSketchOnFace') {
+    const planeArtifact = getArtifactOfTypes(
+      { key: selection.artifact.faceId, types: ['plane'] },
+      artifactGraph
+    )
+    if (!err(planeArtifact)) {
+      deletionArtifact = planeArtifact
+    }
+  }
+
   if (
-    (selection.artifact?.type === 'plane' ||
-      selection.artifact?.type === 'cap' ||
-      selection.artifact?.type === 'wall') &&
-    selection.artifact?.pathIds?.length
+    (deletionArtifact?.type === 'plane' ||
+      deletionArtifact?.type === 'cap' ||
+      deletionArtifact?.type === 'wall') &&
+    deletionArtifact?.pathIds?.length
   ) {
     const plane =
-      selection.artifact.type === 'plane'
-        ? expandPlane(selection.artifact, artifactGraph)
-        : selection.artifact.type === 'wall'
-        ? expandWall(selection.artifact, artifactGraph)
-        : expandCap(selection.artifact, artifactGraph)
+      deletionArtifact.type === 'plane'
+        ? expandPlane(deletionArtifact, artifactGraph)
+        : deletionArtifact.type === 'wall'
+        ? expandWall(deletionArtifact, artifactGraph)
+        : expandCap(deletionArtifact, artifactGraph)
     for (const path of plane.paths.sort(
       (a, b) => b.codeRef.range?.[0] - a.codeRef.range?.[0]
     )) {
@@ -1435,22 +1470,36 @@ export async function deleteFromSelection(
     }
     // If it's a cap, we're not going to continue and try to
     // delete the extrusion
-    if (
-      selection.artifact.type === 'cap' ||
-      selection.artifact.type === 'wall'
-    ) {
+    if (deletionArtifact.type === 'cap' || deletionArtifact.type === 'wall') {
       // Delete the sketch node, which would not work if
       // we continued down the traditional code path below.
       // faceCodeRef's pathToNode is empty for some reason
       // so using source range instead
-      const codeRef = getFaceCodeRef(selection.artifact)
+      const codeRef = getFaceCodeRef(deletionArtifact)
       if (!codeRef) return new Error('Could not find face code ref')
       const sketchVarDec = getNodePathFromSourceRange(astClone, codeRef.range)
       const sketchBodyIndex = Number(sketchVarDec[1][0])
       astClone.body.splice(sketchBodyIndex, 1)
       return astClone
     }
+
+    // If we coerced the artifact from a sketch to a plane,
+    // this is where we hop off after we delete the sketch variable declaration
+    if (
+      selection.artifact?.type === 'startSketchOnPlane' ||
+      selection.artifact?.type === 'startSketchOnFace'
+    ) {
+      const sketchVarDec = getNodePathFromSourceRange(
+        astClone,
+        selection.artifact.codeRef.range
+      )
+      const sketchBodyIndex = Number(sketchVarDec[1][0])
+      astClone.body.splice(sketchBodyIndex, 1)
+      return astClone
+    }
   }
+
+  // Below is all AST-based deletion logic
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
     selection?.codeRef?.pathToNode,

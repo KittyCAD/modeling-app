@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing double_map_fn.kcl
 ---
 {
@@ -16,7 +16,7 @@ description: Variables in memory after executing double_map_fn.kcl
     ]
   },
   "xs": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",
@@ -81,7 +81,7 @@ description: Variables in memory after executing double_map_fn.kcl
     ]
   },
   "ys": {
-    "type": "Array",
+    "type": "MixedArray",
     "value": [
       {
         "type": "Number",

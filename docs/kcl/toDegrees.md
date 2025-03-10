@@ -21,11 +21,11 @@ toDegrees(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number` |  | Yes |
+| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples
@@ -37,7 +37,7 @@ exampleSketch = startSketchOn("XZ")
        angle = 50,
        length = 70 * cos(toDegrees(pi() / 4))
      }, %)
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 example = extrude(exampleSketch, length = 5)

@@ -327,6 +327,50 @@ impl ExecutorContext {
                     }
                     last_expr = None;
                 }
+                BodyItem::TypeDeclaration(ty) => {
+                    let metadata = Metadata::from(&**ty);
+                    let impl_kind = annotations::get_impl(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
+                    match impl_kind {
+                        annotations::Impl::Rust => {
+                            let std_path = match &exec_state.mod_local.settings.std_path {
+                                Some(p) => p,
+                                None => {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: "User-defined types are not yet supported.".to_owned(),
+                                        source_ranges: vec![metadata.source_range],
+                                    }));
+                                }
+                            };
+                            let value = KclValue::Type {
+                                value: Some(crate::std::std_ty(std_path, &ty.name.name)),
+                                meta: vec![metadata],
+                            };
+                            exec_state
+                                .mut_stack()
+                                .add(
+                                    format!("{}{}", memory::TYPE_PREFIX, ty.name.name),
+                                    value,
+                                    metadata.source_range,
+                                )
+                                .map_err(|_| {
+                                    KclError::Semantic(KclErrorDetails {
+                                        message: format!("Redefinition of type {}.", ty.name.name),
+                                        source_ranges: vec![metadata.source_range],
+                                    })
+                                })?;
+                        }
+                        // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
+                        annotations::Impl::Primitive => {}
+                        annotations::Impl::Kcl => {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                message: "User-defined types are not yet supported.".to_owned(),
+                                source_ranges: vec![metadata.source_range],
+                            }));
+                        }
+                    }
+
+                    last_expr = None;
+                }
                 BodyItem::ReturnStatement(return_statement) => {
                     let metadata = Metadata::from(return_statement);
 
@@ -561,21 +605,9 @@ impl ExecutorContext {
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
-                let mut rust_impl = false;
-                for attr in annotations {
-                    if attr.name.is_some() || attr.properties.is_none() {
-                        continue;
-                    }
-                    for p in attr.properties.as_ref().unwrap() {
-                        if &*p.key.name == "impl" {
-                            if let Some(s) = p.value.ident_name() {
-                                if s == "std_rust" {
-                                    rust_impl = true;
-                                }
-                            }
-                        }
-                    }
-                }
+                let rust_impl = annotations::get_impl(annotations, metadata.source_range)?
+                    .map(|s| s == annotations::Impl::Rust)
+                    .unwrap_or(false);
 
                 if rust_impl {
                     if let Some(std_path) = &exec_state.mod_local.settings.std_path {
@@ -598,6 +630,7 @@ impl ExecutorContext {
                     KclValue::Function {
                         value: FunctionSource::User {
                             ast: function_expression.clone(),
+                            settings: exec_state.mod_local.settings.clone(),
                             memory: exec_state.mut_stack().snapshot(),
                         },
                         meta: vec![metadata.to_owned()],
@@ -665,7 +698,12 @@ impl ExecutorContext {
 }
 
 fn coerce(value: KclValue, ty: &Node<Type>, exec_state: &mut ExecState) -> Result<KclValue, KclValue> {
-    let ty = RuntimeType::from_parsed(ty.inner.clone(), &exec_state.mod_local.settings).ok_or_else(|| value.clone())?;
+    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, (&value).into())
+        .map_err(|e| {
+            exec_state.err(e);
+            value.clone()
+        })?
+        .ok_or_else(|| value.clone())?;
     if value.has_type(&ty) {
         return Ok(value);
     }
@@ -759,7 +797,7 @@ impl Node<MemberExpression> {
             }
         };
 
-        let KclValue::Array { value: array, meta: _ } = array else {
+        let KclValue::MixedArray { value: array, meta: _ } = array else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!("MemberExpression array is not an array: {:?}", array),
                 source_ranges: vec![self.clone().into()],
@@ -809,7 +847,7 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (KclValue::Array { value: arr, meta: _ }, Property::UInt(index)) => {
+            (KclValue::MixedArray { value: arr, meta: _ }, Property::UInt(index)) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -820,7 +858,7 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::Array { .. }, p) => {
+            (KclValue::MixedArray { .. }, p) => {
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -1494,7 +1532,7 @@ impl Node<ArrayExpression> {
             results.push(value);
         }
 
-        Ok(KclValue::Array {
+        Ok(KclValue::MixedArray {
             value: results,
             meta: vec![self.into()],
         })
@@ -1543,7 +1581,7 @@ impl Node<ArrayRangeExpression> {
         let meta = vec![Metadata {
             source_range: self.into(),
         }];
-        Ok(KclValue::Array {
+        Ok(KclValue::MixedArray {
             value: range
                 .into_iter()
                 .map(|num| KclValue::Number {
@@ -1957,7 +1995,7 @@ impl FunctionSource {
 
                 func(exec_state, args).await.map(Some)
             }
-            FunctionSource::User { ast, memory } => {
+            FunctionSource::User { ast, memory, .. } => {
                 call_user_defined_function(args, *memory, ast, exec_state, ctx).await
             }
             FunctionSource::None => unreachable!(),
@@ -2109,9 +2147,11 @@ p = {
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        let mem = result.3.stack();
+        let mem = result.exec_state.stack();
         assert!(matches!(
-            mem.memory.get_from("p", result.1, SourceRange::default(), 0).unwrap(),
+            mem.memory
+                .get_from("p", result.mem_env, SourceRange::default(), 0)
+                .unwrap(),
             KclValue::Plane { .. }
         ));
 
@@ -2147,8 +2187,12 @@ p2 = -p
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        let mem = result.3.stack();
-        match mem.memory.get_from("p2", result.1, SourceRange::default(), 0).unwrap() {
+        let mem = result.exec_state.stack();
+        match mem
+            .memory
+            .get_from("p2", result.mem_env, SourceRange::default(), 0)
+            .unwrap()
+        {
             KclValue::Plane { value } => assert_eq!(value.z_axis.z, -1.0),
             _ => unreachable!(),
         }

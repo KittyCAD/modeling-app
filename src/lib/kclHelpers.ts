@@ -9,12 +9,9 @@ const DUMMY_VARIABLE_NAME = '__result__'
 
 /**
  * Calculate the value of the KCL expression,
- * given the value and the variables that are available
+ * given the value and the variables that are available in memory.
  */
-export async function getCalculatedKclExpressionValue(
-  value: string,
-  variables: VariableMap
-) {
+export async function getCalculatedKclExpressionValue(value: string) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `const ${DUMMY_VARIABLE_NAME} = ${value}`
   const pResult = parse(dummyProgramCode)
@@ -26,7 +23,6 @@ export async function getCalculatedKclExpressionValue(
     ast,
     engineCommandManager,
     isMock: true,
-    variables,
   })
 
   // Find the variable declaration for the result
@@ -47,14 +43,8 @@ export async function getCalculatedKclExpressionValue(
   }
 }
 
-export async function stringToKclExpression(
-  value: string,
-  variables: VariableMap
-) {
-  const calculatedResult = await getCalculatedKclExpressionValue(
-    value,
-    variables
-  )
+export async function stringToKclExpression(value: string) {
+  const calculatedResult = await getCalculatedKclExpressionValue(value)
   if (err(calculatedResult) || 'errors' in calculatedResult) {
     return calculatedResult
   } else if (!calculatedResult.astNode) {

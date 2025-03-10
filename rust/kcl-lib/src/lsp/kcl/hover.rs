@@ -32,6 +32,10 @@ pub(super) enum Hover {
         callee_name: String,
         range: LspRange,
     },
+    Type {
+        name: String,
+        range: LspRange,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -72,7 +76,6 @@ impl Program {
         }
 
         let value = self.get_expr_for_position(pos)?;
-
         value.get_hover_value_for_position(pos, code, opts)
     }
 }
@@ -120,8 +123,10 @@ impl Expr {
             Expr::TagDeclarator(_) => None,
             // TODO LSP hover info for tag
             Expr::LabelledExpression(expr) => expr.expr.get_hover_value_for_position(pos, code, opts),
-            // TODO LSP hover info for type
-            Expr::AscribedExpression(expr) => expr.expr.get_hover_value_for_position(pos, code, opts),
+            Expr::AscribedExpression(expr) => expr
+                .ty
+                .get_hover_value_for_position(pos, code, opts)
+                .or_else(|| expr.expr.get_hover_value_for_position(pos, code, opts)),
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Expr::PipeSubstitution(_) => None,
         }
@@ -334,8 +339,43 @@ impl PipeExpression {
     }
 }
 
+impl Node<Type> {
+    fn get_hover_value_for_position(&self, pos: usize, code: &str, _opts: &HoverOpts) -> Option<Hover> {
+        let range = self.as_source_range();
+        if range.contains(pos) {
+            match &self.inner {
+                Type::Array(t) | Type::Primitive(t) => {
+                    let mut name = t.to_string();
+                    if name.ends_with(')') {
+                        name.truncate(name.find('(').unwrap());
+                    }
+                    return Some(Hover::Type {
+                        name,
+                        range: range.to_lsp_range(code),
+                    });
+                }
+                _ => {}
+            }
+        }
+
+        None
+    }
+}
+
 impl FunctionExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
+        if let Some(ty) = &self.return_type {
+            if let Some(h) = ty.get_hover_value_for_position(pos, code, opts) {
+                return Some(h);
+            }
+        }
+        for arg in &self.params {
+            if let Some(ty) = &arg.type_ {
+                if let Some(h) = ty.get_hover_value_for_position(pos, code, opts) {
+                    return Some(h);
+                }
+            }
+        }
         if let Some(value) = self.body.get_expr_for_position(pos) {
             let mut vars = opts.vars.clone().unwrap_or_default();
             for arg in &self.params {

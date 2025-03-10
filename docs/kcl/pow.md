@@ -24,12 +24,12 @@ pow(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number` |  | Yes |
-| `pow` | `number` |  | Yes |
+| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `pow` | [`number`](/docs/kcl/types/number) |  | Yes |
 
 ### Returns
 
-`number`
+[`number`](/docs/kcl/types/number)
 
 
 ### Examples
@@ -38,7 +38,7 @@ pow(
 exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle = 50, length = pow(5, 2) }, %)
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 example = extrude(exampleSketch, length = 5)

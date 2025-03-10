@@ -168,8 +168,7 @@ test.describe('Point-and-click tests', () => {
         })
 
         await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
-          await toolbar.exitSketchBtn.click()
-          await scene.waitForExecutionDone()
+          await toolbar.exitSketch()
         })
         await test.step('Check there is no errors after code created in previous steps executes', async () => {
           await editor.expectState({
@@ -200,7 +199,9 @@ test.describe('Point-and-click tests', () => {
       }, file)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await expect(
+        page.getByTestId('model-state-indicator-receive-reliable')
+      ).toBeVisible()
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
@@ -388,6 +389,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       }, file)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+
       await scene.waitForExecutionDone()
 
       const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
@@ -522,7 +524,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     const expectedCodeSnippets = {
       sketchOnXzPlane: `sketch001 = startSketchOn('XZ')`,
       pointAtOrigin: `startProfileAt([${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}], sketch001)`,
-      segmentOnXAxis: `xLine(${xAxisSloppy.kcl[0]}, %)`,
+      segmentOnXAxis: `xLine(length = ${xAxisSloppy.kcl[0]})`,
       afterSegmentDraggedOffYAxis: `startProfileAt([${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}], sketch001)`,
       afterSegmentDraggedOnYAxis: `startProfileAt([${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}], sketch001)`,
     }
@@ -583,7 +585,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
 openSketch = startSketchOn('XY')
   |> startProfileAt([-5, 0], %)
   |> line(endAbsolute = [0, 5])
-  |> xLine(5, %)
+  |> xLine(length = 5)
   |> tangentialArcTo([10, 0], %)
 `
     const viewPortSize = { width: 1000, height: 500 }
@@ -1348,7 +1350,7 @@ loft001 = loft([sketch001, sketch002])
      )
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> xLine(-500, %)
+  |> xLine(length = -500)
   |> tangentialArcTo([-2000, 500], %)
 `
     await context.addInitScript((initialCode) => {
@@ -1442,7 +1444,7 @@ sketch002 = startSketchOn('XZ')
      )
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> xLine(-500, %)
+  |> xLine(length = -500)
   |> line(endAbsolute = [-2000, 500])
 `
     await context.addInitScript((initialCode) => {
@@ -2363,9 +2365,9 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
   }) => {
     const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-20, 20], %)
-  |> xLine(40, %)
-  |> yLine(-60, %)
-  |> xLine(-40, %)
+  |> xLine(length = 40)
+  |> yLine(length = -60)
+  |> xLine(length = -40)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 40)
@@ -2381,7 +2383,7 @@ extrude001 = extrude(sketch001, length = 40)
     const testPoint = { x: 580, y: 180 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 70)
-    const mutatedCode = 'xLine(-40, %, $seg01)'
+    const mutatedCode = 'xLine(length = -40, tag = $seg01)'
     const shellDeclaration =
       "shell001 = shell(extrude001, faces = ['end', seg01], thickness = 5)"
 
@@ -2547,9 +2549,9 @@ extrude002 = extrude(sketch002, length = 50)
     }) => {
       const sketchCode = `sketch001 = startSketchOn('XY')
 profile001 = startProfileAt([-20, 20], sketch001)
-    |> xLine(40, %)
-    |> yLine(-60, %)
-    |> xLine(-40, %)
+    |> xLine(length = 40)
+    |> yLine(length = -60)
+    |> xLine(length = -40)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 `
@@ -2635,7 +2637,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
      )
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> xLine(-2000, %)
+  |> xLine(length = -2000)
 sweep001 = sweep(sketch001, path = sketch002)
 `
     await context.addInitScript((initialCode) => {
@@ -2796,7 +2798,7 @@ radius = 8.69
       const initialCode = `
     sketch002 = startSketchOn('XY')
       |> startProfileAt([-2.02, 1.79], %)
-      |> xLine(2.6, %)
+      |> xLine(length = 2.6)
     sketch001 = startSketchOn('-XY')
       |> startProfileAt([-0.48, 1.25], %)
       |> angledLine([0, 2.38], %, $rectangleSegmentA001)
@@ -2828,7 +2830,7 @@ radius = 8.69
       await page.getByText(codeToSelecton).click()
       await toolbar.revolveButton.click()
       await page.getByText('Edge', { exact: true }).click()
-      const lineCodeToSelection = `|> xLine(2.6, %)`
+      const lineCodeToSelection = `|> xLine(length = 2.6)`
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
 
@@ -2900,7 +2902,7 @@ extrude001 = extrude(profile001, length = 100)
       await enterAppearanceFlow(`Open Set Appearance flow`)
 
       await test.step(`Validate hidden argument "nodeToEdit" can't be reached with Backspace`, async () => {
-        await page.keyboard.press('Backspace')
+        await page.keyboard.press('Shift+Backspace')
         await cmdBar.expectState({
           stage: 'pickCommand',
         })

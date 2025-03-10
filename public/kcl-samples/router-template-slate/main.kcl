@@ -1,0 +1,88 @@
+// Router template for a slate
+// A guide for routing a slate for a cross bar.
+
+// Set Units
+@settings(defaultLengthUnit = mm)
+
+// Define constants
+routerDiameter = 12.7
+templateDiameter = 11 / 16 * inch()
+templateGap = (templateDiameter - routerDiameter) / 2 - 0.5
+slateWidthHalf = 41.5 / 2
+minClampingDistance = 50 + 30
+templateThickness = 10
+radius = 10
+depth = 30
+length001 = slateWidthHalf - radius
+length002 = depth + minClampingDistance
+
+// Create the first sketch
+sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, depth - templateGap], %)
+  |> xLine(length = length001, tag = $seg01)
+  |> arc({
+       angleEnd = 0,
+       angleStart = 90,
+       radius = radius - templateGap
+     }, %)
+  |> yLine(endAbsolute = -templateGap * 2 - (templateDiameter / 2), tag = $seg05)
+  |> xLine(endAbsolute = slateWidthHalf + templateThickness, tag = $seg04)
+  |> yLine(length = -length002, tag = $seg03)
+  |> xLine(endAbsolute = ZERO, tag = $seg02)
+  // |> line(end = [7.78, 11.16])
+  |> xLine(length = -segLen(seg02))
+  |> yLine(length = segLen(seg03))
+  |> xLine(length = segLen(seg04))
+  |> yLine(length = segLen(seg05))
+  |> arc({
+       angleEnd = 90,
+       angleStart = 180,
+       radius = radius - templateGap
+     }, %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Extrude the first sketch
+extrude001 = extrude(sketch001, length = 5)
+
+// Create the second sketch
+sketch002 = startSketchOn(extrude001, 'START')
+  |> startProfileAt([
+       -slateWidthHalf,
+       -templateGap * 2 - (templateDiameter / 2)
+     ], %)
+  |> xLine(length = -7, tag = $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) + 90,
+       minClampingDistance
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Extrude the second sketch
+extrude002 = extrude(sketch002, length = 7.5)
+
+// Create the third sketch
+sketch003 = startSketchOn(extrude001, 'START')
+  |> startProfileAt([
+       slateWidthHalf,
+       -templateGap * 2 - (templateDiameter / 2)
+     ], %)
+  |> xLine(length = 7, tag = $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) - 90,
+       minClampingDistance
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Extrude the third Sketch
+extrude003 = extrude(sketch003, length = 7.5)

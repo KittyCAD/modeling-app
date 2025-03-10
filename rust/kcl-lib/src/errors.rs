@@ -152,7 +152,7 @@ impl KclErrorWithOutputs {
             source_files: Default::default(),
         }
     }
-    pub fn into_miette_report_with_outputs(self) -> anyhow::Result<ReportWithOutputs> {
+    pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
         let mut source_ranges = self.error.source_ranges();
 
         // Pop off the first source range to get the filename.
@@ -164,12 +164,19 @@ impl KclErrorWithOutputs {
             .source_files
             .get(&first_source_range.module_id())
             .cloned()
-            .ok_or_else(|| {
-                anyhow::anyhow!(
-                    "Could not find source file for module id: {:?}",
-                    first_source_range.module_id()
-                )
-            })?;
+            .unwrap_or(ModuleSource {
+                source: code.to_string(),
+                path: self
+                    .filenames
+                    .get(&first_source_range.module_id())
+                    .ok_or_else(|| {
+                        anyhow::anyhow!(
+                            "Could not find filename for module id: {:?}",
+                            first_source_range.module_id()
+                        )
+                    })?
+                    .clone(),
+            });
         let filename = source.path.to_string();
         let kcl_source = source.source.to_string();
 

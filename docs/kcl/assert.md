@@ -20,8 +20,8 @@ assert(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `bool` |  | Yes |
-| `message` | `string` |  | Yes |
+| `data` | [`bool`](/docs/kcl/types/bool) |  | Yes |
+| `message` | [`string`](/docs/kcl/types/string) |  | Yes |
 
 ### Returns
 

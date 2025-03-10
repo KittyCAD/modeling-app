@@ -1,0 +1,73 @@
+// Mounting Plate
+// A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components.
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+// Define constants
+plateLength = 10
+plateWidth = 6
+filletRadius = 0.5
+plateThickness = .5
+centerHoleDiameter = 2
+
+// Create a function that defines the body width and length of the mounting plate. Tag the corners so they can be passed through the fillet function.
+fn rectShape(pos, w, l) {
+  rr = startSketchOn('XY')
+    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
+    |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
+    |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
+    |> close(tag = $edge4)
+  return rr
+}
+
+// Define the hole radius and x, y location constants
+holeRadius = .25
+holeIndex = .75
+
+// Create the mounting plate extrusion, holes, and fillets
+rs = rectShape([0, 0], plateWidth, plateLength)
+part = rs
+  |> hole(circle(
+       center = [
+         -plateWidth / 2 + holeIndex,
+         plateLength / 2 - holeIndex
+       ],
+       radius = holeRadius
+     ), %)
+  |> hole(circle(
+       center = [
+         plateWidth / 2 - holeIndex,
+         plateLength / 2 - holeIndex
+       ],
+       radius = holeRadius
+     ), %)
+  |> hole(circle(
+       center = [
+         -plateWidth / 2 + holeIndex,
+         -plateLength / 2 + holeIndex
+       ],
+       radius = holeRadius
+     ), %)
+  |> hole(circle(
+       center = [
+         plateWidth / 2 - holeIndex,
+         -plateLength / 2 + holeIndex
+       ],
+       radius = holeRadius
+     ), %)
+  |> hole(circle(
+       center = [0, 0],
+       radius = centerHoleDiameter
+     ), %)
+  |> extrude(length = plateThickness)
+  |> fillet(
+       radius = filletRadius,
+       tags = [
+         getPreviousAdjacentEdge(rs.tags.edge1),
+         getPreviousAdjacentEdge(rs.tags.edge2),
+         getPreviousAdjacentEdge(rs.tags.edge3),
+         getPreviousAdjacentEdge(rs.tags.edge4)
+       ]
+     )

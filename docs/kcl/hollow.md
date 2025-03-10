@@ -20,12 +20,12 @@ hollow(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `thickness` | `number` |  | Yes |
-| `solid` | [`Solid`](/docs/kcl/types/Solid) | A solid is a collection of extrude surfaces. | Yes |
+| `thickness` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) |  | Yes |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid)
 
 
 ### Examples

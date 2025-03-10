@@ -55,6 +55,9 @@ pub async fn modify_ast_for_sketch(
         let constraint_level = match ast_sketch {
             super::types::Definition::Variable(var) => var.get_constraint_level(),
             super::types::Definition::Import(import) => import.get_constraint_level(),
+            super::types::Definition::Type(_) => ConstraintLevel::Ignore {
+                source_ranges: Vec::new(),
+            },
         };
         match &constraint_level {
             ConstraintLevel::None { source_ranges: _ } => {}

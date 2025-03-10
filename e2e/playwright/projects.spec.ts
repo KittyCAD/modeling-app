@@ -745,6 +745,23 @@ test(
       // expect the name not to have changed
       await expect(page.getByText('bracket')).toBeVisible()
     })
+
+    await test.step(`rename a project to a duplicate name should error toast`, async () => {
+      const routerTemplate = page.getByText('bracket')
+
+      await routerTemplate.hover()
+      await routerTemplate.focus()
+
+      await expect(page.getByLabel('sketch').last()).toBeVisible()
+      await page.getByLabel('sketch').last().click()
+
+      const inputField = page.getByTestId('project-rename-input')
+      await expect(inputField).toBeVisible()
+      await expect(inputField).toBeFocused()
+      await inputField.fill('lego')
+      await page.keyboard.press('Enter')
+      await expect(page.getByText('already exists')).toBeVisible()
+    })
   }
 )
 

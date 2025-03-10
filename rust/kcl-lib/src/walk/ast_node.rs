@@ -12,6 +12,7 @@ pub enum Node<'a> {
     ImportStatement(NodeRef<'a, types::ImportStatement>),
     ExpressionStatement(NodeRef<'a, types::ExpressionStatement>),
     VariableDeclaration(NodeRef<'a, types::VariableDeclaration>),
+    TypeDeclaration(NodeRef<'a, types::TypeDeclaration>),
     ReturnStatement(NodeRef<'a, types::ReturnStatement>),
 
     VariableDeclarator(NodeRef<'a, types::VariableDeclarator>),
@@ -53,6 +54,7 @@ impl Node<'_> {
             Node::ImportStatement(n) => n.digest,
             Node::ExpressionStatement(n) => n.digest,
             Node::VariableDeclaration(n) => n.digest,
+            Node::TypeDeclaration(n) => n.digest,
             Node::ReturnStatement(n) => n.digest,
             Node::VariableDeclarator(n) => n.digest,
             Node::Literal(n) => n.digest,
@@ -96,6 +98,7 @@ impl Node<'_> {
             Node::ImportStatement(n) => *n as *const _ as *const (),
             Node::ExpressionStatement(n) => *n as *const _ as *const (),
             Node::VariableDeclaration(n) => *n as *const _ as *const (),
+            Node::TypeDeclaration(n) => *n as *const _ as *const (),
             Node::ReturnStatement(n) => *n as *const _ as *const (),
             Node::VariableDeclarator(n) => *n as *const _ as *const (),
             Node::Literal(n) => *n as *const _ as *const (),
@@ -139,6 +142,7 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::ImportStatement(n) => SourceRange::from(*n),
             Node::ExpressionStatement(n) => SourceRange::from(*n),
             Node::VariableDeclaration(n) => SourceRange::from(*n),
+            Node::TypeDeclaration(n) => SourceRange::from(*n),
             Node::ReturnStatement(n) => SourceRange::from(*n),
             Node::VariableDeclarator(n) => SourceRange::from(*n),
             Node::Literal(n) => SourceRange::from(*n),
@@ -177,6 +181,7 @@ impl<'tree> From<&'tree types::BodyItem> for Node<'tree> {
             types::BodyItem::ImportStatement(v) => v.as_ref().into(),
             types::BodyItem::ExpressionStatement(v) => v.into(),
             types::BodyItem::VariableDeclaration(v) => v.as_ref().into(),
+            types::BodyItem::TypeDeclaration(v) => v.as_ref().into(),
             types::BodyItem::ReturnStatement(v) => v.into(),
         }
     }
@@ -264,6 +269,7 @@ impl_from!(Node, Program);
 impl_from!(Node, ImportStatement);
 impl_from!(Node, ExpressionStatement);
 impl_from!(Node, VariableDeclaration);
+impl_from!(Node, TypeDeclaration);
 impl_from!(Node, ReturnStatement);
 impl_from!(Node, VariableDeclarator);
 impl_from!(Node, Literal);

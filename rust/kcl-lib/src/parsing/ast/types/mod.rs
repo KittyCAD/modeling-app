@@ -38,6 +38,7 @@ mod none;
 pub enum Definition<'a> {
     Variable(&'a VariableDeclarator),
     Import(NodeRef<'a, ImportStatement>),
+    Type(NodeRef<'a, TypeDeclaration>),
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -52,18 +53,6 @@ pub struct Node<T> {
     pub module_id: ModuleId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub outer_attrs: NodeList<Annotation>,
-}
-
-impl<T> Node<T> {
-    pub fn metadata(&self) -> Metadata {
-        Metadata {
-            source_range: SourceRange::new(self.start, self.end, self.module_id),
-        }
-    }
-
-    pub fn contains(&self, pos: usize) -> bool {
-        self.start <= pos && pos <= self.end
-    }
 }
 
 impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
@@ -125,6 +114,26 @@ impl<T> Node<T> {
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
         vec![self.as_source_range()]
+    }
+
+    pub fn metadata(&self) -> Metadata {
+        Metadata {
+            source_range: SourceRange::new(self.start, self.end, self.module_id),
+        }
+    }
+
+    pub fn contains(&self, pos: usize) -> bool {
+        self.start <= pos && pos <= self.end
+    }
+
+    pub fn map<U>(self, f: fn(T) -> U) -> Node<U> {
+        Node {
+            inner: f(self.inner),
+            start: self.start,
+            end: self.end,
+            module_id: self.module_id,
+            outer_attrs: self.outer_attrs,
+        }
     }
 }
 
@@ -352,7 +361,7 @@ impl Program {
 
         // Recurse over the item.
         match item {
-            BodyItem::ImportStatement(_) => None,
+            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => None,
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
@@ -373,6 +382,7 @@ impl Program {
             Some(BodyItem::VariableDeclaration(variable_declaration)) => {
                 variable_declaration.get_expr_for_position(pos)
             }
+            Some(BodyItem::TypeDeclaration(_)) => None,
             Some(BodyItem::ReturnStatement(return_statement)) => Some(&return_statement.argument),
             None => return false,
         };
@@ -395,7 +405,7 @@ impl Program {
         // We only care about the top level things in the program.
         for item in &self.body {
             match item {
-                BodyItem::ImportStatement(_) => continue,
+                BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => continue,
                 BodyItem::ExpressionStatement(expression_statement) => {
                     if let Some(folding_range) = expression_statement.expression.get_lsp_folding_range() {
                         ranges.push(folding_range)
@@ -425,16 +435,13 @@ impl Program {
                         break;
                     }
                 }
-                BodyItem::ExpressionStatement(_expression_statement) => {
-                    continue;
-                }
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
                     if let Some(var_old_name) = variable_declaration.rename_symbol(new_name, pos) {
                         old_name = Some(var_old_name);
                         break;
                     }
                 }
-                BodyItem::ReturnStatement(_return_statement) => continue,
+                _ => {}
             }
         }
 
@@ -458,6 +465,7 @@ impl Program {
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
                     variable_declaration.get_mut_expr_for_position(pos)
                 }
+                BodyItem::TypeDeclaration(_) => None,
                 BodyItem::ReturnStatement(ref mut return_statement) => Some(&mut return_statement.argument),
             };
 
@@ -483,16 +491,17 @@ impl Program {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for item in &mut self.body {
             match item {
-                BodyItem::ImportStatement(ref mut stmt) => {
+                BodyItem::ImportStatement(stmt) => {
                     stmt.rename_identifiers(old_name, new_name);
                 }
-                BodyItem::ExpressionStatement(ref mut expression_statement) => {
+                BodyItem::ExpressionStatement(expression_statement) => {
                     expression_statement.expression.rename_identifiers(old_name, new_name);
                 }
-                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                BodyItem::VariableDeclaration(variable_declaration) => {
                     variable_declaration.rename_identifiers(old_name, new_name);
                 }
-                BodyItem::ReturnStatement(ref mut return_statement) => {
+                BodyItem::TypeDeclaration(_) => {}
+                BodyItem::ReturnStatement(return_statement) => {
                     return_statement.argument.rename_identifiers(old_name, new_name);
                 }
             }
@@ -506,7 +515,7 @@ impl Program {
                 BodyItem::ImportStatement(_) => {
                     continue;
                 }
-                BodyItem::ExpressionStatement(_expression_statement) => {
+                BodyItem::ExpressionStatement(_) => {
                     continue;
                 }
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
@@ -515,7 +524,10 @@ impl Program {
                         return;
                     }
                 }
-                BodyItem::ReturnStatement(_return_statement) => continue,
+                BodyItem::TypeDeclaration(_) => {
+                    continue;
+                }
+                BodyItem::ReturnStatement(_) => continue,
             }
         }
     }
@@ -531,6 +543,7 @@ impl Program {
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
                     variable_declaration.replace_value(source_range, new_value.clone())
                 }
+                BodyItem::TypeDeclaration(_) => {}
                 BodyItem::ReturnStatement(ref mut return_statement) => {
                     return_statement.argument.replace_value(source_range, new_value.clone())
                 }
@@ -553,6 +566,11 @@ impl Program {
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     if variable_declaration.declaration.id.name == name {
                         return Some(Definition::Variable(&variable_declaration.declaration));
+                    }
+                }
+                BodyItem::TypeDeclaration(ty_declaration) => {
+                    if ty_declaration.name.name == name {
+                        return Some(Definition::Type(ty_declaration));
                     }
                 }
                 BodyItem::ReturnStatement(_return_statement) => continue,
@@ -588,6 +606,7 @@ pub enum BodyItem {
     ImportStatement(BoxNode<ImportStatement>),
     ExpressionStatement(Node<ExpressionStatement>),
     VariableDeclaration(BoxNode<VariableDeclaration>),
+    TypeDeclaration(BoxNode<TypeDeclaration>),
     ReturnStatement(Node<ReturnStatement>),
 }
 
@@ -597,6 +616,7 @@ impl BodyItem {
             BodyItem::ImportStatement(stmt) => stmt.start,
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.start,
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.start,
+            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.start,
             BodyItem::ReturnStatement(return_statement) => return_statement.start,
         }
     }
@@ -606,6 +626,7 @@ impl BodyItem {
             BodyItem::ImportStatement(stmt) => stmt.end,
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.end,
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.end,
+            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.end,
             BodyItem::ReturnStatement(return_statement) => return_statement.end,
         }
     }
@@ -615,6 +636,7 @@ impl BodyItem {
             BodyItem::ImportStatement(node) => node.outer_attrs = attr,
             BodyItem::ExpressionStatement(node) => node.outer_attrs = attr,
             BodyItem::VariableDeclaration(node) => node.outer_attrs = attr,
+            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.outer_attrs = attr,
             BodyItem::ReturnStatement(node) => node.outer_attrs = attr,
         }
     }
@@ -624,6 +646,7 @@ impl BodyItem {
             BodyItem::ImportStatement(node) => &node.outer_attrs,
             BodyItem::ExpressionStatement(node) => &node.outer_attrs,
             BodyItem::VariableDeclaration(node) => &node.outer_attrs,
+            BodyItem::TypeDeclaration(ty_declaration) => &ty_declaration.outer_attrs,
             BodyItem::ReturnStatement(node) => &node.outer_attrs,
         }
     }
@@ -633,6 +656,7 @@ impl BodyItem {
             BodyItem::ImportStatement(node) => &mut node.outer_attrs,
             BodyItem::ExpressionStatement(node) => &mut node.outer_attrs,
             BodyItem::VariableDeclaration(node) => &mut node.outer_attrs,
+            BodyItem::TypeDeclaration(ty_declaration) => &mut ty_declaration.outer_attrs,
             BodyItem::ReturnStatement(node) => &mut node.outer_attrs,
         }
     }
@@ -1768,6 +1792,20 @@ impl ItemVisibility {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+pub struct TypeDeclaration {
+    pub name: Node<Identifier>,
+    pub args: Option<NodeList<Identifier>>,
+    #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
+    pub visibility: ItemVisibility,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct VariableDeclaration {
     pub declaration: Node<VariableDeclarator>,
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
@@ -2832,7 +2870,8 @@ impl PipeExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum PrimitiveType {
@@ -2845,39 +2884,16 @@ pub enum PrimitiveType {
     Boolean,
     /// A tag.
     Tag,
-    /// A sketch type.
-    Sketch,
-    /// A sketch surface type.
-    SketchSurface,
-    /// An solid type.
-    Solid,
-    /// A plane.
-    Plane,
+    /// An identifier used as a type (not really a primitive type, but whatever).
+    Named(Node<Identifier>),
 }
 
 impl PrimitiveType {
-    pub fn digestable_id(&self) -> &[u8] {
-        match self {
-            PrimitiveType::String => b"string",
-            PrimitiveType::Number(suffix) => suffix.digestable_id(),
-            PrimitiveType::Boolean => b"bool",
-            PrimitiveType::Tag => b"tag",
-            PrimitiveType::Sketch => b"Sketch",
-            PrimitiveType::SketchSurface => b"SketchSurface",
-            PrimitiveType::Solid => b"Solid",
-            PrimitiveType::Plane => b"Plane",
-        }
-    }
-
-    pub fn from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
+    pub fn primitive_from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
             ("tag", None) => Some(PrimitiveType::Tag),
-            ("Sketch", None) => Some(PrimitiveType::Sketch),
-            ("SketchSurface", None) => Some(PrimitiveType::SketchSurface),
-            ("Solid", None) => Some(PrimitiveType::Solid),
-            ("Plane", None) => Some(PrimitiveType::Plane),
             ("number", None) => Some(PrimitiveType::Number(NumericSuffix::None)),
             ("number", Some(s)) => Some(PrimitiveType::Number(s)),
             _ => None,
@@ -2898,10 +2914,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
             PrimitiveType::Tag => write!(f, "tag"),
-            PrimitiveType::Sketch => write!(f, "Sketch"),
-            PrimitiveType::SketchSurface => write!(f, "SketchSurface"),
-            PrimitiveType::Solid => write!(f, "Solid"),
-            PrimitiveType::Plane => write!(f, "Plane"),
+            PrimitiveType::Named(n) => write!(f, "{}", n.name),
         }
     }
 }
@@ -3456,11 +3469,11 @@ const cylinder = startSketchOn('-XZ')
     fn test_ast_in_comment_inline() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> xLine(5, %) // lin
+  |> xLine(length = 5) // lin
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        assert!(program.in_comment(86));
+        assert!(program.in_comment(92));
     }
 
     #[tokio::test(flavor = "multi_thread")]

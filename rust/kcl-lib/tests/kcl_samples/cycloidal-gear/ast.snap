@@ -1,0 +1,1538 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing cycloidal-gear.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 1721,
+          "id": {
+            "end": 222,
+            "name": "cycloidalGear",
+            "start": 209,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "declaration": {
+                    "end": 1512,
+                    "id": {
+                      "end": 448,
+                      "name": "gearSketch",
+                      "start": 438,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": {
+                        "body": [
+                          {
+                            "declaration": {
+                              "end": 511,
+                              "id": {
+                                "end": 475,
+                                "name": "helixAngleP",
+                                "start": 464,
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "end": 511,
+                                "left": {
+                                  "end": 498,
+                                  "left": {
+                                    "end": 488,
+                                    "name": "helixAngle",
+                                    "start": 478,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "*",
+                                  "right": {
+                                    "end": 498,
+                                    "name": "gHeight",
+                                    "start": 491,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "start": 478,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "end": 511,
+                                  "name": "gearHeight",
+                                  "start": 501,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 478,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 464,
+                              "type": "VariableDeclarator"
+                            },
+                            "end": 511,
+                            "kind": "const",
+                            "start": 464,
+                            "type": "VariableDeclaration",
+                            "type": "VariableDeclaration"
+                          },
+                          {
+                            "declaration": {
+                              "end": 1485,
+                              "id": {
+                                "end": 527,
+                                "name": "gearProfile",
+                                "start": 516,
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "body": [
+                                  {
+                                    "arguments": [
+                                      {
+                                        "arguments": [
+                                          {
+                                            "type": "LabeledArg",
+                                            "label": {
+                                              "end": 568,
+                                              "name": "offset",
+                                              "start": 562,
+                                              "type": "Identifier"
+                                            },
+                                            "arg": {
+                                              "end": 578,
+                                              "name": "gHeight",
+                                              "start": 571,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            }
+                                          }
+                                        ],
+                                        "callee": {
+                                          "end": 555,
+                                          "name": "offsetPlane",
+                                          "start": 544,
+                                          "type": "Identifier"
+                                        },
+                                        "end": 579,
+                                        "start": 544,
+                                        "type": "CallExpressionKw",
+                                        "type": "CallExpressionKw",
+                                        "unlabeled": {
+                                          "end": 560,
+                                          "raw": "\"XY\"",
+                                          "start": 556,
+                                          "type": "Literal",
+                                          "type": "Literal",
+                                          "value": "XY"
+                                        }
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 543,
+                                      "name": "startSketchOn",
+                                      "start": 530,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 580,
+                                    "start": 530,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "elements": [
+                                          {
+                                            "end": 707,
+                                            "left": {
+                                              "end": 664,
+                                              "left": {
+                                                "end": 634,
+                                                "left": {
+                                                  "end": 627,
+                                                  "name": "gearPitch",
+                                                  "start": 618,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                },
+                                                "operator": "*",
+                                                "right": {
+                                                  "end": 634,
+                                                  "raw": "1.55",
+                                                  "start": 630,
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 1.55,
+                                                    "suffix": "None"
+                                                  }
+                                                },
+                                                "start": 618,
+                                                "type": "BinaryExpression",
+                                                "type": "BinaryExpression"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "arguments": [
+                                                  {
+                                                    "arguments": [
+                                                      {
+                                                        "end": 662,
+                                                        "name": "helixAngleP",
+                                                        "start": 651,
+                                                        "type": "Identifier",
+                                                        "type": "Identifier"
+                                                      }
+                                                    ],
+                                                    "callee": {
+                                                      "end": 650,
+                                                      "name": "toRadians",
+                                                      "start": 641,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "end": 663,
+                                                    "start": 641,
+                                                    "type": "CallExpression",
+                                                    "type": "CallExpression"
+                                                  }
+                                                ],
+                                                "callee": {
+                                                  "end": 640,
+                                                  "name": "cos",
+                                                  "start": 637,
+                                                  "type": "Identifier"
+                                                },
+                                                "end": 664,
+                                                "start": 637,
+                                                "type": "CallExpression",
+                                                "type": "CallExpression"
+                                              },
+                                              "start": 618,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            "operator": "+",
+                                            "right": {
+                                              "end": 707,
+                                              "left": {
+                                                "end": 676,
+                                                "name": "gearPitch",
+                                                "start": 667,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "arguments": [
+                                                  {
+                                                    "arguments": [
+                                                      {
+                                                        "argument": {
+                                                          "end": 705,
+                                                          "name": "helixAngleP",
+                                                          "start": 694,
+                                                          "type": "Identifier",
+                                                          "type": "Identifier"
+                                                        },
+                                                        "end": 705,
+                                                        "operator": "-",
+                                                        "start": 693,
+                                                        "type": "UnaryExpression",
+                                                        "type": "UnaryExpression"
+                                                      }
+                                                    ],
+                                                    "callee": {
+                                                      "end": 692,
+                                                      "name": "toRadians",
+                                                      "start": 683,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "end": 706,
+                                                    "start": 683,
+                                                    "type": "CallExpression",
+                                                    "type": "CallExpression"
+                                                  }
+                                                ],
+                                                "callee": {
+                                                  "end": 682,
+                                                  "name": "sin",
+                                                  "start": 679,
+                                                  "type": "Identifier"
+                                                },
+                                                "end": 707,
+                                                "start": 679,
+                                                "type": "CallExpression",
+                                                "type": "CallExpression"
+                                              },
+                                              "start": 667,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            "start": 618,
+                                            "type": "BinaryExpression",
+                                            "type": "BinaryExpression"
+                                          },
+                                          {
+                                            "end": 809,
+                                            "left": {
+                                              "end": 766,
+                                              "left": {
+                                                "end": 736,
+                                                "left": {
+                                                  "end": 729,
+                                                  "name": "gearPitch",
+                                                  "start": 720,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                },
+                                                "operator": "*",
+                                                "right": {
+                                                  "end": 736,
+                                                  "raw": "1.55",
+                                                  "start": 732,
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 1.55,
+                                                    "suffix": "None"
+                                                  }
+                                                },
+                                                "start": 720,
+                                                "type": "BinaryExpression",
+                                                "type": "BinaryExpression"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "arguments": [
+                                                  {
+                                                    "arguments": [
+                                                      {
+                                                        "end": 764,
+                                                        "name": "helixAngleP",
+                                                        "start": 753,
+                                                        "type": "Identifier",
+                                                        "type": "Identifier"
+                                                      }
+                                                    ],
+                                                    "callee": {
+                                                      "end": 752,
+                                                      "name": "toRadians",
+                                                      "start": 743,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "end": 765,
+                                                    "start": 743,
+                                                    "type": "CallExpression",
+                                                    "type": "CallExpression"
+                                                  }
+                                                ],
+                                                "callee": {
+                                                  "end": 742,
+                                                  "name": "sin",
+                                                  "start": 739,
+                                                  "type": "Identifier"
+                                                },
+                                                "end": 766,
+                                                "start": 739,
+                                                "type": "CallExpression",
+                                                "type": "CallExpression"
+                                              },
+                                              "start": 720,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            "operator": "+",
+                                            "right": {
+                                              "end": 809,
+                                              "left": {
+                                                "end": 778,
+                                                "name": "gearPitch",
+                                                "start": 769,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "arguments": [
+                                                  {
+                                                    "arguments": [
+                                                      {
+                                                        "argument": {
+                                                          "end": 807,
+                                                          "name": "helixAngleP",
+                                                          "start": 796,
+                                                          "type": "Identifier",
+                                                          "type": "Identifier"
+                                                        },
+                                                        "end": 807,
+                                                        "operator": "-",
+                                                        "start": 795,
+                                                        "type": "UnaryExpression",
+                                                        "type": "UnaryExpression"
+                                                      }
+                                                    ],
+                                                    "callee": {
+                                                      "end": 794,
+                                                      "name": "toRadians",
+                                                      "start": 785,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "end": 808,
+                                                    "start": 785,
+                                                    "type": "CallExpression",
+                                                    "type": "CallExpression"
+                                                  }
+                                                ],
+                                                "callee": {
+                                                  "end": 784,
+                                                  "name": "cos",
+                                                  "start": 781,
+                                                  "type": "Identifier"
+                                                },
+                                                "end": 809,
+                                                "start": 781,
+                                                "type": "CallExpression",
+                                                "type": "CallExpression"
+                                              },
+                                              "start": 769,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            "start": 720,
+                                            "type": "BinaryExpression",
+                                            "type": "BinaryExpression"
+                                          }
+                                        ],
+                                        "end": 820,
+                                        "start": 605,
+                                        "type": "ArrayExpression",
+                                        "type": "ArrayExpression"
+                                      },
+                                      {
+                                        "end": 823,
+                                        "start": 822,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 604,
+                                      "name": "startProfileAt",
+                                      "start": 590,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 824,
+                                    "start": 590,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "end": 963,
+                                        "properties": [
+                                          {
+                                            "end": 880,
+                                            "key": {
+                                              "end": 861,
+                                              "name": "angleStart",
+                                              "start": 851,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 851,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "end": 880,
+                                              "left": {
+                                                "end": 866,
+                                                "raw": "90",
+                                                "start": 864,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 90.0,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "end": 880,
+                                                "name": "helixAngleP",
+                                                "start": 869,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 864,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          },
+                                          {
+                                            "end": 921,
+                                            "key": {
+                                              "end": 901,
+                                              "name": "angleEnd",
+                                              "start": 893,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 893,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "end": 921,
+                                              "left": {
+                                                "argument": {
+                                                  "end": 907,
+                                                  "raw": "90",
+                                                  "start": 905,
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 90.0,
+                                                    "suffix": "None"
+                                                  }
+                                                },
+                                                "end": 907,
+                                                "operator": "-",
+                                                "start": 904,
+                                                "type": "UnaryExpression",
+                                                "type": "UnaryExpression"
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "end": 921,
+                                                "name": "helixAngleP",
+                                                "start": 910,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 904,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          },
+                                          {
+                                            "end": 952,
+                                            "key": {
+                                              "end": 940,
+                                              "name": "radius",
+                                              "start": 934,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 934,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "end": 952,
+                                              "name": "gearPitch",
+                                              "start": 943,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            }
+                                          }
+                                        ],
+                                        "start": 838,
+                                        "type": "ObjectExpression",
+                                        "type": "ObjectExpression"
+                                      },
+                                      {
+                                        "end": 966,
+                                        "start": 965,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 837,
+                                      "name": "arc",
+                                      "start": 834,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 967,
+                                    "start": 834,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "end": 1064,
+                                        "properties": [
+                                          {
+                                            "end": 1029,
+                                            "key": {
+                                              "end": 1010,
+                                              "name": "radius",
+                                              "start": 1004,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 1004,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "end": 1029,
+                                              "left": {
+                                                "end": 1022,
+                                                "name": "gearPitch",
+                                                "start": 1013,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "end": 1029,
+                                                "raw": "1.67",
+                                                "start": 1025,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 1.67,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "start": 1013,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          },
+                                          {
+                                            "end": 1053,
+                                            "key": {
+                                              "end": 1048,
+                                              "name": "offset",
+                                              "start": 1042,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 1042,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "end": 1053,
+                                              "raw": "60",
+                                              "start": 1051,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 60.0,
+                                                "suffix": "None"
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "start": 991,
+                                        "type": "ObjectExpression",
+                                        "type": "ObjectExpression"
+                                      },
+                                      {
+                                        "end": 1067,
+                                        "start": 1066,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 990,
+                                      "name": "tangentialArc",
+                                      "start": 977,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 1068,
+                                    "start": 977,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "end": 1129,
+                                        "properties": [
+                                          {
+                                            "end": 1112,
+                                            "key": {
+                                              "end": 1100,
+                                              "name": "radius",
+                                              "start": 1094,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 1094,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "end": 1112,
+                                              "name": "gearPitch",
+                                              "start": 1103,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            }
+                                          },
+                                          {
+                                            "end": 1127,
+                                            "key": {
+                                              "end": 1120,
+                                              "name": "offset",
+                                              "start": 1114,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 1114,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "argument": {
+                                                "end": 1127,
+                                                "raw": "180",
+                                                "start": 1124,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 180.0,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "end": 1127,
+                                              "operator": "-",
+                                              "start": 1123,
+                                              "type": "UnaryExpression",
+                                              "type": "UnaryExpression"
+                                            }
+                                          }
+                                        ],
+                                        "start": 1092,
+                                        "type": "ObjectExpression",
+                                        "type": "ObjectExpression"
+                                      },
+                                      {
+                                        "end": 1132,
+                                        "start": 1131,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 1091,
+                                      "name": "tangentialArc",
+                                      "start": 1078,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 1133,
+                                    "start": 1078,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "end": 1230,
+                                        "properties": [
+                                          {
+                                            "end": 1195,
+                                            "key": {
+                                              "end": 1176,
+                                              "name": "radius",
+                                              "start": 1170,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 1170,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "end": 1195,
+                                              "left": {
+                                                "end": 1188,
+                                                "name": "gearPitch",
+                                                "start": 1179,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "*",
+                                              "right": {
+                                                "end": 1195,
+                                                "raw": "1.67",
+                                                "start": 1191,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 1.67,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "start": 1179,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          },
+                                          {
+                                            "end": 1219,
+                                            "key": {
+                                              "end": 1214,
+                                              "name": "offset",
+                                              "start": 1208,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 1208,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "end": 1219,
+                                              "raw": "60",
+                                              "start": 1217,
+                                              "type": "Literal",
+                                              "type": "Literal",
+                                              "value": {
+                                                "value": 60.0,
+                                                "suffix": "None"
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "start": 1157,
+                                        "type": "ObjectExpression",
+                                        "type": "ObjectExpression"
+                                      },
+                                      {
+                                        "end": 1233,
+                                        "start": 1232,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 1156,
+                                      "name": "tangentialArc",
+                                      "start": 1143,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 1234,
+                                    "start": 1143,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "end": 1295,
+                                        "properties": [
+                                          {
+                                            "end": 1278,
+                                            "key": {
+                                              "end": 1266,
+                                              "name": "radius",
+                                              "start": 1260,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 1260,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "end": 1278,
+                                              "name": "gearPitch",
+                                              "start": 1269,
+                                              "type": "Identifier",
+                                              "type": "Identifier"
+                                            }
+                                          },
+                                          {
+                                            "end": 1293,
+                                            "key": {
+                                              "end": 1286,
+                                              "name": "offset",
+                                              "start": 1280,
+                                              "type": "Identifier"
+                                            },
+                                            "start": 1280,
+                                            "type": "ObjectProperty",
+                                            "value": {
+                                              "argument": {
+                                                "end": 1293,
+                                                "raw": "180",
+                                                "start": 1290,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 180.0,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "end": 1293,
+                                              "operator": "-",
+                                              "start": 1289,
+                                              "type": "UnaryExpression",
+                                              "type": "UnaryExpression"
+                                            }
+                                          }
+                                        ],
+                                        "start": 1258,
+                                        "type": "ObjectExpression",
+                                        "type": "ObjectExpression"
+                                      },
+                                      {
+                                        "end": 1298,
+                                        "start": 1297,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 1257,
+                                      "name": "tangentialArc",
+                                      "start": 1244,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 1299,
+                                    "start": 1244,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "elements": [
+                                          {
+                                            "arguments": [
+                                              {
+                                                "end": 1341,
+                                                "start": 1340,
+                                                "type": "PipeSubstitution",
+                                                "type": "PipeSubstitution"
+                                              }
+                                            ],
+                                            "callee": {
+                                              "end": 1339,
+                                              "name": "profileStartX",
+                                              "start": 1326,
+                                              "type": "Identifier"
+                                            },
+                                            "end": 1342,
+                                            "start": 1326,
+                                            "type": "CallExpression",
+                                            "type": "CallExpression"
+                                          },
+                                          {
+                                            "arguments": [
+                                              {
+                                                "end": 1359,
+                                                "start": 1358,
+                                                "type": "PipeSubstitution",
+                                                "type": "PipeSubstitution"
+                                              }
+                                            ],
+                                            "callee": {
+                                              "end": 1357,
+                                              "name": "profileStartY",
+                                              "start": 1344,
+                                              "type": "Identifier"
+                                            },
+                                            "end": 1360,
+                                            "start": 1344,
+                                            "type": "CallExpression",
+                                            "type": "CallExpression"
+                                          }
+                                        ],
+                                        "end": 1361,
+                                        "start": 1325,
+                                        "type": "ArrayExpression",
+                                        "type": "ArrayExpression"
+                                      },
+                                      {
+                                        "end": 1364,
+                                        "start": 1363,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 1324,
+                                      "name": "tangentialArcTo",
+                                      "start": 1309,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 1365,
+                                    "start": 1309,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "end": 1382,
+                                        "start": 1381,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 1380,
+                                      "name": "close",
+                                      "start": 1375,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 1383,
+                                    "start": 1375,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "arguments": [
+                                          {
+                                            "type": "LabeledArg",
+                                            "label": {
+                                              "end": 1423,
+                                              "name": "center",
+                                              "start": 1417,
+                                              "type": "Identifier"
+                                            },
+                                            "arg": {
+                                              "elements": [
+                                                {
+                                                  "end": 1428,
+                                                  "raw": "0",
+                                                  "start": 1427,
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 0.0,
+                                                    "suffix": "None"
+                                                  }
+                                                },
+                                                {
+                                                  "end": 1431,
+                                                  "raw": "0",
+                                                  "start": 1430,
+                                                  "type": "Literal",
+                                                  "type": "Literal",
+                                                  "value": {
+                                                    "value": 0.0,
+                                                    "suffix": "None"
+                                                  }
+                                                }
+                                              ],
+                                              "end": 1432,
+                                              "start": 1426,
+                                              "type": "ArrayExpression",
+                                              "type": "ArrayExpression"
+                                            }
+                                          },
+                                          {
+                                            "type": "LabeledArg",
+                                            "label": {
+                                              "end": 1451,
+                                              "name": "radius",
+                                              "start": 1445,
+                                              "type": "Identifier"
+                                            },
+                                            "arg": {
+                                              "end": 1470,
+                                              "left": {
+                                                "end": 1466,
+                                                "name": "holeDiameter",
+                                                "start": 1454,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "/",
+                                              "right": {
+                                                "end": 1470,
+                                                "raw": "2",
+                                                "start": 1469,
+                                                "type": "Literal",
+                                                "type": "Literal",
+                                                "value": {
+                                                  "value": 2.0,
+                                                  "suffix": "None"
+                                                }
+                                              },
+                                              "start": 1454,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          }
+                                        ],
+                                        "callee": {
+                                          "end": 1404,
+                                          "name": "circle",
+                                          "start": 1398,
+                                          "type": "Identifier"
+                                        },
+                                        "end": 1481,
+                                        "start": 1398,
+                                        "type": "CallExpressionKw",
+                                        "type": "CallExpressionKw",
+                                        "unlabeled": null
+                                      },
+                                      {
+                                        "end": 1484,
+                                        "start": 1483,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 1397,
+                                      "name": "hole",
+                                      "start": 1393,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 1485,
+                                    "start": 1393,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  }
+                                ],
+                                "end": 1485,
+                                "start": 530,
+                                "type": "PipeExpression",
+                                "type": "PipeExpression"
+                              },
+                              "start": 516,
+                              "type": "VariableDeclarator"
+                            },
+                            "end": 1485,
+                            "kind": "const",
+                            "start": 516,
+                            "type": "VariableDeclaration",
+                            "type": "VariableDeclaration"
+                          },
+                          {
+                            "argument": {
+                              "end": 1508,
+                              "name": "gearProfile",
+                              "start": 1497,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 1508,
+                            "start": 1490,
+                            "type": "ReturnStatement",
+                            "type": "ReturnStatement"
+                          }
+                        ],
+                        "end": 1512,
+                        "start": 458
+                      },
+                      "end": 1512,
+                      "params": [
+                        {
+                          "type": "Parameter",
+                          "identifier": {
+                            "end": 456,
+                            "name": "gHeight",
+                            "start": 449,
+                            "type": "Identifier"
+                          }
+                        }
+                      ],
+                      "start": 448,
+                      "type": "FunctionExpression",
+                      "type": "FunctionExpression"
+                    },
+                    "start": 438,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1512,
+                  "kind": "fn",
+                  "start": 435,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "declaration": {
+                    "end": 1700,
+                    "id": {
+                      "end": 1608,
+                      "name": "gearLoft",
+                      "start": 1600,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "arguments": [
+                        {
+                          "elements": [
+                            {
+                              "arguments": [
+                                {
+                                  "end": 1634,
+                                  "raw": "0",
+                                  "start": 1633,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                }
+                              ],
+                              "callee": {
+                                "end": 1632,
+                                "name": "gearSketch",
+                                "start": 1622,
+                                "type": "Identifier"
+                              },
+                              "end": 1635,
+                              "start": 1622,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            {
+                              "arguments": [
+                                {
+                                  "end": 1666,
+                                  "left": {
+                                    "end": 1662,
+                                    "name": "gearHeight",
+                                    "start": 1652,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "end": 1666,
+                                    "raw": "2",
+                                    "start": 1665,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 1652,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "callee": {
+                                "end": 1651,
+                                "name": "gearSketch",
+                                "start": 1641,
+                                "type": "Identifier"
+                              },
+                              "end": 1667,
+                              "start": 1641,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            {
+                              "arguments": [
+                                {
+                                  "end": 1694,
+                                  "name": "gearHeight",
+                                  "start": 1684,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                }
+                              ],
+                              "callee": {
+                                "end": 1683,
+                                "name": "gearSketch",
+                                "start": 1673,
+                                "type": "Identifier"
+                              },
+                              "end": 1695,
+                              "start": 1673,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            }
+                          ],
+                          "end": 1699,
+                          "start": 1616,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        }
+                      ],
+                      "callee": {
+                        "end": 1615,
+                        "name": "loft",
+                        "start": 1611,
+                        "type": "Identifier"
+                      },
+                      "end": 1700,
+                      "start": 1611,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    },
+                    "start": 1600,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1700,
+                  "kind": "const",
+                  "start": 1600,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "argument": {
+                    "end": 1719,
+                    "name": "gearLoft",
+                    "start": 1711,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "end": 1719,
+                  "start": 1704,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 1721,
+              "nonCodeMeta": {
+                "nonCodeNodes": {
+                  "0": [
+                    {
+                      "end": 1597,
+                      "start": 1514,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLineBlockComment",
+                        "value": "Draw sketches of the gear profile along the gear height and loft them together",
+                        "style": "line"
+                      }
+                    }
+                  ],
+                  "1": [
+                    {
+                      "end": 1704,
+                      "start": 1700,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ]
+                },
+                "startNodes": [
+                  {
+                    "end": 433,
+                    "start": 273,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "Create a function to draw the gear profile as a sketch. Rotate each profile about the gear's axis by an helix angle proportional to the total gear height",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "start": 273
+            },
+            "end": 1721,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 232,
+                  "name": "gearPitch",
+                  "start": 223,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 244,
+                  "name": "gearHeight",
+                  "start": 234,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 258,
+                  "name": "holeDiameter",
+                  "start": 246,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 270,
+                  "name": "helixAngle",
+                  "start": 260,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 222,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 209,
+          "type": "VariableDeclarator"
+        },
+        "end": 1721,
+        "kind": "fn",
+        "start": 206,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 1757,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1739,
+              "raw": ".3",
+              "start": 1737,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.3,
+                "suffix": "None"
+              }
+            },
+            {
+              "end": 1744,
+              "raw": "1.5",
+              "start": 1741,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.5,
+                "suffix": "None"
+              }
+            },
+            {
+              "end": 1751,
+              "raw": "0.297",
+              "start": 1746,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.297,
+                "suffix": "None"
+              }
+            },
+            {
+              "argument": {
+                "end": 1756,
+                "raw": "80",
+                "start": 1754,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 80.0,
+                  "suffix": "None"
+                }
+              },
+              "end": 1756,
+              "operator": "-",
+              "start": 1753,
+              "type": "UnaryExpression",
+              "type": "UnaryExpression"
+            }
+          ],
+          "callee": {
+            "end": 1736,
+            "name": "cycloidalGear",
+            "start": 1723,
+            "type": "Identifier"
+          },
+          "end": 1757,
+          "start": 1723,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1723,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 1758,
+    "innerAttrs": [
+      {
+        "end": 203,
+        "name": {
+          "end": 179,
+          "name": "settings",
+          "start": 171,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 202,
+            "key": {
+              "end": 197,
+              "name": "defaultLengthUnit",
+              "start": 180,
+              "type": "Identifier"
+            },
+            "start": 180,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 202,
+              "name": "in",
+              "start": 200,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 170,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 1723,
+            "start": 1721,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 17,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Cycloidal Gear",
+            "style": "line"
+          }
+        },
+        {
+          "end": 155,
+          "start": 18,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation",
+            "style": "line"
+          }
+        },
+        {
+          "end": 157,
+          "start": 155,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 169,
+          "start": 157,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Set Units",
+            "style": "line"
+          }
+        },
+        {
+          "end": 206,
+          "start": 203,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

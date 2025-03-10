@@ -55,6 +55,7 @@ assertions_on_result_states = "warn"
 dbg_macro = "warn"
 iter_over_hash_type = "warn"
 lossy_float_literal = "warn"
+result_large_err = "allow"
 
 # Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
 #[patch.crates-io]

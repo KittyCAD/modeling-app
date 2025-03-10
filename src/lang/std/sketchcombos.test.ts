@@ -21,7 +21,12 @@ import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { codeRefFromRange } from './artifactGraph'
 import { findKwArg } from 'lang/util'
-import { ARG_END, ARG_END_ABSOLUTE } from './sketch'
+import {
+  ARG_END,
+  ARG_END_ABSOLUTE,
+  getArgForEnd,
+  isAbsoluteLine,
+} from './sketch'
 
 beforeAll(async () => {
   await initPromise
@@ -59,16 +64,16 @@ describe('testing getConstraintType', () => {
   })
   const helper2 = getConstraintTypeFromSourceHelper2
   it('testing xLine', () => {
-    expect(helper2(`xLine(5, %)`)).toBe('yRelative')
+    expect(helper2(`xLine(length = 5)`)).toBe('yRelative')
   })
   it('testing yLine', () => {
-    expect(helper2(`yLine(5, %)`)).toBe('xRelative')
+    expect(helper2(`yLine(length = 5)`)).toBe('xRelative')
   })
   it('testing xLineTo', () => {
-    expect(helper2(`xLineTo(5, %)`)).toBe('yAbsolute')
+    expect(helper2(`xLine(endAbsolute = 5)`)).toBe('yAbsolute')
   })
   it('testing yLineTo', () => {
-    expect(helper2(`yLineTo(5, %)`)).toBe('xAbsolute')
+    expect(helper2(`yLine(endAbsolute = 5)`)).toBe('xAbsolute')
   })
 })
 
@@ -124,9 +129,36 @@ function getConstraintTypeFromSourceHelper2(
 ): ReturnType<typeof getConstraintType> | Error {
   const ast = assertParse(code)
 
-  const arg = (ast.body[0] as any).expression.arguments[0] as Expr
-  const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
-  return getConstraintType(arg, fnName, false)
+  const bodyItem = ast.body[0]
+  if (bodyItem.type !== 'ExpressionStatement') {
+    return new Error('was not a call expression')
+  }
+  const callExpr = bodyItem.expression
+  let arg
+  let isAbsolute = false
+  switch (callExpr.type) {
+    case 'CallExpression':
+      arg = callExpr.arguments[0]
+      break
+    case 'CallExpressionKw':
+      const argEnd = getArgForEnd(callExpr)
+      if (err(argEnd)) {
+        return argEnd
+      }
+      const maybeAbsolute = isAbsoluteLine(callExpr)
+      if (err(maybeAbsolute)) {
+        return maybeAbsolute
+      } else {
+        isAbsolute = maybeAbsolute
+      }
+      arg = argEnd.val
+      break
+    default:
+      return new Error('was not a call expression')
+  }
+  const fnName = callExpr.callee.name as ToolTip
+  const constraintType = getConstraintType(arg, fnName, isAbsolute)
+  return constraintType
 }
 
 function makeSelections(
@@ -254,10 +286,10 @@ part001 = startSketchOn('XY')
   |> angledLineOfYLength([myAng, 0.7], %) // ln-angledLineOfYLength-angle should become angledLine
   |> angledLineOfYLength([35, myVar], %) // ln-angledLineOfYLength-yRelative use legAngY
   |> angledLineOfYLength([305, myVar], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
-  |> xLine(1.03, %) // ln-xLine-free should sub in segLen
-  |> yLine(1.04, %) // ln-yLine-free should sub in segLen
-  |> xLineTo(30, %) // ln-xLineTo-free should convert to xLine
-  |> yLineTo(20, %) // ln-yLineTo-free should convert to yLine
+  |> xLine(length = 1.03) // ln-xLine-free should sub in segLen
+  |> yLine(length = 1.04) // ln-yLine-free should sub in segLen
+  |> xLine(endAbsolute = 30) // ln-xLineTo-free should convert to xLine
+  |> yLine(endAbsolute = 20) // ln-yLineTo-free should convert to yLine
 `
   const expectModifiedScript = `myVar = 3
 myVar2 = 5
@@ -326,10 +358,10 @@ part001 = startSketchOn('XY')
        270 + legAngY(segLen(seg01), myVar),
        min(segLen(seg01), myVar)
      ], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
-  |> xLine(segLen(seg01), %) // ln-xLine-free should sub in segLen
-  |> yLine(segLen(seg01), %) // ln-yLine-free should sub in segLen
-  |> xLine(segLen(seg01), %) // ln-xLineTo-free should convert to xLine
-  |> yLine(segLen(seg01), %) // ln-yLineTo-free should convert to yLine
+  |> xLine(length = segLen(seg01)) // ln-xLine-free should sub in segLen
+  |> yLine(length = segLen(seg01)) // ln-yLine-free should sub in segLen
+  |> xLine(length = segLen(seg01)) // ln-xLineTo-free should convert to xLine
+  |> yLine(length = segLen(seg01)) // ln-yLineTo-free should convert to yLine
 `
   it('should transform the ast', async () => {
     const ast = assertParse(inputScript)
@@ -400,25 +432,25 @@ myVar3 = -10
 part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 1])
-  |> xLine(-6.28, %) // select for horizontal constraint 1
+  |> xLine(length = -6.28) // select for horizontal constraint 1
   |> line(end = [-1.07, myVar]) // select for vertical constraint 1
-  |> xLine(myVar, %) // select for horizontal constraint 2
+  |> xLine(length = myVar) // select for horizontal constraint 2
   |> line(end = [6.35, -1.12]) // select for vertical constraint 2
-  |> xLineTo(5, %) // select for horizontal constraint 3
+  |> xLine(endAbsolute = 5) // select for horizontal constraint 3
   |> line(endAbsolute = [3, 11]) // select for vertical constraint 3
-  |> xLineTo(myVar2, %) // select for horizontal constraint 4
+  |> xLine(endAbsolute = myVar2) // select for horizontal constraint 4
   |> line(endAbsolute = [4.08, myVar2]) // select for vertical constraint 4
-  |> xLine(-1.22, %) // select for horizontal constraint 5
+  |> xLine(length = -1.22) // select for horizontal constraint 5
   |> angledLine([103, 1.44], %) // select for vertical constraint 5
-  |> xLine(-myVar, %) // select for horizontal constraint 6
+  |> xLine(length = -myVar) // select for horizontal constraint 6
   |> angledLine([129, myVar], %) // select for vertical constraint 6
-  |> xLine(-1.05, %) // select for horizontal constraint 7
+  |> xLine(length = -1.05) // select for horizontal constraint 7
   |> angledLineOfYLength([196, 1.11], %) // select for vertical constraint 7
-  |> xLine(-myVar, %) // select for horizontal constraint 8
+  |> xLine(length = -myVar) // select for horizontal constraint 8
   |> angledLineOfYLength([248, myVar], %) // select for vertical constraint 8
-  |> xLineTo(-10.92, %) // select for horizontal constraint 9
+  |> xLine(endAbsolute = -10.92) // select for horizontal constraint 9
   |> angledLineToY([223, 7.68], %) // select for vertical constraint 9
-  |> xLineTo(myVar3, %) // select for horizontal constraint 10
+  |> xLine(endAbsolute = myVar3) // select for horizontal constraint 10
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 `
     const ast = assertParse(inputScript)
@@ -461,25 +493,25 @@ part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line(endAbsolute = [1, 1])
   |> line(end = [-6.28, 1.4]) // select for horizontal constraint 1
-  |> yLine(myVar, %) // select for vertical constraint 1
+  |> yLine(length = myVar) // select for vertical constraint 1
   |> line(end = [myVar, 4.32]) // select for horizontal constraint 2
-  |> yLine(-1.12, %) // select for vertical constraint 2
+  |> yLine(length = -1.12) // select for vertical constraint 2
   |> line(endAbsolute = [5, 8]) // select for horizontal constraint 3
-  |> yLineTo(11, %) // select for vertical constraint 3
+  |> yLine(endAbsolute = 11) // select for vertical constraint 3
   |> line(endAbsolute = [myVar2, 12.63]) // select for horizontal constraint 4
-  |> yLineTo(myVar2, %) // select for vertical constraint 4
+  |> yLine(endAbsolute = myVar2) // select for vertical constraint 4
   |> angledLine([156, 1.34], %) // select for horizontal constraint 5
-  |> yLine(1.4, %) // select for vertical constraint 5
+  |> yLine(length = 1.4) // select for vertical constraint 5
   |> angledLine([-178, myVar], %) // select for horizontal constraint 6
-  |> yLine(myVar, %) // select for vertical constraint 6
+  |> yLine(length = myVar) // select for vertical constraint 6
   |> angledLineOfXLength([237, 1.05], %) // select for horizontal constraint 7
-  |> yLine(-1.11, %) // select for vertical constraint 7
+  |> yLine(length = -1.11) // select for vertical constraint 7
   |> angledLineOfXLength([194, myVar], %) // select for horizontal constraint 8
-  |> yLine(-myVar, %) // select for vertical constraint 8
+  |> yLine(length = -myVar) // select for vertical constraint 8
   |> angledLineToX([202, -10.92], %) // select for horizontal constraint 9
-  |> yLineTo(7.68, %) // select for vertical constraint 9
+  |> yLine(endAbsolute = 7.68) // select for vertical constraint 9
   |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
-  |> yLineTo(myVar, %) // select for vertical constraint 10
+  |> yLine(endAbsolute = myVar) // select for vertical constraint 10
 `
     const ast = assertParse(inputScript)
 
@@ -627,19 +659,19 @@ halfArmAngle = armAngle / 2
 part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.05], %)
   |> line(end = [0.01, 0.94 + 0]) // partial
-  |> xLine(3.03, %) // partial
+  |> xLine(length = 3.03) // partial
   |> angledLine({
   angle: halfArmAngle,
   length: 2.45,
 }, %, $seg01bing) // partial
-  |> xLine(4.4, %) // partial
-  |> yLine(-1, %) // partial
-  |> xLine(-4.2 + 0, %) // full
+  |> xLine(length = 4.4) // partial
+  |> yLine(length = -1) // partial
+  |> xLine(length = -4.2 + 0) // full
   |> angledLine([segAng(seg01bing) + 180, 1.79], %) // partial
   |> line(end = [1.44, -0.74]) // free
-  |> xLine(3.36, %) // partial
+  |> xLine(length = 3.36) // partial
   |> line(end = [1.49, 1.06]) // free
-  |> xLine(-3.43 + 0, %) // full
+  |> xLine(length = -3.43 + 0) // full
   |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full`
     const ast = assertParse(code)
     const constraintLevels: ConstraintLevel[] = ['full', 'partial', 'free']
