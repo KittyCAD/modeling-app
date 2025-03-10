@@ -1,19 +1,20 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.46"
+version = "0.2.47"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.83"
 authors = ["Jess Frazelle", "Adam Chalmers", "KittyCAD, Inc"]
 keywords = ["kcl", "KittyCAD", "CAD"]
+exclude = ["tests/*", "benches/*", "examples/*", "e2e/*", "bindings/*", "fuzz/*"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
-async-trait = {workspace = true}
+async-trait = { workspace = true }
 base64 = "0.22.1"
 chrono = "0.4.38"
 clap = { version = "4.5.27", default-features = false, optional = true, features = [
@@ -21,7 +22,7 @@ clap = { version = "4.5.27", default-features = false, optional = true, features
     "derive",
 ] }
 convert_case = "0.8.0"
-dashmap = {workspace = true}
+dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
 form_urlencoded = "1.2.1"
