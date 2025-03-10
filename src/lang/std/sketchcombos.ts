@@ -1616,7 +1616,7 @@ function getTransformMapPath(
   if (!toolTips.includes(name)) {
     return false
   }
-  if( name === 'arcTo') {
+  if (name === 'arcTo') {
     return false
   }
 

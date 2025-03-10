@@ -65,15 +65,6 @@ export type SegmentInputs =
   | StraightSegmentInput
   | ArcSegmentInput
   | CircleThreePointSegmentInput
-  // TODO remove, we should be able to use threePointSegmentInput
-  | {
-      type: 'three-point-arc-segment'
-      from: [number, number]
-      to: [number, number]
-      center: [number, number]
-      radius: number
-      ccw: boolean
-    }
 
 /**
  * Interface for adding or replacing a sketch stblib call expression to a sketch.
