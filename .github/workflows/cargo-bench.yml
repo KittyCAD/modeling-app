@@ -25,7 +25,7 @@ concurrency:
 name: cargo bench
 jobs:
   cargo-bench:
-    name: Benchmark rust
+    name: cargo bench
     runs-on: ubuntu-latest-8-cores
     steps:
       - uses: actions/checkout@v4
