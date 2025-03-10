@@ -1813,7 +1813,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.46"
+version = "0.1.47"
 dependencies = [
  "proc-macro2",
  "quote",
