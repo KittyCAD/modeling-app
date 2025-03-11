@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
 import { Annotation, Transaction } from '@codemirror/state'
 import { EditorView, KeyBinding } from '@codemirror/view'
-import { recast, Program, parse } from 'lang/wasm'
+import { recast, Program, parse, SourceRange } from 'lang/wasm'
 import { err, reportRejection } from 'lib/trap'
 import { Compartment } from '@codemirror/state'
 import { history } from '@codemirror/commands'
@@ -55,6 +55,10 @@ export default class CodeManager {
 
   get code(): string {
     return this._code
+  }
+
+  getCodeAtRange(range: SourceRange) {
+    return this._code.slice(range[0], range[1])
   }
 
   localStoragePersistCode(): string {
