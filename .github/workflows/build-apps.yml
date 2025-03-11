@@ -88,7 +88,8 @@ jobs:
         with:
           workspaces: rust
 
-      - if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
+      - name: Run build:wasm
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         run: "yarn build:wasm"
 
       - name: Set nightly version, product name, release notes, and icons
