@@ -884,13 +884,13 @@ pub enum Path {
     ArcThreePoint {
         #[serde(flatten)]
         base: BasePath,
-        /// Point 1 of the circle
+        /// Point 1 of the arc (base on the end of previous segment)
         #[ts(type = "[number, number]")]
         p1: [f64; 2],
-        /// Point 2 of the circle
+        /// Point 2 of the arc (interior kwarg)
         #[ts(type = "[number, number]")]
         p2: [f64; 2],
-        /// Point 3 of the circle
+        /// Point 3 of the arc (end kwarg)
         #[ts(type = "[number, number]")]
         p3: [f64; 2],
     },
