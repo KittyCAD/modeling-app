@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main, pierremtb/adhoc/break-out-snapshots ]
+    branches: [ main ]
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
@@ -337,7 +337,6 @@ jobs:
 
       - name: Run playwright/electron flow (with retries)
         id: retry
-        continue-on-error: true
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
@@ -353,6 +352,7 @@ jobs:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
@@ -361,6 +361,7 @@ jobs:
           overwrite: true
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: playwright-report/
