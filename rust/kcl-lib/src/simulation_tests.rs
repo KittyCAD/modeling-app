@@ -27,7 +27,7 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
-pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.linux.step";
+pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.step";
 
 impl Test {
     fn new(name: &str) -> Self {
@@ -145,13 +145,9 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             }
             if export_step {
                 let step = step.unwrap();
-                let step_str = std::str::from_utf8(&step).unwrap();
-                // We use expectorate here so we can see the diff in ci.
-                expectorate::assert_contents(
-                    test.output_dir
-                        .join(format!("exported_step.{}.step", std::env::consts::OS)),
-                    step_str,
-                );
+                // We do not use expectorate here becasue the output is non-deterministic
+                // due to SSI and GPU.
+                std::fs::write(test.output_dir.join(EXPORTED_STEP_NAME), step).unwrap();
             }
             let outcome = exec_state.to_wasm_outcome(env_ref);
             assert_common_snapshots(
