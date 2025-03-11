@@ -22,7 +22,7 @@ jobs:
       - name: Use correct Rust toolchain
         shell: bash
         run: |
-          cp --update=none rust/rust-toolchain.toml ./ || true
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:

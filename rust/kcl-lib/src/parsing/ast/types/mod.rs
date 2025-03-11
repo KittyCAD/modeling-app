@@ -3469,11 +3469,11 @@ const cylinder = startSketchOn('-XZ')
     fn test_ast_in_comment_inline() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> xLine(5, %) // lin
+  |> xLine(length = 5) // lin
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        assert!(program.in_comment(86));
+        assert!(program.in_comment(92));
     }
 
     #[tokio::test(flavor = "multi_thread")]

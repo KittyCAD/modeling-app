@@ -40,7 +40,7 @@ sketch001 = startSketchOn('XZ')
        angle = angleToMatchLengthY(seg01, 15, %),
        length = 5
      }, %)
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 extrusion = extrude(sketch001, length = 5)

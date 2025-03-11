@@ -495,7 +495,7 @@ description: Artifact commands french-press.kcl
     "cmdId": "[uuid]",
     "range": [
       1043,
-      1056,
+      1062,
       0
     ],
     "command": {
@@ -515,8 +515,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1062,
-      1084,
+      1068,
+      1102,
       0
     ],
     "command": {
@@ -536,8 +536,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1090,
-      1174,
+      1108,
+      1192,
       0
     ],
     "command": {
@@ -565,8 +565,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1180,
-      1232,
+      1198,
+      1250,
       0
     ],
     "command": {
@@ -586,8 +586,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1238,
-      1322,
+      1256,
+      1340,
       0
     ],
     "command": {
@@ -615,8 +615,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1328,
-      1380,
+      1346,
+      1398,
       0
     ],
     "command": {
@@ -636,8 +636,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1386,
-      1468,
+      1404,
+      1486,
       0
     ],
     "command": {
@@ -665,8 +665,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1474,
-      1499,
+      1492,
+      1532,
       0
     ],
     "command": {
@@ -686,8 +686,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1505,
-      1518,
+      1538,
+      1557,
       0
     ],
     "command": {
@@ -707,8 +707,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1524,
-      1565,
+      1563,
+      1616,
       0
     ],
     "command": {
@@ -728,8 +728,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1571,
-      1653,
+      1622,
+      1704,
       0
     ],
     "command": {
@@ -757,8 +757,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1659,
-      1749,
+      1710,
+      1800,
       0
     ],
     "command": {
@@ -778,8 +778,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1755,
-      1839,
+      1806,
+      1890,
       0
     ],
     "command": {
@@ -807,8 +807,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1845,
-      1935,
+      1896,
+      1986,
       0
     ],
     "command": {
@@ -828,8 +828,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1941,
-      2025,
+      1992,
+      2076,
       0
     ],
     "command": {
@@ -857,8 +857,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2031,
-      2087,
+      2082,
+      2138,
       0
     ],
     "command": {
@@ -878,8 +878,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2093,
-      2100,
+      2144,
+      2151,
       0
     ],
     "command": {
@@ -890,8 +890,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2093,
-      2100,
+      2144,
+      2151,
       0
     ],
     "command": {
@@ -901,8 +901,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -921,8 +921,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -935,8 +935,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -946,8 +946,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -958,8 +958,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -971,8 +971,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -985,8 +985,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -999,8 +999,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1013,8 +1013,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1027,8 +1027,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1041,8 +1041,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1055,8 +1055,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1069,8 +1069,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1083,8 +1083,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1097,8 +1097,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1111,8 +1111,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1125,8 +1125,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1139,8 +1139,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1153,8 +1153,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1167,8 +1167,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1181,8 +1181,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1195,8 +1195,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1209,8 +1209,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1223,8 +1223,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1237,8 +1237,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1251,8 +1251,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1265,8 +1265,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1279,8 +1279,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1293,8 +1293,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1307,8 +1307,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1321,8 +1321,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1335,8 +1335,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1349,8 +1349,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1363,8 +1363,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1377,8 +1377,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1391,8 +1391,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1405,8 +1405,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "command": {
@@ -1419,8 +1419,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2134,
-      2289,
+      2185,
+      2340,
       0
     ],
     "command": {
@@ -1444,8 +1444,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2332,
-      2361,
+      2383,
+      2412,
       0
     ],
     "command": {
@@ -1473,8 +1473,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2332,
-      2361,
+      2383,
+      2412,
       0
     ],
     "command": {
@@ -1491,8 +1491,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2368,
-      2448,
+      2419,
+      2499,
       0
     ],
     "command": {
@@ -1511,8 +1511,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2368,
-      2448,
+      2419,
+      2499,
       0
     ],
     "command": {
@@ -1522,8 +1522,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2368,
-      2448,
+      2419,
+      2499,
       0
     ],
     "command": {
@@ -1539,8 +1539,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2368,
-      2448,
+      2419,
+      2499,
       0
     ],
     "command": {
@@ -1568,8 +1568,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2368,
-      2448,
+      2419,
+      2499,
       0
     ],
     "command": {
@@ -1580,8 +1580,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2463,
-      2497,
+      2514,
+      2548,
       0
     ],
     "command": {
@@ -1600,8 +1600,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2463,
-      2497,
+      2514,
+      2548,
       0
     ],
     "command": {
@@ -1614,8 +1614,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2463,
-      2497,
+      2514,
+      2548,
       0
     ],
     "command": {
@@ -1625,8 +1625,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2463,
-      2497,
+      2514,
+      2548,
       0
     ],
     "command": {
@@ -1637,8 +1637,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2463,
-      2497,
+      2514,
+      2548,
       0
     ],
     "command": {
@@ -1650,8 +1650,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2463,
-      2497,
+      2514,
+      2548,
       0
     ],
     "command": {
@@ -1664,8 +1664,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2463,
-      2497,
+      2514,
+      2548,
       0
     ],
     "command": {
@@ -1678,8 +1678,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2549,
-      2579,
+      2600,
+      2630,
       0
     ],
     "command": {
@@ -1694,8 +1694,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2549,
-      2579,
+      2600,
+      2630,
       0
     ],
     "command": {
@@ -1705,8 +1705,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2549,
-      2579,
+      2600,
+      2630,
       0
     ],
     "command": {
@@ -1722,8 +1722,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2585,
-      2598,
+      2636,
+      2655,
       0
     ],
     "command": {
@@ -1743,8 +1743,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2604,
-      2687,
+      2661,
+      2744,
       0
     ],
     "command": {
@@ -1772,8 +1772,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2693,
-      2749,
+      2750,
+      2806,
       0
     ],
     "command": {
@@ -1793,8 +1793,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2755,
-      2762,
+      2812,
+      2819,
       0
     ],
     "command": {
@@ -1805,8 +1805,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2768,
-      2895,
+      2825,
+      2952,
       0
     ],
     "command": {
@@ -1830,8 +1830,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1846,8 +1846,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1860,8 +1860,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1871,8 +1871,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1883,8 +1883,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1896,8 +1896,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1910,8 +1910,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1924,8 +1924,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1938,8 +1938,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1952,8 +1952,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1966,8 +1966,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1980,8 +1980,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -1996,8 +1996,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2010,8 +2010,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2021,8 +2021,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2033,8 +2033,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2046,8 +2046,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2060,8 +2060,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2074,8 +2074,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2088,8 +2088,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2102,8 +2102,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2116,8 +2116,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2130,8 +2130,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2146,8 +2146,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2160,8 +2160,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2171,8 +2171,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2183,8 +2183,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2196,8 +2196,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2210,8 +2210,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2224,8 +2224,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2238,8 +2238,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2252,8 +2252,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2266,8 +2266,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "command": {
@@ -2280,8 +2280,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2976,
-      2995,
+      3033,
+      3052,
       0
     ],
     "command": {
@@ -2309,8 +2309,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3001,
-      3032,
+      3058,
+      3089,
       0
     ],
     "command": {
@@ -2329,8 +2329,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3001,
-      3032,
+      3058,
+      3089,
       0
     ],
     "command": {
@@ -2340,8 +2340,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3001,
-      3032,
+      3058,
+      3089,
       0
     ],
     "command": {
@@ -2357,8 +2357,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3038,
-      3074,
+      3095,
+      3140,
       0
     ],
     "command": {
@@ -2378,8 +2378,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3080,
-      3170,
+      3146,
+      3236,
       0
     ],
     "command": {
@@ -2399,8 +2399,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3176,
-      3222,
+      3242,
+      3288,
       0
     ],
     "command": {
@@ -2420,8 +2420,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3228,
-      3281,
+      3294,
+      3347,
       0
     ],
     "command": {
@@ -2441,8 +2441,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3287,
-      3303,
+      3353,
+      3378,
       0
     ],
     "command": {
@@ -2462,8 +2462,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3309,
-      3365,
+      3384,
+      3440,
       0
     ],
     "command": {
@@ -2483,8 +2483,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3371,
-      3378,
+      3446,
+      3453,
       0
     ],
     "command": {
@@ -2495,8 +2495,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3371,
-      3378,
+      3446,
+      3453,
       0
     ],
     "command": {
@@ -2506,8 +2506,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2534,8 +2534,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2546,8 +2546,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2559,8 +2559,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2573,8 +2573,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2587,8 +2587,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2601,8 +2601,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2615,8 +2615,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2629,8 +2629,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2643,8 +2643,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2657,8 +2657,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2671,8 +2671,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2685,8 +2685,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2699,8 +2699,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2713,8 +2713,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "command": {
@@ -2727,8 +2727,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3444,
-      3463,
+      3519,
+      3538,
       0
     ],
     "command": {
@@ -2756,8 +2756,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3469,
-      3496,
+      3544,
+      3571,
       0
     ],
     "command": {
@@ -2776,8 +2776,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3469,
-      3496,
+      3544,
+      3571,
       0
     ],
     "command": {
@@ -2787,8 +2787,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3469,
-      3496,
+      3544,
+      3571,
       0
     ],
     "command": {
@@ -2804,8 +2804,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3502,
-      3522,
+      3577,
+      3597,
       0
     ],
     "command": {
@@ -2825,8 +2825,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3528,
-      3571,
+      3603,
+      3646,
       0
     ],
     "command": {
@@ -2846,8 +2846,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3577,
-      3589,
+      3652,
+      3670,
       0
     ],
     "command": {
@@ -2867,8 +2867,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3595,
-      3615,
+      3676,
+      3696,
       0
     ],
     "command": {
@@ -2888,8 +2888,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3621,
-      3635,
+      3702,
+      3722,
       0
     ],
     "command": {
@@ -2909,8 +2909,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3641,
-      3689,
+      3728,
+      3776,
       0
     ],
     "command": {
@@ -2929,8 +2929,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3695,
-      3751,
+      3782,
+      3838,
       0
     ],
     "command": {
@@ -2950,8 +2950,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3757,
-      3764,
+      3844,
+      3851,
       0
     ],
     "command": {
@@ -2962,8 +2962,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3757,
-      3764,
+      3844,
+      3851,
       0
     ],
     "command": {
@@ -2973,8 +2973,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3001,8 +3001,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3013,8 +3013,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3026,8 +3026,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3040,8 +3040,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3054,8 +3054,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3068,8 +3068,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3082,8 +3082,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3096,8 +3096,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3110,8 +3110,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3124,8 +3124,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3138,8 +3138,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3152,8 +3152,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3166,8 +3166,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3180,8 +3180,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3194,8 +3194,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3208,8 +3208,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "command": {
@@ -3222,8 +3222,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3840,
-      3872,
+      3927,
+      3959,
       0
     ],
     "command": {
@@ -3251,8 +3251,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3840,
-      3872,
+      3927,
+      3959,
       0
     ],
     "command": {
@@ -3269,8 +3269,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3879,
-      3959,
+      3966,
+      4046,
       0
     ],
     "command": {
@@ -3289,8 +3289,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3879,
-      3959,
+      3966,
+      4046,
       0
     ],
     "command": {
@@ -3300,8 +3300,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3879,
-      3959,
+      3966,
+      4046,
       0
     ],
     "command": {
@@ -3317,8 +3317,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3879,
-      3959,
+      3966,
+      4046,
       0
     ],
     "command": {
@@ -3346,8 +3346,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3879,
-      3959,
+      3966,
+      4046,
       0
     ],
     "command": {
@@ -3358,8 +3358,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3970,
-      4007,
+      4057,
+      4094,
       0
     ],
     "command": {
@@ -3378,8 +3378,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3970,
-      4007,
+      4057,
+      4094,
       0
     ],
     "command": {
@@ -3389,8 +3389,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3970,
-      4007,
+      4057,
+      4094,
       0
     ],
     "command": {
@@ -3406,8 +3406,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3970,
-      4007,
+      4057,
+      4094,
       0
     ],
     "command": {
@@ -3435,8 +3435,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3970,
-      4007,
+      4057,
+      4094,
       0
     ],
     "command": {
@@ -3447,8 +3447,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3965,
-      4011,
+      4052,
+      4098,
       0
     ],
     "command": {
@@ -3460,8 +3460,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3965,
-      4011,
+      4052,
+      4098,
       0
     ],
     "command": {
@@ -3473,8 +3473,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4026,
-      4060,
+      4113,
+      4147,
       0
     ],
     "command": {
@@ -3493,8 +3493,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4026,
-      4060,
+      4113,
+      4147,
       0
     ],
     "command": {
@@ -3507,8 +3507,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4026,
-      4060,
+      4113,
+      4147,
       0
     ],
     "command": {
@@ -3518,8 +3518,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4026,
-      4060,
+      4113,
+      4147,
       0
     ],
     "command": {
@@ -3530,8 +3530,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4026,
-      4060,
+      4113,
+      4147,
       0
     ],
     "command": {
@@ -3543,8 +3543,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4026,
-      4060,
+      4113,
+      4147,
       0
     ],
     "command": {
@@ -3557,8 +3557,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4026,
-      4060,
+      4113,
+      4147,
       0
     ],
     "command": {
@@ -3571,8 +3571,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4026,
-      4060,
+      4113,
+      4147,
       0
     ],
     "command": {
@@ -3585,8 +3585,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4026,
-      4060,
+      4113,
+      4147,
       0
     ],
     "command": {
@@ -3599,8 +3599,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4149,
-      4187,
+      4236,
+      4274,
       0
     ],
     "command": {
@@ -3615,8 +3615,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4149,
-      4187,
+      4236,
+      4274,
       0
     ],
     "command": {
@@ -3626,8 +3626,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4149,
-      4187,
+      4236,
+      4274,
       0
     ],
     "command": {
@@ -3643,8 +3643,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4149,
-      4187,
+      4236,
+      4274,
       0
     ],
     "command": {
@@ -3672,8 +3672,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4149,
-      4187,
+      4236,
+      4274,
       0
     ],
     "command": {
@@ -3684,8 +3684,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4193,
-      4320,
+      4280,
+      4407,
       0
     ],
     "command": {
@@ -3709,8 +3709,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3725,8 +3725,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3739,8 +3739,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3750,8 +3750,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3762,8 +3762,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3775,8 +3775,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3789,8 +3789,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3803,8 +3803,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3819,8 +3819,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3833,8 +3833,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3844,8 +3844,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3856,8 +3856,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3869,8 +3869,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3883,8 +3883,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3897,8 +3897,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3913,8 +3913,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3927,8 +3927,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3938,8 +3938,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3950,8 +3950,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3963,8 +3963,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3977,8 +3977,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -3991,8 +3991,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4007,8 +4007,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4021,8 +4021,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4032,8 +4032,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4044,8 +4044,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4057,8 +4057,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4071,8 +4071,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4085,8 +4085,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4101,8 +4101,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4115,8 +4115,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4126,8 +4126,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4138,8 +4138,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4151,8 +4151,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4165,8 +4165,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4179,8 +4179,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4195,8 +4195,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4209,8 +4209,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4220,8 +4220,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4232,8 +4232,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4245,8 +4245,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4259,8 +4259,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4273,8 +4273,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4289,8 +4289,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4303,8 +4303,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4314,8 +4314,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4326,8 +4326,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4339,8 +4339,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4353,8 +4353,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4367,8 +4367,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4383,8 +4383,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4397,8 +4397,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4408,8 +4408,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4420,8 +4420,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4433,8 +4433,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4447,8 +4447,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "command": {
@@ -4461,8 +4461,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4459,
-      4497,
+      4546,
+      4584,
       0
     ],
     "command": {
@@ -4477,8 +4477,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4459,
-      4497,
+      4546,
+      4584,
       0
     ],
     "command": {
@@ -4488,8 +4488,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4459,
-      4497,
+      4546,
+      4584,
       0
     ],
     "command": {
@@ -4505,8 +4505,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4459,
-      4497,
+      4546,
+      4584,
       0
     ],
     "command": {
@@ -4534,8 +4534,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4459,
-      4497,
+      4546,
+      4584,
       0
     ],
     "command": {
@@ -4546,8 +4546,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4503,
-      4630,
+      4590,
+      4717,
       0
     ],
     "command": {
@@ -4571,8 +4571,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4587,8 +4587,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4601,8 +4601,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4612,8 +4612,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4624,8 +4624,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4637,8 +4637,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4651,8 +4651,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4665,8 +4665,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4681,8 +4681,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4695,8 +4695,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4706,8 +4706,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4718,8 +4718,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4731,8 +4731,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4745,8 +4745,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4759,8 +4759,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4775,8 +4775,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4789,8 +4789,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4800,8 +4800,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4812,8 +4812,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4825,8 +4825,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4839,8 +4839,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4853,8 +4853,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4869,8 +4869,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4883,8 +4883,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4894,8 +4894,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4906,8 +4906,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4919,8 +4919,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4933,8 +4933,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "command": {
@@ -4947,8 +4947,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4725,
-      4744,
+      4812,
+      4831,
       0
     ],
     "command": {
@@ -4976,8 +4976,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4750,
-      4823,
+      4837,
+      4910,
       0
     ],
     "command": {
@@ -4996,8 +4996,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4750,
-      4823,
+      4837,
+      4910,
       0
     ],
     "command": {
@@ -5007,8 +5007,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4750,
-      4823,
+      4837,
+      4910,
       0
     ],
     "command": {
@@ -5024,8 +5024,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4750,
-      4823,
+      4837,
+      4910,
       0
     ],
     "command": {
@@ -5053,8 +5053,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4750,
-      4823,
+      4837,
+      4910,
       0
     ],
     "command": {
@@ -5065,8 +5065,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4919,
-      4960,
+      5006,
+      5047,
       0
     ],
     "command": {
@@ -5085,8 +5085,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4919,
-      4960,
+      5006,
+      5047,
       0
     ],
     "command": {
@@ -5099,8 +5099,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4919,
-      4960,
+      5006,
+      5047,
       0
     ],
     "command": {
@@ -5110,8 +5110,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4919,
-      4960,
+      5006,
+      5047,
       0
     ],
     "command": {
@@ -5122,8 +5122,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4919,
-      4960,
+      5006,
+      5047,
       0
     ],
     "command": {
@@ -5135,8 +5135,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4919,
-      4960,
+      5006,
+      5047,
       0
     ],
     "command": {
@@ -5149,8 +5149,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4919,
-      4960,
+      5006,
+      5047,
       0
     ],
     "command": {
@@ -5163,8 +5163,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4966,
-      5005,
+      5053,
+      5092,
       0
     ],
     "command": {
@@ -5180,8 +5180,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5047,
-      5066,
+      5134,
+      5153,
       0
     ],
     "command": {
@@ -5209,8 +5209,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5072,
-      5116,
+      5159,
+      5203,
       0
     ],
     "command": {
@@ -5229,8 +5229,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5072,
-      5116,
+      5159,
+      5203,
       0
     ],
     "command": {
@@ -5240,8 +5240,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5072,
-      5116,
+      5159,
+      5203,
       0
     ],
     "command": {
@@ -5257,8 +5257,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5122,
-      5156,
+      5209,
+      5249,
       0
     ],
     "command": {
@@ -5278,8 +5278,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5162,
-      5175,
+      5255,
+      5274,
       0
     ],
     "command": {
@@ -5299,8 +5299,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5181,
-      5194,
+      5280,
+      5299,
       0
     ],
     "command": {
@@ -5320,8 +5320,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5200,
-      5213,
+      5305,
+      5324,
       0
     ],
     "command": {
@@ -5341,8 +5341,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5219,
-      5244,
+      5330,
+      5355,
       0
     ],
     "command": {
@@ -5362,8 +5362,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5250,
-      5390,
+      5361,
+      5501,
       0
     ],
     "command": {
@@ -5393,8 +5393,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5396,
-      5452,
+      5507,
+      5563,
       0
     ],
     "command": {
@@ -5414,8 +5414,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5458,
-      5465,
+      5569,
+      5576,
       0
     ],
     "command": {
@@ -5426,8 +5426,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5458,
-      5465,
+      5569,
+      5576,
       0
     ],
     "command": {
@@ -5437,8 +5437,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5465,8 +5465,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5477,8 +5477,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5490,8 +5490,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5504,8 +5504,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5518,8 +5518,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5532,8 +5532,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5546,8 +5546,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5560,8 +5560,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5574,8 +5574,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5588,8 +5588,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5602,8 +5602,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5616,8 +5616,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5630,8 +5630,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5644,8 +5644,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5658,8 +5658,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5672,8 +5672,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "command": {
@@ -5686,8 +5686,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5552,
-      5599,
+      5663,
+      5710,
       0
     ],
     "command": {
@@ -5715,8 +5715,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5552,
-      5599,
+      5663,
+      5710,
       0
     ],
     "command": {
@@ -5733,8 +5733,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5606,
-      5635,
+      5717,
+      5746,
       0
     ],
     "command": {
@@ -5753,8 +5753,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5606,
-      5635,
+      5717,
+      5746,
       0
     ],
     "command": {
@@ -5764,8 +5764,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5606,
-      5635,
+      5717,
+      5746,
       0
     ],
     "command": {
@@ -5781,8 +5781,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5641,
-      5662,
+      5752,
+      5773,
       0
     ],
     "command": {
@@ -5802,8 +5802,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5668,
-      5699,
+      5779,
+      5810,
       0
     ],
     "command": {
@@ -5823,8 +5823,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5705,
-      5736,
+      5816,
+      5847,
       0
     ],
     "command": {
@@ -5844,8 +5844,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5742,
-      5774,
+      5853,
+      5885,
       0
     ],
     "command": {
@@ -5865,8 +5865,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5780,
-      5802,
+      5891,
+      5913,
       0
     ],
     "command": {
@@ -5886,8 +5886,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5808,
-      5829,
+      5919,
+      5940,
       0
     ],
     "command": {
@@ -5907,8 +5907,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5835,
-      5860,
+      5946,
+      5971,
       0
     ],
     "command": {
@@ -5928,8 +5928,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5866,
-      5897,
+      5977,
+      6008,
       0
     ],
     "command": {
@@ -5949,8 +5949,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5903,
-      5935,
+      6014,
+      6046,
       0
     ],
     "command": {
@@ -5970,8 +5970,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5941,
-      5973,
+      6052,
+      6084,
       0
     ],
     "command": {
@@ -5991,8 +5991,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5979,
-      6000,
+      6090,
+      6111,
       0
     ],
     "command": {
@@ -6012,8 +6012,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6006,
-      6062,
+      6117,
+      6173,
       0
     ],
     "command": {
@@ -6033,8 +6033,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6068,
-      6075,
+      6179,
+      6186,
       0
     ],
     "command": {
@@ -6045,8 +6045,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6068,
-      6075,
+      6179,
+      6186,
       0
     ],
     "command": {
@@ -6056,8 +6056,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6076,8 +6076,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6090,8 +6090,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6101,8 +6101,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6113,8 +6113,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6126,8 +6126,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6140,8 +6140,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6154,8 +6154,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6168,8 +6168,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6182,8 +6182,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6196,8 +6196,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6210,8 +6210,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6224,8 +6224,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6238,8 +6238,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6252,8 +6252,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6266,8 +6266,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6280,8 +6280,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6294,8 +6294,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6308,8 +6308,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6322,8 +6322,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6336,8 +6336,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6350,8 +6350,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6364,8 +6364,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6378,8 +6378,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6392,8 +6392,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6406,8 +6406,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6420,8 +6420,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6434,8 +6434,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6448,8 +6448,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "command": {
@@ -6475,8 +6475,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2368,
-      2448,
+      2419,
+      2499,
       0
     ],
     "command": {
@@ -6488,8 +6488,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3879,
-      3959,
+      3966,
+      4046,
       0
     ],
     "command": {
@@ -6501,8 +6501,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3970,
-      4007,
+      4057,
+      4094,
       0
     ],
     "command": {
@@ -6514,8 +6514,8 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5606,
-      5635,
+      5717,
+      5746,
       0
     ],
     "command": {

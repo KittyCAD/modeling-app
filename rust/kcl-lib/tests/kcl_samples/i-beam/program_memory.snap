@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing i-beam.kcl
 ---
 {
@@ -85,7 +85,7 @@ description: Variables in memory after executing i-beam.kcl
               "id": "[uuid]",
               "sourceRange": [
                 447,
-                468,
+                474,
                 0
               ]
             },
@@ -107,8 +107,8 @@ description: Variables in memory after executing i-beam.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                474,
-                498,
+                480,
+                510,
                 0
               ]
             },
@@ -130,8 +130,8 @@ description: Variables in memory after executing i-beam.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                504,
-                531,
+                516,
+                552,
                 0
               ]
             },
@@ -153,8 +153,8 @@ description: Variables in memory after executing i-beam.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                537,
-                550,
+                558,
+                580,
                 0
               ]
             },

@@ -329,7 +329,7 @@ description: Artifact commands socket-head-cap-screw.kcl
     "cmdId": "[uuid]",
     "range": [
       1347,
-      1375,
+      1381,
       0
     ],
     "command": {
@@ -349,8 +349,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1383,
-      1475,
+      1389,
+      1481,
       0
     ],
     "command": {
@@ -370,8 +370,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1483,
-      1592,
+      1489,
+      1598,
       0
     ],
     "command": {
@@ -391,8 +391,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1600,
-      1715,
+      1606,
+      1721,
       0
     ],
     "command": {
@@ -412,8 +412,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1723,
-      1838,
+      1729,
+      1844,
       0
     ],
     "command": {
@@ -433,8 +433,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1846,
-      1961,
+      1852,
+      1967,
       0
     ],
     "command": {
@@ -454,8 +454,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1969,
-      1976,
+      1975,
+      1982,
       0
     ],
     "command": {
@@ -466,8 +466,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -482,8 +482,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -496,8 +496,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -507,8 +507,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -519,8 +519,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -532,8 +532,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -546,8 +546,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -560,8 +560,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -574,8 +574,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -588,8 +588,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -602,8 +602,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -616,8 +616,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -630,8 +630,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -644,8 +644,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -658,8 +658,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -672,8 +672,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -686,8 +686,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -700,8 +700,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -714,8 +714,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1992,
-      2046,
+      1998,
+      2052,
       0
     ],
     "command": {
@@ -728,8 +728,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2109,
-      2191,
+      2115,
+      2197,
       0
     ],
     "command": {
@@ -744,8 +744,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2109,
-      2191,
+      2115,
+      2197,
       0
     ],
     "command": {
@@ -755,8 +755,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2109,
-      2191,
+      2115,
+      2197,
       0
     ],
     "command": {
@@ -772,8 +772,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2109,
-      2191,
+      2115,
+      2197,
       0
     ],
     "command": {
@@ -801,8 +801,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2109,
-      2191,
+      2115,
+      2197,
       0
     ],
     "command": {
@@ -813,8 +813,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2206,
-      2247,
+      2212,
+      2253,
       0
     ],
     "command": {
@@ -829,8 +829,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2206,
-      2247,
+      2212,
+      2253,
       0
     ],
     "command": {
@@ -843,8 +843,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2206,
-      2247,
+      2212,
+      2253,
       0
     ],
     "command": {
@@ -854,8 +854,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2206,
-      2247,
+      2212,
+      2253,
       0
     ],
     "command": {
@@ -866,8 +866,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2206,
-      2247,
+      2212,
+      2253,
       0
     ],
     "command": {
@@ -879,8 +879,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2206,
-      2247,
+      2212,
+      2253,
       0
     ],
     "command": {
@@ -893,8 +893,8 @@ description: Artifact commands socket-head-cap-screw.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2206,
-      2247,
+      2212,
+      2253,
       0
     ],
     "command": {

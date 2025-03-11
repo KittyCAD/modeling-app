@@ -276,6 +276,19 @@ export function mutateKwArg(
   return false
 }
 
+/**
+Mutates the given node by removing the labeled arguments.
+*/
+export function removeKwArgs(labels: string[], node: CallExpressionKw) {
+  for (const label of labels) {
+    const i = node.arguments.findIndex((la) => la.label.name === label)
+    if (i == -1) {
+      continue
+    }
+    node.arguments.splice(i, 1)
+  }
+}
+
 export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((element, i) => {

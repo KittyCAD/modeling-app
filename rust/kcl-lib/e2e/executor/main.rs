@@ -857,7 +857,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "Expected a kcl_lib::std::shapes::SketchOrSurface but found string (text)"
+        "This function expected this argument to be of type SketchOrSurface but it's actually of type string (text)"
     );
 }
 
@@ -1545,9 +1545,9 @@ baseExtrusion = extrude(sketch001, length = width)
 async fn kcl_test_shell_with_tag() {
     let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([61.74, 206.13], %)
-  |> xLine(305.11, %, $seg01)
-  |> yLine(-291.85, %)
-  |> xLine(-segLen(seg01), %)
+  |> xLine(length = 305.11, tag = $seg01)
+  |> yLine(length = -291.85)
+  |> xLine(length = -segLen(seg01))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 40.14)
@@ -2009,9 +2009,9 @@ someFunction('INVALID')
 async fn kcl_test_error_no_auth_websocket() {
     let code = r#"const sketch001 = startSketchOn('XZ')
   |> startProfileAt([61.74, 206.13], %)
-  |> xLine(305.11, %, $seg01)
-  |> yLine(-291.85, %)
-  |> xLine(-segLen(seg01), %)
+  |> xLine(length = 305.11, tag = $seg01)
+  |> yLine(length = -291.85)
+  |> xLine(length = -segLen(seg01))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 40.14)
@@ -2084,6 +2084,26 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     assert!(ctx.engine.batch_end().read().await.is_empty());
 
     ctx.close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_better_type_names() {
+    let code = r#"startSketchOn('XY')
+  |> circle(center = [-95.51, -74.7], radius = 262.23)
+  |> appearance(metalness = 0.9)
+"#;
+    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+
+    let err = match result.err() {
+        Some(x) => match x {
+            ExecError::Kcl(kcl_error_with_outputs) => kcl_error_with_outputs.error.message().to_owned(),
+            ExecError::Connection(_) => todo!(),
+            ExecError::BadPng(_) => todo!(),
+            ExecError::BadExport(_) => todo!(),
+        },
+        None => todo!(),
+    };
+    assert_eq!(err, "This function expected this argument to be of type SolidSet but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
 }
 
 #[tokio::test(flavor = "multi_thread")]
