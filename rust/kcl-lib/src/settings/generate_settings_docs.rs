@@ -161,20 +161,11 @@ pub fn generate_settings_docs() {
     } else {
         "Project specific settings for the KittyCAD modeling app.".to_string()
     };
-    
-    // Trim any trailing periods to avoid double periods
-    let trimmed_description = project_description.trim_end_matches('.');
-    
-    // Add additional context about the file format
-    let full_description = format!(
-        "{}. This document describes the available settings in the `project.toml` configuration file. This configuration file uses the [TOML](https://toml.io) format.",
-        trimmed_description
-    );
-    
+
     // Convert the schema to our template format
     let project_data = json!({
         "title": "Project Settings",
-        "description": full_description,
+        "description": project_description,
         "config_type": "Project Configuration",
         "file_name": "project.toml",
         "settings": json!(project_schema),
@@ -205,19 +196,12 @@ pub fn generate_settings_docs() {
     } else {
         "User-specific configuration options for the KittyCAD modeling app.".to_string()
     };
-    
+
     // Trim any trailing periods to avoid double periods
-    let trimmed_description = user_description.trim_end_matches('.');
-    
-    // Add additional context about the file format
-    let full_description = format!(
-        "{}. This document describes the available settings in the `user.toml` configuration file. This configuration file uses the [TOML](https://toml.io) format.",
-        trimmed_description
-    );
-    
+
     let user_data = json!({
         "title": "User Settings",
-        "description": full_description,
+        "description": user_description,
         "config_type": "User Configuration",
         "file_name": "user.toml",
         "settings": json!(user_schema),
@@ -242,7 +226,7 @@ mod tests {
             .expect("Project settings example is not valid according to ProjectConfiguration");
         let _user_config: Configuration = toml::from_str(USER_SETTINGS_EXAMPLE)
             .expect("User settings example is not valid according to Configuration");
-        
+
         // Expectorate will verify the output matches what we expect,
         // or update it if run with EXPECTORATE=overwrite
         generate_settings_docs();
