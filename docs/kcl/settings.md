@@ -1,5 +1,5 @@
 ---
-title: "KCL settings"
+title: "KCL Settings"
 excerpt: "Documentation of settings for the KCL language and Zoo Modeling App."
 layout: manual
 ---
