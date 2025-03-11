@@ -452,7 +452,9 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String) -> Result<()> {
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &file_name))
+        .filter_map(|(index, example)| {
+            generate_example(index, &example.0, &example.1, file_name.trim_start_matches("types/"))
+        })
         .collect();
 
     let data = json!({
@@ -464,7 +466,10 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String) -> Result<()> {
     });
 
     let output = hbs.render("kclType", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl/types/{}.md", file_name), &output);
+    expectorate::assert_contents(
+        format!("../../docs/kcl/types/{}.md", file_name.trim_start_matches("types/")),
+        &output,
+    );
 
     Ok(())
 }
@@ -526,7 +531,9 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String) -> Result<()> {
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &file_name))
+        .filter_map(|(index, example)| {
+            generate_example(index, &example.0, &example.1, &file_name.replace("consts/", "const_"))
+        })
         .collect();
 
     let data = json!({
@@ -540,7 +547,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String) -> Result<()> {
     });
 
     let output = hbs.render("const", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl/consts/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
 
     Ok(())
 }

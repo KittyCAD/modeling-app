@@ -118,9 +118,8 @@ impl DocData {
     pub fn file_name(&self) -> String {
         match self {
             DocData::Fn(f) => f.qual_name.replace("::", "-"),
-            DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
-            // TODO might want to change this
-            DocData::Ty(t) => t.name.clone(),
+            DocData::Const(c) => format!("consts/{}", c.qual_name.replace("::", "-")),
+            DocData::Ty(t) => format!("types/{}", t.name.clone()),
         }
     }
 
