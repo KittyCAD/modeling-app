@@ -1,0 +1,77 @@
+---
+title: "{{title}}"
+excerpt: "{{description}}"
+layout: manual
+---
+
+# {{title}}
+
+{{description}}
+
+This document describes the available settings in the `{{file_name}}` configuration file for the KittyCAD modeling app. This configuration file uses the [TOML](https://toml.io) format and provides project-specific settings.
+
+## {{config_type}} Structure
+
+```toml
+[settings.app]
+# Application settings
+
+[settings.modeling]
+# Modeling behavior settings
+
+[settings.text_editor]
+# Text editor behavior settings
+
+[settings.command_bar]
+# Command bar behavior settings
+{{#if settings.settings.properties.project}}
+
+[settings.project]
+# Project management settings
+{{/if}}
+```
+
+## Available Settings
+
+{{#with settings.settings}}
+{{description}}
+
+{{#each properties}}
+### {{@key}}
+
+{{description}}
+
+{{#each properties}}
+#### {{@key}}
+
+{{description}}
+
+{{#if enum}}
+**Possible values:** {{#each enum}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}
+{{/if}}
+
+**Default:** {{default}}
+
+{{/each}}
+
+{{/each}}
+{{/with}}
+
+## Example
+
+```toml
+[settings.app]
+{{#if settings.settings.properties.app.properties.appearance.properties.theme}}
+# Set the theme to dark mode
+[settings.app.appearance]
+theme = "dark"
+{{else}}
+# Set the app color to blue
+[settings.app.appearance]
+color = 220.0
+{{/if}}
+
+[settings.modeling]
+# Use inches as the default measurement unit
+base_unit = "in"
+```
