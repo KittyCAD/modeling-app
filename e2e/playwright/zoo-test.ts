@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+
 import {
   test as playwrightTestFn,
   ElectronApplication,

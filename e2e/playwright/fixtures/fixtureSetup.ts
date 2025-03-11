@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+
 import type {
   BrowserContext,
   ElectronApplication,
