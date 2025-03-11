@@ -92,13 +92,17 @@ part001 = startSketchOn('-XZ')
     await page.waitForTimeout(1000)
     await u.clearAndCloseDebugPanel()
 
+    if (!tronApp?.projectDirName) {
+      fail()
+    }
+
     await doExport(
       {
         type: 'gltf',
         storage: 'embedded',
         presentation: 'pretty',
       },
-      tronApp.projectDirName,
+      tronApp?.projectDirName,
       page
     )
   }

@@ -1,24 +1,13 @@
 import {
   test as playwrightTestFn,
-  TestInfo as TestInfoPlaywright,
-  BrowserContext as BrowserContextPlaywright,
-  Page as PagePlaywright,
-  TestDetails as TestDetailsPlaywright,
-  PlaywrightTestArgs,
-  PlaywrightTestOptions,
-  PlaywrightWorkerArgs,
-  PlaywrightWorkerOptions,
   ElectronApplication,
 } from '@playwright/test'
 
 import {
-  fixturesForElectron,
-  fixturesForWeb,
-  fixturesForAll,
+  fixturesBasedOnProcessEnvPlatform,
   Fixtures,
   AuthenticatedApp,
   ElectronZoo,
-  ElectronZooPool,
 } from './fixtures/fixtureSetup'
 
 import { Settings } from '@rust/kcl-lib/bindings/Settings'
@@ -26,9 +15,6 @@ import { DeepPartial } from 'lib/types'
 export { expect } from '@playwright/test'
 
 declare module '@playwright/test' {
-  interface TestInfo {
-    tronApp?: AuthenticatedTronApp
-  }
   interface BrowserContext {
     folderSetupFn: (
       cb: (dir: string) => Promise<void>
@@ -44,14 +30,6 @@ declare module '@playwright/test' {
   }
 }
 
-export type TestInfo = TestInfoPlaywright
-export type BrowserContext = BrowserContextPlaywright
-export type Page = PagePlaywright
-export type TestDetails = TestDetailsPlaywright & {
-  cleanProjectDir?: boolean
-  appSettings?: DeepPartial<Settings>
-}
-
 // Each worker spawns a new thread, which will spawn its own ElectronZoo.
 // So in some sense there is an implicit pool.
 // For example, the variable just beneath this text is reused many times
@@ -60,44 +38,49 @@ const electronZooInstance = new ElectronZoo()
 
 // Our custom decorated Zoo test object. Makes it easier to add fixtures, and
 // switch between web and electron if needed.
-const pwTestFnWithFixtures_ = playwrightTestFn.extend<Fixtures>({
+const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
+    tronApp?: ElectronZoo
+  }>({
   tronApp: async ({}, use, testInfo) => {
+    if (process.env.PLATFORM === 'web') {
+      await use(undefined)
+      return
+    }
+
     await use(electronZooInstance)
   },
 })
 
-const test =
-  process.env.PLATFORM !== 'web'
-    ? pwTestFnWithFixtures_.extend(fixturesForElectron).extend(fixturesForAll)
-    : playwrightTestFn
-        .extend({ tronApp: undefined })
-        .extend(fixturesForWeb)
-        .extend(fixturesForAll)
+const test = playwrightTestFnWithFixtures_
+  .extend<Fixtures>(fixturesBasedOnProcessEnvPlatform)
 
-if (process.env.PLATFORM === 'web') {
-  test.beforeEach(async ({ context, page }, testInfo) => {
+test.beforeEach(async ({ context, page }, testInfo) => {
+  if (process.env.PLATFORM !== 'web') return
 
-    // We do the same thing in ElectronZoo. addInitScript simply doesn't fire
-    // at the correct time, so we reload the page and it fires appropriately.
-    const oldPageAddInitScript = page.addInitScript
-    page.addInitScript = async function (...args) {
-      await oldPageAddInitScript.apply(this, args)
-      await page.reload()
-    }
+  // We do the same thing in ElectronZoo. addInitScript simply doesn't fire
+  // at the correct time, so we reload the page and it fires appropriately.
+  const oldPageAddInitScript = page.addInitScript
+  page.addInitScript = async function (...args) {
+    // @ts-expect-error
+    await oldPageAddInitScript.apply(this, args)
+    await page.reload()
+  }
 
-    const oldContextAddInitScript = context.addInitScript
-    context.addInitScript = async function (...args) {
-      await oldContextAddInitScript.apply(this, args)
-      await page.reload()
-    }
+  const oldContextAddInitScript = context.addInitScript
+  context.addInitScript = async function (...args) {
+    // @ts-expect-error
+    await oldContextAddInitScript.apply(this, args)
+    await page.reload()
+  }
 
-    const webApp = new AuthenticatedApp(context, page, testInfo)
-    await webApp.initialise()
-  })
-} else {
-  test.afterEach(async ({ tronApp }) => {
-    await tronApp.makeAvailableAgain()
-  })
-}
+  const webApp = new AuthenticatedApp(context, page, testInfo)
+  await webApp.initialise()
+})
+
+test.afterEach(async ({ tronApp }) => {
+  if (process.env.PLATFORM === 'web') return
+
+  await tronApp?.makeAvailableAgain()
+})
 
 export { test }

@@ -1,4 +1,5 @@
-import { test, expect, Page } from './zoo-test'
+import { Page } from '@playwright/test'
+import { test, expect } from './zoo-test'
 
 import { deg, getUtils, wiggleMove } from './test-utils'
 import { LineInputsType } from 'lang/std/sketchcombos'

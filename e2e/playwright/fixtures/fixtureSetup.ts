@@ -1,11 +1,16 @@
 import type {
   BrowserContext,
   ElectronApplication,
+  Fixtures as PlaywrightFixtures,
   TestInfo,
   Page,
 } from '@playwright/test'
 
-import { _electron as electron } from '@playwright/test'
+import {
+  _electron as electron,
+  PlaywrightTestArgs,
+  PlaywrightWorkerArgs,
+} from '@playwright/test'
 
 import * as TOML from '@iarna/toml'
 import {
@@ -15,7 +20,7 @@ import {
   TEST_SETTINGS_DEFAULT_THEME,
 } from '../storageStates'
 import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
-import { getUtils, setup, setupElectron } from '../test-utils'
+import { getUtils, setup } from '../test-utils'
 import fsp from 'fs/promises'
 import fs from 'node:fs'
 import path from 'path'
@@ -76,10 +81,10 @@ export class ElectronZoo {
   public electron!: ElectronApplication
   public firstUrl = ''
   public viewPortSize = { width: 1200, height: 500 }
-  public dir = ''
+  public projectDirName = ''
 
-  public page: Page
-  public context: BrowserContext
+  public page!: Page
+  public context!: BrowserContext
 
   constructor() {}
 
@@ -88,7 +93,7 @@ export class ElectronZoo {
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
         if (!window.engineCommandManager.engineConnection?.state?.type) {
-          return resolve()
+          return resolve(undefined)
         }
 
         window.engineCommandManager.tearDown()
@@ -96,8 +101,11 @@ export class ElectronZoo {
         const checkDisconnected = () => {
           // It's possible we never even created an engineConnection
           // e.g. never left Projects view.
-          if (window.engineCommandManager.engineConnection.state.type === 'disconnected') {
-            return resolve()
+          if (
+            window.engineCommandManager?.engineConnection?.state.type ===
+            'disconnected'
+          ) {
+            return resolve(undefined)
           }
           setTimeout(checkDisconnected, 0)
         }
@@ -105,7 +113,7 @@ export class ElectronZoo {
       })
     })
 
-    await this.context.tracing.stopChunk({ path: 'trace.zip' });
+    await this.context.tracing.stopChunk({ path: 'trace.zip' })
 
     // Only after cleanup we're ready.
     this.available = true
@@ -164,7 +172,7 @@ export class ElectronZoo {
     }) {
       await this.setViewportSize(dims)
 
-      await this.electron?.evaluateHandle(async ({ app }, dims) => {
+      await that.electron?.evaluateHandle(async ({ app }, dims) => {
         // @ts-ignore sorry jon but see comment in main.ts why this is ignored
         await app.resizeWindow(dims.width, dims.height)
       }, dims)
@@ -235,7 +243,7 @@ export class ElectronZoo {
     await this.page.reload()
   }
 
-  async cleanProjectDir(appSettings) {
+  async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
     try {
       if (fs.existsSync(this.projectDirName)) {
         await fsp.rm(this.projectDirName, { recursive: true })
@@ -254,65 +262,80 @@ export class ElectronZoo {
       this.projectDirName,
       SETTINGS_FILE_NAME
     )
-    const settingsOverrides = TOML.stringify(
-      appSettings
-        ? {
-            settings: {
-              ...TEST_SETTINGS,
-              ...appSettings,
-              app: {
-                ...TEST_SETTINGS.app,
-                project_directory: this.projectDirName,
-                ...appSettings.app,
-              },
-            },
-          }
-        : {
-            settings: {
-              ...TEST_SETTINGS,
-              app: {
-                ...TEST_SETTINGS.app,
-                project_directory: this.projectDirName,
-              },
-            },
-          }
-    )
-    await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
+
+    let settingsOverridesToml = ''
+
+    if (appSettings) {
+      settingsOverridesToml = TOML.stringify({
+        settings: {
+          ...TEST_SETTINGS,
+          ...appSettings,
+          ...{
+            app: {
+              project_directory: this.projectDirName,
+            }
+          },
+        },
+      })
+    } else {
+      settingsOverridesToml = TOML.stringify({
+        settings: {
+          ...TEST_SETTINGS,
+          ...{
+            app: {
+              project_directory: this.projectDirName,
+            }
+          },
+        },
+      })
+    }
+    await fsp.writeFile(tempSettingsFilePath, settingsOverridesToml)
   }
 }
 
-export const fixturesForElectron = {
-  page: async ({ tronApp }, use, testInfo) => {
+// If yee encounter this, please try to type it.
+type FnUse = any
+
+const fixturesForElectron = {
+  page: async ({ tronApp }: { tronApp: ElectronZoo }, use: FnUse, testInfo: TestInfo) => {
     await tronApp.createInstanceIfMissing(testInfo)
     await use(tronApp.page)
   },
-  context: async ({ tronApp }, use, testInfo) => {
+  context: async ({ tronApp }: { tronApp: ElectronZoo }, use: FnUse, testInfo: TestInfo) => {
     await tronApp.createInstanceIfMissing(testInfo)
     await use(tronApp.context)
   },
 }
 
-export const fixturesForWeb = {
-  page: async ({ page }: { page: Page }, use: any) => {
+const fixturesForWeb = {
+  page: async ({ page }: { page: Page }, use: FnUse) => {
     page.setBodyDimensions = page.setViewportSize
     await use(page)
   },
 }
 
-export const fixturesForAll = {
-  cmdBar: async ({ page }: { page: Page }, use: any) => {
+const fixturesBasedOnProcessEnvPlatform = {
+  cmdBar: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new CmdBarFixture(page))
   },
-  editor: async ({ page }: { page: Page }, use: any) => {
+  editor: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new EditorFixture(page))
   },
-  toolbar: async ({ page }: { page: Page }, use: any) => {
+  toolbar: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new ToolbarFixture(page))
   },
-  scene: async ({ page }: { page: Page }, use: any) => {
+  scene: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new SceneFixture(page))
   },
-  homePage: async ({ page }: { page: Page }, use: any) => {
+  homePage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new HomePageFixture(page))
   },
 }
+
+if (process.env.PLATFORM === 'web') {
+  Object.assign(fixturesBasedOnProcessEnvPlatform, fixturesForWeb)
+} else {
+  Object.assign(fixturesBasedOnProcessEnvPlatform, fixturesForElectron)
+}
+
+export { fixturesBasedOnProcessEnvPlatform }

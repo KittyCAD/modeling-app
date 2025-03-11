@@ -31,7 +31,6 @@ test.beforeEach(async ({ page, context }) => {
 // Help engine-manager: tear shit down.
 test.afterEach(async ({ page }) => {
   await page.evaluate(() => {
-    // @ts-expect-error
     window.engineCommandManager.tearDown()
   })
 })
@@ -46,6 +45,8 @@ test.skip(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
+    if (!tronApp) { fail() }
+
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)

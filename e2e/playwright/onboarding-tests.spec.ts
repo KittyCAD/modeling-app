@@ -26,6 +26,7 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
+    if (!tronApp) { fail() }
     await tronApp.cleanProjectDir({
       app: {
         onboarding_status: '',
@@ -58,6 +59,7 @@ test.describe('Onboarding tests', () => {
       tag: '@electron',
     },
     async ({ page, tronApp }) => {
+    if (!tronApp) { fail() }
       await tronApp.cleanProjectDir({
         app: {
           onboarding_status: '',
@@ -105,6 +107,7 @@ test.describe('Onboarding tests', () => {
     scene,
     cmdBar,
   }) => {
+    if (!tronApp) { fail() }
     await tronApp.cleanProjectDir()
 
     const initialCode = `sketch001 = startSketchOn('XZ')`
@@ -150,6 +153,7 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
+    if (!tronApp) { fail() }
     await tronApp.cleanProjectDir({
       app: {
         onboarding_status: '',
@@ -204,6 +208,7 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
+    if (!tronApp) { fail() }
     await tronApp.cleanProjectDir({
       app: {
         onboarding_status: '/export',
@@ -258,6 +263,7 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
+    if (!tronApp) { fail() }
     await tronApp.cleanProjectDir({
       app: {
         onboarding_status: '/parametric-modeling',
@@ -304,6 +310,8 @@ test.describe('Onboarding tests', () => {
   test.fixme(
     'Avatar text updates depending on image load success',
     async ({ context, page, homePage, tronApp }) => {
+      if (!tronApp) { fail() }
+
       await tronApp.cleanProjectDir({
         app: {
           onboarding_status: '',
@@ -375,6 +383,8 @@ test.describe('Onboarding tests', () => {
   test.fixme(
     "Avatar text doesn't mention avatar when no avatar",
     async ({ context, page, homePage, tronApp }) => {
+      if (!tronApp) { fail() }
+
       await tronApp.cleanProjectDir({
         app: {
           onboarding_status: '',
@@ -428,6 +438,8 @@ test.describe('Onboarding tests', () => {
 test.fixme(
   'Restarting onboarding on desktop takes one attempt',
   async ({ context, page, tronApp }) => {
+    if (!tronApp) { fail() }
+
     await tronApp.cleanProjectDir({
       app: {
         onboarding_status: 'dismissed',

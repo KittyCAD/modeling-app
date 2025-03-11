@@ -465,6 +465,8 @@ test.describe('Can export from electron app', () => {
       `Can export using ${method}`,
       { tag: ['@electron', '@skipLocalEngine'] },
       async ({ context, page, tronApp }, testInfo) => {
+        if (!tronApp) { fail() }
+
         await context.folderSetupFn(async (dir) => {
           const bracketDir = path.join(dir, 'bracket')
           await fsp.mkdir(bracketDir, { recursive: true })
@@ -1688,6 +1690,8 @@ test(
   'You can change the root projects directory and nothing is lost',
   { tag: '@electron' },
   async ({ context, page, tronApp, homePage }, testInfo) => {
+    if (!tronApp) { fail() }
+
     await context.folderSetupFn(async (dir) => {
       await Promise.all([
         fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),

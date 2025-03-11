@@ -38,6 +38,8 @@ export class ToolbarFixture {
   featureTreeId = 'feature-tree' as const
   /** The pane element for the Feature Tree */
   featureTreePane!: Locator
+  gizmo!: Locator
+  gizmoDisabled!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -92,7 +94,7 @@ export class ToolbarFixture {
     await expect(this.gizmoDisabled).toBeVisible()
   }
 
-  startSketchThenCallbackThenWaitUntilReady = async (cb) => {
+  startSketchThenCallbackThenWaitUntilReady = async (cb: () => Promise<void>) => {
     await this.startSketchBtn.click()
     await cb()
     await this.waitUntilSketchingReady()

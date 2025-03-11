@@ -10,8 +10,14 @@ export const codeManager = new CodeManager()
 
 export const engineCommandManager = new EngineCommandManager()
 
+declare global {
+  interface Window {
+    editorManager: EditorManager,
+    engineCommandManager: EngineCommandManager,
+  }
+}
+
 // Accessible for tests mostly
-// @ts-ignore
 window.engineCommandManager = engineCommandManager
 
 // This needs to be after codeManager is created.
@@ -22,12 +28,6 @@ export const sceneInfra = new SceneInfra(engineCommandManager)
 engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
 export const sceneEntitiesManager = new SceneEntities(engineCommandManager)
-
-declare global {
-  interface Window {
-    editorManager: EditorManager
-  }
-}
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager()

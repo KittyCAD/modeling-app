@@ -1,4 +1,5 @@
-import { test, expect, Page } from './zoo-test'
+import { Page } from '@playwright/test'
+import { test, expect } from './zoo-test'
 import path from 'path'
 import * as fsp from 'fs/promises'
 import { getUtils, executorInputPath } from './test-utils'

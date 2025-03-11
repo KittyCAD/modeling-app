@@ -5,8 +5,9 @@ import {
   _electron as electron,
   ElectronApplication,
   Locator,
+  Page,
 } from '@playwright/test'
-import { test, Page } from './zoo-test'
+import { test } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
@@ -337,7 +338,7 @@ export const getMovementUtils = (opts: any) => {
 
 async function waitForAuthAndLsp(page: Page) {
   const waitForLspPromise = page.waitForEvent('console', {
-    predicate: async (message) => {
+    predicate: async (message: any) => {
       // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
       // but that doesn't seem to make it to the console for macos/safari :(
       if (message.text().includes('start kcl lsp')) {
@@ -420,7 +421,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const overlay = page.locator(locator)
       const bbox = await overlay
         .boundingBox({ timeout: 5_000 })
-        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
+        .then((box: any) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
       const angleYOffset = Math.sin(((angle - 180) * Math.PI) / 180) * px
@@ -437,7 +438,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       page
         .locator(locator)
         .boundingBox({ timeout: 5_000 })
-        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+        .then((box: any) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
     crushKclCodeIntoOneLineAndThenMaybeSome: async () => {
       const code = await page.locator('.cm-content').innerText()
@@ -631,7 +632,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     panesOpen: async (paneIds: PaneId[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
         await page.addInitScript(
-          ({ PERSIST_MODELING_CONTEXT, paneIds }) => {
+          ({ PERSIST_MODELING_CONTEXT, paneIds }: any) => {
             localStorage.setItem(
               PERSIST_MODELING_CONTEXT,
               JSON.stringify({ openPanes: paneIds })
@@ -860,12 +861,6 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
     downloadThroughput: -1,
     uploadThroughput: -1,
   })
-
-  // It seems it's best to give the browser about 3s to close things
-  // It's not super reliable but we have no real other choice for now
-  await page.waitForTimeout(3000)
-
-  await testInfo.tronApp?.close()
 }
 
 // settingsOverrides may need to be augmented to take more generic items,
@@ -940,7 +935,8 @@ let page: Page | undefined = undefined
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
   // enabled for chrome for now
   if (page.context().browser()?.browserType().name() === 'chromium') {
-    page.on('pageerror', (exception) => {
+    // No idea wtf exception is
+    page.on('pageerror', (exception: any) => {
       if (isErrorWhitelisted(exception)) {
         return
       }

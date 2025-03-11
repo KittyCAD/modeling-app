@@ -22,12 +22,15 @@ import { Settings } from '@rust/kcl-lib/bindings/Settings'
 test.describe('Testing settings', () => {
   test(
     'Stored settings are validated and fall back to defaults',
-    // Override beforeEach test setup
-    // with corrupted settings
-    {
-      appSettings: TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>,
-    },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, tronApp }) => {
+      if (!tronApp) { fail() }
+      // Override beforeEach test setup
+      // with corrupted settings
+      await tronApp.cleanProjectDir(
+        TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>
+      )
+
+
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       // Check the settings were reset
@@ -377,13 +380,15 @@ test.describe('Testing settings', () => {
     `Load desktop app with a settings file, but no project directory setting`,
     {
       tag: '@electron',
-      appSettings: {
+    },
+    async ({ context, page, tronApp }, testInfo) => {
+      if (!tronApp) { fail() }
+      await tronApp.cleanProjectDir({
         app: {
           theme_color: '259',
         },
-      },
-    },
-    async ({ context, page }, testInfo) => {
+      })
+
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       // Selectors and constants
@@ -403,15 +408,18 @@ test.describe('Testing settings', () => {
     'user settings reload on external change, on project and modeling view',
     {
       tag: '@electron',
-      appSettings: {
+    },
+    async ({ context, page, tronApp }, testInfo) => {
+      if (!tronApp) { fail() }
+
+      await tronApp.cleanProjectDir({
         app: {
           // Doesn't matter what you set it to. It will
           // default to 264.5
           theme_color: '0',
         },
-      },
-    },
-    async ({ context, page }, testInfo) => {
+      })
+
       const { dir: projectDirName } = await context.folderSetupFn(
         async () => {}
       )
@@ -786,6 +794,8 @@ test.describe('Testing settings', () => {
     homePage,
     tronApp,
   }) => {
+    if (!tronApp) { fail() }
+
     await tronApp.cleanProjectDir({
       // Override the settings so that the theme is set to `system`
       ...TEST_SETTINGS_DEFAULT_THEME,
@@ -838,6 +848,8 @@ test.describe('Testing settings', () => {
     homePage,
     tronApp,
   }) => {
+    if (!tronApp) { fail() }
+
     await tronApp.cleanProjectDir({
       // Override beforeEach test setup
       // with debug panel open

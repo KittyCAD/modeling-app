@@ -1,4 +1,5 @@
-import { test, expect, Page } from './zoo-test'
+import { Page } from '@playwright/test'
+import { test, expect } from './zoo-test'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { HomePageFixture } from './fixtures/homePageFixture'
