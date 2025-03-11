@@ -197,15 +197,11 @@ mod tests {
 
     #[test]
     fn test_generate_settings_docs() {
-        // First verify that our TOML examples are valid
-        let project_toml: toml::Value = toml::from_str(PROJECT_SETTINGS_EXAMPLE)
-            .expect("Project settings example is not valid TOML");
-        let user_toml: toml::Value = toml::from_str(USER_SETTINGS_EXAMPLE)
-            .expect("User settings example is not valid TOML");
-        
-        // Check that they have the expected structures
-        assert!(project_toml.get("settings").is_some(), "Project settings example missing 'settings' table");
-        assert!(user_toml.get("settings").is_some(), "User settings example missing 'settings' table");
+        // First verify that our TOML examples are valid and match the expected types
+        let _project_config: ProjectConfiguration = toml::from_str(PROJECT_SETTINGS_EXAMPLE)
+            .expect("Project settings example is not valid according to ProjectConfiguration");
+        let _user_config: Configuration = toml::from_str(USER_SETTINGS_EXAMPLE)
+            .expect("User settings example is not valid according to Configuration");
         
         // Expectorate will verify the output matches what we expect,
         // or update it if run with EXPECTORATE=overwrite
