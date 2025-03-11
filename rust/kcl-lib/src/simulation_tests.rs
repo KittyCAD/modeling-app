@@ -77,7 +77,7 @@ fn read<P>(filename: &str, dir: P) -> String
 where
     P: AsRef<Path>,
 {
-    std::fs::read_to_string(dir.as_ref().join(filename)).unwrap()
+    std::fs::read_to_string(dir.as_ref().join(filename)).expect("Failed to read file: {filename}")
 }
 
 fn parse(test_name: &str) {
