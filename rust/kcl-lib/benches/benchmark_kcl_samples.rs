@@ -94,7 +94,7 @@ fn run_benchmarks(c: &mut Criterion) {
                     }
                 }
 
-                result.expect("Function failed after all retry attempts")
+                result.unwrap()
             })
         });
 
