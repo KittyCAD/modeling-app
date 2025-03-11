@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pierremtb/adhoc/break-out-snapshots ]
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
