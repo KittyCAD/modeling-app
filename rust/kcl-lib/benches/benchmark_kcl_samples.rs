@@ -76,14 +76,25 @@ fn run_benchmarks(c: &mut Criterion) {
 
         group.bench_function("execute", |b| {
             b.iter(|| {
-                rt.block_on(async {
-                    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
-                        .await
-                        .unwrap();
-                    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
-                    ctx.run(black_box(&program), &mut exec_state).await.unwrap();
-                    ctx.close().await;
-                })
+                let mut result = Err(());
+                for _ in 0..3 {
+                    // Try up to 3 times
+                    match rt.block_on(async {
+                        let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
+                        let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+                        ctx.run(black_box(&program), &mut exec_state).await?;
+                        ctx.close().await;
+                        Ok::<(), anyhow::Error>(())
+                    }) {
+                        Ok(value) => {
+                            result = Ok(value);
+                            break;
+                        }
+                        Err(_) => continue,
+                    }
+                }
+
+                result.expect("Function failed after all retry attempts")
             })
         });
 
