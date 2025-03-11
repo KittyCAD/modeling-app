@@ -1,5 +1,10 @@
 import { CustomIconName } from 'components/CustomIcon'
-import { Artifact, getArtifactOfTypes } from 'lang/std/artifactGraph'
+import {
+  Artifact,
+  getArtifactByPredicate,
+  getArtifactOfTypes,
+  getArtifactsOfTypes,
+} from 'lang/std/artifactGraph'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
@@ -293,6 +298,84 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   }
 }
 
+const prepareToEditFillet: PrepareToEditCallback = async ({
+  artifact,
+  operation,
+}) => {
+  const baseCommand = {
+    name: 'Fillet',
+    groupId: 'modeling',
+  }
+  if (
+    operation.type !== 'StdLibCall' ||
+    !operation.labeledArgs ||
+    operation.name !== 'fillet' ||
+    !('tags' in operation.labeledArgs) ||
+    !('radius' in operation.labeledArgs) ||
+    !operation.labeledArgs.radius ||
+    !artifact ||
+    artifact.type !== 'edgeCut' ||
+    artifact.subType !== 'fillet'
+  ) {
+    return baseCommand
+  }
+
+  if (
+    !operation.labeledArgs.tags ||
+    operation.labeledArgs.tags.value.type !== 'Array'
+  ) {
+    return baseCommand
+  }
+  const edgeIds = operation.labeledArgs.tags.value.value.map((tag) =>
+    tag.type === 'Uuid' ? tag.value : ''
+  )
+  if (!edgeIds.every((id) => id)) {
+    return baseCommand
+  }
+
+  const edges = getArtifactsOfTypes(
+    {
+      keys: edgeIds,
+      types: ['sweepEdge', 'segment'],
+    },
+    engineCommandManager.artifactGraph
+  )
+  const selection: ModelingCommandSchema['Fillet']['selection'] = {
+    graphSelections: edges
+      .values()
+      .map((edge, index) => ({
+        artifact: edge,
+        codeRef: {
+          range: operation.labeledArgs.tags?.sourceRange ?? [0, 0, 0],
+          pathToNode: getNodePathFromSourceRange(
+            kclManager.ast,
+            operation.labeledArgs.tags?.sourceRange ?? [0, 0, 0]
+          ),
+        },
+      }))
+      .toArray(),
+    otherSelections: [],
+  }
+  const maybeRadius = await stringToKclExpression(
+    codeManager.getCodeAtRange(operation.labeledArgs.radius.sourceRange)
+  )
+  if (err(maybeRadius) || 'errors' in maybeRadius) return baseCommand
+
+  const argDefaultValues: ModelingCommandSchema['Fillet'] = {
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(operation.sourceRange)
+    ),
+    radius: maybeRadius,
+    selection,
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 /**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
@@ -312,6 +395,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   fillet: {
     label: 'Fillet',
     icon: 'fillet3d',
+    prepareToEdit: prepareToEditFillet,
   },
   helix: {
     label: 'Helix',
