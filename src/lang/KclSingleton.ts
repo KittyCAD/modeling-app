@@ -476,8 +476,7 @@ export class KclManager {
     })
 
     this._logs = logs
-    this._execState = execState
-    this._variables = execState.variables
+    this.execState = execState
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
