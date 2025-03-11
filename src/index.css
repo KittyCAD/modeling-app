@@ -269,7 +269,7 @@ code {
 
 .segment-length-label-text {
   transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--degree, 0));
-  @apply font-mono body-bg px-0.5 rounded-sm border border-chalkboard-110 dark:border-chalkboard-10;
+  @apply font-mono body-bg px-2 pt-0.5 rounded-sm border border-chalkboard-110 dark:border-chalkboard-10;
 }
 
 @layer components {

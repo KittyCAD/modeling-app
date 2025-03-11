@@ -330,7 +330,6 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
       }
 
-      // add code for dragging three point arc and arc handles here
       // drag arcTo interior handle (three point arc)
       const arcToHandle = await u.getBoundingBox('[data-overlay-index="2"]')
       await page.mouse.move(arcToHandle.x, arcToHandle.y - 5)
@@ -378,7 +377,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
       }
 
-      // drag arc center handle (we'll have to hardcode the position because it doesn't have a overlay near the handl)
+      // drag arc center handle (we'll have to hardcode the position because it doesn't have a overlay near the handle)
       const arcCenterHandle = { x: 745, y: 214 }
       await page.mouse.move(arcCenterHandle.x, arcCenterHandle.y - 5)
       await page.mouse.down()

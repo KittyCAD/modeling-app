@@ -158,7 +158,6 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           const unconstrainedLocator = page.locator(
             `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
           )
-          // await expect(unconstrainedLocator).toHaveCount
           await unconstrainedLocator.hover()
           await expect(
             await page.getByTestId('constraint-symbol-popover').count()
