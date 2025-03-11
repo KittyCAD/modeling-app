@@ -1127,7 +1127,6 @@ test.describe('Electron constraint tests', () => {
           path.join(bracketDir, 'main.kcl')
         )
       })
-      const [clickHandler] = scene.makeMouseHelpers(600, 300)
 
       await test.step('setup test', async () => {
         await homePage.expectState({
@@ -1144,8 +1143,12 @@ test.describe('Electron constraint tests', () => {
       })
 
       await test.step('Double click to constrain', async () => {
-        await clickHandler()
-        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+        // Enter sketch edit mode via feature tree
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Sketch', 0)
+        await op.dblclick()
+        await toolbar.closePane('feature-tree')
+
         const child = page
           .locator('.segment-length-label-text')
           .first()

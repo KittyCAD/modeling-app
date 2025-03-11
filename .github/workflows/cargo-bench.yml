@@ -1,0 +1,55 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.rs'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - .github/workflows/cargo-bench.yml
+  pull_request:
+    paths:
+      - '**.rs'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - .github/workflows/cargo-bench.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: write
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+name: cargo bench
+jobs:
+  cargo-bench:
+    name: cargo bench
+    runs-on: ubuntu-latest-8-cores
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: rust
+      - name: Install dependencies
+        run: |
+          cargo install cargo-criterion
+          cargo install cargo-codspeed
+          cd rust/kcl-lib
+          cargo add --dev codspeed-criterion-compat --rename criterion
+      - name: Build the benchmark target(s)
+        run: |
+          cd rust
+          cargo codspeed build
+      - name: Run the benchmarks
+        uses: CodSpeedHQ/action@v3
+        with:
+          working-directory: rust
+          run: KITTYCAD_API_TOKEN=${{secrets.KITTYCAD_API_TOKEN}} cargo codspeed run
+          token: ${{ secrets.CODSPEED_TOKEN }}

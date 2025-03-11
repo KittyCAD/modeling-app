@@ -274,7 +274,6 @@ test.describe('Feature Tree pane', () => {
         currentArgKey: 'distance',
         currentArgValue: initialInput,
         headerArguments: {
-          Selection: '1 face',
           Distance: initialInput,
         },
         highlightedHeaderArg: 'distance',
@@ -291,7 +290,6 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Selection: '1 face',
           // The calculated value is shown in the argument summary
           Distance: initialInput,
         },

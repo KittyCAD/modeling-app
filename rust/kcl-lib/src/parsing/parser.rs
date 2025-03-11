@@ -2809,29 +2809,45 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     let _ = open_paren.parse_next(i)?;
     ignore_whitespace(i);
 
+    #[allow(clippy::large_enum_variant)]
+    pub enum ArgPlace {
+        NonCode(Node<NonCodeNode>),
+        LabeledArg(LabeledArg),
+        UnlabeledArg(Expr),
+    }
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
     let args: Vec<_> = repeat(
         0..,
         alt((
-            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
-            terminated(labeled_argument, labeled_arg_separator).map(NonCodeOr::Code),
+            terminated(non_code_node.map(ArgPlace::NonCode), whitespace),
+            terminated(labeled_argument, labeled_arg_separator).map(ArgPlace::LabeledArg),
+            expression.map(ArgPlace::UnlabeledArg),
         )),
     )
     .parse_next(i)?;
-    let (args, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = args.into_iter().enumerate().fold(
+    let (args, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = args.into_iter().enumerate().try_fold(
         (Vec::new(), BTreeMap::new()),
         |(mut args, mut non_code_nodes), (i, e)| {
             match e {
-                NonCodeOr::NonCode(x) => {
+                ArgPlace::NonCode(x) => {
                     non_code_nodes.insert(i, vec![x]);
                 }
-                NonCodeOr::Code(x) => {
+                ArgPlace::LabeledArg(x) => {
                     args.push(x);
                 }
+                ArgPlace::UnlabeledArg(arg) => {
+                    return Err(ErrMode::Cut(
+                        CompilationError::fatal(
+                            SourceRange::from(arg),
+                            "This argument needs a label, but it doesn't have one",
+                        )
+                        .into(),
+                    ));
+                }
             }
-            (args, non_code_nodes)
+            Ok((args, non_code_nodes))
         },
-    );
+    )?;
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         let just_args: Vec<_> = args.iter().collect();
         typecheck_all_kw(std_fn, &just_args)?;
@@ -4640,6 +4656,27 @@ baz = 2
         };
         assert_eq!(actual.operator, UnaryOperator::Not);
         crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_equals_in_kwarg() {
+        for (i, program) in ["f(x=1,y)", "f(x=1,y,z)", "f(x=1,y,z=1)", "f(x=1, y, z=1)"]
+            .into_iter()
+            .enumerate()
+        {
+            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
+            let err = fn_call_kw.parse(tokens.as_slice()).unwrap_err();
+            let cause = err.inner().cause.as_ref().unwrap();
+            assert_eq!(
+                cause.message, "This argument needs a label, but it doesn't have one",
+                "failed test {i}: {program}"
+            );
+            assert_eq!(
+                cause.source_range.start(),
+                program.find("y").unwrap(),
+                "failed test {i}: {program}"
+            );
+        }
     }
 }
 
