@@ -319,6 +319,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       // result: {
       //   inputType: 'options',
@@ -407,6 +408,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axisOrEdge: {
         inputType: 'options',
@@ -416,6 +418,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Axis', isCurrent: true, value: 'Axis' },
           { name: 'Edge', isCurrent: false, value: 'Edge' },
         ],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axis: {
         required: (commandContext) =>
@@ -437,6 +440,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
         validation: revolveAxisValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       angle: {
         inputType: 'kcl',
