@@ -76,11 +76,12 @@ fn run_benchmarks(c: &mut Criterion) {
 
         group.bench_function("execute", |b| {
             b.iter_custom(|iters| {
-                let start = std::time::Instant::now();
+                let mut start = std::time::Instant::now();
 
                 for _ in 0..iters {
                     let mut result = Err(());
                     for _ in 0..3 {
+                        start = std::time::Instant::now();
                         // Try up to 3 times
                         match rt.block_on(async {
                             let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
