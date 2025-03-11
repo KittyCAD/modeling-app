@@ -25,11 +25,6 @@ color = 240.0
 # Use inches as the default measurement unit
 base_unit = "in"
 
-# Enable auto-save feature with 5 minute interval
-[settings.project]
-auto_save = true
-auto_save_interval_mins = 5
-
 ```
 
 ## Available Settings
@@ -209,10 +204,5 @@ color = 240.0
 [settings.modeling]
 # Use inches as the default measurement unit
 base_unit = "in"
-
-# Enable auto-save feature with 5 minute interval
-[settings.project]
-auto_save = true
-auto_save_interval_mins = 5
 
 ```

@@ -26,9 +26,6 @@ base_unit = "mm"
 [settings.text_editor]
 # Disable text wrapping in the editor
 text_wrapping = false
-# Use 2 spaces for indentation
-tab_size = 2
-use_spaces = true
 
 ```
 
@@ -271,8 +268,5 @@ base_unit = "mm"
 [settings.text_editor]
 # Disable text wrapping in the editor
 text_wrapping = false
-# Use 2 spaces for indentation
-tab_size = 2
-use_spaces = true
 
 ```

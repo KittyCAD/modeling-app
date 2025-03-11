@@ -19,11 +19,6 @@ color = 240.0
 [settings.modeling]
 # Use inches as the default measurement unit
 base_unit = "in"
-
-# Enable auto-save feature with 5 minute interval
-[settings.project]
-auto_save = true
-auto_save_interval_mins = 5
 "#;
 
 // User settings example in TOML format
@@ -42,9 +37,6 @@ base_unit = "mm"
 [settings.text_editor]
 # Disable text wrapping in the editor
 text_wrapping = false
-# Use 2 spaces for indentation
-tab_size = 2
-use_spaces = true
 "#;
 
 const PROJECT_SETTINGS_DOC_PATH: &str = "../../docs/kcl/settings/project.toml.md";
