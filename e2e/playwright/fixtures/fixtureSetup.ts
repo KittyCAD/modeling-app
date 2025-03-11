@@ -271,10 +271,10 @@ export class ElectronZoo {
         settings: {
           ...TEST_SETTINGS,
           ...appSettings,
-          ...{
-            app: {
-              project_directory: this.projectDirName,
-            },
+          app: {
+            ...TEST_SETTINGS.app,
+            project_directory: this.projectDirName,
+            ...appSettings.app,
           },
         },
       })
@@ -282,10 +282,9 @@ export class ElectronZoo {
       settingsOverridesToml = TOML.stringify({
         settings: {
           ...TEST_SETTINGS,
-          ...{
-            app: {
-              project_directory: this.projectDirName,
-            },
+          app: {
+            ...TEST_SETTINGS.app,
+            project_directory: this.projectDirName,
           },
         },
       })
