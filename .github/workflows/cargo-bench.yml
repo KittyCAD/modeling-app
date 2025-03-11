@@ -41,7 +41,7 @@ jobs:
         run: |
           cargo install cargo-criterion
           cargo install cargo-codspeed
-          cd rust
+          cd rust/kcl-lib
           cargo add --dev codspeed-criterion-compat --rename criterion
       - name: Build the benchmark target(s)
         run: cargo codspeed build
