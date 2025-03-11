@@ -1004,19 +1004,21 @@ class ArcSegment implements SegmentUtils {
       scale,
     })
 
+    const grey = 0xaaaaaa
+
     // Create a line from the center to the 'to' point
     const centerToFromLine = createLine({
       from: center,
       to: from,
       scale,
-      color: 0xaaaaaa, // Light gray color for the line
+      color: grey, // Light gray color for the line
     })
     centerToFromLine.name = ARC_CENTER_TO_FROM
     const centerToToLine = createLine({
       from: center,
       to,
       scale,
-      color: 0xaaaaaa, // Light gray color for the line
+      color: grey, // Light gray color for the line
     })
     centerToToLine.name = ARC_CENTER_TO_TO
     const angleReferenceLine = createLine({
@@ -1024,7 +1026,7 @@ class ArcSegment implements SegmentUtils {
       from: [center[0] + 28 * scale, center[1]],
       to: [center[0] + 32 * scale, center[1]],
       scale,
-      color: 0xaaaaaa, // Light gray color for the line
+      color: grey, // Light gray color for the line
     })
     angleReferenceLine.name = ARC_ANGLE_REFERENCE_LINE
 
@@ -1035,7 +1037,7 @@ class ArcSegment implements SegmentUtils {
       startAngle: 0,
       endAngle,
       scale,
-      color: 0xaaaaaa, // Red color for the angle indicator
+      color: grey, // Red color for the angle indicator
     }) as Line
     angleIndicator.name = 'angleIndicator'
 
@@ -1046,7 +1048,7 @@ class ArcSegment implements SegmentUtils {
       startAngle: 0,
       endAngle: (endAngle * Math.PI) / 180,
       scale,
-      color: 0xaaaaaa, // Green color for the end angle indicator
+      color: grey, // Green color for the end angle indicator
     }) as Line
     endAngleIndicator.name = 'endAngleIndicator'
 
