@@ -97,6 +97,7 @@ jobs:
       - run: yarn install
 
       - name: Download Wasm Cache
+        id: download-wasm
         if: ${{ github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
         uses: dawidd6/action-download-artifact@v7
         continue-on-error: true
@@ -109,8 +110,6 @@ jobs:
 
       - name: Build WASM condition
         id: wasm
-        if: needs.conditions.outputs.should-run == 'true'
-        shell: bash
         run: |
           set -euox pipefail
           # Build wasm if this is a scheduled run, there are Rust changes, or
