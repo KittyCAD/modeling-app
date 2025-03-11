@@ -151,10 +151,30 @@ pub fn generate_settings_docs() {
     // fs::write("/tmp/project_schema.json", serde_json::to_string_pretty(&project_schema).unwrap())
     //     .expect("Failed to write debug schema");
 
+    // Extract the description from the schema metadata
+    let project_description = if let schemars::schema::Schema::Object(obj) = &project_schema {
+        if let Some(metadata) = &obj.metadata {
+            metadata.description.clone().unwrap_or_default()
+        } else {
+            "Project specific settings for the KittyCAD modeling app.".to_string()
+        }
+    } else {
+        "Project specific settings for the KittyCAD modeling app.".to_string()
+    };
+    
+    // Trim any trailing periods to avoid double periods
+    let trimmed_description = project_description.trim_end_matches('.');
+    
+    // Add additional context about the file format
+    let full_description = format!(
+        "{}. This document describes the available settings in the `project.toml` configuration file. This configuration file uses the [TOML](https://toml.io) format.",
+        trimmed_description
+    );
+    
     // Convert the schema to our template format
     let project_data = json!({
         "title": "Project Settings",
-        "description": "Configuration options for KittyCAD modeling app projects.",
+        "description": full_description,
         "config_type": "Project Configuration",
         "file_name": "project.toml",
         "settings": json!(project_schema),
@@ -175,9 +195,29 @@ pub fn generate_settings_docs() {
     // fs::write("/tmp/user_schema.json", serde_json::to_string_pretty(&user_schema).unwrap())
     //     .expect("Failed to write debug schema");
 
+    // Extract the description from the schema metadata
+    let user_description = if let schemars::schema::Schema::Object(obj) = &user_schema {
+        if let Some(metadata) = &obj.metadata {
+            metadata.description.clone().unwrap_or_default()
+        } else {
+            "User-specific configuration options for the KittyCAD modeling app.".to_string()
+        }
+    } else {
+        "User-specific configuration options for the KittyCAD modeling app.".to_string()
+    };
+    
+    // Trim any trailing periods to avoid double periods
+    let trimmed_description = user_description.trim_end_matches('.');
+    
+    // Add additional context about the file format
+    let full_description = format!(
+        "{}. This document describes the available settings in the `user.toml` configuration file. This configuration file uses the [TOML](https://toml.io) format.",
+        trimmed_description
+    );
+    
     let user_data = json!({
         "title": "User Settings",
-        "description": "User-specific configuration options for the KittyCAD modeling app.",
+        "description": full_description,
         "config_type": "User Configuration",
         "file_name": "user.toml",
         "settings": json!(user_schema),
