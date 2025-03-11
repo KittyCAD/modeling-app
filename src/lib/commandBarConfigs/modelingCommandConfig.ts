@@ -362,6 +362,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         skip: true,
         multiple: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       trajectory: {
         inputType: 'selection',
@@ -370,6 +371,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         multiple: false,
         validation: sweepValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       sectional: {
         inputType: 'options',

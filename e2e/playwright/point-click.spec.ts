@@ -1443,8 +1443,6 @@ sketch002 = startSketchOn('XZ')
       await cmdBar.expectState({
         commandName: 'Sweep',
         headerArguments: {
-          Target: '1 face',
-          Trajectory: '1 segment',
           Sectional: '',
         },
         stage: 'review',
@@ -1455,8 +1453,6 @@ sketch002 = startSketchOn('XZ')
       await cmdBar.expectState({
         commandName: 'Sweep',
         headerArguments: {
-          Target: '1 face',
-          Trajectory: '1 segment',
           Sectional: '',
         },
         stage: 'review',
