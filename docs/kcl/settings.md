@@ -4,13 +4,28 @@ excerpt: "Documentation of settings for the KCL language and Zoo Modeling App."
 layout: manual
 ---
 
-# Per-file settings
+# KCL Settings
+
+There are three levels of settings available in the KittyCAD modeling application:
+
+1. [User Settings](/docs/kcl/settings/user.toml): Global settings that apply to all projects, stored in `user.toml`
+2. [Project Settings](/docs/kcl/settings/project.toml): Settings specific to a project, stored in `project.toml`
+3. Per-file Settings: Settings that apply to a single KCL file, specified using the `@settings` attribute
+
+## Configuration Files
+
+The KittyCAD modeling app uses TOML files for configuration:
+
+* **User Settings**: `user.toml` - See [complete documentation](/docs/kcl/settings/user.toml)
+* **Project Settings**: `project.toml` - See [complete documentation](/docs/kcl/settings/project.toml)
+
+## Per-file settings
 
 Settings which affect a single file are configured using the settings attribute.
 This must be at the top of the KCL file (comments before the attribute are permitted).
-E.g.,
+For example:
 
-```
+```js
 // The settings attribute.
 @settings(defaultLengthUnit = in)
 
