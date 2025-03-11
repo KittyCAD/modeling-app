@@ -2651,7 +2651,7 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
             ))
         }),
         // Array types
-        (primitive_type, open_bracket, close_bracket).map(|(t, _, _)| Ok(t.map(Type::Array))),
+        (open_bracket, primitive_type, close_bracket).map(|(_, t, _)| Ok(t.map(Type::Array))),
         // Primitive types
         primitive_type.map(|t| Ok(t.map(Type::Primitive))),
     ))
