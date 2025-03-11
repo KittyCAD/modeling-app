@@ -40,6 +40,7 @@ jobs:
           # cleanup old
           rm -rf documentation/content/pages/docs/kcl/*.md
           rm -rf documentation/content/pages/docs/kcl/types
+          rm -rf documentation/content/pages/docs/kcl/settings
           # move new
           mv -f docs/kcl/*.md documentation/content/pages/docs/kcl/
           mv -f docs/kcl/types documentation/content/pages/docs/kcl/
