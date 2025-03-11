@@ -1,0 +1,246 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing more_arcs.kcl
+---
+{
+  "profile001": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              92,
+              119,
+              0
+            ]
+          },
+          "from": [
+            49.48,
+            99.87
+          ],
+          "tag": null,
+          "to": [
+            208.9,
+            269.37
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              125,
+              208,
+              0
+            ]
+          },
+          "from": [
+            208.9,
+            269.37
+          ],
+          "p1": [
+            208.89999999999998,
+            269.37
+          ],
+          "p2": [
+            376.57,
+            207.07
+          ],
+          "p3": [
+            318.85,
+            79.71
+          ],
+          "tag": null,
+          "to": [
+            318.85,
+            79.71
+          ],
+          "type": "ArcThreePoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              214,
+              307,
+              0
+            ]
+          },
+          "ccw": false,
+          "center": [
+            239.1359,
+            10.9996
+          ],
+          "from": [
+            318.85,
+            79.71
+          ],
+          "radius": 105.24,
+          "tag": null,
+          "to": [
+            175.2886,
+            -72.6603
+          ],
+          "type": "Arc",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              313,
+              369,
+              0
+            ]
+          },
+          "from": [
+            175.2886,
+            -72.6603
+          ],
+          "tag": null,
+          "to": [
+            49.48,
+            99.87
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              375,
+              382,
+              0
+            ]
+          },
+          "from": [
+            49.48,
+            99.87
+          ],
+          "tag": null,
+          "to": [
+            49.48,
+            99.87
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
+      "on": {
+        "type": "plane",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": "XZ",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
+        },
+        "units": {
+          "type": "Mm"
+        },
+        "__meta": []
+      },
+      "start": {
+        "from": [
+          49.48,
+          99.87
+        ],
+        "to": [
+          49.48,
+          99.87
+        ],
+        "units": {
+          "type": "Mm"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": [
+            45,
+            86,
+            0
+          ]
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": [
+        {
+          "sourceRange": [
+            45,
+            86,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "sketch001": {
+    "type": "Plane",
+    "value": {
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": "XZ",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "units": {
+        "type": "Mm"
+      },
+      "__meta": []
+    }
+  }
+}
