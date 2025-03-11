@@ -5,4 +5,9 @@ description: Error from executing array_elem_pop_empty_fail.kcl
 KCL Semantic error
 
   × semantic: Cannot pop from an empty array
-  [Failed to read contents for label `tests/array_elem_pop_empty_fail/input.kcl` (offset: 16, length: 8): OutOfBounds]
+   ╭─[2:8]
+ 1 │ arr = []
+ 2 │ fail = pop(arr)
+   ·        ────┬───
+   ·            ╰── tests/array_elem_pop_empty_fail/input.kcl
+   ╰────
