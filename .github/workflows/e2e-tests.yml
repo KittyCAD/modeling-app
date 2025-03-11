@@ -167,6 +167,10 @@ jobs:
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
 
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
       - uses: actions/download-artifact@v4
         name: prepared-wasm
 
@@ -275,9 +279,7 @@ jobs:
       - name: Copy prepared wasm
         run: |
           ls -R prepared-wasm
-          cp prepared-wasm/rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
-          mkdir rust/kcl-wasm-lib/pkg
-          cp prepared-wasm/rust/kcl-wasm-lib/pkg/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
 
       - uses: actions/setup-node@v4
         with:
