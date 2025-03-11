@@ -8,7 +8,7 @@ layout: manual
 
 Configuration options for KittyCAD modeling app projects.
 
-This document describes the available settings in the `project.toml` configuration file for the KittyCAD modeling app. This configuration file uses the [TOML](https://toml.io) format and provides project-specific settings.
+This document describes the available settings in the `project.toml` configuration file for the KittyCAD modeling app. This configuration file uses the [TOML](https://toml.io) format and provides configuration for the KittyCAD modeling application.
 
 ## Project Configuration Structure
 
@@ -28,140 +28,162 @@ This document describes the available settings in the `project.toml` configurati
 
 ## Available Settings
 
-The settings section contains all project-specific configuration options.
-
-### app
-
-Application-specific settings for this project.
-
-#### appearance
-
-Controls the visual appearance of the application for this project.
+### settings
 
 
-**Default:** 
 
-#### onboarding_status
+#### app
 
-The onboarding status for this project.
-
-**Possible values:** ``, `completed`, `incomplete`, `dismissed`
-
-**Default:** incomplete
-
-#### theme_color
-
-DEPRECATED: Use appearance.color instead. The hue of the primary theme color.
+The settings for the modeling app.
 
 
-**Default:** null
+**Default:** None
 
-#### enable_ssao
+This setting has the following nested options:
 
-DEPRECATED: Use modeling.enable_ssao instead. Whether Screen Space Ambient Occlusion is enabled.
+##### appearance
 
-
-**Default:** null
-
-#### dismiss_web_banner
-
-Permanently dismiss the banner warning to download the desktop app.
+The settings for the appearance of the app.
 
 
-**Default:** false
+**Default:** None
 
-#### stream_idle_mode
+This setting has further nested options. See the schema for full details.
+##### onboarding_status
+
+The onboarding status of the app.
+
+
+**Default:** None
+
+##### theme_color
+
+The hue of the primary theme color for the app.
+
+
+**Default:** None
+
+##### enable_ssao
+
+Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+
+
+**Default:** None
+
+##### dismiss_web_banner
+
+Permanently dismiss the banner warning to download the desktop app. This setting only applies to the web app. And is temporary until we have Linux support.
+
+
+**Default:** None
+
+##### stream_idle_mode
 
 When the user is idle, and this is true, the stream will be torn down.
 
 
-**Default:** false
+**Default:** None
 
-#### allow_orbit_in_sketch_mode
+##### allow_orbit_in_sketch_mode
 
-Whether to allow orbit camera controls in sketch mode.
-
-
-**Default:** false
-
-#### show_debug_panel
-
-Whether to show the debug panel, which lets you see various states of the app.
+When the user is idle, and this is true, the stream will be torn down.
 
 
-**Default:** false
+**Default:** None
 
-#### named_views
+##### show_debug_panel
 
-User-defined camera positions saved as named views.
-
-
-**Default:** 
+Whether to show the debug panel, which lets you see various states of the app to aid in development.
 
 
-### modeling
+**Default:** None
+
+##### named_views
+
+Settings that affect the behavior of the command bar.
+
+
+**Default:** None
+
+
+#### modeling
 
 Settings that affect the behavior while modeling.
 
-#### base_unit
+
+**Default:** None
+
+This setting has the following nested options:
+
+##### base_unit
 
 The default unit to use in modeling dimensions.
 
-**Possible values:** `cm`, `ft`, `in`, `m`, `mm`, `yd`
 
-**Default:** mm
+**Default:** None
 
-#### highlight_edges
+##### highlight_edges
 
-Whether to highlight edges of 3D objects.
-
-
-**Default:** true
-
-#### show_debug_panel
-
-DEPRECATED: Use app.show_debug_panel instead.
+Highlight edges of 3D objects?
 
 
-**Default:** false
+**Default:** None
 
-#### enable_ssao
+##### show_debug_panel
 
-Whether Screen Space Ambient Occlusion is enabled.
-
-
-**Default:** true
+Whether to show the debug panel, which lets you see various states of the app to aid in development. Remove this when we remove backwards compatibility with the old settings file.
 
 
-### text_editor
+**Default:** None
+
+##### enable_ssao
+
+Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+
+
+**Default:** None
+
+
+#### text_editor
 
 Settings that affect the behavior of the KCL text editor.
 
-#### text_wrapping
+
+**Default:** None
+
+This setting has the following nested options:
+
+##### text_wrapping
 
 Whether to wrap text in the editor or overflow with scroll.
 
 
-**Default:** true
+**Default:** None
 
-#### blinking_cursor
+##### blinking_cursor
 
 Whether to make the cursor blink in the editor.
 
 
-**Default:** true
+**Default:** None
 
 
-### command_bar
+#### command_bar
 
 Settings that affect the behavior of the command bar.
 
-#### include_settings
+
+**Default:** None
+
+This setting has the following nested options:
+
+##### include_settings
 
 Whether to include settings in the command bar.
 
 
-**Default:** true
+**Default:** None
+
 
 
 
@@ -169,11 +191,18 @@ Whether to include settings in the command bar.
 
 ```toml
 [settings.app]
-# Set the app color to blue
+# Set the appearance of the application
 [settings.app.appearance]
-color = 220.0
+# Use dark mode theme
+theme = "dark"
+# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
+color = 240.0
 
 [settings.modeling]
 # Use inches as the default measurement unit
 base_unit = "in"
+
+[settings.text_editor]
+# Disable text wrapping in the editor
+text_wrapping = false
 ```
