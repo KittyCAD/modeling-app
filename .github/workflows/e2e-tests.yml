@@ -305,7 +305,7 @@ jobs:
       - run: yarn tronb:vite:dev
 
       - name: install good sed
-        if: ${{ needs.conditions.outputs.should-run == 'true' && startsWith(matrix.os, 'macos') }}
+        if: startsWith(matrix.os, 'macos')
         shell: bash
         run: |
           brew install gnu-sed
@@ -330,7 +330,6 @@ jobs:
           ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
 
       - uses: actions/download-artifact@v4
-        if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -338,7 +337,7 @@ jobs:
 
       - name: Run playwright/electron flow (with retries)
         id: retry
-        if: ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
+        continue-on-error: true
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
@@ -354,7 +353,6 @@ jobs:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
@@ -363,7 +361,6 @@ jobs:
           overwrite: true
 
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: playwright-report/
