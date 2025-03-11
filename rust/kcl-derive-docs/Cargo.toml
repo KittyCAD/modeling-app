@@ -9,6 +9,7 @@ repository = "https://github.com/KittyCAD/modeling-app"
 
 [lib]
 proc-macro = true
+bench = false
 
 [dependencies]
 Inflector = "0.11.4"

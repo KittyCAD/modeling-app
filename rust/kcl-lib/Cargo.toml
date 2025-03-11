@@ -11,6 +11,14 @@ keywords = ["kcl", "KittyCAD", "CAD"]
 exclude = ["tests/*", "benches/*", "examples/*", "e2e/*", "bindings/*", "fuzz/*"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+bench = false
+
+[[bin]]
+name = "kcl-lib-bin"
+path = "src/main.rs"
+bench = false
+
 [dependencies]
 anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
@@ -33,7 +41,7 @@ http = { workspace = true }
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 indexmap = { workspace = true, features = ["serde"] }
 itertools = "0.13.0"
-kcl-derive-docs = { path = "../kcl-derive-docs" }
+kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = { workspace = true }
@@ -114,7 +122,7 @@ expectorate = "1.1.0"
 handlebars = "6.3.0"
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 insta = { version = "1.41.1", features = ["json", "filters", "redactions"] }
-kcl-directory-test-macro = { path = "../kcl-directory-test-macro" }
+kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.5.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
 tokio = { version = "1.41.1", features = ["rt-multi-thread", "macros", "time"] }
@@ -138,6 +146,10 @@ required-features = ["lsp-test-util"]
 
 [[bench]]
 name = "executor_benchmark_criterion"
+harness = false
+
+[[bench]]
+name = "benchmark_kcl_samples"
 harness = false
 
 [[test]]
