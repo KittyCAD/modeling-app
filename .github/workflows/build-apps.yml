@@ -33,6 +33,38 @@ jobs:
 
       - run: yarn install
 
+      - id: filter
+        name: Check for Rust changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            rust:
+              - 'rust/**'
+
+      - name: Download Wasm Cache
+        id: download-wasm
+        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
+        uses: dawidd6/action-download-artifact@v7
+        continue-on-error: true
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          name: wasm-bundle
+          workflow: build-and-store-wasm.yml
+          branch: main
+          path: rust/kcl-wasm-lib/pkg
+
+      - name: Build WASM condition
+        id: wasm
+        run: |
+          set -euox pipefail
+          # Build wasm if this is a push to main or tag, there are Rust changes, or
+          # downloading from the wasm cache failed.
+          if [[ ${{github.event_name}} == 'push' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+            echo "should-build-wasm=true" >> $GITHUB_OUTPUT
+          else
+            echo "should-build-wasm=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Use correct Rust toolchain
         shell: bash
         run: |
