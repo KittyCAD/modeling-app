@@ -273,8 +273,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
 
         let ang = 0
 
-        const line = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
-        ang = await u.getAngle(`[data-overlay-index="${0}"]`)
+        const line = await u.getBoundingBox('[data-overlay-index="0"]')
+        ang = await u.getAngle('[data-overlay-index="0"]')
         console.log('line1', line, ang)
         await clickConstrained({
           hoverPos: { x: line.x, y: line.y },
@@ -296,8 +296,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           locator: '[data-overlay-index="0"]',
         })
 
-        const angledLine = await u.getBoundingBox(`[data-overlay-index="1"]`)
-        ang = await u.getAngle(`[data-overlay-index="1"]`)
+        const angledLine = await u.getBoundingBox('[data-overlay-index="1"]')
+        ang = await u.getAngle('[data-overlay-index="1"]')
         console.log('angledLine1')
         await clickConstrained({
           hoverPos: { x: angledLine.x, y: angledLine.y },
@@ -326,8 +326,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         await page.mouse.move(700, 250)
         await page.waitForTimeout(100)
 
-        let lineTo = await u.getBoundingBox(`[data-overlay-index="2"]`)
-        ang = await u.getAngle(`[data-overlay-index="2"]`)
+        let lineTo = await u.getBoundingBox('[data-overlay-index="2"]')
+        ang = await u.getAngle('[data-overlay-index="2"]')
         console.log('lineTo1')
         await clickConstrained({
           hoverPos: { x: lineTo.x, y: lineTo.y },
@@ -352,8 +352,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           locator: '[data-overlay-toolbar-index="2"]',
         })
 
-        const xLineTo = await u.getBoundingBox(`[data-overlay-index="3"]`)
-        ang = await u.getAngle(`[data-overlay-index="3"]`)
+        const xLineTo = await u.getBoundingBox('[data-overlay-index="3"]')
+        ang = await u.getAngle('[data-overlay-index="3"]')
         console.log('xlineTo1')
         await clickConstrained({
           hoverPos: { x: xLineTo.x, y: xLineTo.y },
@@ -418,8 +418,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
 
           let ang = 0
 
-          const yLineTo = await u.getBoundingBox(`[data-overlay-index="4"]`)
-          ang = await u.getAngle(`[data-overlay-index="4"]`)
+          const yLineTo = await u.getBoundingBox('[data-overlay-index="4"]')
+          ang = await u.getAngle('[data-overlay-index="4"]')
           console.log('ylineTo1')
           await clickUnconstrained({
             hoverPos: { x: yLineTo.x, y: yLineTo.y - 200 },
@@ -431,8 +431,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
             locator: '[data-overlay-toolbar-index="4"]',
           })
 
-          const xLine = await u.getBoundingBox(`[data-overlay-index="5"]`)
-          ang = await u.getAngle(`[data-overlay-index="5"]`)
+          const xLine = await u.getBoundingBox('[data-overlay-index="5"]')
+          ang = await u.getAngle('[data-overlay-index="5"]')
           console.log('xline')
           await clickUnconstrained({
             hoverPos: { x: xLine.x, y: xLine.y },
@@ -500,8 +500,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
 
         let ang = 0
 
-        const yLine = await u.getBoundingBox(`[data-overlay-index="6"]`)
-        ang = await u.getAngle(`[data-overlay-index="6"]`)
+        const yLine = await u.getBoundingBox('[data-overlay-index="6"]')
+        ang = await u.getAngle('[data-overlay-index="6"]')
         console.log('yline1')
         await clickConstrained({
           hoverPos: { x: yLine.x, y: yLine.y },
@@ -514,9 +514,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         })
 
         const angledLineOfXLength = await u.getBoundingBox(
-          `[data-overlay-index="7"]`
+          '[data-overlay-index="7"]'
         )
-        ang = await u.getAngle(`[data-overlay-index="7"]`)
+        ang = await u.getAngle('[data-overlay-index="7"]')
         console.log('angledLineOfXLength1')
         await clickConstrained({
           hoverPos: { x: angledLineOfXLength.x, y: angledLineOfXLength.y },
@@ -546,9 +546,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         })
 
         const angledLineOfYLength = await u.getBoundingBox(
-          `[data-overlay-index="8"]`
+          '[data-overlay-index="8"]'
         )
-        ang = await u.getAngle(`[data-overlay-index="8"]`)
+        ang = await u.getAngle('[data-overlay-index="8"]')
         console.log('angledLineOfYLength1')
         await clickUnconstrained({
           hoverPos: { x: angledLineOfYLength.x, y: angledLineOfYLength.y },
@@ -631,8 +631,8 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
 
         let ang = 0
 
-        const angledLineToX = await u.getBoundingBox(`[data-overlay-index="9"]`)
-        ang = await u.getAngle(`[data-overlay-index="9"]`)
+        const angledLineToX = await u.getBoundingBox('[data-overlay-index="9"]')
+        ang = await u.getAngle('[data-overlay-index="9"]')
         console.log('angledLineToX')
         await clickConstrained({
           hoverPos: { x: angledLineToX.x, y: angledLineToX.y },
@@ -658,9 +658,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         })
 
         const angledLineToY = await u.getBoundingBox(
-          `[data-overlay-index="10"]`
+          '[data-overlay-index="10"]'
         )
-        ang = await u.getAngle(`[data-overlay-index="10"]`)
+        ang = await u.getAngle('[data-overlay-index="10"]')
         console.log('angledLineToY')
         await clickUnconstrained({
           hoverPos: { x: angledLineToY.x, y: angledLineToY.y },
@@ -688,9 +688,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         })
 
         const angledLineThatIntersects = await u.getBoundingBox(
-          `[data-overlay-index="11"]`
+          '[data-overlay-index="11"]'
         )
-        ang = await u.getAngle(`[data-overlay-index="11"]`)
+        ang = await u.getAngle('[data-overlay-index="11"]')
         console.log('angledLineThatIntersects')
         await clickUnconstrained({
           hoverPos: {
@@ -1151,7 +1151,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
         locator: '[data-overlay-toolbar-index="14"]',
       })
       segmentToDelete = await getOverlayByIndex(13)
-      ang = await u.getAngle(`[data-overlay-index="${13}"]`)
+      ang = await u.getAngle('[data-overlay-index="13"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: `arcTo({
@@ -1164,7 +1164,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
         locator: '[data-overlay-toolbar-index="13"]',
       })
       segmentToDelete = await getOverlayByIndex(12)
-      ang = await u.getAngle(`[data-overlay-index="${12}"]`)
+      ang = await u.getAngle('[data-overlay-index="12"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'tangentialArcTo([3.14 + 13, 1.14], %)',
@@ -1175,7 +1175,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(11)
-      ang = await u.getAngle(`[data-overlay-index="${11}"]`)
+      ang = await u.getAngle('[data-overlay-index="11"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: `angledLineThatIntersects({
@@ -1190,7 +1190,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(10)
-      ang = await u.getAngle(`[data-overlay-index="${10}"]`)
+      ang = await u.getAngle('[data-overlay-index="10"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'angledLineToY({ angle = 89, to = 9.14 + 0 }, %)',
@@ -1200,7 +1200,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(9)
-      ang = await u.getAngle(`[data-overlay-index="${9}"]`)
+      ang = await u.getAngle('[data-overlay-index="9"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'angledLineToX({ angle = 3 + 0, to = 26 }, %)',
@@ -1210,7 +1210,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(8)
-      ang = await u.getAngle(`[data-overlay-index="${8}"]`)
+      ang = await u.getAngle('[data-overlay-index="8"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted:
@@ -1221,7 +1221,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(7)
-      ang = await u.getAngle(`[data-overlay-index="${7}"]`)
+      ang = await u.getAngle('[data-overlay-index="7"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted:
@@ -1232,7 +1232,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(6)
-      ang = await u.getAngle(`[data-overlay-index="${6}"]`)
+      ang = await u.getAngle('[data-overlay-index="6"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'yLine(length = 21.14 + 0)',
@@ -1242,7 +1242,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(5)
-      ang = await u.getAngle(`[data-overlay-index="${5}"]`)
+      ang = await u.getAngle('[data-overlay-index="5"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'xLine(length = 26.04)',
@@ -1252,7 +1252,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(4)
-      ang = await u.getAngle(`[data-overlay-index="${4}"]`)
+      ang = await u.getAngle('[data-overlay-index="4"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'yLine(endAbsolute = -10.77, tag = $a)',
@@ -1262,7 +1262,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(3)
-      ang = await u.getAngle(`[data-overlay-index="${3}"]`)
+      ang = await u.getAngle('[data-overlay-index="3"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'xLine(endAbsolute = 9 - 5)',
@@ -1272,7 +1272,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(2)
-      ang = await u.getAngle(`[data-overlay-index="${2}"]`)
+      ang = await u.getAngle('[data-overlay-index="2"]')
       await expect(page.getByText('Added variable')).not.toBeVisible()
 
       const hoverPos = { x: segmentToDelete.x, y: segmentToDelete.y }
@@ -1305,7 +1305,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(1)
-      ang = await u.getAngle(`[data-overlay-index="${1}"]`)
+      ang = await u.getAngle('[data-overlay-index="1"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'angledLine({ angle = 3 + 0, length = 32 + 0 }, %)',
@@ -1315,7 +1315,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       })
 
       segmentToDelete = await getOverlayByIndex(0)
-      ang = await u.getAngle(`[data-overlay-index="${0}"]`)
+      ang = await u.getAngle('[data-overlay-index="0"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'line(end = [0.5, -14 + 0])',
