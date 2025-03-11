@@ -1,0 +1,19 @@
+[package]
+name = "kcl-directory-test-macro"
+description = "A tool for generating tests from a directory of kcl files"
+version = "0.1.47"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
+
+[lib]
+proc-macro = true
+bench = false
+
+[dependencies]
+proc-macro2 = "1"
+quote = "1"
+syn = { version = "2.0.96", features = ["full"] }
+
+[lints]
+workspace = true

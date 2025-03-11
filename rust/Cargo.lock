@@ -1783,7 +1783,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.46"
+version = "0.1.47"
 dependencies = [
  "anyhow",
  "clap",
@@ -1794,7 +1794,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.46"
+version = "0.1.47"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1812,8 +1812,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-directory-test-macro"
+version = "0.1.47"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.96",
+]
+
+[[package]]
 name = "kcl-language-server"
-version = "0.2.46"
+version = "0.2.47"
 dependencies = [
  "anyhow",
  "clap",
@@ -1834,7 +1843,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.46"
+version = "0.1.47"
 dependencies = [
  "anyhow",
  "clap",
@@ -1854,7 +1863,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.46"
+version = "0.2.47"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1882,6 +1891,7 @@ dependencies = [
  "itertools 0.13.0",
  "js-sys",
  "kcl-derive-docs",
+ "kcl-directory-test-macro",
  "kittycad",
  "kittycad-modeling-cmds",
  "lazy_static",
@@ -1920,7 +1930,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.46"
+version = "0.3.47"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1935,7 +1945,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.46"
+version = "0.1.47"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -1948,7 +1958,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.46"
+version = "0.1.47"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1962,7 +1972,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.46"
+version = "0.1.47"
 dependencies = [
  "bson",
  "console_error_panic_hook",

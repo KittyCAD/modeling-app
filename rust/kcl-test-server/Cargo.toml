@@ -1,9 +1,12 @@
 [package]
 name = "kcl-test-server"
 description = "A test server for KCL"
-version = "0.1.46"
+version = "0.1.47"
 edition = "2021"
 license = "MIT"
+
+[lib]
+bench = false
 
 [dependencies]
 anyhow = "1.0.95"

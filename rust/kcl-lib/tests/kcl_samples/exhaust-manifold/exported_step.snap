@@ -1,6 +1,0 @@
----
-source: kcl-lib/src/simulation_tests.rs
-description: Step file exhaust-manifold.kcl
-extension: step
-snapshot_kind: binary
----
