@@ -217,7 +217,6 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
 
       const u = await getUtils(page)
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
       await scene.settled(cmdBar)
 
       await expect(
