@@ -1052,10 +1052,6 @@ export const modelingMachine = setup({
       )
         return {}
       if (!context.sketchDetails) return {}
-      // if (event.output.expressionIndexToDelete >= 0) {
-      //   const _ast = structuredClone(kclManager.ast)
-      //   _ast.body.splice(event.output.expressionIndexToDelete, 1)
-      // }
       return {
         sketchDetails: {
           ...context.sketchDetails,
