@@ -1696,7 +1696,7 @@ export class SceneEntities {
     // Calculate a default center point and radius based on the last segment's endpoint
     const from: [number, number] = [lastSeg.to[0], lastSeg.to[1]]
     const radius = Math.sqrt(
-      Math.pow(center[0] - from[0], 2) + Math.pow(center[1] - from[1], 2)
+      (center[0] - from[0]) ** 2 + (center[1] - from[1]) ** 2
     )
     const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
     const endAngle = startAngle + Math.PI / 180 // arbitrary 1 degree arc as starting default
