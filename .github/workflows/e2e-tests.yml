@@ -177,7 +177,9 @@ jobs:
       - name: Copy prepared wasm
         run: |
           ls -R prepared-wasm
-          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
+          cp prepared-files/kcl_wasm_lib_bg.wasm public
+          mkdir rust/kcl-wasm-lib/pkg
+          cp prepared-files/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
       - uses: actions/setup-node@v4
         with:
