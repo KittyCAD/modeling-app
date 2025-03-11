@@ -125,6 +125,10 @@ export class ElectronZoo {
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
+    // We need to expose this in order for some tests that require folder
+    // creation and some code below.
+    const that = this
+
     const options = {
       args: ['.', '--no-sandbox'],
       env: {
@@ -153,8 +157,6 @@ export class ElectronZoo {
       this.electron = await electron.launch(options)
       this.context = this.electron.context()
       this.page = await this.electron.firstWindow()
-      this.context.on('console', console.log)
-      this.page.on('console', console.log)
       await this.context.tracing.start({ screenshots: true, snapshots: true })
     }
 
@@ -190,9 +192,6 @@ export class ElectronZoo {
 
     await this.page.setBodyDimensions(this.viewPortSize)
 
-    // We need to expose this in order for some tests that require folder
-    // creation.
-    const that = this
     this.context.folderSetupFn = async function (fn) {
       return fn(that.projectDirName)
         .then(() => that.page.reload())
