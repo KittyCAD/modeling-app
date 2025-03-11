@@ -2,6 +2,8 @@
 # If a test uses the engine, we want to limit the number that can run in parallel.
 # This way we don't start and stop too many engine instances, putting pressure on our cloud.
 uses-engine = { max-threads = 4 }
+# If a test must run after the engine tests, we want to make sure the engine tests are done first.
+after-engine = { max-threads = 12 }
 
 [profile.default]
 slow-timeout = { period = "30s", terminate-after = 1 }
@@ -24,3 +26,27 @@ threads-required = 2
 [[profile.default.overrides]]
 filter = "test(parser::parser_impl::snapshot_tests)"
 slow-timeout = { period = "1s", terminate-after = 5 }
+
+# Create the filters for things that need to run after the engine tests.
+# Like generating the docs or the kcl-samples manifest, etc.
+
+[[profile.default.overrides]]
+# If a test starts with test_after_engine_, then it needs to be run after the engine tests.
+filter = "test(test_after_engine_)"
+test-group = "after-engine"
+
+[[profile.ci.overrides]]
+# If a test starts with test_after_engine_, then it needs to be run after the engine tests.
+filter = "test(test_after_engine_)"
+test-group = "after-engine"
+
+[[profile.default.overrides]]
+# Generate the docs tests after the engine tests.
+filter = "test(docs::gen_std_tests)"
+test-group = "after-engine"
+
+[[profile.ci.overrides]]
+# Generate the docs tests after the engine tests.
+filter = "test(docs::gen_std_tests)"
+test-group = "after-engine"
+

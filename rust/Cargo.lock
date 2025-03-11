@@ -1783,7 +1783,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.46"
+version = "0.1.48"
 dependencies = [
  "anyhow",
  "clap",
@@ -1794,7 +1794,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.46"
+version = "0.1.48"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1812,8 +1812,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-directory-test-macro"
+version = "0.1.48"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.96",
+]
+
+[[package]]
 name = "kcl-language-server"
-version = "0.2.46"
+version = "0.2.48"
 dependencies = [
  "anyhow",
  "clap",
@@ -1834,7 +1843,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.46"
+version = "0.1.48"
 dependencies = [
  "anyhow",
  "clap",
@@ -1854,7 +1863,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.46"
+version = "0.2.48"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1882,6 +1891,7 @@ dependencies = [
  "itertools 0.13.0",
  "js-sys",
  "kcl-derive-docs",
+ "kcl-directory-test-macro",
  "kittycad",
  "kittycad-modeling-cmds",
  "lazy_static",
@@ -1907,6 +1917,7 @@ dependencies = [
  "tower-lsp",
  "ts-rs",
  "twenty-twenty",
+ "tynm",
  "url",
  "uuid",
  "validator",
@@ -1920,7 +1931,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.46"
+version = "0.3.48"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1935,7 +1946,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.46"
+version = "0.1.48"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -1948,7 +1959,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.46"
+version = "0.1.48"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1962,7 +1973,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.46"
+version = "0.1.48"
 dependencies = [
  "bson",
  "console_error_panic_hook",
@@ -4230,6 +4241,15 @@ dependencies = [
  "image",
  "image-compare",
  "uuid",
+]
+
+[[package]]
+name = "tynm"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bd30d05e69d1478e13fe3e7a853409cfec82cebc2cf9b8d613b3c6b0081781ed"
+dependencies = [
+ "nom",
 ]
 
 [[package]]

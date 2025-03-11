@@ -27,7 +27,7 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
-//pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.step";
+pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.linux.step";
 
 impl Test {
     fn new(name: &str) -> Self {
@@ -107,15 +107,7 @@ fn unparse_test(test: &Test) {
     };
     // Check recasting the AST produces the original string.
     let actual = ast.recast(&Default::default(), 0);
-    if matches!(std::env::var("EXPECTORATE").as_deref(), Ok("overwrite")) {
-        std::fs::write(test.input_dir.join(&test.entry_point), &actual).unwrap();
-    }
-    let expected = read(&test.entry_point, &test.input_dir);
-    pretty_assertions::assert_eq!(
-        actual,
-        expected,
-        "Parse then unparse didn't recreate the original KCL file"
-    );
+    expectorate::assert_contents(test.input_dir.join(&test.entry_point), &actual);
 }
 
 async fn execute(test_name: &str, render_to_png: bool) {
@@ -153,12 +145,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             }
             if export_step {
                 let step = step.unwrap();
-                // TODO FIXME: This is failing because the step file is not deterministic.
-                // But it should be, talk to @katie
-                /*assert_snapshot(test, "Step file", || {
-                    insta::assert_binary_snapshot!(EXPORTED_STEP_NAME, step);
-                });*/
-                std::fs::write(test.output_dir.join("exported_step.snap.step"), step).unwrap();
+                let step_str = std::str::from_utf8(&step).unwrap();
+                // We use expectorate here so we can see the diff in ci.
+                expectorate::assert_contents(
+                    test.output_dir
+                        .join(format!("exported_step.{}.step", std::env::consts::OS)),
+                    step_str,
+                );
             }
             let outcome = exec_state.to_wasm_outcome(env_ref);
             assert_common_snapshots(
