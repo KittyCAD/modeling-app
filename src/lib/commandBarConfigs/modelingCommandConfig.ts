@@ -69,6 +69,8 @@ export type ModelingCommandSchema = {
     edge: Selections
   }
   Fillet: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
     selection: Selections
     radius: KclCommandValue
   }
@@ -538,12 +540,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     status: 'development',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: true,
         required: true,
         skip: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
         warningMessage:
           'Fillets cannot touch other fillets yet. This is under development.',
       },
