@@ -43,6 +43,7 @@ jobs:
           # move new
           mv -f docs/kcl/*.md documentation/content/pages/docs/kcl/
           mv -f docs/kcl/types documentation/content/pages/docs/kcl/
+          mv -f docs/kcl/settings documentation/content/pages/docs/kcl/
       - name: move kcl-samples
         shell: bash
         run: |
