@@ -62,7 +62,6 @@ import {
   THREE_POINT_ARC_SEGMENT_DASH,
   THREE_POINT_ARC_HANDLE2,
   THREE_POINT_ARC_HANDLE3,
-  DRAFT_DASHED_LINE,
 } from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
@@ -87,6 +86,7 @@ import { Selections } from 'lib/selections'
 import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { commandBarActor } from 'machines/commandBarMachine'
 
+const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
   input: SegmentInputs
   prevSegment: Sketch['paths'][number]
@@ -1022,9 +1022,8 @@ class ArcSegment implements SegmentUtils {
     })
     centerToToLine.name = ARC_CENTER_TO_TO
     const angleReferenceLine = createLine({
-      // from: center,
-      from: [center[0] + 28 * scale, center[1]],
-      to: [center[0] + 32 * scale, center[1]],
+      from: [center[0] + (ANGLE_INDICATOR_RADIUS - 2) * scale, center[1]],
+      to: [center[0] + (ANGLE_INDICATOR_RADIUS + 2) * scale, center[1]],
       scale,
       color: grey, // Light gray color for the line
     })
@@ -1033,7 +1032,7 @@ class ArcSegment implements SegmentUtils {
     // Create a curved line with an arrow to indicate the angle
     const angleIndicator = createAngleIndicator({
       center,
-      radius: radius / 2, // Half the radius for the indicator
+      radius: ANGLE_INDICATOR_RADIUS, // Half the radius for the indicator
       startAngle: 0,
       endAngle,
       scale,
@@ -1044,7 +1043,7 @@ class ArcSegment implements SegmentUtils {
     // Create a new angle indicator for the end angle
     const endAngleIndicator = createAngleIndicator({
       center,
-      radius: radius / 2, // Half the radius for the indicator
+      radius: ANGLE_INDICATOR_RADIUS, // Half the radius for the indicator
       startAngle: 0,
       endAngle: (endAngle * Math.PI) / 180,
       scale,
@@ -1258,7 +1257,7 @@ class ArcSegment implements SegmentUtils {
     if (angleIndicator) {
       updateAngleIndicator(angleIndicator, {
         center,
-        radiusPx: 20,
+        radiusPx: ANGLE_INDICATOR_RADIUS - 10,
         startAngle: 0,
         endAngle: (normalizedStartAngle * Math.PI) / 180,
         scale,
@@ -1270,7 +1269,7 @@ class ArcSegment implements SegmentUtils {
     if (endAngleIndicator) {
       updateAngleIndicator(endAngleIndicator, {
         center,
-        radiusPx: 30,
+        radiusPx: ANGLE_INDICATOR_RADIUS,
         startAngle: 0,
         endAngle: (normalizedEndAngle * Math.PI) / 180,
         scale,
