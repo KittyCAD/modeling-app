@@ -10,7 +10,15 @@ kcl_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "..", "..", "kcl-lib"
 )
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
-walkie_talkie_dir = os.path.join(files_dir, "walkie-talkie")
+walkie_talkie_dir = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    "..",
+    "..",
+    "..",
+    "public",
+    "kcl-samples",
+    "walkie-talkie",
+)
 
 
 @pytest.mark.asyncio

@@ -24,7 +24,7 @@ mod test_examples_line_to {
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
-                error: e,
+                error: e.error,
                 filename: format!("{}{}", "line_to", 0usize),
                 kcl_source: "This is another code block.\nyes sirrr.\nlineTo".to_string(),
             }));

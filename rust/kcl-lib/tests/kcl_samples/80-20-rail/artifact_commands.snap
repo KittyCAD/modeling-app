@@ -1,236 +1,8 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands 80-20-rail.kcl
 ---
 [
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.7,
-        "g": 0.28,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.7,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.28,
-        "b": 0.7,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
   {
     "cmdId": "[uuid]",
     "range": [
@@ -432,7 +204,7 @@ description: Artifact commands 80-20-rail.kcl
     "cmdId": "[uuid]",
     "range": [
       661,
-      687,
+      693,
       0
     ],
     "command": {
@@ -452,8 +224,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      695,
-      804,
+      701,
+      810,
       0
     ],
     "command": {
@@ -481,8 +253,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      812,
-      847,
+      818,
+      865,
       0
     ],
     "command": {
@@ -502,8 +274,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      855,
-      891,
+      873,
+      921,
       0
     ],
     "command": {
@@ -523,8 +295,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      899,
-      936,
+      929,
+      978,
       0
     ],
     "command": {
@@ -544,8 +316,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      944,
-      1061,
+      986,
+      1103,
       0
     ],
     "command": {
@@ -565,8 +337,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1069,
-      1105,
+      1111,
+      1159,
       0
     ],
     "command": {
@@ -586,8 +358,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1113,
-      1221,
+      1167,
+      1275,
       0
     ],
     "command": {
@@ -607,8 +379,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1229,
-      1266,
+      1283,
+      1332,
       0
     ],
     "command": {
@@ -628,8 +400,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1274,
-      1311,
+      1340,
+      1389,
       0
     ],
     "command": {
@@ -649,8 +421,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1319,
-      1346,
+      1397,
+      1430,
       0
     ],
     "command": {
@@ -670,8 +442,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1354,
-      1463,
+      1438,
+      1547,
       0
     ],
     "command": {
@@ -699,8 +471,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1471,
-      1497,
+      1555,
+      1587,
       0
     ],
     "command": {
@@ -720,8 +492,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1505,
-      1614,
+      1595,
+      1704,
       0
     ],
     "command": {
@@ -749,8 +521,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1622,
-      1725,
+      1712,
+      1815,
       0
     ],
     "command": {
@@ -778,8 +550,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1766,
-      1876,
+      1856,
+      1966,
       0
     ],
     "command": {
@@ -807,8 +579,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1884,
-      1910,
+      1974,
+      2006,
       0
     ],
     "command": {
@@ -828,8 +600,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1918,
-      2028,
+      2014,
+      2124,
       0
     ],
     "command": {
@@ -857,8 +629,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2036,
-      2071,
+      2132,
+      2179,
       0
     ],
     "command": {
@@ -878,8 +650,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2079,
-      2117,
+      2187,
+      2237,
       0
     ],
     "command": {
@@ -899,8 +671,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2125,
-      2163,
+      2245,
+      2295,
       0
     ],
     "command": {
@@ -920,8 +692,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2181,
-      2310,
+      2313,
+      2442,
       0
     ],
     "command": {
@@ -941,8 +713,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2328,
-      2365,
+      2460,
+      2509,
       0
     ],
     "command": {
@@ -962,8 +734,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2379,
-      2493,
+      2523,
+      2637,
       0
     ],
     "command": {
@@ -983,8 +755,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2507,
-      2545,
+      2651,
+      2701,
       0
     ],
     "command": {
@@ -1004,8 +776,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2559,
-      2596,
+      2715,
+      2764,
       0
     ],
     "command": {
@@ -1025,8 +797,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2604,
-      2631,
+      2772,
+      2805,
       0
     ],
     "command": {
@@ -1046,8 +818,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2639,
-      2749,
+      2813,
+      2923,
       0
     ],
     "command": {
@@ -1075,8 +847,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2757,
-      2783,
+      2931,
+      2963,
       0
     ],
     "command": {
@@ -1096,8 +868,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2791,
-      2901,
+      2971,
+      3081,
       0
     ],
     "command": {
@@ -1125,8 +897,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2942,
-      3044,
+      3122,
+      3224,
       0
     ],
     "command": {
@@ -1154,8 +926,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3052,
-      3162,
+      3232,
+      3342,
       0
     ],
     "command": {
@@ -1183,8 +955,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3170,
-      3197,
+      3350,
+      3383,
       0
     ],
     "command": {
@@ -1204,8 +976,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3205,
-      3315,
+      3391,
+      3501,
       0
     ],
     "command": {
@@ -1233,8 +1005,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3323,
-      3360,
+      3509,
+      3558,
       0
     ],
     "command": {
@@ -1254,8 +1026,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3368,
-      3406,
+      3566,
+      3616,
       0
     ],
     "command": {
@@ -1275,8 +1047,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3414,
-      3451,
+      3624,
+      3673,
       0
     ],
     "command": {
@@ -1296,8 +1068,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3459,
-      3587,
+      3681,
+      3809,
       0
     ],
     "command": {
@@ -1317,8 +1089,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3595,
-      3633,
+      3817,
+      3867,
       0
     ],
     "command": {
@@ -1338,8 +1110,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3641,
-      3756,
+      3875,
+      3990,
       0
     ],
     "command": {
@@ -1359,8 +1131,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3764,
-      3801,
+      3998,
+      4047,
       0
     ],
     "command": {
@@ -1380,8 +1152,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3809,
-      3846,
+      4055,
+      4104,
       0
     ],
     "command": {
@@ -1401,8 +1173,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3854,
-      3882,
+      4112,
+      4146,
       0
     ],
     "command": {
@@ -1422,8 +1194,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3890,
-      4000,
+      4154,
+      4264,
       0
     ],
     "command": {
@@ -1451,8 +1223,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4008,
-      4035,
+      4272,
+      4305,
       0
     ],
     "command": {
@@ -1472,8 +1244,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4153,
+      4313,
+      4423,
       0
     ],
     "command": {
@@ -1501,8 +1273,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4161,
-      4265,
+      4431,
+      4535,
       0
     ],
     "command": {
@@ -1530,8 +1302,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4306,
-      4416,
+      4576,
+      4686,
       0
     ],
     "command": {
@@ -1559,8 +1331,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4424,
-      4451,
+      4694,
+      4727,
       0
     ],
     "command": {
@@ -1580,8 +1352,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4459,
-      4569,
+      4735,
+      4845,
       0
     ],
     "command": {
@@ -1609,8 +1381,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4577,
-      4614,
+      4853,
+      4902,
       0
     ],
     "command": {
@@ -1630,8 +1402,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4622,
-      4659,
+      4910,
+      4959,
       0
     ],
     "command": {
@@ -1651,8 +1423,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4667,
-      4704,
+      4967,
+      5016,
       0
     ],
     "command": {
@@ -1672,8 +1444,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4712,
-      4831,
+      5024,
+      5143,
       0
     ],
     "command": {
@@ -1693,8 +1465,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4839,
-      4877,
+      5151,
+      5201,
       0
     ],
     "command": {
@@ -1714,8 +1486,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4885,
-      4993,
+      5209,
+      5317,
       0
     ],
     "command": {
@@ -1735,8 +1507,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5001,
-      5038,
+      5325,
+      5374,
       0
     ],
     "command": {
@@ -1756,8 +1528,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5046,
-      5084,
+      5382,
+      5432,
       0
     ],
     "command": {
@@ -1777,8 +1549,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5092,
-      5120,
+      5440,
+      5474,
       0
     ],
     "command": {
@@ -1798,8 +1570,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5128,
-      5238,
+      5482,
+      5592,
       0
     ],
     "command": {
@@ -1827,8 +1599,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5246,
-      5273,
+      5600,
+      5633,
       0
     ],
     "command": {
@@ -1848,8 +1620,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5281,
-      5391,
+      5641,
+      5751,
       0
     ],
     "command": {
@@ -1877,8 +1649,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5399,
-      5406,
+      5759,
+      5766,
       0
     ],
     "command": {
@@ -1889,8 +1661,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5399,
-      5406,
+      5759,
+      5766,
       0
     ],
     "command": {
@@ -1900,8 +1672,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5457,
-      5634,
+      5817,
+      5994,
       0
     ],
     "command": {
@@ -1920,8 +1692,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5457,
-      5634,
+      5817,
+      5994,
       0
     ],
     "command": {
@@ -1931,8 +1703,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5457,
-      5634,
+      5817,
+      5994,
       0
     ],
     "command": {
@@ -1948,8 +1720,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5457,
-      5634,
+      5817,
+      5994,
       0
     ],
     "command": {
@@ -1977,8 +1749,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5457,
-      5634,
+      5817,
+      5994,
       0
     ],
     "command": {
@@ -1989,8 +1761,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5452,
-      5638,
+      5812,
+      5998,
       0
     ],
     "command": {
@@ -2002,8 +1774,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5452,
-      5638,
+      5812,
+      5998,
       0
     ],
     "command": {
@@ -2015,8 +1787,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5646,
-      5674,
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -2035,8 +1807,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5646,
-      5674,
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -2049,8 +1821,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5646,
-      5674,
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -2060,8 +1832,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5646,
-      5674,
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -2072,8 +1844,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5646,
-      5674,
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -2085,1912 +1857,22 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5646,
-      5674,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5743,
-      5769,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5782,
-      5808,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5821,
-      5847,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5860,
-      5886,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5899,
-      5926,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5939,
-      5966,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5979,
       6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -4003,8 +1885,22 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6019,
-      6046,
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -4017,8 +1913,22 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6059,
-      6086,
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -4031,8 +1941,22 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6099,
-      6126,
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -4045,8 +1969,22 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6139,
-      6166,
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -4059,8 +1997,22 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6179,
-      6206,
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
       0
     ],
     "command": {
@@ -4073,7 +2025,1701 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6219,
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6006,
+      6034,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6103,
+      6129,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6142,
+      6168,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6181,
+      6207,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6220,
       6246,
       0
     ],
@@ -4129,8 +3775,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6455,
-      6481,
+      6379,
+      6406,
       0
     ],
     "command": {
@@ -4143,8 +3789,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6494,
-      6520,
+      6419,
+      6446,
       0
     ],
     "command": {
@@ -4157,8 +3803,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6533,
-      6559,
+      6459,
+      6486,
       0
     ],
     "command": {
@@ -4171,8 +3817,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6572,
-      6598,
+      6499,
+      6526,
       0
     ],
     "command": {
@@ -4185,8 +3831,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6611,
-      6637,
+      6539,
+      6566,
       0
     ],
     "command": {
@@ -4199,8 +3845,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6650,
-      6677,
+      6579,
+      6606,
       0
     ],
     "command": {
@@ -4213,8 +3859,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6690,
-      6717,
+      6619,
+      6646,
       0
     ],
     "command": {
@@ -4227,8 +3873,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6730,
-      6757,
+      6659,
+      6686,
       0
     ],
     "command": {
@@ -4241,8 +3887,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6770,
-      6797,
+      6699,
+      6726,
       0
     ],
     "command": {
@@ -4255,8 +3901,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6810,
-      6837,
+      6815,
+      6841,
       0
     ],
     "command": {
@@ -4269,8 +3915,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6850,
-      6877,
+      6854,
+      6880,
       0
     ],
     "command": {
@@ -4283,8 +3929,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6890,
-      6917,
+      6893,
+      6919,
       0
     ],
     "command": {
@@ -4297,8 +3943,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6930,
-      6957,
+      6932,
+      6958,
       0
     ],
     "command": {
@@ -4311,7 +3957,7 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6970,
+      6971,
       6997,
       0
     ],
@@ -4353,8 +3999,134 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      7090,
+      7117,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7130,
+      7157,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7170,
+      7197,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7210,
+      7237,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7250,
+      7277,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7290,
+      7317,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7330,
+      7357,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7370,
+      7397,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7410,
+      7437,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4369,8 +4141,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4385,8 +4157,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4401,8 +4173,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4417,8 +4189,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4433,8 +4205,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4449,8 +4221,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4465,8 +4237,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4481,8 +4253,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4497,8 +4269,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4513,8 +4285,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4529,8 +4301,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4545,8 +4317,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4561,8 +4333,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4577,8 +4349,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4593,8 +4365,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5682,
-      6386,
+      6042,
+      6746,
       0
     ],
     "command": {
@@ -4609,8 +4381,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4625,8 +4397,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4641,8 +4413,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4657,8 +4429,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4673,8 +4445,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4689,8 +4461,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4705,8 +4477,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4721,8 +4493,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4737,8 +4509,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4753,8 +4525,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4769,8 +4541,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4785,8 +4557,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4801,8 +4573,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4817,8 +4589,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4833,8 +4605,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {
@@ -4849,8 +4621,8 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6394,
-      7097,
+      6754,
+      7457,
       0
     ],
     "command": {

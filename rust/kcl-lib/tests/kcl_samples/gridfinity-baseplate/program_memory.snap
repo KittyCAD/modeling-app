@@ -27,8 +27,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1497,
-                      1500,
+                      1509,
+                      1512,
                       0
                     ]
                   }
@@ -49,8 +49,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      1502,
-                      1505,
+                      1514,
+                      1517,
                       0
                     ]
                   }
@@ -60,8 +60,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  1496,
-                  1506,
+                  1508,
+                  1518,
                   0
                 ]
               }
@@ -118,8 +118,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  1521,
-                  1549,
+                  1533,
+                  1561,
                   0
                 ]
               }
@@ -129,8 +129,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
         "__meta": [
           {
             "sourceRange": [
-              1483,
-              1553,
+              1495,
+              1565,
               0
             ]
           }
@@ -140,8 +140,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
     "__meta": [
       {
         "sourceRange": [
-          1470,
-          1555,
+          1482,
+          1567,
           0
         ]
       }
@@ -160,7 +160,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -170,8 +170,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -181,8 +181,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -192,8 +192,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -203,8 +203,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -220,7 +220,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -242,8 +242,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -265,8 +265,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -288,8 +288,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -311,8 +311,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -424,7 +424,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -434,8 +434,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -445,8 +445,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -456,8 +456,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -467,8 +467,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -484,7 +484,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -506,8 +506,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -529,8 +529,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -552,8 +552,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -575,8 +575,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -688,7 +688,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -698,8 +698,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -709,8 +709,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -720,8 +720,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -731,8 +731,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -748,7 +748,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -770,8 +770,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -793,8 +793,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -816,8 +816,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -839,8 +839,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -952,7 +952,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -962,8 +962,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -973,8 +973,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -984,8 +984,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -995,8 +995,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -1012,7 +1012,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -1034,8 +1034,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -1057,8 +1057,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -1080,8 +1080,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -1103,8 +1103,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -1216,7 +1216,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -1226,8 +1226,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -1237,8 +1237,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -1248,8 +1248,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -1259,8 +1259,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -1276,7 +1276,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -1298,8 +1298,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -1321,8 +1321,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -1344,8 +1344,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -1367,8 +1367,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -1480,7 +1480,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -1490,8 +1490,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -1501,8 +1501,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -1512,8 +1512,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -1523,8 +1523,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -1540,7 +1540,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -1562,8 +1562,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -1585,8 +1585,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -1608,8 +1608,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -1631,8 +1631,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -1744,7 +1744,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -1754,8 +1754,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -1765,8 +1765,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -1776,8 +1776,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -1787,8 +1787,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -1804,7 +1804,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -1826,8 +1826,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -1849,8 +1849,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -1872,8 +1872,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -1895,8 +1895,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -2008,7 +2008,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -2018,8 +2018,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -2029,8 +2029,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -2040,8 +2040,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -2051,8 +2051,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -2068,7 +2068,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -2090,8 +2090,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -2113,8 +2113,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -2136,8 +2136,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -2159,8 +2159,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -2272,7 +2272,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -2282,8 +2282,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -2293,8 +2293,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -2304,8 +2304,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -2315,8 +2315,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -2332,7 +2332,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -2354,8 +2354,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -2377,8 +2377,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -2400,8 +2400,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -2423,8 +2423,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -2536,7 +2536,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -2546,8 +2546,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -2557,8 +2557,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -2568,8 +2568,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -2579,8 +2579,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -2596,7 +2596,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -2618,8 +2618,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -2641,8 +2641,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -2664,8 +2664,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -2687,8 +2687,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -2800,7 +2800,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -2810,8 +2810,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -2821,8 +2821,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -2832,8 +2832,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -2843,8 +2843,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -2860,7 +2860,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -2882,8 +2882,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -2905,8 +2905,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -2928,8 +2928,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -2951,8 +2951,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -3064,7 +3064,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -3074,8 +3074,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -3085,8 +3085,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -3096,8 +3096,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -3107,8 +3107,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -3124,7 +3124,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -3146,8 +3146,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -3169,8 +3169,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -3192,8 +3192,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -3215,8 +3215,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -3328,7 +3328,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -3338,8 +3338,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -3349,8 +3349,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -3360,8 +3360,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -3371,8 +3371,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -3388,7 +3388,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -3410,8 +3410,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -3433,8 +3433,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -3456,8 +3456,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -3479,8 +3479,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -3592,7 +3592,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -3602,8 +3602,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -3613,8 +3613,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -3624,8 +3624,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -3635,8 +3635,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -3652,7 +3652,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -3674,8 +3674,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -3697,8 +3697,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -3720,8 +3720,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -3743,8 +3743,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -3856,7 +3856,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -3866,8 +3866,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -3877,8 +3877,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -3888,8 +3888,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -3899,8 +3899,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -3916,7 +3916,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -3938,8 +3938,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -3961,8 +3961,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -3984,8 +3984,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -4007,8 +4007,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -4120,7 +4120,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -4130,8 +4130,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -4141,8 +4141,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -4152,8 +4152,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -4163,8 +4163,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -4180,7 +4180,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -4202,8 +4202,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -4225,8 +4225,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -4248,8 +4248,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -4271,8 +4271,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -4384,7 +4384,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -4394,8 +4394,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -4405,8 +4405,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -4416,8 +4416,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -4427,8 +4427,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -4444,7 +4444,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -4466,8 +4466,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -4489,8 +4489,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -4512,8 +4512,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -4535,8 +4535,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -4648,7 +4648,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -4658,8 +4658,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -4669,8 +4669,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -4680,8 +4680,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -4691,8 +4691,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -4708,7 +4708,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -4730,8 +4730,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -4753,8 +4753,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -4776,8 +4776,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -4799,8 +4799,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -4912,7 +4912,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -4922,8 +4922,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -4933,8 +4933,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -4944,8 +4944,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -4955,8 +4955,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -4972,7 +4972,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -4994,8 +4994,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -5017,8 +5017,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -5040,8 +5040,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -5063,8 +5063,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -5176,7 +5176,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -5186,8 +5186,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -5197,8 +5197,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -5208,8 +5208,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -5219,8 +5219,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -5236,7 +5236,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -5258,8 +5258,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -5281,8 +5281,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -5304,8 +5304,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -5327,8 +5327,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -5440,7 +5440,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -5450,8 +5450,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -5461,8 +5461,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -5472,8 +5472,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -5483,8 +5483,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -5500,7 +5500,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -5522,8 +5522,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -5545,8 +5545,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -5568,8 +5568,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -5591,8 +5591,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -5704,7 +5704,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -5714,8 +5714,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -5725,8 +5725,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -5736,8 +5736,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -5747,8 +5747,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -5764,7 +5764,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -5786,8 +5786,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -5809,8 +5809,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -5832,8 +5832,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -5855,8 +5855,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -5968,7 +5968,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -5978,8 +5978,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -5989,8 +5989,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -6000,8 +6000,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -6011,8 +6011,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -6028,7 +6028,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -6050,8 +6050,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -6073,8 +6073,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -6096,8 +6096,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -6119,8 +6119,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -6232,7 +6232,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -6242,8 +6242,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -6253,8 +6253,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -6264,8 +6264,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -6275,8 +6275,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -6292,7 +6292,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -6314,8 +6314,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -6337,8 +6337,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -6360,8 +6360,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -6383,8 +6383,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -6501,7 +6501,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -6511,8 +6511,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -6522,8 +6522,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -6533,8 +6533,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -6544,8 +6544,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -6561,7 +6561,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -6583,8 +6583,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -6606,8 +6606,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -6629,8 +6629,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -6652,8 +6652,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -6765,7 +6765,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -6775,8 +6775,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -6786,8 +6786,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -6797,8 +6797,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -6808,8 +6808,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -6825,7 +6825,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -6847,8 +6847,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -6870,8 +6870,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -6893,8 +6893,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -6916,8 +6916,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -7029,7 +7029,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -7039,8 +7039,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -7050,8 +7050,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -7061,8 +7061,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -7072,8 +7072,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -7089,7 +7089,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -7111,8 +7111,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -7134,8 +7134,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -7157,8 +7157,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -7180,8 +7180,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -7293,7 +7293,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -7303,8 +7303,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -7314,8 +7314,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -7325,8 +7325,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -7336,8 +7336,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -7353,7 +7353,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -7375,8 +7375,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -7398,8 +7398,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -7421,8 +7421,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -7444,8 +7444,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -7557,7 +7557,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -7567,8 +7567,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -7578,8 +7578,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -7589,8 +7589,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -7600,8 +7600,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -7617,7 +7617,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -7639,8 +7639,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -7662,8 +7662,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -7685,8 +7685,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -7708,8 +7708,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -7821,7 +7821,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -7831,8 +7831,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -7842,8 +7842,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -7853,8 +7853,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -7864,8 +7864,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -7881,7 +7881,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -7903,8 +7903,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -7926,8 +7926,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -7949,8 +7949,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -7972,8 +7972,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -8085,7 +8085,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -8095,8 +8095,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -8106,8 +8106,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -8117,8 +8117,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -8128,8 +8128,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -8145,7 +8145,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -8167,8 +8167,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -8190,8 +8190,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -8213,8 +8213,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -8236,8 +8236,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -8349,7 +8349,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -8359,8 +8359,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -8370,8 +8370,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -8381,8 +8381,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -8392,8 +8392,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -8409,7 +8409,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -8431,8 +8431,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -8454,8 +8454,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -8477,8 +8477,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -8500,8 +8500,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -8613,7 +8613,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -8623,8 +8623,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -8634,8 +8634,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -8645,8 +8645,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -8656,8 +8656,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -8673,7 +8673,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -8695,8 +8695,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -8718,8 +8718,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -8741,8 +8741,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -8764,8 +8764,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -8877,7 +8877,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -8887,8 +8887,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -8898,8 +8898,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -8909,8 +8909,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -8920,8 +8920,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -8937,7 +8937,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -8959,8 +8959,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -8982,8 +8982,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -9005,8 +9005,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -9028,8 +9028,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -9141,7 +9141,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -9151,8 +9151,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -9162,8 +9162,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -9173,8 +9173,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -9184,8 +9184,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -9201,7 +9201,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -9223,8 +9223,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -9246,8 +9246,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -9269,8 +9269,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -9292,8 +9292,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -9405,7 +9405,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -9415,8 +9415,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -9426,8 +9426,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -9437,8 +9437,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -9448,8 +9448,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -9465,7 +9465,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -9487,8 +9487,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -9510,8 +9510,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -9533,8 +9533,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -9556,8 +9556,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -9669,7 +9669,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -9679,8 +9679,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -9690,8 +9690,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -9701,8 +9701,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -9712,8 +9712,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -9729,7 +9729,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -9751,8 +9751,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -9774,8 +9774,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -9797,8 +9797,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -9820,8 +9820,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -9933,7 +9933,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -9943,8 +9943,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -9954,8 +9954,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -9965,8 +9965,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -9976,8 +9976,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -9993,7 +9993,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -10015,8 +10015,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -10038,8 +10038,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -10061,8 +10061,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -10084,8 +10084,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -10197,7 +10197,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -10207,8 +10207,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -10218,8 +10218,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -10229,8 +10229,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -10240,8 +10240,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -10257,7 +10257,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -10279,8 +10279,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -10302,8 +10302,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -10325,8 +10325,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -10348,8 +10348,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -10461,7 +10461,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -10471,8 +10471,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -10482,8 +10482,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -10493,8 +10493,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -10504,8 +10504,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -10521,7 +10521,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -10543,8 +10543,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -10566,8 +10566,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -10589,8 +10589,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -10612,8 +10612,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -10725,7 +10725,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -10735,8 +10735,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -10746,8 +10746,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -10757,8 +10757,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -10768,8 +10768,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -10785,7 +10785,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -10807,8 +10807,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -10830,8 +10830,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -10853,8 +10853,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -10876,8 +10876,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -10989,7 +10989,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -10999,8 +10999,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -11010,8 +11010,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -11021,8 +11021,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -11032,8 +11032,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -11049,7 +11049,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -11071,8 +11071,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -11094,8 +11094,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -11117,8 +11117,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -11140,8 +11140,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -11253,7 +11253,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -11263,8 +11263,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -11274,8 +11274,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -11285,8 +11285,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -11296,8 +11296,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -11313,7 +11313,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -11335,8 +11335,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -11358,8 +11358,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -11381,8 +11381,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -11404,8 +11404,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -11517,7 +11517,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -11527,8 +11527,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -11538,8 +11538,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -11549,8 +11549,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -11560,8 +11560,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -11577,7 +11577,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -11599,8 +11599,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -11622,8 +11622,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -11645,8 +11645,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -11668,8 +11668,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -11781,7 +11781,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -11791,8 +11791,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -11802,8 +11802,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -11813,8 +11813,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -11824,8 +11824,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -11841,7 +11841,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -11863,8 +11863,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -11886,8 +11886,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -11909,8 +11909,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -11932,8 +11932,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -12045,7 +12045,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -12055,8 +12055,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -12066,8 +12066,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -12077,8 +12077,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -12088,8 +12088,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -12105,7 +12105,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -12127,8 +12127,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -12150,8 +12150,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -12173,8 +12173,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -12196,8 +12196,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -12309,7 +12309,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -12319,8 +12319,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -12330,8 +12330,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -12341,8 +12341,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -12352,8 +12352,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -12369,7 +12369,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -12391,8 +12391,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -12414,8 +12414,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -12437,8 +12437,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -12460,8 +12460,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -12573,7 +12573,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -12583,8 +12583,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -12594,8 +12594,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -12605,8 +12605,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -12616,8 +12616,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -12633,7 +12633,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -12655,8 +12655,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -12678,8 +12678,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -12701,8 +12701,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -12724,8 +12724,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -12886,7 +12886,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -12896,8 +12896,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -12907,8 +12907,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -12918,8 +12918,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -12929,8 +12929,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -12946,7 +12946,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -12968,8 +12968,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -12991,8 +12991,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -13014,8 +13014,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -13037,8 +13037,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -13150,7 +13150,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -13160,8 +13160,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -13171,8 +13171,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -13182,8 +13182,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -13193,8 +13193,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -13210,7 +13210,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -13232,8 +13232,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -13255,8 +13255,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -13278,8 +13278,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -13301,8 +13301,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -13414,7 +13414,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -13424,8 +13424,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -13435,8 +13435,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -13446,8 +13446,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -13457,8 +13457,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -13474,7 +13474,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -13496,8 +13496,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -13519,8 +13519,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -13542,8 +13542,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -13565,8 +13565,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -13678,7 +13678,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -13688,8 +13688,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -13699,8 +13699,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -13710,8 +13710,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -13721,8 +13721,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -13738,7 +13738,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -13760,8 +13760,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -13783,8 +13783,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -13806,8 +13806,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -13829,8 +13829,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -13984,7 +13984,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       {
         "sourceRange": [
           745,
-          1047,
+          1059,
           0
         ]
       }
@@ -14083,7 +14083,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -14093,8 +14093,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -14104,8 +14104,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -14115,8 +14115,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -14126,8 +14126,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -14143,7 +14143,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -14165,8 +14165,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -14188,8 +14188,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -14211,8 +14211,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -14234,8 +14234,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -14347,7 +14347,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -14357,8 +14357,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -14368,8 +14368,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -14379,8 +14379,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -14390,8 +14390,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -14407,7 +14407,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -14429,8 +14429,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -14452,8 +14452,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -14475,8 +14475,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -14498,8 +14498,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -14611,7 +14611,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -14621,8 +14621,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -14632,8 +14632,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -14643,8 +14643,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -14654,8 +14654,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -14671,7 +14671,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -14693,8 +14693,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -14716,8 +14716,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -14739,8 +14739,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -14762,8 +14762,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -14875,7 +14875,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "id": "[uuid]",
             "sourceRange": [
               831,
-              847,
+              853,
               0
             ],
             "tag": null,
@@ -14885,8 +14885,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              855,
-              914,
+              861,
+              920,
               0
             ],
             "tag": null,
@@ -14896,8 +14896,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              922,
-              943,
+              928,
+              955,
               0
             ],
             "tag": null,
@@ -14907,8 +14907,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              951,
-              1010,
+              963,
+              1022,
               0
             ],
             "tag": null,
@@ -14918,8 +14918,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              1018,
-              1025,
+              1030,
+              1037,
               0
             ],
             "tag": null,
@@ -14935,7 +14935,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   831,
-                  847,
+                  853,
                   0
                 ]
               },
@@ -14957,8 +14957,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  855,
-                  914,
+                  861,
+                  920,
                   0
                 ]
               },
@@ -14980,8 +14980,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  922,
-                  943,
+                  928,
+                  955,
                   0
                 ]
               },
@@ -15003,8 +15003,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  951,
-                  1010,
+                  963,
+                  1022,
                   0
                 ]
               },
@@ -15026,8 +15026,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1018,
-                  1025,
+                  1030,
+                  1037,
                   0
                 ]
               },
@@ -15143,7 +15143,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "id": "[uuid]",
           "sourceRange": [
             831,
-            847,
+            853,
             0
           ],
           "tag": null,
@@ -15153,8 +15153,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            855,
-            914,
+            861,
+            920,
             0
           ],
           "tag": null,
@@ -15164,8 +15164,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            922,
-            943,
+            928,
+            955,
             0
           ],
           "tag": null,
@@ -15175,8 +15175,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            951,
-            1010,
+            963,
+            1022,
             0
           ],
           "tag": null,
@@ -15186,8 +15186,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1018,
-            1025,
+            1030,
+            1037,
             0
           ],
           "tag": null,
@@ -15203,7 +15203,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "id": "[uuid]",
               "sourceRange": [
                 831,
-                847,
+                853,
                 0
               ]
             },
@@ -15225,8 +15225,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                855,
-                914,
+                861,
+                920,
                 0
               ]
             },
@@ -15248,8 +15248,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                922,
-                943,
+                928,
+                955,
                 0
               ]
             },
@@ -15271,8 +15271,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                951,
-                1010,
+                963,
+                1022,
                 0
               ]
             },
@@ -15294,8 +15294,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1018,
-                1025,
+                1030,
+                1037,
                 0
               ]
             },
@@ -15410,7 +15410,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "id": "[uuid]",
           "sourceRange": [
             831,
-            847,
+            853,
             0
           ],
           "tag": null,
@@ -15420,8 +15420,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            855,
-            914,
+            861,
+            920,
             0
           ],
           "tag": null,
@@ -15431,8 +15431,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            922,
-            943,
+            928,
+            955,
             0
           ],
           "tag": null,
@@ -15442,8 +15442,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            951,
-            1010,
+            963,
+            1022,
             0
           ],
           "tag": null,
@@ -15453,8 +15453,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1018,
-            1025,
+            1030,
+            1037,
             0
           ],
           "tag": null,
@@ -15470,7 +15470,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "id": "[uuid]",
               "sourceRange": [
                 831,
-                847,
+                853,
                 0
               ]
             },
@@ -15492,8 +15492,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                855,
-                914,
+                861,
+                920,
                 0
               ]
             },
@@ -15515,8 +15515,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                922,
-                943,
+                928,
+                955,
                 0
               ]
             },
@@ -15538,8 +15538,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                951,
-                1010,
+                963,
+                1022,
                 0
               ]
             },
@@ -15561,8 +15561,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1018,
-                1025,
+                1030,
+                1037,
                 0
               ]
             },

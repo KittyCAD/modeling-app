@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed tag_proxied_through_function_does_not_define_var.kcl
-snapshot_kind: text
 ---
 [
   {

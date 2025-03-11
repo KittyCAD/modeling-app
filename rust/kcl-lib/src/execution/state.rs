@@ -10,8 +10,10 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
-        annotations, kcl_value, memory::ProgramMemory, memory::Stack, Artifact, ArtifactCommand, ArtifactGraph,
-        ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, Operation, UnitAngle, UnitLen,
+        annotations, kcl_value,
+        memory::{ProgramMemory, Stack},
+        Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue,
+        Operation, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::Annotation,
@@ -121,7 +123,6 @@ impl ExecState {
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
             operations: self.global.operations,
-            artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
             artifact_graph: self.global.artifact_graph,
             errors: self.global.errors,
@@ -144,7 +145,6 @@ impl ExecState {
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
             operations: Default::default(),
-            artifacts: Default::default(),
             artifact_commands: Default::default(),
             artifact_graph: Default::default(),
             errors: self.global.errors,

@@ -122,7 +122,7 @@ test.describe('Test network and connection issues', () => {
 
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
-      |> xLine(${commonPoints.num1}, %)`)
+      |> xLine(length = ${commonPoints.num1})`)
 
       // Expect the network to be up
       await expect(networkToggle).toContainText('Connected')
@@ -215,7 +215,7 @@ test.describe('Test network and connection issues', () => {
       await expect.poll(u.normalisedEditorCode)
         .toBe(`sketch001 = startSketchOn('XZ')
 profile001 = startProfileAt([12.34, -12.34], sketch001)
-  |> xLine(12.34, %)
+  |> xLine(length = 12.34)
   |> line(end = [-12.34, 12.34])
 
 `)
@@ -225,9 +225,9 @@ profile001 = startProfileAt([12.34, -12.34], sketch001)
       await expect.poll(u.normalisedEditorCode)
         .toBe(`sketch001 = startSketchOn('XZ')
 profile001 = startProfileAt([12.34, -12.34], sketch001)
-  |> xLine(12.34, %)
+  |> xLine(length = 12.34)
   |> line(end = [-12.34, 12.34])
-  |> xLine(-12.34, %)
+  |> xLine(length = -12.34)
 
 `)
 

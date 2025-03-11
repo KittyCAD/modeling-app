@@ -14,9 +14,9 @@ plane = offsetPlane("XZ", offset = 1)
 fn screenHole(sketchStart) {
   sketch006 = startSketchOn(sketchStart)
     |> startProfileAt([-screenWidth / 2, screenYPosition], %)
-    |> xLine(screenWidth, %)
-    |> yLine(-screenHeight, %)
-    |> xLine(-screenWidth, %)
+    |> xLine(length = screenWidth)
+    |> yLine(length = -screenHeight)
+    |> xLine(length = -screenWidth)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
   return sketch006

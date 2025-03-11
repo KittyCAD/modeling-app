@@ -13,7 +13,14 @@ pub fn bench_execute(c: &mut Criterion) {
         let mut group = c.benchmark_group("executor");
         // Configure Criterion.rs to detect smaller differences and increase sample size to improve
         // precision and counteract the resulting noise.
-        group.sample_size(10);
+        group
+            .sample_size(10)
+            .measurement_time(std::time::Duration::from_secs(1)); // Short
+                                                                  // measurement
+                                                                  // time to keep
+                                                                  // it from
+                                                                  // running in
+                                                                  // parallel
         group.bench_with_input(BenchmarkId::new("execute", name), &code, |b, &s| {
             let rt = Runtime::new().unwrap();
             // Spawn a future onto the runtime

@@ -1,15 +1,15 @@
 [package]
 name = "kcl-derive-docs"
 description = "A tool for generating documentation from Rust derive macros"
-version = "0.1.45"
+version = "0.1.48"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
-rust-version = "1.73"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
 proc-macro = true
+bench = false
 
 [dependencies]
 Inflector = "0.11.4"

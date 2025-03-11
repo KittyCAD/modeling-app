@@ -1,236 +1,8 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands gridfinity-bins-stacking-lip.kcl
 ---
 [
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.7,
-        "g": 0.28,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.7,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.28,
-        "b": 0.7,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
   {
     "cmdId": "[uuid]",
     "range": [
@@ -284,8 +56,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1552,
-      1601,
+      1570,
+      1619,
       0
     ],
     "command": {
@@ -313,8 +85,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1552,
-      1601,
+      1570,
+      1619,
       0
     ],
     "command": {
@@ -380,7 +152,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
     "cmdId": "[uuid]",
     "range": [
       1240,
-      1256,
+      1262,
       0
     ],
     "command": {
@@ -400,8 +172,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1264,
-      1288,
+      1270,
+      1300,
       0
     ],
     "command": {
@@ -421,8 +193,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1296,
-      1355,
+      1308,
+      1367,
       0
     ],
     "command": {
@@ -442,8 +214,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1363,
-      1384,
+      1375,
+      1402,
       0
     ],
     "command": {
@@ -463,8 +235,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1392,
-      1451,
+      1410,
+      1469,
       0
     ],
     "command": {
@@ -484,8 +256,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1459,
-      1466,
+      1477,
+      1484,
       0
     ],
     "command": {
@@ -496,8 +268,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1459,
-      1466,
+      1477,
+      1484,
       0
     ],
     "command": {
@@ -507,8 +279,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -527,8 +299,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -541,8 +313,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -552,8 +324,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -564,8 +336,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -577,8 +349,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -591,8 +363,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -605,8 +377,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -619,8 +391,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -633,8 +405,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -647,8 +419,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -661,8 +433,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -675,8 +447,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -689,8 +461,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -703,8 +475,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1644,
+      1557,
+      1662,
       0
     ],
     "command": {
@@ -717,8 +489,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1928,
+      1737,
+      1946,
       0
     ],
     "command": {
@@ -742,8 +514,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2187,
-      2236,
+      2205,
+      2254,
       0
     ],
     "command": {
@@ -771,8 +543,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2187,
-      2236,
+      2205,
+      2254,
       0
     ],
     "command": {
@@ -838,7 +610,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
     "cmdId": "[uuid]",
     "range": [
       1240,
-      1256,
+      1262,
       0
     ],
     "command": {
@@ -858,8 +630,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1264,
-      1288,
+      1270,
+      1300,
       0
     ],
     "command": {
@@ -879,8 +651,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1296,
-      1355,
+      1308,
+      1367,
       0
     ],
     "command": {
@@ -900,8 +672,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1363,
-      1384,
+      1375,
+      1402,
       0
     ],
     "command": {
@@ -921,8 +693,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1392,
-      1451,
+      1410,
+      1469,
       0
     ],
     "command": {
@@ -942,8 +714,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1459,
-      1466,
+      1477,
+      1484,
       0
     ],
     "command": {
@@ -954,8 +726,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1459,
-      1466,
+      1477,
+      1484,
       0
     ],
     "command": {
@@ -965,8 +737,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -993,8 +765,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1005,8 +777,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1018,8 +790,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1032,8 +804,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1046,8 +818,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1060,8 +832,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1074,8 +846,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1088,8 +860,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1102,8 +874,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1116,8 +888,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1130,8 +902,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1144,8 +916,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2238,
+      2159,
+      2256,
       0
     ],
     "command": {
@@ -1158,8 +930,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2283,
-      2494,
+      2301,
+      2512,
       0
     ],
     "command": {
@@ -1183,8 +955,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2512,
-      2531,
+      2530,
+      2549,
       0
     ],
     "command": {
@@ -1212,8 +984,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2537,
-      2625,
+      2555,
+      2643,
       0
     ],
     "command": {
@@ -1232,8 +1004,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2537,
-      2625,
+      2555,
+      2643,
       0
     ],
     "command": {
@@ -1243,8 +1015,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2537,
-      2625,
+      2555,
+      2643,
       0
     ],
     "command": {
@@ -1260,8 +1032,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2631,
-      2695,
+      2649,
+      2713,
       0
     ],
     "command": {
@@ -1281,8 +1053,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2701,
-      2765,
+      2719,
+      2783,
       0
     ],
     "command": {
@@ -1302,8 +1074,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2771,
-      2809,
+      2789,
+      2842,
       0
     ],
     "command": {
@@ -1323,8 +1095,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2815,
-      2836,
+      2848,
+      2869,
       0
     ],
     "command": {
@@ -1335,8 +1107,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2815,
-      2836,
+      2848,
+      2869,
       0
     ],
     "command": {
@@ -1346,8 +1118,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1366,8 +1138,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1380,8 +1152,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1391,8 +1163,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1403,8 +1175,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1416,8 +1188,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1430,8 +1202,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1444,8 +1216,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1458,8 +1230,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1472,8 +1244,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1486,8 +1258,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1500,8 +1272,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1514,8 +1286,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2842,
-      2866,
+      2875,
+      2899,
       0
     ],
     "command": {
@@ -1528,8 +1300,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2932,
-      2960,
+      2965,
+      2993,
       0
     ],
     "command": {
@@ -1542,8 +1314,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2971,
-      3003,
+      3004,
+      3036,
       0
     ],
     "command": {
@@ -1556,8 +1328,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3014,
-      3042,
+      3047,
+      3075,
       0
     ],
     "command": {
@@ -1570,8 +1342,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3053,
-      3085,
+      3086,
+      3118,
       0
     ],
     "command": {
@@ -1584,8 +1356,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2872,
-      3101,
+      2905,
+      3134,
       0
     ],
     "command": {
@@ -1600,8 +1372,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2872,
-      3101,
+      2905,
+      3134,
       0
     ],
     "command": {
@@ -1616,8 +1388,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2872,
-      3101,
+      2905,
+      3134,
       0
     ],
     "command": {
@@ -1632,8 +1404,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2872,
-      3101,
+      2905,
+      3134,
       0
     ],
     "command": {
@@ -1648,8 +1420,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3161,
-      3326,
+      3194,
+      3359,
       0
     ],
     "command": {
@@ -1664,8 +1436,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3161,
-      3326,
+      3194,
+      3359,
       0
     ],
     "command": {
@@ -1675,8 +1447,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3161,
-      3326,
+      3194,
+      3359,
       0
     ],
     "command": {
@@ -1692,8 +1464,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3161,
-      3326,
+      3194,
+      3359,
       0
     ],
     "command": {
@@ -1721,8 +1493,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3161,
-      3326,
+      3194,
+      3359,
       0
     ],
     "command": {
@@ -1733,8 +1505,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3332,
-      3541,
+      3365,
+      3574,
       0
     ],
     "command": {
@@ -1758,8 +1530,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1774,8 +1546,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1788,8 +1560,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1799,8 +1571,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1811,8 +1583,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1824,8 +1596,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1838,8 +1610,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1852,8 +1624,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1868,8 +1640,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1882,8 +1654,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1893,8 +1665,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1905,8 +1677,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1918,8 +1690,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1932,8 +1704,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1946,8 +1718,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1962,8 +1734,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1976,8 +1748,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1987,8 +1759,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -1999,8 +1771,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -2012,8 +1784,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -2026,8 +1798,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -2040,8 +1812,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -2056,8 +1828,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -2070,8 +1842,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -2081,8 +1853,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -2093,8 +1865,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -2106,8 +1878,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -2120,8 +1892,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3547,
-      3574,
+      3580,
+      3607,
       0
     ],
     "command": {
@@ -2134,8 +1906,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3631,
-      3774,
+      3664,
+      3807,
       0
     ],
     "command": {
@@ -2178,8 +1950,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3631,
-      3774,
+      3664,
+      3807,
       0
     ],
     "command": {
@@ -2222,8 +1994,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3631,
-      3774,
+      3664,
+      3807,
       0
     ],
     "command": {
@@ -2266,8 +2038,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3631,
-      3774,
+      3664,
+      3807,
       0
     ],
     "command": {
@@ -2310,8 +2082,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3780,
-      3910,
+      3813,
+      3943,
       0
     ],
     "command": {
@@ -2383,8 +2155,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3780,
-      3910,
+      3813,
+      3943,
       0
     ],
     "command": {
@@ -2456,8 +2228,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3780,
-      3910,
+      3813,
+      3943,
       0
     ],
     "command": {
@@ -2529,8 +2301,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3780,
-      3910,
+      3813,
+      3943,
       0
     ],
     "command": {
@@ -2602,8 +2374,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3780,
-      3910,
+      3813,
+      3943,
       0
     ],
     "command": {
@@ -2675,8 +2447,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3780,
-      3910,
+      3813,
+      3943,
       0
     ],
     "command": {
@@ -2748,8 +2520,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3780,
-      3910,
+      3813,
+      3943,
       0
     ],
     "command": {
@@ -2821,8 +2593,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3780,
-      3910,
+      3813,
+      3943,
       0
     ],
     "command": {
@@ -2894,8 +2666,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3990,
-      4135,
+      4023,
+      4168,
       0
     ],
     "command": {
@@ -2938,8 +2710,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3990,
-      4135,
+      4023,
+      4168,
       0
     ],
     "command": {
@@ -2982,8 +2754,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3990,
-      4135,
+      4023,
+      4168,
       0
     ],
     "command": {
@@ -3026,8 +2798,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3990,
-      4135,
+      4023,
+      4168,
       0
     ],
     "command": {
@@ -3070,8 +2842,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4141,
-      4271,
+      4174,
+      4304,
       0
     ],
     "command": {
@@ -3143,8 +2915,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4141,
-      4271,
+      4174,
+      4304,
       0
     ],
     "command": {
@@ -3216,8 +2988,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4141,
-      4271,
+      4174,
+      4304,
       0
     ],
     "command": {
@@ -3289,8 +3061,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4141,
-      4271,
+      4174,
+      4304,
       0
     ],
     "command": {
@@ -3362,8 +3134,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4141,
-      4271,
+      4174,
+      4304,
       0
     ],
     "command": {
@@ -3435,8 +3207,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4141,
-      4271,
+      4174,
+      4304,
       0
     ],
     "command": {
@@ -3508,8 +3280,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4141,
-      4271,
+      4174,
+      4304,
       0
     ],
     "command": {
@@ -3581,8 +3353,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4141,
-      4271,
+      4174,
+      4304,
       0
     ],
     "command": {
@@ -3654,8 +3426,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4339,
-      4490,
+      4372,
+      4523,
       0
     ],
     "command": {
@@ -3698,8 +3470,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4496,
-      4626,
+      4529,
+      4659,
       0
     ],
     "command": {
@@ -3771,8 +3543,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4496,
-      4626,
+      4529,
+      4659,
       0
     ],
     "command": {
@@ -3844,8 +3616,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4654,
-      4688,
+      4687,
+      4721,
       0
     ],
     "command": {
@@ -3873,8 +3645,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4654,
-      4688,
+      4687,
+      4721,
       0
     ],
     "command": {
@@ -3891,8 +3663,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4695,
-      4720,
+      4728,
+      4753,
       0
     ],
     "command": {
@@ -3911,8 +3683,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4695,
-      4720,
+      4728,
+      4753,
       0
     ],
     "command": {
@@ -3922,8 +3694,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4695,
-      4720,
+      4728,
+      4753,
       0
     ],
     "command": {
@@ -3939,8 +3711,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4726,
-      4786,
+      4759,
+      4831,
       0
     ],
     "command": {
@@ -3960,8 +3732,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4792,
-      4853,
+      4837,
+      4910,
       0
     ],
     "command": {
@@ -3981,8 +3753,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4859,
-      4897,
+      4916,
+      4969,
       0
     ],
     "command": {
@@ -4002,8 +3774,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4903,
-      4924,
+      4975,
+      4996,
       0
     ],
     "command": {
@@ -4014,8 +3786,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4903,
-      4924,
+      4975,
+      4996,
       0
     ],
     "command": {
@@ -4025,8 +3797,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4045,8 +3817,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4059,8 +3831,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4070,8 +3842,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4082,8 +3854,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4095,8 +3867,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4109,8 +3881,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4123,8 +3895,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4137,8 +3909,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4151,8 +3923,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4165,8 +3937,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4179,8 +3951,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4193,8 +3965,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4930,
-      4974,
+      5002,
+      5046,
       0
     ],
     "command": {
@@ -4207,8 +3979,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5043,
-      5071,
+      5115,
+      5143,
       0
     ],
     "command": {
@@ -4221,8 +3993,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5082,
-      5114,
+      5154,
+      5186,
       0
     ],
     "command": {
@@ -4235,8 +4007,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5125,
-      5153,
+      5197,
+      5225,
       0
     ],
     "command": {
@@ -4249,8 +4021,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5164,
-      5196,
+      5236,
+      5268,
       0
     ],
     "command": {
@@ -4263,8 +4035,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4980,
-      5212,
+      5052,
+      5284,
       0
     ],
     "command": {
@@ -4279,8 +4051,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4980,
-      5212,
+      5052,
+      5284,
       0
     ],
     "command": {
@@ -4295,8 +4067,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4980,
-      5212,
+      5052,
+      5284,
       0
     ],
     "command": {
@@ -4311,8 +4083,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4980,
-      5212,
+      5052,
+      5284,
       0
     ],
     "command": {
@@ -4327,8 +4099,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5218,
-      5260,
+      5290,
+      5332,
       0
     ],
     "command": {
@@ -4344,8 +4116,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5364,
-      5384,
+      5436,
+      5456,
       0
     ],
     "command": {
@@ -4373,8 +4145,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -4393,8 +4165,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -4404,8 +4176,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -4421,8 +4193,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5465,
-      5508,
+      5549,
+      5592,
       0
     ],
     "command": {
@@ -4442,8 +4214,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5516,
-      5625,
+      5600,
+      5709,
       0
     ],
     "command": {
@@ -4471,8 +4243,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5700,
-      5749,
+      5784,
+      5833,
       0
     ],
     "command": {
@@ -4492,8 +4264,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5757,
-      5776,
+      5841,
+      5866,
       0
     ],
     "command": {
@@ -4513,8 +4285,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5784,
-      5842,
+      5874,
+      5932,
       0
     ],
     "command": {
@@ -4534,8 +4306,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5850,
-      5869,
+      5940,
+      5965,
       0
     ],
     "command": {
@@ -4555,8 +4327,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5877,
-      5936,
+      5973,
+      6032,
       0
     ],
     "command": {
@@ -4576,8 +4348,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5944,
-      5951,
+      6040,
+      6047,
       0
     ],
     "command": {
@@ -4588,8 +4360,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5944,
-      5951,
+      6040,
+      6047,
       0
     ],
     "command": {
@@ -4599,8 +4371,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4619,8 +4391,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4633,8 +4405,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4644,8 +4416,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4656,8 +4428,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4669,8 +4441,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4683,8 +4455,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4697,8 +4469,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4711,8 +4483,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4725,8 +4497,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4739,8 +4511,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4753,8 +4525,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4767,8 +4539,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4781,8 +4553,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4795,8 +4567,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4809,8 +4581,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4823,8 +4595,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4837,8 +4609,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4851,8 +4623,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4865,8 +4637,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4879,8 +4651,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6834,
+      6818,
+      6930,
       0
     ],
     "command": {
@@ -4893,8 +4665,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5364,
-      5384,
+      5436,
+      5456,
       0
     ],
     "command": {
@@ -4922,8 +4694,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -4942,8 +4714,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -4953,8 +4725,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -4970,8 +4742,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5465,
-      5508,
+      5549,
+      5592,
       0
     ],
     "command": {
@@ -4991,8 +4763,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5516,
-      5625,
+      5600,
+      5709,
       0
     ],
     "command": {
@@ -5020,8 +4792,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5700,
-      5749,
+      5784,
+      5833,
       0
     ],
     "command": {
@@ -5041,8 +4813,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5757,
-      5776,
+      5841,
+      5866,
       0
     ],
     "command": {
@@ -5062,8 +4834,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5784,
-      5842,
+      5874,
+      5932,
       0
     ],
     "command": {
@@ -5083,8 +4855,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5850,
-      5869,
+      5940,
+      5965,
       0
     ],
     "command": {
@@ -5104,8 +4876,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5877,
-      5936,
+      5973,
+      6032,
       0
     ],
     "command": {
@@ -5125,8 +4897,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5944,
-      5951,
+      6040,
+      6047,
       0
     ],
     "command": {
@@ -5137,8 +4909,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5944,
-      5951,
+      6040,
+      6047,
       0
     ],
     "command": {
@@ -5148,8 +4920,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5168,8 +4940,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5182,8 +4954,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5193,8 +4965,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5205,8 +4977,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5218,8 +4990,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5232,8 +5004,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5246,8 +5018,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5260,8 +5032,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5274,8 +5046,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5288,8 +5060,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5302,8 +5074,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5316,8 +5088,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5330,8 +5102,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5344,8 +5116,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5358,8 +5130,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5372,8 +5144,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5386,8 +5158,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5400,8 +5172,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5414,8 +5186,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5428,8 +5200,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6900,
-      7014,
+      6996,
+      7110,
       0
     ],
     "command": {
@@ -5442,8 +5214,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7095,
-      7342,
+      7191,
+      7438,
       0
     ],
     "command": {
@@ -5467,8 +5239,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7422,
-      7668,
+      7518,
+      7764,
       0
     ],
     "command": {
@@ -5492,8 +5264,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5364,
-      5384,
+      5436,
+      5456,
       0
     ],
     "command": {
@@ -5521,8 +5293,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -5541,8 +5313,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -5552,8 +5324,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -5569,8 +5341,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5465,
-      5508,
+      5549,
+      5592,
       0
     ],
     "command": {
@@ -5590,8 +5362,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5516,
-      5625,
+      5600,
+      5709,
       0
     ],
     "command": {
@@ -5619,8 +5391,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5700,
-      5749,
+      5784,
+      5833,
       0
     ],
     "command": {
@@ -5640,8 +5412,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5757,
-      5776,
+      5841,
+      5866,
       0
     ],
     "command": {
@@ -5661,8 +5433,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5784,
-      5842,
+      5874,
+      5932,
       0
     ],
     "command": {
@@ -5682,8 +5454,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5850,
-      5869,
+      5940,
+      5965,
       0
     ],
     "command": {
@@ -5703,8 +5475,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5877,
-      5936,
+      5973,
+      6032,
       0
     ],
     "command": {
@@ -5724,8 +5496,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5944,
-      5951,
+      6040,
+      6047,
       0
     ],
     "command": {
@@ -5736,8 +5508,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5944,
-      5951,
+      6040,
+      6047,
       0
     ],
     "command": {
@@ -5747,8 +5519,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5775,8 +5547,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5787,8 +5559,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5800,8 +5572,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5814,8 +5586,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5828,8 +5600,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5842,8 +5614,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5856,8 +5628,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5870,8 +5642,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5884,8 +5656,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5898,8 +5670,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5912,8 +5684,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5926,8 +5698,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5940,8 +5712,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5954,8 +5726,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5968,8 +5740,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5982,8 +5754,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -5996,8 +5768,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -6010,8 +5782,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7854,
-      7913,
+      7950,
+      8009,
       0
     ],
     "command": {
@@ -6024,8 +5796,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5364,
-      5384,
+      5436,
+      5456,
       0
     ],
     "command": {
@@ -6053,8 +5825,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -6073,8 +5845,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -6084,8 +5856,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -6101,8 +5873,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5465,
-      5508,
+      5549,
+      5592,
       0
     ],
     "command": {
@@ -6122,8 +5894,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5516,
-      5625,
+      5600,
+      5709,
       0
     ],
     "command": {
@@ -6151,8 +5923,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5700,
-      5749,
+      5784,
+      5833,
       0
     ],
     "command": {
@@ -6172,8 +5944,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5757,
-      5776,
+      5841,
+      5866,
       0
     ],
     "command": {
@@ -6193,8 +5965,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5784,
-      5842,
+      5874,
+      5932,
       0
     ],
     "command": {
@@ -6214,8 +5986,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5850,
-      5869,
+      5940,
+      5965,
       0
     ],
     "command": {
@@ -6235,8 +6007,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5877,
-      5936,
+      5973,
+      6032,
       0
     ],
     "command": {
@@ -6256,8 +6028,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5944,
-      5951,
+      6040,
+      6047,
       0
     ],
     "command": {
@@ -6268,8 +6040,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5944,
-      5951,
+      6040,
+      6047,
       0
     ],
     "command": {
@@ -6279,8 +6051,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6307,8 +6079,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6319,8 +6091,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6332,8 +6104,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6346,8 +6118,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6360,8 +6132,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6374,8 +6146,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6388,8 +6160,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6402,8 +6174,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6416,8 +6188,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6430,8 +6202,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6444,8 +6216,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6458,8 +6230,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6472,8 +6244,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6486,8 +6258,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6500,8 +6272,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6514,8 +6286,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6528,8 +6300,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6542,8 +6314,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7975,
-      8033,
+      8071,
+      8129,
       0
     ],
     "command": {
@@ -6556,8 +6328,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      8084,
-      8337,
+      8180,
+      8433,
       0
     ],
     "command": {
@@ -6581,8 +6353,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      8388,
-      8640,
+      8484,
+      8736,
       0
     ],
     "command": {
@@ -6632,8 +6404,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4695,
-      4720,
+      4728,
+      4753,
       0
     ],
     "command": {
@@ -6645,8 +6417,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -6658,8 +6430,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -6671,8 +6443,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {
@@ -6684,8 +6456,8 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5392,
-      5417,
+      5464,
+      5489,
       0
     ],
     "command": {

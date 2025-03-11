@@ -7,29 +7,29 @@ export fn zLogo(surface, origin, scale) {
          0 + origin[0],
          0.15 * scale + origin[1]
        ], %)
-    |> yLine(-0.15 * scale, %)
-    |> xLine(0.15 * scale, %)
+    |> yLine(length = -0.15 * scale)
+    |> xLine(length = 0.15 * scale)
     |> angledLineToX({
          angle = 47.15,
          to = 0.3 * scale + origin[0]
        }, %, $seg1)
-    |> yLineTo(0 + origin[1], %, $seg3)
-    |> xLine(0.63 * scale, %)
-    |> yLine(0.225 * scale, %)
-    |> xLine(-0.57 * scale, %)
+    |> yLine(endAbsolute = 0 + origin[1], tag = $seg3)
+    |> xLine(length = 0.63 * scale)
+    |> yLine(length = 0.225 * scale)
+    |> xLine(length = -0.57 * scale)
     |> angledLineToX({
          angle = 47.15,
          to = 0.93 * scale + origin[0]
        }, %)
-    |> yLine(0.15 * scale, %)
-    |> xLine(-0.15 * scale, %)
+    |> yLine(length = 0.15 * scale)
+    |> xLine(length = -0.15 * scale)
     |> angledLine({
          angle = 47.15,
          length = -segLen(seg1)
        }, %, $seg2)
-    |> yLine(segLen(seg3), %)
-    |> xLineTo(0 + origin[0], %)
-    |> yLine(-0.225 * scale, %)
+    |> yLine(length = segLen(seg3))
+    |> xLine(endAbsolute = 0 + origin[0])
+    |> yLine(length = -0.225 * scale)
     |> angledLineThatIntersects({
          angle = 0,
          intersectTag = seg2,

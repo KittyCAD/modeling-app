@@ -1,6 +1,6 @@
 [package]
 name = "kcl-python-bindings"
-version = "0.3.45"
+version = "0.3.48"
 edition = "2021"
 repository = "https://github.com/kittycad/modeling-app"
 
@@ -8,6 +8,7 @@ repository = "https://github.com/kittycad/modeling-app"
 [lib]
 name = "kcl"
 crate-type = ["cdylib"]
+bench = false
 
 [dependencies]
 anyhow = { workspace = true }

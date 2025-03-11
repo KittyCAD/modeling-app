@@ -16,7 +16,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
-  |> xLine(-20, %)
+  |> xLine(length = -20)
   |> close()
     `
       )

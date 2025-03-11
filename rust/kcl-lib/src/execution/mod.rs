@@ -64,8 +64,6 @@ pub struct ExecOutcome {
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
-    /// Output map of UUIDs to artifacts.
-    pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.
     pub artifact_commands: Vec<ArtifactCommand>,
     /// Output artifact graph.
@@ -625,8 +623,6 @@ impl ExecutorContext {
                 let mut exec_state = old_state;
                 exec_state.reset(&self.settings);
 
-                exec_state.add_root_module_contents(&program);
-
                 // We don't do this in mock mode since there is no engine connection
                 // anyways and from the TS side we override memory and don't want to clear it.
                 self.send_clear_scene(&mut exec_state, Default::default())
@@ -636,7 +632,6 @@ impl ExecutorContext {
                 (exec_state, false)
             } else {
                 old_state.mut_stack().restore_env(result_env);
-                old_state.add_root_module_contents(&program);
 
                 (old_state, true)
             };
@@ -644,7 +639,6 @@ impl ExecutorContext {
             (program, exec_state, preserve_mem)
         } else {
             let mut exec_state = ExecState::new(&self.settings);
-            exec_state.add_root_module_contents(&program);
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -683,28 +677,7 @@ impl ExecutorContext {
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
-    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclError> {
-        self.run_with_ui_outputs(program, exec_state)
-            .await
-            .map_err(|e| e.into())
-    }
-
-    /// Perform the execution of a program.
-    ///
-    /// You can optionally pass in some initialization memory for partial
-    /// execution.
-    ///
-    /// The error includes additional outputs used for the feature tree and
-    /// artifact graph.
-    pub async fn run_with_ui_outputs(
-        &self,
-        program: &crate::Program,
-        exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        exec_state.add_root_module_contents(program);
-        self.send_clear_scene(exec_state, Default::default())
-            .await
-            .map_err(KclErrorWithOutputs::no_outputs)?;
         self.inner_run(program, exec_state, false).await
     }
 
@@ -716,6 +689,8 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        exec_state.add_root_module_contents(program);
+
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Re-apply the settings, in case the cache was busted.
@@ -882,18 +857,83 @@ impl ExecutorContext {
         Ok(contents)
     }
 
+    /// Export the current scene as a CAD file.
+    pub async fn export(
+        &self,
+        format: kittycad_modeling_cmds::format::OutputFormat3d,
+    ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
+        let resp = self
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                crate::SourceRange::default(),
+                &kittycad_modeling_cmds::ModelingCmd::Export(kittycad_modeling_cmds::Export {
+                    entity_ids: vec![],
+                    format,
+                }),
+            )
+            .await?;
+
+        let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
+            return Err(KclError::Internal(crate::errors::KclErrorDetails {
+                message: format!("Expected Export response, got {resp:?}",),
+                source_ranges: vec![SourceRange::default()],
+            }));
+        };
+
+        Ok(files)
+    }
+
+    /// Export the current scene as a STEP file.
+    pub async fn export_step(
+        &self,
+        deterministic_time: bool,
+    ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
+        let mut files = self
+            .export(kittycad_modeling_cmds::format::OutputFormat3d::Step(
+                kittycad_modeling_cmds::format::step::export::Options {
+                    coords: *kittycad_modeling_cmds::coord::KITTYCAD,
+                    created: None,
+                },
+            ))
+            .await?;
+
+        if deterministic_time {
+            for kittycad_modeling_cmds::websocket::RawFile { contents, .. } in &mut files {
+                use std::fmt::Write;
+                let utf8 = std::str::from_utf8(contents).unwrap();
+                let mut postprocessed = String::new();
+                for line in utf8.lines() {
+                    if line.starts_with("FILE_NAME") {
+                        let name = "test.step";
+                        let time = "2021-01-01T00:00:00Z";
+                        let author = "Test";
+                        let org = "Zoo";
+                        let version = "zoo.dev beta";
+                        let system = "zoo.dev";
+                        let authorization = "Test";
+                        writeln!(&mut postprocessed, "FILE_NAME('{name}', '{time}', ('{author}'), ('{org}'), '{version}', '{system}', '{authorization}');").unwrap();
+                    } else {
+                        writeln!(&mut postprocessed, "{line}").unwrap();
+                    }
+                }
+                *contents = postprocessed.into_bytes();
+            }
+        }
+
+        Ok(files)
+    }
+
     pub async fn close(&self) {
         self.engine.close().await;
     }
 }
 
 #[cfg(test)]
-pub(crate) async fn parse_execute(
-    code: &str,
-) -> Result<(crate::Program, EnvironmentRef, ExecutorContext, ExecState), KclError> {
+pub(crate) async fn parse_execute(code: &str) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
-    let ctx = ExecutorContext {
+    let exec_ctxt = ExecutorContext {
         engine: Arc::new(Box::new(
             crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
                 KclError::Internal(crate::errors::KclErrorDetails {
@@ -907,10 +947,24 @@ pub(crate) async fn parse_execute(
         settings: Default::default(),
         context_type: ContextType::Mock,
     };
-    let mut exec_state = ExecState::new(&ctx.settings);
-    let result = ctx.run(&program, &mut exec_state).await?;
+    let mut exec_state = ExecState::new(&exec_ctxt.settings);
+    let result = exec_ctxt.run(&program, &mut exec_state).await?;
 
-    Ok((program, result.0, ctx, exec_state))
+    Ok(ExecTestResults {
+        program,
+        mem_env: result.0,
+        exec_ctxt,
+        exec_state,
+    })
+}
+
+#[cfg(test)]
+#[derive(Debug)]
+pub(crate) struct ExecTestResults {
+    program: crate::Program,
+    mem_env: EnvironmentRef,
+    exec_ctxt: ExecutorContext,
+    exec_state: ExecState,
 }
 
 #[cfg(test)]
@@ -933,8 +987,8 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_warn() {
         let text = "@blah";
-        let (_, _, _, exec_state) = parse_execute(text).await.unwrap();
-        let errs = exec_state.errors();
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
         assert_eq!(errs.len(), 1);
         assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
         assert!(
@@ -947,8 +1001,8 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_warn_on_deprecated() {
         let text = "p = pi()";
-        let (_, _, _, exec_state) = parse_execute(text).await.unwrap();
-        let errs = exec_state.errors();
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
         assert_eq!(errs.len(), 1);
         assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
         assert!(
@@ -1034,8 +1088,8 @@ const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
 const part001 = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
-  |> yLineTo(1, %)
-  |> xLine(3.84, %) // selection-range-7ish-before-this
+  |> yLine(endAbsolute = 1)
+  |> xLine(length = 3.84) // selection-range-7ish-before-this
 
 const variableBelowShouldNotBeIncluded = 3
 "#;
@@ -1324,8 +1378,8 @@ const answer = returnX()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_override_prelude() {
         let text = "PI = 3.0";
-        let (_, _, _, exec_state) = parse_execute(text).await.unwrap();
-        let errs = exec_state.errors();
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
         assert!(errs.is_empty());
     }
 
@@ -1391,50 +1445,79 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(5.0, mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap());
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            5.0,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "myVar")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute() {
         let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap());
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            7.4,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "myVar")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"const myVar = -5 + 6"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(1.0, mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap());
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            1.0,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "myVar")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
         let ast = r#"const myVar = PI * 2"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             std::f64::consts::TAU,
-            mem_get_json(exec_state.stack(), env, "myVar").as_f64().unwrap()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "myVar")
+                .as_f64()
+                .unwrap()
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(exec_state.stack(), env, "thing").as_f64().unwrap());
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            7.4,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "thing")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_unit_default() {
         let ast = r#"const inMm = 25.4 * mm()
 const inInches = 1.0 * inch()"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(25.4, mem_get_json(exec_state.stack(), env, "inMm").as_f64().unwrap());
+        let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             25.4,
-            mem_get_json(exec_state.stack(), env, "inInches").as_f64().unwrap()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
+                .as_f64()
+                .unwrap()
+        );
+        assert_eq!(
+            25.4,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
+                .as_f64()
+                .unwrap()
         );
     }
 
@@ -1443,12 +1526,20 @@ const inInches = 1.0 * inch()"#;
         let ast = r#"@settings(defaultLengthUnit = inch)
 const inMm = 25.4 * mm()
 const inInches = 1.0 * inch()"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
-            mem_get_json(exec_state.stack(), env, "inMm").as_f64().unwrap().round()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
+                .as_f64()
+                .unwrap()
+                .round()
         );
-        assert_eq!(1.0, mem_get_json(exec_state.stack(), env, "inInches").as_f64().unwrap());
+        assert_eq!(
+            1.0,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1456,12 +1547,20 @@ const inInches = 1.0 * inch()"#;
         let ast = r#"@settings(defaultLengthUnit = in)
 const inMm = 25.4 * mm()
 const inInches = 2.0 * inch()"#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
-            mem_get_json(exec_state.stack(), env, "inMm").as_f64().unwrap().round()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
+                .as_f64()
+                .unwrap()
+                .round()
         );
-        assert_eq!(2.0, mem_get_json(exec_state.stack(), env, "inInches").as_f64().unwrap());
+        assert_eq!(
+            2.0,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
+                .as_f64()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1500,17 +1599,31 @@ fn check = (x) => {
 }
 check(false)
 "#;
-        let (_, env, _, exec_state) = parse_execute(ast).await.unwrap();
+        let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             false,
-            mem_get_json(exec_state.stack(), env, "notTrue").as_bool().unwrap()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "notTrue")
+                .as_bool()
+                .unwrap()
         );
         assert_eq!(
             true,
-            mem_get_json(exec_state.stack(), env, "notFalse").as_bool().unwrap()
+            mem_get_json(result.exec_state.stack(), result.mem_env, "notFalse")
+                .as_bool()
+                .unwrap()
         );
-        assert_eq!(true, mem_get_json(exec_state.stack(), env, "c").as_bool().unwrap());
-        assert_eq!(false, mem_get_json(exec_state.stack(), env, "d").as_bool().unwrap());
+        assert_eq!(
+            true,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "c")
+                .as_bool()
+                .unwrap()
+        );
+        assert_eq!(
+            false,
+            mem_get_json(result.exec_state.stack(), result.mem_env, "d")
+                .as_bool()
+                .unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1763,9 +1876,9 @@ let w = f() + f()
     async fn kcl_test_ids_stable_between_executions() {
         let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfileAt([61.74, 206.13], %)
-|> xLine(305.11, %, $seg01)
-|> yLine(-291.85, %)
-|> xLine(-segLen(seg01), %)
+|> xLine(length = 305.11, tag = $seg01)
+|> yLine(length = -291.85)
+|> xLine(length = -segLen(seg01))
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
@@ -1788,9 +1901,9 @@ let w = f() + f()
 
         let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfileAt([62.74, 206.13], %)
-|> xLine(305.11, %, $seg01)
-|> yLine(-291.85, %)
-|> xLine(-segLen(seg01), %)
+|> xLine(length = 305.11, tag = $seg01)
+|> yLine(length = -291.85)
+|> xLine(length = -segLen(seg01))
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
@@ -1814,9 +1927,9 @@ let w = f() + f()
     async fn kcl_test_changing_a_setting_updates_the_cached_state() {
         let code = r#"sketch001 = startSketchOn('XZ')
 |> startProfileAt([61.74, 206.13], %)
-|> xLine(305.11, %, $seg01)
-|> yLine(-291.85, %)
-|> xLine(-segLen(seg01), %)
+|> xLine(length = 305.11, tag = $seg01)
+|> yLine(length = -291.85)
+|> xLine(length = -segLen(seg01))
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 |> extrude(length = 40.14)
