@@ -12,6 +12,7 @@ layout: manual
 * [`Modules`](kcl/modules)
 * [`Settings`](kcl/settings)
 * [`Known Issues`](kcl/known-issues)
+* [`Constants`](kcl/consts)
 
 ### Standard library
 
