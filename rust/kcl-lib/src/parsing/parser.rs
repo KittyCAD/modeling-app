@@ -844,11 +844,23 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
         ))
         .parse_next(i)?;
     ignore_whitespace(i);
-    let expr = expression
+    let expr = match expression
         .context(expected(
             "the value which you're setting the property to, e.g. in 'height: 4', the value is 4",
         ))
-        .parse_next(i)?;
+        .parse_next(i)
+    {
+        Ok(expr) => expr,
+        Err(_) => {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    SourceRange::from(sep),
+                    "This property has a label, but no value. Put some value after the equals sign",
+                )
+                .into(),
+            ));
+        }
+    };
 
     let result = Node {
         start: key.start,
@@ -2813,6 +2825,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     pub enum ArgPlace {
         NonCode(Node<NonCodeNode>),
         LabeledArg(LabeledArg),
+        LabelWithoutRhs(Expr),
         UnlabeledArg(Expr),
     }
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
@@ -2821,6 +2834,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         alt((
             terminated(non_code_node.map(ArgPlace::NonCode), whitespace),
             terminated(labeled_argument, labeled_arg_separator).map(ArgPlace::LabeledArg),
+            terminated(expression, (opt(whitespace), equals)).map(ArgPlace::LabelWithoutRhs),
             expression.map(ArgPlace::UnlabeledArg),
         )),
     )
@@ -2840,6 +2854,15 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
                         CompilationError::fatal(
                             SourceRange::from(arg),
                             "This argument needs a label, but it doesn't have one",
+                        )
+                        .into(),
+                    ));
+                }
+                ArgPlace::LabelWithoutRhs(arg) => {
+                    return Err(ErrMode::Cut(
+                        CompilationError::fatal(
+                            SourceRange::from(arg),
+                            "This argument has a label, but no value. Put some value after the equals sign",
                         )
                         .into(),
                     ));
@@ -4674,6 +4697,42 @@ baz = 2
             assert_eq!(
                 cause.source_range.start(),
                 program.find("y").unwrap(),
+                "failed test {i}: {program}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_rhs_of_kw_arg() {
+        for (i, program) in ["f(x, y=)"].into_iter().enumerate() {
+            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
+            let err = fn_call_kw.parse(tokens.as_slice()).unwrap_err();
+            let cause = err.inner().cause.as_ref().unwrap();
+            assert_eq!(
+                cause.message, "This argument has a label, but no value. Put some value after the equals sign",
+                "failed test {i}: {program}"
+            );
+            assert_eq!(
+                cause.source_range.start(),
+                program.find("y").unwrap(),
+                "failed test {i}: {program}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_rhs_of_obj_property() {
+        for (i, program) in ["{x = 1, y =}"].into_iter().enumerate() {
+            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
+            let err = object.parse(tokens.as_slice()).unwrap_err();
+            let cause = err.inner().cause.as_ref().unwrap();
+            assert_eq!(
+                cause.message, "This property has a label, but no value. Put some value after the equals sign",
+                "failed test {i}: {program}"
+            );
+            assert_eq!(
+                cause.source_range.start(),
+                program.rfind('=').unwrap(),
                 "failed test {i}: {program}"
             );
         }
