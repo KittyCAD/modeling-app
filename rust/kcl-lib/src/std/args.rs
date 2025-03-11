@@ -176,7 +176,7 @@ impl Args {
             let err = KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![arg.source_range],
                 message: format!(
-                    "Expected a {} but found {}",
+                    "Expected an array of {} but found {}",
                     type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
