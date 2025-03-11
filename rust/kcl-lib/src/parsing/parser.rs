@@ -2822,10 +2822,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     ignore_whitespace(i);
 
     #[allow(clippy::large_enum_variant)]
-    pub enum ArgPlace {
+    enum ArgPlace {
         NonCode(Node<NonCodeNode>),
         LabeledArg(LabeledArg),
-        LabelWithoutRhs(Expr),
         UnlabeledArg(Expr),
     }
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
@@ -2834,38 +2833,40 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         alt((
             terminated(non_code_node.map(ArgPlace::NonCode), whitespace),
             terminated(labeled_argument, labeled_arg_separator).map(ArgPlace::LabeledArg),
-            terminated(expression, (opt(whitespace), equals)).map(ArgPlace::LabelWithoutRhs),
             expression.map(ArgPlace::UnlabeledArg),
         )),
     )
     .parse_next(i)?;
     let (args, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = args.into_iter().enumerate().try_fold(
         (Vec::new(), BTreeMap::new()),
-        |(mut args, mut non_code_nodes), (i, e)| {
+        |(mut args, mut non_code_nodes), (index, e)| {
             match e {
                 ArgPlace::NonCode(x) => {
-                    non_code_nodes.insert(i, vec![x]);
+                    non_code_nodes.insert(index, vec![x]);
                 }
                 ArgPlace::LabeledArg(x) => {
                     args.push(x);
                 }
                 ArgPlace::UnlabeledArg(arg) => {
-                    return Err(ErrMode::Cut(
-                        CompilationError::fatal(
-                            SourceRange::from(arg),
-                            "This argument needs a label, but it doesn't have one",
+                    let followed_by_equals = peek((opt(whitespace), equals)).parse_next(i).is_ok();
+                    let err = if followed_by_equals {
+                        ErrMode::Cut(
+                            CompilationError::fatal(
+                                SourceRange::from(arg),
+                                "This argument has a label, but no value. Put some value after the equals sign",
+                            )
+                            .into(),
                         )
-                        .into(),
-                    ));
-                }
-                ArgPlace::LabelWithoutRhs(arg) => {
-                    return Err(ErrMode::Cut(
-                        CompilationError::fatal(
-                            SourceRange::from(arg),
-                            "This argument has a label, but no value. Put some value after the equals sign",
+                    } else {
+                        ErrMode::Cut(
+                            CompilationError::fatal(
+                                SourceRange::from(arg),
+                                "This argument needs a label, but it doesn't have one",
+                            )
+                            .into(),
                         )
-                        .into(),
-                    ));
+                    };
+                    return Err(err);
                 }
             }
             Ok((args, non_code_nodes))
