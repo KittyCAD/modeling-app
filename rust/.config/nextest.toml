@@ -3,7 +3,7 @@
 # This way we don't start and stop too many engine instances, putting pressure on our cloud.
 uses-engine = { max-threads = 4 }
 # If a test must run after the engine tests, we want to make sure the engine tests are done first.
-after-engine = { depends-on = ["uses-engine"], max-threads = 12 }
+after-engine = { max-threads = 12 }
 
 [profile.default]
 slow-timeout = { period = "30s", terminate-after = 1 }

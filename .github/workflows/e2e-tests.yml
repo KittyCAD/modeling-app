@@ -77,11 +77,12 @@ jobs:
     # seperate job on Ubuntu to build or fetch the wasm blob once on the fastest runner
     runs-on: namespace-profile-ubuntu-8-cores
     needs: conditions
-    if: needs.conditions.outputs.should-run == 'true'
     steps:
       - uses: actions/checkout@v4
+        if: needs.conditions.outputs.should-run == 'true'
 
       - id: filter
+        if: needs.conditions.outputs.should-run == 'true'
         name: Check for Rust changes
         uses: dorny/paths-filter@v3
         with:
@@ -90,15 +91,18 @@ jobs:
               - 'rust/**'
 
       - uses: actions/setup-node@v4
+        if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
 
-      - run: yarn install
+      - name: Install dependencies
+        if: needs.conditions.outputs.should-run == 'true'
+        run: yarn
 
       - name: Download Wasm Cache
         id: download-wasm
-        if: ${{ github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
+        if: ${{ needs.conditions.outputs.should-run == 'true' && github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
         uses: dawidd6/action-download-artifact@v7
         continue-on-error: true
         with:
@@ -110,6 +114,7 @@ jobs:
 
       - name: Build WASM condition
         id: wasm
+        if: needs.conditions.outputs.should-run == 'true'
         run: |
           set -euox pipefail
           # Build wasm if this is a scheduled run, there are Rust changes, or
@@ -149,6 +154,7 @@ jobs:
         run: yarn build:wasm
 
       - uses: actions/upload-artifact@v4
+        if: needs.conditions.outputs.should-run == 'true'
         with:
           name: prepared-wasm
           path: |
@@ -161,6 +167,7 @@ jobs:
     needs: [conditions, prepare-wasm]
     steps:
       - uses: actions/create-github-app-token@v1
+        if: needs.conditions.outputs.should-run == 'true'
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
@@ -168,13 +175,16 @@ jobs:
           owner: ${{ github.repository_owner }}
 
       - uses: actions/checkout@v4
+        if: needs.conditions.outputs.should-run == 'true'
         with:
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
+        if: needs.conditions.outputs.should-run == 'true'
         name: prepared-wasm
 
       - name: Copy prepared wasm
+        if: needs.conditions.outputs.should-run == 'true'
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
@@ -182,13 +192,18 @@ jobs:
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
       - uses: actions/setup-node@v4
+        if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
 
-      - run: yarn install
+      - name: Install dependencies
+        id: deps-install
+        if: needs.conditions.outputs.should-run == 'true'
+        run: yarn
 
       - name: Cache Playwright Browsers
+        if: needs.conditions.outputs.should-run == 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -196,11 +211,17 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
 
       - name: Install Playwright Browsers
+        if: needs.conditions.outputs.should-run == 'true'
         run: yarn playwright install --with-deps
 
-      - run: yarn tronb:vite:dev
+      - name: build web
+        if: needs.conditions.outputs.should-run == 'true'
+        run: yarn tronb:vite:dev
 
-      - run: yarn test:snapshots
+      - name: Run ubuntu/chrome snapshots
+        if: needs.conditions.outputs.should-run == 'true'
+        run: |
+          yarn test:snapshots
         env:
           CI: true
           NODE_ENV: development
@@ -274,11 +295,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        if: needs.conditions.outputs.should-run == 'true'
 
       - uses: actions/download-artifact@v4
+        if: needs.conditions.outputs.should-run == 'true'
         name: prepared-wasm
 
       - name: Copy prepared wasm
+        if: needs.conditions.outputs.should-run == 'true'
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
@@ -286,11 +310,15 @@ jobs:
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
       - uses: actions/setup-node@v4
+        if: needs.conditions.outputs.should-run == 'true'
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
 
-      - run: yarn install
+      - name: Install dependencies
+        id: deps-install
+        if: needs.conditions.outputs.should-run == 'true'
+        run: yarn
 
       - name: Cache Playwright Browsers
         uses: actions/cache@v4
@@ -302,34 +330,21 @@ jobs:
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
 
-      - run: yarn tronb:vite:dev
+      - name: Build web
+        if: needs.conditions.outputs.should-run == 'true'
+        run: yarn tronb:vite:dev
 
-      - name: install good sed
+      - name: Install good sed
         if: startsWith(matrix.os, 'macos')
         shell: bash
         run: |
           brew install gnu-sed
           echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
 
-      - name: Install vector
-        shell: bash
-        # TODO: figure out what to do with this, it's failing
-        if: false
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
-          chmod +x /tmp/vector.sh
-          /tmp/vector.sh -y -no-modify-path
-          mkdir -p /tmp/vector
-          cp .github/workflows/vector.toml /tmp/vector.toml
-          sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
-          sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
-          sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
-          cat /tmp/vector.toml
-          ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
+        # TODO: Add back axiom logs
 
       - uses: actions/download-artifact@v4
+        if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -337,6 +352,7 @@ jobs:
 
       - name: Run playwright/electron flow (with retries)
         id: retry
+        if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && steps.deps-install.outcome == 'success' }}
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
@@ -352,7 +368,7 @@ jobs:
           token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
@@ -361,7 +377,7 @@ jobs:
           overwrite: true
 
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}
         with:
           name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: playwright-report/
