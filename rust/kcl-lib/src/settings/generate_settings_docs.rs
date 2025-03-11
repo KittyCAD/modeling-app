@@ -121,8 +121,7 @@ pub fn generate_settings_docs() {
     let project_output = hbs.render("settings", &project_data)
         .expect("Failed to render project settings documentation");
     
-    fs::write(PROJECT_SETTINGS_DOC_PATH, project_output)
-        .expect("Failed to write project settings documentation");
+    expectorate::assert_contents(PROJECT_SETTINGS_DOC_PATH, &project_output);
     
     // Generate user settings documentation
     let mut generator = SchemaGenerator::new(settings);
@@ -143,8 +142,7 @@ pub fn generate_settings_docs() {
     let user_output = hbs.render("settings", &user_data)
         .expect("Failed to render user settings documentation");
     
-    fs::write(USER_SETTINGS_DOC_PATH, user_output)
-        .expect("Failed to write user settings documentation");
+    expectorate::assert_contents(USER_SETTINGS_DOC_PATH, &user_output);
 }
 
 #[cfg(test)]
@@ -153,6 +151,14 @@ mod tests {
 
     #[test]
     fn test_generate_settings_docs() {
+        // Expectorate will verify the output matches what we expect,
+        // or update it if run with EXPECTORATE=overwrite
         generate_settings_docs();
+        
+        // Verify files exist
+        let project_path = PathBuf::from(PROJECT_SETTINGS_DOC_PATH);
+        let user_path = PathBuf::from(USER_SETTINGS_DOC_PATH);
+        assert!(project_path.exists(), "Project settings documentation not generated");
+        assert!(user_path.exists(), "User settings documentation not generated");
     }
 }
