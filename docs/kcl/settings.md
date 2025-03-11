@@ -8,16 +8,16 @@ layout: manual
 
 There are three levels of settings available in the KittyCAD modeling application:
 
-1. [User Settings](/docs/kcl/settings/user.toml): Global settings that apply to all projects, stored in `user.toml`
-2. [Project Settings](/docs/kcl/settings/project.toml): Settings specific to a project, stored in `project.toml`
+1. [User Settings](/docs/kcl/settings/user): Global settings that apply to all projects, stored in `user.toml`
+2. [Project Settings](/docs/kcl/settings/project): Settings specific to a project, stored in `project.toml`
 3. Per-file Settings: Settings that apply to a single KCL file, specified using the `@settings` attribute
 
 ## Configuration Files
 
 The KittyCAD modeling app uses TOML files for configuration:
 
-* **User Settings**: `user.toml` - See [complete documentation](/docs/kcl/settings/user.toml)
-* **Project Settings**: `project.toml` - See [complete documentation](/docs/kcl/settings/project.toml)
+* **User Settings**: `user.toml` - See [complete documentation](/docs/kcl/settings/user)
+* **Project Settings**: `project.toml` - See [complete documentation](/docs/kcl/settings/project)
 
 ## Per-file settings
 
