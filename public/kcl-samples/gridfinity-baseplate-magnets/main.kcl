@@ -25,9 +25,9 @@ height = firstStep + secondStep + thirdStep
 fn face(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([0, 0], %)
-    |> yLine(height, %)
+    |> yLine(length = height)
     |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
-    |> yLine(-secondStep, %)
+    |> yLine(length = -secondStep)
     |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
     |> close()
   return faceSketch
@@ -100,38 +100,38 @@ fn magnetCenterCutout(plane) {
          firstStep + thirdStep,
          2 * magOuterDiam
        ], %)
-    |> xLine(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2), %)
+    |> xLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
     |> arc({
          angleStart = 90.0,
          angleEnd = 0.0,
          radius = magOuterDiam / 2
        }, %)
-    |> yLine(-(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)), %)
-    |> xLine(binLength - (4 * magOuterDiam), %)
-    |> yLine(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2), %)
+    |> yLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
+    |> xLine(length = binLength - (4 * magOuterDiam))
+    |> yLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
     |> arc({
          angleStart = 180.0,
          angleEnd = 90.0,
          radius = magOuterDiam / 2
        }, %)
-    |> xLine(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2), %)
-    |> yLine(binLength - (4 * magOuterDiam), %)
-    |> xLine(-(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)), %)
+    |> xLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
+    |> yLine(length = binLength - (4 * magOuterDiam))
+    |> xLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
     |> arc({
          angleStart = 270.0,
          angleEnd = 180.0,
          radius = magOuterDiam / 2
        }, %)
-    |> yLine(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2), %)
-    |> xLine(-(binLength - (4 * magOuterDiam)), %, $line012)
-    |> yLine(-(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)), %)
+    |> yLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
+    |> xLine(length = -(binLength - (4 * magOuterDiam)), tag = $line012)
+    |> yLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
     |> arc({
          angleStart = 360.0,
          angleEnd = 270.0,
          radius = magOuterDiam / 2
        }, %)
-    |> xLine(-(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)), %)
-    |> yLine(-(binLength - (4 * magOuterDiam)), %)
+    |> xLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
+    |> yLine(length = -(binLength - (4 * magOuterDiam)))
     |> close()
   return magnetSketch
 }
@@ -140,9 +140,9 @@ fn magnetCenterCutout(plane) {
 fn magnetBase(plane) {
   magnetBaseSketch = startSketchOn(plane)
     |> startProfileAt([0, 0], %)
-    |> xLine(binLength, %, $line001)
-    |> yLine(binLength, %, $line002)
-    |> xLineTo(profileStartX(%), %, $line003)
+    |> xLine(length = binLength, tag = $line001)
+    |> yLine(length = binLength, tag = $line002)
+    |> xLine(endAbsolute = profileStartX(%), tag = $line003)
     |> close(tag = $line004)
     |> hole(magnetCenterCutout(plane), %)
   return magnetBaseSketch

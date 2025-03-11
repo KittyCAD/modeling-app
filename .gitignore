@@ -53,8 +53,6 @@ e2e/playwright/export-snapshots/*
 
 /public/kcl-samples.zip
 /public/kcl-samples/.github
-/public/kcl-samples/screenshots
-/public/kcl-samples/step
 /test-results/
 /playwright-report/
 /blob-report/

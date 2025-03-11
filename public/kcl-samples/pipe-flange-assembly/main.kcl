@@ -69,7 +69,7 @@ fn capScrew(start, length, dia) {
          -start[0] + wallToWallLength / 2,
          start[2]
        ], %)
-    |> yLine(-hexWallLength / 2, %)
+    |> yLine(length = -hexWallLength / 2)
     |> angledLine({
          angle = hexStartingAngle,
          length = hexWallLength

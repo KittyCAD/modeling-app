@@ -19,21 +19,21 @@ length002 = depth + minClampingDistance
 // Create the first sketch
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, depth - templateGap], %)
-  |> xLine(length001, %, $seg01)
+  |> xLine(length = length001, tag = $seg01)
   |> arc({
        angleEnd = 0,
        angleStart = 90,
        radius = radius - templateGap
      }, %)
-  |> yLineTo(-templateGap * 2 - (templateDiameter / 2), %, $seg05)
-  |> xLineTo(slateWidthHalf + templateThickness, %, $seg04)
-  |> yLine(-length002, %, $seg03)
-  |> xLineTo(ZERO, %, $seg02)
+  |> yLine(endAbsolute = -templateGap * 2 - (templateDiameter / 2), tag = $seg05)
+  |> xLine(endAbsolute = slateWidthHalf + templateThickness, tag = $seg04)
+  |> yLine(length = -length002, tag = $seg03)
+  |> xLine(endAbsolute = ZERO, tag = $seg02)
   // |> line(end = [7.78, 11.16])
-  |> xLine(-segLen(seg02), %)
-  |> yLine(segLen(seg03), %)
-  |> xLine(segLen(seg04), %)
-  |> yLine(segLen(seg05), %)
+  |> xLine(length = -segLen(seg02))
+  |> yLine(length = segLen(seg03))
+  |> xLine(length = segLen(seg04))
+  |> yLine(length = segLen(seg05))
   |> arc({
        angleEnd = 90,
        angleStart = 180,
@@ -51,7 +51,7 @@ sketch002 = startSketchOn(extrude001, 'START')
        -slateWidthHalf,
        -templateGap * 2 - (templateDiameter / 2)
      ], %)
-  |> xLine(-7, %, $rectangleSegmentA001)
+  |> xLine(length = -7, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) + 90,
        minClampingDistance
@@ -72,7 +72,7 @@ sketch003 = startSketchOn(extrude001, 'START')
        slateWidthHalf,
        -templateGap * 2 - (templateDiameter / 2)
      ], %)
-  |> xLine(7, %, $rectangleSegmentA002)
+  |> xLine(length = 7, tag = $rectangleSegmentA002)
   |> angledLine([
        segAng(rectangleSegmentA002) - 90,
        minClampingDistance

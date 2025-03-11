@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing 80-20-rail.kcl
 ---
 {
@@ -9,7 +9,7 @@ description: Variables in memory after executing 80-20-rail.kcl
       {
         "sourceRange": [
           214,
-          7118,
+          7478,
           0
         ]
       }

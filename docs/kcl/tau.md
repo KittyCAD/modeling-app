@@ -31,7 +31,7 @@ tau(): number
 exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle = 50, length = 10 * tau() }, %)
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 example = extrude(exampleSketch, length = 5)

@@ -15,28 +15,28 @@ depth = 30
 distanceToInsideEdge = slateWidthHalf + templateThickness + templateGap
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([ZERO, depth + templateGap], %)
-  |> xLine(slateWidthHalf - radius, %, $seg01)
+  |> xLine(length = slateWidthHalf - radius, tag = $seg01)
   |> arc({
        angleEnd = 0,
        angleStart = 90,
        radius = 10 + templateGap
      }, %, $seg09)
-  |> yLineTo(-templateThickness, %, $seg03)
-  |> xLine(templateThickness, %, $seg07)
-  |> yLineTo((segEndY(seg01) + templateThickness) / 2 - templateThickness, %, $seg02)
-  |> xLineTo(segEndX(seg03) + minClampingDistance, %, $seg06)
-  |> yLine(templateThickness * 2, %, $seg08)
-  |> xLineTo(segEndX(seg02) + 0, %, $seg05)
-  |> yLineTo(segEndY(seg01) + templateThickness, %, $seg10)
-  |> xLineTo(ZERO, %, $seg04)
-  |> xLine(-segLen(seg04), %)
-  |> yLine(-segLen(seg10), %)
-  |> xLine(-segLen(seg05), %)
-  |> yLine(-segLen(seg08), %)
-  |> xLine(segLen(seg06), %)
-  |> yLine(-segLen(seg02), %)
-  |> xLine(segLen(seg07), %)
-  |> yLine(segLen(seg03), %)
+  |> yLine(endAbsolute = -templateThickness, tag = $seg03)
+  |> xLine(length = templateThickness, tag = $seg07)
+  |> yLine(endAbsolute = (segEndY(seg01) + templateThickness) / 2 - templateThickness, tag = $seg02)
+  |> xLine(endAbsolute = segEndX(seg03) + minClampingDistance, tag = $seg06)
+  |> yLine(length = templateThickness * 2, tag = $seg08)
+  |> xLine(endAbsolute = segEndX(seg02) + 0, tag = $seg05)
+  |> yLine(endAbsolute = segEndY(seg01) + templateThickness, tag = $seg10)
+  |> xLine(endAbsolute = ZERO, tag = $seg04)
+  |> xLine(length = -segLen(seg04))
+  |> yLine(length = -segLen(seg10))
+  |> xLine(length = -segLen(seg05))
+  |> yLine(length = -segLen(seg08))
+  |> xLine(length = segLen(seg06))
+  |> yLine(length = -segLen(seg02))
+  |> xLine(length = segLen(seg07))
+  |> yLine(length = segLen(seg03))
   |> arc({
        angleEnd = 90,
        angleStart = 180,

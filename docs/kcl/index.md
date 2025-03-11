@@ -131,9 +131,7 @@ layout: manual
   * [`toRadians`](kcl/toRadians)
   * [`translate`](kcl/translate)
   * [`xLine`](kcl/xLine)
-  * [`xLineTo`](kcl/xLineTo)
   * [`yLine`](kcl/yLine)
-  * [`yLineTo`](kcl/yLineTo)
   * [`yd`](kcl/yd)
 * **std::math**
   * [`E`](kcl/const_std-math-E)

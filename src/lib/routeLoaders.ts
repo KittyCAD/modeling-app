@@ -6,6 +6,7 @@ import { BROWSER_PATH } from 'lib/paths'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
+  FILE_EXT,
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
@@ -16,6 +17,7 @@ import { getProjectInfo } from './desktop'
 import { normalizeLineEndings } from 'lib/codeEditor'
 import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { getSettings, settingsActor } from 'machines/appMachine'
+import { waitFor } from 'xstate'
 
 export const telemetryLoader: LoaderFunction = async ({
   params,
@@ -107,6 +109,8 @@ export const fileLoader: LoaderFunction = async (
     const project = maybeProjectInfo ?? defaultProjectData
 
     // Fire off the event to load the project settings
+    // once we know it's idle.
+    await waitFor(settingsActor, (state) => state.matches('idle'))
     settingsActor.send({
       type: 'load.project',
       project,
@@ -127,13 +131,33 @@ export const fileLoader: LoaderFunction = async (
     }
   }
 
+  const project = {
+    name: BROWSER_PROJECT_NAME,
+    path: `/${BROWSER_PROJECT_NAME}`,
+    children: [
+      {
+        name: `${BROWSER_FILE_NAME}.${FILE_EXT}`,
+        path: BROWSER_PATH,
+        children: [],
+      },
+    ],
+    default_file: BROWSER_FILE_NAME,
+    directory_count: 0,
+    kcl_file_count: 1,
+    metadata: null,
+  }
+
+  // Fire off the event to load the project settings
+  // once we know it's idle.
+  await waitFor(settingsActor, (state) => state.matches('idle'))
+  settingsActor.send({
+    type: 'load.project',
+    project,
+  })
+
   return {
     code,
-    project: {
-      name: BROWSER_PROJECT_NAME,
-      path: '/' + BROWSER_PROJECT_NAME,
-      children: [],
-    },
+    project,
     file: {
       name: BROWSER_FILE_NAME,
       path: decodeURIComponent(BROWSER_PATH),

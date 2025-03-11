@@ -22,7 +22,7 @@ mod test_examples_some_function {
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
-                error: e,
+                error: e.error,
                 filename: format!("{}{}", "some_function", 0usize),
                 kcl_source: "someFunction()".to_string(),
             }));

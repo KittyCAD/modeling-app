@@ -41,7 +41,7 @@ sketch001 = startSketchOn('XZ')
        angle = toDegrees(atan2(1.25, 2)),
        length = 20
      }, %)
-  |> yLineTo(0, %)
+  |> yLine(endAbsolute = 0)
   |> close()
 
 extrude001 = extrude(sketch001, length = 5)

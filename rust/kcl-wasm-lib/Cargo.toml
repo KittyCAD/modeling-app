@@ -1,6 +1,6 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.45"
+version = "0.1.47"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.83"
@@ -8,6 +8,7 @@ publish = false
 
 [lib]
 crate-type = ["cdylib"]
+bench = false
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 bson = { version = "2.13.0", features = ["uuid-1", "chrono"] }

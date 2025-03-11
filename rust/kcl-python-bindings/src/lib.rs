@@ -16,8 +16,8 @@ fn tokio() -> &'static tokio::runtime::Runtime {
     RT.get_or_init(|| tokio::runtime::Runtime::new().unwrap())
 }
 
-fn into_miette(error: kcl_lib::KclErrorWithOutputs) -> PyErr {
-    let report = error.clone().into_miette_report_with_outputs().unwrap();
+fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
+    let report = error.clone().into_miette_report_with_outputs(code).unwrap();
     let report = miette::Report::new(report);
     pyo3::exceptions::PyException::new_err(format!("{:?}", report))
 }
@@ -242,9 +242,9 @@ async fn execute(path: String) -> PyResult<()> {
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
-            ctx.run_with_ui_outputs(&program, &mut state)
+            ctx.run(&program, &mut state)
                 .await
-                .map_err(into_miette)?;
+                .map_err(|err| into_miette(err, &code))?;
 
             Ok(())
         })
@@ -264,9 +264,9 @@ async fn execute_code(code: String) -> PyResult<()> {
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
-            ctx.run_with_ui_outputs(&program, &mut state)
+            ctx.run(&program, &mut state)
                 .await
-                .map_err(into_miette)?;
+                .map_err(|err| into_miette(err, &code))?;
 
             Ok(())
         })
@@ -289,9 +289,9 @@ async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResu
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
-            ctx.run_with_ui_outputs(&program, &mut state)
+            ctx.run(&program, &mut state)
                 .await
-                .map_err(into_miette)?;
+                .map_err(|err| into_miette(err, &code))?;
 
             // Zoom to fit.
             ctx.engine
@@ -346,9 +346,9 @@ async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> P
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
-            ctx.run_with_ui_outputs(&program, &mut state)
+            ctx.run(&program, &mut state)
                 .await
-                .map_err(into_miette)?;
+                .map_err(|err| into_miette(err, &code))?;
 
             // Zoom to fit.
             ctx.engine
@@ -408,9 +408,9 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
-            ctx.run_with_ui_outputs(&program, &mut state)
+            ctx.run(&program, &mut state)
                 .await
-                .map_err(into_miette)?;
+                .map_err(|err| into_miette(err, &code))?;
 
             // This will not return until there are files.
             let resp = ctx
@@ -452,9 +452,9 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
-            ctx.run_with_ui_outputs(&program, &mut state)
+            ctx.run(&program, &mut state)
                 .await
-                .map_err(into_miette)?;
+                .map_err(|err| into_miette(err, &code))?;
 
             // This will not return until there are files.
             let resp = ctx

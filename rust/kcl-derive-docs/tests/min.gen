@@ -23,7 +23,7 @@ mod test_examples_min {
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
-                error: e,
+                error: e.error,
                 filename: format!("{}{}", "min", 0usize),
                 kcl_source: "This is another code block.\nyes sirrr.\nmin".to_string(),
             }));

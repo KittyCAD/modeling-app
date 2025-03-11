@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed french-press.kcl
 ---
 [
@@ -302,16 +302,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          2123,
-          2127,
+          2174,
+          2178,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2106,
-      2128,
+      2157,
+      2179,
       0
     ],
     "type": "StdLibCall",
@@ -346,8 +346,8 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          2247,
-          2250,
+          2298,
+          2301,
           0
         ]
       },
@@ -397,8 +397,8 @@ description: Operations executed french-press.kcl
           ]
         },
         "sourceRange": [
-          2167,
-          2176,
+          2218,
+          2227,
           0
         ]
       },
@@ -448,8 +448,8 @@ description: Operations executed french-press.kcl
           ]
         },
         "sourceRange": [
-          2194,
-          2203,
+          2245,
+          2254,
           0
         ]
       },
@@ -468,8 +468,8 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          2224,
-          2225,
+          2275,
+          2276,
           0
         ]
       },
@@ -479,16 +479,16 @@ description: Operations executed french-press.kcl
           "value": true
         },
         "sourceRange": [
-          2278,
-          2282,
+          2329,
+          2333,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      2134,
-      2289,
+      2185,
+      2340,
       0
     ],
     "type": "StdLibCall",
@@ -523,16 +523,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          2359,
-          2360,
+          2410,
+          2411,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      2332,
-      2361,
+      2383,
+      2412,
       0
     ],
     "type": "StdLibCall",
@@ -542,8 +542,8 @@ description: Operations executed french-press.kcl
         "value": "XY"
       },
       "sourceRange": [
-        2344,
-        2348,
+        2395,
+        2399,
         0
       ]
     }
@@ -556,16 +556,16 @@ description: Operations executed french-press.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          2332,
-          2361,
+          2383,
+          2412,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2318,
-      2362,
+      2369,
+      2413,
       0
     ],
     "type": "StdLibCall",
@@ -588,16 +588,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          2491,
-          2496,
+          2542,
+          2547,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2463,
-      2497,
+      2514,
+      2548,
       0
     ],
     "type": "StdLibCall",
@@ -609,8 +609,8 @@ description: Operations executed french-press.kcl
         }
       },
       "sourceRange": [
-        2471,
-        2480,
+        2522,
+        2531,
         0
       ]
     }
@@ -625,8 +625,8 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          2525,
-          2535,
+          2576,
+          2586,
           0
         ]
       },
@@ -636,16 +636,16 @@ description: Operations executed french-press.kcl
           "value": "END"
         },
         "sourceRange": [
-          2537,
-          2542,
+          2588,
+          2593,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2511,
-      2543,
+      2562,
+      2594,
       0
     ],
     "type": "StdLibCall",
@@ -668,16 +668,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          2938,
-          2944,
+          2995,
+          3001,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2910,
-      2945,
+      2967,
+      3002,
       0
     ],
     "type": "StdLibCall",
@@ -697,8 +697,8 @@ description: Operations executed french-press.kcl
         ]
       },
       "sourceRange": [
-        2918,
-        2927,
+        2975,
+        2984,
         0
       ]
     }
@@ -711,16 +711,16 @@ description: Operations executed french-press.kcl
           "value": "XZ"
         },
         "sourceRange": [
-          2990,
-          2994,
+          3047,
+          3051,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2976,
-      2995,
+      3033,
+      3052,
       0
     ],
     "type": "StdLibCall",
@@ -739,8 +739,8 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          3392,
-          3406,
+          3467,
+          3481,
           0
         ]
       },
@@ -752,16 +752,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          3408,
-          3409,
+          3483,
+          3484,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      3384,
-      3410,
+      3459,
+      3485,
       0
     ],
     "type": "StdLibCall",
@@ -775,16 +775,16 @@ description: Operations executed french-press.kcl
           "value": "XZ"
         },
         "sourceRange": [
-          3458,
-          3462,
+          3533,
+          3537,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3444,
-      3463,
+      3519,
+      3538,
       0
     ],
     "type": "StdLibCall",
@@ -803,8 +803,8 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          3778,
-          3792,
+          3865,
+          3879,
           0
         ]
       },
@@ -816,16 +816,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          3794,
-          3795,
+          3881,
+          3882,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      3770,
-      3796,
+      3857,
+      3883,
       0
     ],
     "type": "StdLibCall",
@@ -848,16 +848,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          3867,
-          3871,
+          3954,
+          3958,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3840,
-      3872,
+      3927,
+      3959,
       0
     ],
     "type": "StdLibCall",
@@ -867,8 +867,8 @@ description: Operations executed french-press.kcl
         "value": "XY"
       },
       "sourceRange": [
-        3852,
-        3856,
+        3939,
+        3943,
         0
       ]
     }
@@ -881,16 +881,16 @@ description: Operations executed french-press.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3840,
-          3872,
+          3927,
+          3959,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3826,
-      3873,
+      3913,
+      3960,
       0
     ],
     "type": "StdLibCall",
@@ -906,8 +906,8 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          3970,
-          4007,
+          4057,
+          4094,
           0
         ]
       },
@@ -919,16 +919,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          4009,
-          4010,
+          4096,
+          4097,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3965,
-      4011,
+      4052,
+      4098,
       0
     ],
     "type": "StdLibCall",
@@ -951,16 +951,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          4054,
-          4059,
+          4141,
+          4146,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4026,
-      4060,
+      4113,
+      4147,
       0
     ],
     "type": "StdLibCall",
@@ -972,8 +972,8 @@ description: Operations executed french-press.kcl
         }
       },
       "sourceRange": [
-        4034,
-        4043,
+        4121,
+        4130,
         0
       ]
     }
@@ -988,8 +988,8 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          4125,
-          4135,
+          4212,
+          4222,
           0
         ]
       },
@@ -999,16 +999,16 @@ description: Operations executed french-press.kcl
           "value": "END"
         },
         "sourceRange": [
-          4137,
-          4142,
+          4224,
+          4229,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4111,
-      4143,
+      4198,
+      4230,
       0
     ],
     "type": "StdLibCall",
@@ -1031,16 +1031,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          4363,
-          4369,
+          4450,
+          4456,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4335,
-      4370,
+      4422,
+      4457,
       0
     ],
     "type": "StdLibCall",
@@ -1075,8 +1075,8 @@ description: Operations executed french-press.kcl
         ]
       },
       "sourceRange": [
-        4343,
-        4352,
+        4430,
+        4439,
         0
       ]
     }
@@ -1091,8 +1091,8 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          4435,
-          4445,
+          4522,
+          4532,
           0
         ]
       },
@@ -1102,16 +1102,16 @@ description: Operations executed french-press.kcl
           "value": "END"
         },
         "sourceRange": [
-          4447,
-          4452,
+          4534,
+          4539,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4421,
-      4453,
+      4508,
+      4540,
       0
     ],
     "type": "StdLibCall",
@@ -1134,16 +1134,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          4673,
-          4679,
+          4760,
+          4766,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4645,
-      4680,
+      4732,
+      4767,
       0
     ],
     "type": "StdLibCall",
@@ -1166,8 +1166,8 @@ description: Operations executed french-press.kcl
         ]
       },
       "sourceRange": [
-        4653,
-        4662,
+        4740,
+        4749,
         0
       ]
     }
@@ -1180,16 +1180,16 @@ description: Operations executed french-press.kcl
           "value": "XY"
         },
         "sourceRange": [
-          4739,
-          4743,
+          4826,
+          4830,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4725,
-      4744,
+      4812,
+      4831,
       0
     ],
     "type": "StdLibCall",
@@ -1212,16 +1212,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          4947,
-          4959,
+          5034,
+          5046,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4919,
-      4960,
+      5006,
+      5047,
       0
     ],
     "type": "StdLibCall",
@@ -1233,8 +1233,8 @@ description: Operations executed french-press.kcl
         }
       },
       "sourceRange": [
-        4927,
-        4936,
+        5014,
+        5023,
         0
       ]
     }
@@ -1252,8 +1252,8 @@ description: Operations executed french-press.kcl
           ]
         },
         "sourceRange": [
-          4980,
-          4987,
+          5067,
+          5074,
           0
         ]
       },
@@ -1272,16 +1272,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          5001,
-          5004,
+          5088,
+          5091,
           0
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      4966,
-      5005,
+      5053,
+      5092,
       0
     ],
     "type": "StdLibCall",
@@ -1307,16 +1307,16 @@ description: Operations executed french-press.kcl
           "value": "XZ"
         },
         "sourceRange": [
-          5061,
-          5065,
+          5148,
+          5152,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      5047,
-      5066,
+      5134,
+      5153,
       0
     ],
     "type": "StdLibCall",
@@ -1335,8 +1335,8 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          5479,
-          5493,
+          5590,
+          5604,
           0
         ]
       },
@@ -1348,16 +1348,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          5495,
-          5496,
+          5606,
+          5607,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      5471,
-      5497,
+      5582,
+      5608,
       0
     ],
     "type": "StdLibCall",
@@ -1374,16 +1374,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          5579,
-          5598,
+          5690,
+          5709,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      5552,
-      5599,
+      5663,
+      5710,
       0
     ],
     "type": "StdLibCall",
@@ -1393,8 +1393,8 @@ description: Operations executed french-press.kcl
         "value": "XZ"
       },
       "sourceRange": [
-        5564,
-        5568,
+        5675,
+        5679,
         0
       ]
     }
@@ -1407,16 +1407,16 @@ description: Operations executed french-press.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          5552,
-          5599,
+          5663,
+          5710,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      5538,
-      5600,
+      5649,
+      5711,
       0
     ],
     "type": "StdLibCall",
@@ -1439,16 +1439,16 @@ description: Operations executed french-press.kcl
           }
         },
         "sourceRange": [
-          6117,
-          6133,
+          6228,
+          6244,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      6089,
-      6134,
+      6200,
+      6245,
       0
     ],
     "type": "StdLibCall",
@@ -1460,8 +1460,8 @@ description: Operations executed french-press.kcl
         }
       },
       "sourceRange": [
-        6097,
-        6106,
+        6208,
+        6217,
         0
       ]
     }

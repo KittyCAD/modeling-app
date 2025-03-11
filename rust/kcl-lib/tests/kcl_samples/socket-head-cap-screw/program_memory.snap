@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing socket-head-cap-screw.kcl
 ---
 {
@@ -32,7 +32,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       {
         "sourceRange": [
           861,
-          2268,
+          2274,
           0
         ]
       }

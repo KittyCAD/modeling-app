@@ -1681,7 +1681,9 @@ export class SceneEntities {
               from: circleCenter,
             }
           )
-          if (err(moddedResult)) return
+          if (err(moddedResult)) {
+            return
+          }
           modded = moddedResult.modifiedAst
         }
 

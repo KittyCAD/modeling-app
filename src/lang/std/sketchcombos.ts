@@ -52,6 +52,10 @@ import {
   getConstraintInfoKw,
   isAbsoluteLine,
   getCircle,
+  ARG_LENGTH,
+  tooltipToFnName,
+  fnNameToTooltip,
+  DETERMINING_ARGS,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
@@ -147,6 +151,41 @@ function createCallWrapper(
       return {
         callExp: createCallExpressionStdLibKw(
           'line',
+          null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+          labeledArgs
+        ),
+        valueUsedInTransform,
+      }
+    }
+  } else {
+    // In this branch, `val` is an expression.
+    const arg = (() => {
+      switch (tooltip) {
+        case 'xLine':
+        case 'yLine':
+          return createLabeledArg(ARG_LENGTH, val)
+        case 'xLineTo':
+        case 'yLineTo':
+          return createLabeledArg(ARG_END_ABSOLUTE, val)
+      }
+    })()
+    if (arg !== undefined) {
+      const labeledArgs = []
+      labeledArgs.push(arg)
+      if (tag) {
+        labeledArgs.push(createLabeledArg(ARG_TAG, tag))
+      }
+      const fnName = tooltipToFnName(tooltip)
+      if (err(fnName)) {
+        console.error(fnName)
+        return {
+          callExp: createCallExpression('', []),
+          valueUsedInTransform: 0,
+        }
+      }
+      return {
+        callExp: createCallExpressionStdLibKw(
+          fnName,
           null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
           labeledArgs
         ),
@@ -284,9 +323,9 @@ const xyLineSetLength =
       : referenceSeg
       ? segRef
       : args[0].expr
-    const literalARg = asNum(args[0].expr.value)
-    if (err(literalARg)) return literalARg
-    return createCallWrapper(xOrY, lineVal, tag, literalARg)
+    const literalArg = asNum(args[0].expr.value)
+    if (err(literalArg)) return literalArg
+    return createCallWrapper(xOrY, lineVal, tag, literalArg)
   }
 
 type AngLenNone = 'ang' | 'len' | 'none'
@@ -1636,15 +1675,17 @@ function getTransformMapPathKw(
     return false
   }
   const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
-  const nameAbsolute = name === 'line' ? 'lineTo' : name
-  if (!toolTips.includes(name)) {
+  const tooltip = fnNameToTooltip(isAbsolute, name)
+  if (err(tooltip)) {
+    return false
+  }
+  if (!toolTips.includes(tooltip)) {
     return false
   }
 
   // check if the function is locked down and so can't be transformed
   const argForEnd = getArgForEnd(sketchFnExp)
   if (err(argForEnd)) {
-    console.error(argForEnd)
     return false
   }
 
@@ -1652,29 +1693,29 @@ function getTransformMapPathKw(
     return false
   }
 
-  const fnName = isAbsolute ? nameAbsolute : name
-
   // check if the function has no constraints
   if (isLiteralArrayOrStatic(argForEnd.val)) {
-    const info = transformMap?.[fnName]?.free?.[constraintType]
-    if (info)
+    const info = transformMap?.[tooltip]?.free?.[constraintType]
+    if (info) {
       return {
-        toolTip: fnName,
+        toolTip: tooltip,
         lineInputType: 'free',
         constraintType,
       }
+    }
   }
 
   // check what constraints the function has
   const lineInputType = getConstraintType(argForEnd.val, name, isAbsolute)
   if (lineInputType) {
-    const info = transformMap?.[fnName]?.[lineInputType]?.[constraintType]
-    if (info)
+    const info = transformMap?.[tooltip]?.[lineInputType]?.[constraintType]
+    if (info) {
       return {
-        toolTip: fnName,
+        toolTip: tooltip,
         lineInputType,
         constraintType,
       }
+    }
   }
 
   return false
@@ -1715,8 +1756,8 @@ export function getConstraintType(
   // completely locked down or not locked down at all does not depend on the fnName so we can check that first
   const isArr = isArray(val)
   if (!isArr) {
-    if (fnName === 'xLine') return 'yRelative'
-    if (fnName === 'yLine') return 'xRelative'
+    if (fnName === 'xLine') return isAbsolute ? 'yAbsolute' : 'yRelative'
+    if (fnName === 'yLine') return isAbsolute ? 'xAbsolute' : 'xRelative'
     if (fnName === 'xLineTo') return 'yAbsolute'
     if (fnName === 'yLineTo') return 'xAbsolute'
   } else {
@@ -2158,9 +2199,12 @@ export function getConstraintLevelFromSourceRange(
           if (name === 'circle') {
             return getCircle(nodeMeta.node)
           }
-          const arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], nodeMeta.node)
+          const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
           if (arg === undefined) {
-            return new Error('unexpected call expression: ' + name)
+            const argStr = nodeMeta.node.arguments.map((a) => a.label.name)
+            return new Error(
+              `call to expression ${name} has unexpected args: ${argStr} `
+            )
           }
           const val =
             arg.type === 'ArrayExpression' && arg.elements.length === 2

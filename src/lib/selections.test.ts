@@ -1195,15 +1195,13 @@ profile004 = circle(sketch003,
     async (_name, { snippet, artifactDetails }) => {
       const ast = assertParse(MY_CODE)
       const lineIndex = MY_CODE.indexOf(snippet)
-      const path = getNodePathFromSourceRange(ast, [
-        lineIndex,
-        lineIndex + snippet.length,
-        0,
-      ])
+      expect(lineIndex).toBeGreaterThanOrEqual(0)
+      const end = lineIndex + snippet.length
+      const path = getNodePathFromSourceRange(ast, [lineIndex, end, 0])
       const selections: Selection[] = [
         {
           codeRef: {
-            range: [lineIndex + snippet.length, lineIndex + snippet.length, 0],
+            range: [end, end, 0],
             pathToNode: path,
           },
         },
