@@ -8,10 +8,12 @@ repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
 
 [lib]
+bench = false
 
 [[bin]]
 name = "kcl-to-core"
 path = "src/tool.rs"
+bench = false
 
 [dependencies]
 anyhow = { workspace = true }

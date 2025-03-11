@@ -10,6 +10,7 @@ license = "MIT"
 [[bin]]
 name = "kcl-language-server"
 path = "src/main.rs"
+bench = false
 
 [dependencies]
 anyhow = { workspace = true }

@@ -54,6 +54,7 @@ bump-kcl-crate-versions bump='patch':
 publish-kcl version:
     git tag kcl-{{version}}
     cargo publish -p kcl-derive-docs
+    cargo publish -p kcl-directory-test-macro
     cargo publish -p kcl-lib
     cargo publish -p kcl-test-server
     # We push the tag at the end of publish since pushing the tag
