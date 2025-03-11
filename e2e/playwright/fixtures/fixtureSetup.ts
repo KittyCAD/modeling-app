@@ -268,6 +268,7 @@ export class ElectronZoo {
 
     if (appSettings) {
       settingsOverridesToml = TOML.stringify({
+        // @ts-expect-error
         settings: {
           ...TEST_SETTINGS,
           ...appSettings,
@@ -280,6 +281,7 @@ export class ElectronZoo {
       })
     } else {
       settingsOverridesToml = TOML.stringify({
+        // @ts-expect-error
         settings: {
           ...TEST_SETTINGS,
           app: {
