@@ -17,20 +17,20 @@ This document describes the available settings in the `user.toml` configuration 
 # Set the appearance of the application
 [settings.app.appearance]
 # Use dark mode theme
-theme &#x3D; &quot;dark&quot;
-# Set the app color to blue (240.0 &#x3D; blue, 0.0 &#x3D; red, 120.0 &#x3D; green)
-color &#x3D; 240.0
+theme = "dark"
+# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
+color = 240.0
 
 [settings.modeling]
 # Use millimeters as the default measurement unit
-base_unit &#x3D; &quot;mm&quot;
+base_unit = "mm"
 
 [settings.text_editor]
 # Disable text wrapping in the editor
-text_wrapping &#x3D; false
+text_wrapping = false
 # Use 2 spaces for indentation
-tab_size &#x3D; 2
-use_spaces &#x3D; true
+tab_size = 2
+use_spaces = true
 
 ```
 
@@ -262,19 +262,19 @@ Whether to include settings in the command bar.
 # Set the appearance of the application
 [settings.app.appearance]
 # Use dark mode theme
-theme &#x3D; &quot;dark&quot;
-# Set the app color to blue (240.0 &#x3D; blue, 0.0 &#x3D; red, 120.0 &#x3D; green)
-color &#x3D; 240.0
+theme = "dark"
+# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
+color = 240.0
 
 [settings.modeling]
 # Use millimeters as the default measurement unit
-base_unit &#x3D; &quot;mm&quot;
+base_unit = "mm"
 
 [settings.text_editor]
 # Disable text wrapping in the editor
-text_wrapping &#x3D; false
+text_wrapping = false
 # Use 2 spaces for indentation
-tab_size &#x3D; 2
-use_spaces &#x3D; true
+tab_size = 2
+use_spaces = true
 
 ```
