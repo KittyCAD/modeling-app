@@ -25,7 +25,7 @@ Settings which affect a single file are configured using the settings attribute.
 This must be at the top of the KCL file (comments before the attribute are permitted).
 For example:
 
-```kcl
+```js
 // The settings attribute.
 @settings(defaultLengthUnit = in)
 
