@@ -2333,9 +2333,9 @@ extrude001 = extrude(profile003, length = 5)
 
       await test.step('check the sketch is still drawn properly', async () => {
         await Promise.all([
-          scene.expectPixelColor([255, 255, 255], { x: 596, y: 165 }, 15),
-          scene.expectPixelColor([255, 255, 255], { x: 641, y: 220 }, 15),
-          scene.expectPixelColor([255, 255, 255], { x: 763, y: 214 }, 15),
+          scene.expectPixelColor(TEST_COLORS.WHITE, { x: 596, y: 165 }, 15),
+          scene.expectPixelColor(TEST_COLORS.WHITE, { x: 641, y: 220 }, 15),
+          scene.expectPixelColor(TEST_COLORS.WHITE, { x: 763, y: 214 }, 15),
         ])
       })
     }
