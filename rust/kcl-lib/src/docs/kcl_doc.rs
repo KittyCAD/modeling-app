@@ -118,8 +118,16 @@ impl DocData {
     pub fn file_name(&self) -> String {
         match self {
             DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Const(c) => format!("consts/{}", c.qual_name.replace("::", "-")),
+            DocData::Ty(t) => format!("types/{}", t.name.clone()),
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn example_name(&self) -> String {
+        match self {
+            DocData::Fn(f) => f.qual_name.replace("::", "-"),
             DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
-            // TODO might want to change this
             DocData::Ty(t) => t.name.clone(),
         }
     }
@@ -872,7 +880,7 @@ mod test {
                         Ok(img) => img,
                     };
                 twenty_twenty::assert_image(
-                    format!("tests/outputs/serial_test_example_{}{i}.png", d.file_name()),
+                    format!("tests/outputs/serial_test_example_{}{i}.png", d.example_name()),
                     &result,
                     0.99,
                 );
