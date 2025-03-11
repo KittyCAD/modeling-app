@@ -8,6 +8,7 @@ import {
 } from '../test-utils'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
+import { ToolbarModeName } from 'lib/toolbar'
 
 export class ToolbarFixture {
   public page: Page
@@ -101,6 +102,15 @@ export class ToolbarFixture {
     // One of the rare times we want to allow a arbitrary wait
     // this is for the engine animation, as it takes 500ms to complete
     await this.page.waitForTimeout(600)
+  }
+  private _getMode = () =>
+    this.page.locator('[data-current-mode]').getAttribute('data-current-mode')
+  expectToolbarMode = {
+    toBe: (mode: ToolbarModeName) => expect.poll(this._getMode).toEqual(mode),
+    not: {
+      toBe: (mode: ToolbarModeName) =>
+        expect.poll(this._getMode).not.toEqual(mode),
+    },
   }
 
   private _serialiseFileTree = async () => {
