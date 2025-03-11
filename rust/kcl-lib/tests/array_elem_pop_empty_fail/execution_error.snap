@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Error from executing array_elem_pop_empty_fail.kcl
 ---
 KCL Semantic error

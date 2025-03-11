@@ -159,10 +159,13 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [linux-x86_64, windows, macos, sdist]
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
+        with:
+          path: rust/kcl-python-bindings
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v5
-      - name: Install codespell
+      - name: do uv things
         run: |
             cd rust/kcl-python-bindings
             uv venv .venv

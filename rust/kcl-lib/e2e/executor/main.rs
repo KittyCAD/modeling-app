@@ -857,7 +857,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "Expected a kcl_lib::std::shapes::SketchOrSurface but found string (text)"
+        "This function expected this argument to be of type SketchOrSurface but it's actually of type string (text)"
     );
 }
 
@@ -2084,6 +2084,26 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     assert!(ctx.engine.batch_end().read().await.is_empty());
 
     ctx.close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_better_type_names() {
+    let code = r#"startSketchOn('XY')
+  |> circle(center = [-95.51, -74.7], radius = 262.23)
+  |> appearance(metalness = 0.9)
+"#;
+    let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
+
+    let err = match result.err() {
+        Some(x) => match x {
+            ExecError::Kcl(kcl_error_with_outputs) => kcl_error_with_outputs.error.message().to_owned(),
+            ExecError::Connection(_) => todo!(),
+            ExecError::BadPng(_) => todo!(),
+            ExecError::BadExport(_) => todo!(),
+        },
+        None => todo!(),
+    };
+    assert_eq!(err, "This function expected this argument to be of type SolidSet but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
 }
 
 #[tokio::test(flavor = "multi_thread")]
