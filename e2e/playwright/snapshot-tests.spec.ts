@@ -400,7 +400,7 @@ test(
   { tag: '@snapshot' },
   async ({ page, scene, toolbar }) => {
     // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
+    // test.skip(process.platform === 'darwin', 'Skip on macos')
 
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })

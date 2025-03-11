@@ -449,7 +449,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               },
             }),
           icon: 'arc',
-          status: 'unavailable',
+          status: DEV ? 'available' : 'unavailable',
           title: 'Arc',
           description: 'Start drawing an arc',
           links: [],
