@@ -23,16 +23,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1634,
-                      1637,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -45,25 +36,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1639,
-                      1642,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  1633,
-                  1643,
-                  0
-                ]
+                }
               }
             ]
           },
@@ -81,16 +54,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      471,
-                      474,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -103,49 +67,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      471,
-                      474,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  1658,
-                  1686,
-                  0
-                ]
+                }
               }
             ]
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1620,
-              1690,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1607,
-          1692,
-          0
-        ]
-      }
-    ]
+    }
   },
   "basePlateCorners": {
     "type": "Solids",
@@ -358,8 +286,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -387,32 +314,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -622,8 +531,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -651,32 +559,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -886,8 +776,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -915,32 +804,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1150,8 +1021,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1179,32 +1049,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1414,8 +1266,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1443,32 +1294,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1678,8 +1511,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1707,32 +1539,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1942,8 +1756,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1971,32 +1784,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2206,8 +2001,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2235,32 +2029,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2470,8 +2246,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2499,32 +2274,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2734,8 +2491,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2763,32 +2519,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2998,8 +2736,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3027,32 +2764,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3262,8 +2981,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3291,32 +3009,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3526,8 +3226,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3555,32 +3254,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3790,8 +3471,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3819,32 +3499,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4054,8 +3716,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4083,32 +3744,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4318,8 +3961,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4347,32 +3989,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4582,8 +4206,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4611,32 +4234,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4846,8 +4451,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4875,32 +4479,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5110,8 +4696,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5139,32 +4724,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5374,8 +4941,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5403,32 +4969,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5638,8 +5186,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5667,32 +5214,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5902,8 +5431,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5931,32 +5459,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6166,8 +5676,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6195,32 +5704,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6430,8 +5921,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6459,32 +5949,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -6699,8 +6171,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6728,32 +6199,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6963,8 +6416,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6992,32 +6444,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7227,8 +6661,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7256,32 +6689,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7491,8 +6906,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7520,32 +6934,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7755,8 +7151,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7784,32 +7179,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8019,8 +7396,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8048,32 +7424,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8283,8 +7641,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8312,32 +7669,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8547,8 +7886,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8576,32 +7914,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8811,8 +8131,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8840,32 +8159,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9075,8 +8376,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9104,32 +8404,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9339,8 +8621,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9368,32 +8649,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9603,8 +8866,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9632,32 +8894,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9867,8 +9111,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9896,32 +9139,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10131,8 +9356,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10160,32 +9384,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10395,8 +9601,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10424,32 +9629,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10659,8 +9846,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10688,32 +9874,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10923,8 +10091,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10952,32 +10119,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11187,8 +10336,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11216,32 +10364,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11451,8 +10581,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11480,32 +10609,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11715,8 +10826,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11744,32 +10854,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11979,8 +11071,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12008,32 +11099,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12243,8 +11316,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12272,32 +11344,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12507,8 +11561,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12536,32 +11589,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12771,8 +11806,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12800,32 +11834,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -12840,16 +11856,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          451,
-          455,
-          0
-        ]
-      }
-    ]
+    }
   },
   "cornerRadius": {
     "type": "Number",
@@ -12862,16 +11869,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          471,
-          474,
-          0
-        ]
-      }
-    ]
+    }
   },
   "corners": {
     "type": "Solids",
@@ -13084,8 +12082,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13113,32 +12110,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13348,8 +12327,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13377,32 +12355,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13612,8 +12572,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13641,32 +12600,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13876,8 +12817,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13905,32 +12845,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -13945,16 +12867,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          647,
-          648,
-          0
-        ]
-      }
-    ]
+    }
   },
   "countBinWidth": {
     "type": "Number",
@@ -13967,28 +12880,10 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          628,
-          629,
-          0
-        ]
-      }
-    ]
+    }
   },
   "face": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          868,
-          1182,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "firstStep": {
     "type": "Number",
@@ -14001,16 +12896,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          487,
-          490,
-          0
-        ]
-      }
-    ]
+    }
   },
   "height": {
     "type": "Number",
@@ -14023,30 +12909,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          487,
-          490,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          504,
-          507,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          520,
-          524,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line001": {
     "type": "TagIdentifier",
@@ -14100,16 +12963,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4550,
-          4558,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line002": {
     "type": "TagIdentifier",
@@ -14163,16 +13017,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4599,
-          4607,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line003": {
     "type": "TagIdentifier",
@@ -14226,16 +13071,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4660,
-          4668,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line004": {
     "type": "TagIdentifier",
@@ -14289,16 +13125,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4689,
-          4697,
-          0
-        ]
-      }
-    ]
+    }
   },
   "magDepth": {
     "type": "Number",
@@ -14311,16 +13138,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          571,
-          574,
-          0
-        ]
-      }
-    ]
+    }
   },
   "magOffset": {
     "type": "Number",
@@ -14333,16 +13151,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          556,
-          559,
-          0
-        ]
-      }
-    ]
+    }
   },
   "magOuterDiam": {
     "type": "Number",
@@ -14355,40 +13164,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          540,
-          543,
-          0
-        ]
-      }
-    ]
+    }
   },
   "magnetBase": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          4426,
-          4768,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "magnetCenterCutout": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          2775,
-          4366,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "magnetCutoutExtrude": {
     "type": "Solid",
@@ -14606,8 +13388,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -14683,16 +13464,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4550,
-                  4558,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line002": {
             "type": "TagIdentifier",
@@ -14745,16 +13517,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4599,
-                  4607,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line003": {
             "type": "TagIdentifier",
@@ -14807,16 +13570,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4660,
-                  4668,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line004": {
             "type": "TagIdentifier",
@@ -14869,48 +13623,21 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4689,
-                  4697,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4485,
-              4510,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.4,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4485,
-            4510,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "magnetCutoutExtrudeFillets": {
@@ -15129,8 +13856,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -15206,16 +13932,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4550,
-                  4558,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line002": {
             "type": "TagIdentifier",
@@ -15268,16 +13985,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4599,
-                  4607,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line003": {
             "type": "TagIdentifier",
@@ -15330,16 +14038,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4660,
-                  4668,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line004": {
             "type": "TagIdentifier",
@@ -15392,32 +14091,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4689,
-                  4697,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4485,
-              4510,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.4,
       "startCapId": "[uuid]",
@@ -15454,16 +14135,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4485,
-            4510,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "magnetHolesExtrude": {
@@ -15682,8 +14354,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -15759,16 +14430,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4550,
-                  4558,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line002": {
             "type": "TagIdentifier",
@@ -15821,16 +14483,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4599,
-                  4607,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line003": {
             "type": "TagIdentifier",
@@ -15883,16 +14536,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4660,
-                  4668,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line004": {
             "type": "TagIdentifier",
@@ -15945,48 +14589,21 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4689,
-                  4697,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4485,
-              4510,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.4,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4485,
-            4510,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "magnetHolesExtrudeFillets": {
@@ -16205,8 +14822,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -16282,16 +14898,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4550,
-                  4558,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line002": {
             "type": "TagIdentifier",
@@ -16344,16 +14951,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4599,
-                  4607,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line003": {
             "type": "TagIdentifier",
@@ -16406,16 +15004,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4660,
-                  4668,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line004": {
             "type": "TagIdentifier",
@@ -16468,32 +15057,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4689,
-                  4697,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4485,
-              4510,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.4,
       "startCapId": "[uuid]",
@@ -16530,16 +15101,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4485,
-            4510,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "magnetProfile": {
@@ -16688,8 +15250,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -16765,16 +15326,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4550,
-                4558,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line002": {
           "type": "TagIdentifier",
@@ -16827,16 +15379,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4599,
-                4607,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line003": {
           "type": "TagIdentifier",
@@ -16889,16 +15432,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4660,
-                4668,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line004": {
           "type": "TagIdentifier",
@@ -16951,32 +15485,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4689,
-                4697,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4485,
-            4510,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "magnetProfileNoMagnets": {
@@ -17125,8 +15641,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -17202,16 +15717,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4550,
-                4558,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line002": {
           "type": "TagIdentifier",
@@ -17264,16 +15770,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4599,
-                4607,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line003": {
           "type": "TagIdentifier",
@@ -17326,16 +15823,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4660,
-                4668,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line004": {
           "type": "TagIdentifier",
@@ -17388,32 +15876,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4689,
-                4697,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4485,
-            4510,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "magnetsSketch": {
@@ -17480,8 +15950,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -17509,16 +15978,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4856,
-              4957,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -17581,8 +16041,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -17610,16 +16069,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4856,
-              4957,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -17682,8 +16132,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -17711,16 +16160,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4856,
-              4957,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -17783,8 +16223,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -17812,16 +16251,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4856,
-              4957,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -17836,16 +16266,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          504,
-          507,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sides": {
     "type": "Solids",
@@ -18058,8 +16479,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -18087,32 +16507,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -18322,8 +16724,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -18351,32 +16752,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -18586,8 +16969,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -18615,32 +16997,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -18850,8 +17214,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -18879,32 +17242,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                921,
-                946,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -19118,8 +17463,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -19147,32 +17491,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            921,
-            946,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "singleSide": {
@@ -19385,8 +17711,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -19414,32 +17739,14 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              921,
-              946,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 34.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            921,
-            946,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "thirdStep": {
@@ -19453,15 +17760,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          520,
-          524,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

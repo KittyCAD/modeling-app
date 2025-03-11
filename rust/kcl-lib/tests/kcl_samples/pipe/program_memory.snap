@@ -315,8 +315,7 @@ description: Variables in memory after executing pipe.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -344,32 +343,14 @@ description: Variables in memory after executing pipe.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              630,
-              685,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            630,
-            685,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pipeLargeDia": {
@@ -383,16 +364,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          280,
-          281,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeLargeDiaLength": {
     "type": "Number",
@@ -405,16 +377,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          263,
-          264,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeSketch": {
     "type": "Sketch",
@@ -634,8 +597,7 @@ description: Variables in memory after executing pipe.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -663,16 +625,7 @@ description: Variables in memory after executing pipe.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            630,
-            685,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pipeSmallDia": {
@@ -686,16 +639,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          297,
-          300,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeSmallDiaLength": {
     "type": "Number",
@@ -708,30 +652,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          239,
-          241,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          367,
-          370,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          263,
-          264,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeTotalLength": {
     "type": "Number",
@@ -744,16 +665,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          239,
-          241,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeTransitionAngle": {
     "type": "Number",
@@ -766,16 +678,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          341,
-          343,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeTransitionLength": {
     "type": "Number",
@@ -788,16 +691,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          367,
-          370,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thickness": {
     "type": "Number",
@@ -810,15 +704,6 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          313,
-          318,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

@@ -4,16 +4,7 @@ description: Variables in memory after executing double_map_fn.kcl
 ---
 {
   "increment": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          12,
-          34,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "xs": {
     "type": "MixedArray",
@@ -24,16 +15,7 @@ description: Variables in memory after executing double_map_fn.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              47,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -41,16 +23,7 @@ description: Variables in memory after executing double_map_fn.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              47,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -58,25 +31,7 @@ description: Variables in memory after executing double_map_fn.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              47,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          41,
-          47,
-          0
-        ]
+        }
       }
     ]
   },
@@ -88,99 +43,21 @@ description: Variables in memory after executing double_map_fn.kcl
         "value": 2.0,
         "ty": {
           "type": "Unknown"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              47,
-              0
-            ]
-          },
-          {
-            "sourceRange": [
-              31,
-              32,
-              0
-            ]
-          },
-          {
-            "sourceRange": [
-              31,
-              32,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
         "value": 3.0,
         "ty": {
           "type": "Unknown"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              47,
-              0
-            ]
-          },
-          {
-            "sourceRange": [
-              31,
-              32,
-              0
-            ]
-          },
-          {
-            "sourceRange": [
-              31,
-              32,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
         "value": 4.0,
         "ty": {
           "type": "Unknown"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              47,
-              0
-            ]
-          },
-          {
-            "sourceRange": [
-              31,
-              32,
-              0
-            ]
-          },
-          {
-            "sourceRange": [
-              31,
-              32,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          84,
-          101,
-          0
-        ]
+        }
       }
     ]
   }

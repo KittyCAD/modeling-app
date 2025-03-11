@@ -33,7 +33,6 @@ Data for a solid or an imported geometry.
 | `endCapId` |[`string`](/docs/kcl/types/string)| The id of the extrusion end cap | No |
 | `edgeCuts` |`[` [`EdgeCut`](/docs/kcl/types/EdgeCut) `]`| Chamfers or fillets on this solid. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`| Metadata. | No |
 
 
 ----
@@ -52,7 +51,6 @@ Data for an imported geometry.
 | `type` |enum: `importedGeometry`|  | No |
 | `id` |[`string`](/docs/kcl/types/string)| The ID of the imported geometry. | No |
 | `value` |`[` [`string`](/docs/kcl/types/string) `]`| The original file paths. | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
