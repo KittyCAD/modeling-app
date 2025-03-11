@@ -37,7 +37,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
-      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
+      - uses: taiki-e/install-action@87b5304d4e82236718783683826c899da7e5470f
         with:
           tool: wasm-pack
       - run: yarn build:wasm
@@ -57,7 +57,7 @@ jobs:
         with:
           workspaces: './rust'
 
-      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
+      - uses: taiki-e/install-action@87b5304d4e82236718783683826c899da7e5470f
         with:
           tool: wasm-pack
       - run: yarn build:wasm
@@ -100,7 +100,7 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
-      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
+      - uses: taiki-e/install-action@87b5304d4e82236718783683826c899da7e5470f
         with:
           tool: wasm-pack
       - run: yarn build:wasm
@@ -129,7 +129,7 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
-      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
+      - uses: taiki-e/install-action@87b5304d4e82236718783683826c899da7e5470f
         with:
           tool: wasm-pack
       - run: yarn build:wasm
