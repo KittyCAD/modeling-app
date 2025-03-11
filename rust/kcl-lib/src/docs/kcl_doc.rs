@@ -124,6 +124,15 @@ impl DocData {
     }
 
     #[allow(dead_code)]
+    pub fn example_name(&self) -> String {
+        match self {
+            DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
+            DocData::Ty(t) => t.name.clone(),
+        }
+    }
+
+    #[allow(dead_code)]
     pub fn mod_name(&self) -> String {
         let q = match self {
             DocData::Fn(f) => &f.qual_name,
@@ -871,7 +880,7 @@ mod test {
                         Ok(img) => img,
                     };
                 twenty_twenty::assert_image(
-                    format!("tests/outputs/serial_test_example_{}{i}.png", d.file_name()),
+                    format!("tests/outputs/serial_test_example_{}{i}.png", d.example_name()),
                     &result,
                     0.99,
                 );

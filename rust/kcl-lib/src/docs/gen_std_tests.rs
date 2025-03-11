@@ -441,7 +441,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
     }))
 }
 
-fn generate_type_from_kcl(ty: &TyData, file_name: String) -> Result<()> {
+fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) -> Result<()> {
     if ty.properties.doc_hidden {
         return Ok(());
     }
@@ -452,9 +452,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String) -> Result<()> {
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| {
-            generate_example(index, &example.0, &example.1, file_name.trim_start_matches("types/"))
-        })
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
 
     let data = json!({
@@ -466,10 +464,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String) -> Result<()> {
     });
 
     let output = hbs.render("kclType", &data)?;
-    expectorate::assert_contents(
-        format!("../../docs/kcl/types/{}.md", file_name.trim_start_matches("types/")),
-        &output,
-    );
+    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
 
     Ok(())
 }
@@ -521,7 +516,7 @@ fn generate_function_from_kcl(function: &FnData, file_name: String) -> Result<()
     Ok(())
 }
 
-fn generate_const_from_kcl(cnst: &ConstData, file_name: String) -> Result<()> {
+fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: String) -> Result<()> {
     if cnst.properties.doc_hidden {
         return Ok(());
     }
@@ -531,9 +526,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String) -> Result<()> {
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| {
-            generate_example(index, &example.0, &example.1, &file_name.replace("consts/", "const_"))
-        })
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
 
     let data = json!({
@@ -1071,8 +1064,8 @@ fn test_generate_stdlib_markdown_docs() {
     for d in &kcl_std {
         match d {
             DocData::Fn(f) => generate_function_from_kcl(f, d.file_name()).unwrap(),
-            DocData::Const(c) => generate_const_from_kcl(c, d.file_name()).unwrap(),
-            DocData::Ty(t) => generate_type_from_kcl(t, d.file_name()).unwrap(),
+            DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
+            DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name()).unwrap(),
         }
     }
 }
