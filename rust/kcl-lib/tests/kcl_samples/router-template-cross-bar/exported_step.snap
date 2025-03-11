@@ -1,6 +1,0 @@
----
-source: kcl-lib/src/simulation_tests.rs
-description: Step file router-template-cross-bar.kcl
-extension: step
-snapshot_kind: binary
----

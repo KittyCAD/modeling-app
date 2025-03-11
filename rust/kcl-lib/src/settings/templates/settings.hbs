@@ -1,0 +1,67 @@
+---
+title: "{{title}}"
+excerpt: "{{{description}}}"
+layout: manual
+---
+
+# {{title}}
+
+{{{description}}}
+
+## {{config_type}} Structure
+
+```toml
+{{{example}}}
+```
+
+## Available Settings
+
+{{#with settings.properties}}
+{{#each this}}
+### {{@key}}
+
+{{#if metadata.description}}{{metadata.description}}{{/if}}
+
+{{#with properties}}
+{{#each this}}
+#### {{@key}}
+
+{{#if description}}{{description}}{{/if}}
+
+{{#if enum}}
+**Possible values:** {{pretty_enum enum}}
+{{/if}}
+
+**Default:** {{#if default}}{{format_default default}}{{else}}None{{/if}}
+
+{{#if properties}}
+This setting has the following nested options:
+
+{{#each properties}}
+##### {{@key}}
+
+{{#if description}}{{description}}{{/if}}
+
+{{#if enum}}
+**Possible values:** {{pretty_enum enum}}
+{{/if}}
+
+**Default:** {{#if default}}{{format_default default}}{{else}}None{{/if}}
+
+{{#if properties}}
+This setting has further nested options. See the schema for full details.
+{{/if}}
+{{/each}}
+{{/if}}
+
+{{/each}}
+{{/with}}
+
+{{/each}}
+{{/with}}
+
+## Complete Example
+
+```toml
+{{{example}}}
+```
