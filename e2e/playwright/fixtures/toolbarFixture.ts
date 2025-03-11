@@ -94,7 +94,9 @@ export class ToolbarFixture {
     await expect(this.gizmoDisabled).toBeVisible()
   }
 
-  startSketchThenCallbackThenWaitUntilReady = async (cb: () => Promise<void>) => {
+  startSketchThenCallbackThenWaitUntilReady = async (
+    cb: () => Promise<void>
+  ) => {
     await this.startSketchBtn.click()
     await cb()
     await this.waitUntilSketchingReady()

@@ -20,38 +20,40 @@ import { DeepPartial } from 'lib/types'
 import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 test.describe('Testing settings', () => {
-  test(
-    'Stored settings are validated and fall back to defaults',
-    async ({ page, homePage, tronApp }) => {
-      if (!tronApp) { fail() }
-      // Override beforeEach test setup
-      // with corrupted settings
-      await tronApp.cleanProjectDir(
-        TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>
-      )
-
-
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-
-      // Check the settings were reset
-      const storedSettings = tomlToSettings(
-        await page.evaluate(
-          ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
-          { settingsKey: TEST_SETTINGS_KEY }
-        )
-      )
-
-      expect(storedSettings.settings?.app?.theme).toBe('dark')
-
-      // Check that the invalid settings were changed to good defaults
-      expect(storedSettings.settings?.modeling?.base_unit).toBe('in')
-      expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
-      expect(storedSettings.settings?.app?.project_directory).toBe('')
-      expect(storedSettings.settings?.project?.default_project_name).toBe(
-        'project-$nnn'
-      )
+  test('Stored settings are validated and fall back to defaults', async ({
+    page,
+    homePage,
+    tronApp,
+  }) => {
+    if (!tronApp) {
+      fail()
     }
-  )
+    // Override beforeEach test setup
+    // with corrupted settings
+    await tronApp.cleanProjectDir(
+      TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>
+    )
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    // Check the settings were reset
+    const storedSettings = tomlToSettings(
+      await page.evaluate(
+        ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
+        { settingsKey: TEST_SETTINGS_KEY }
+      )
+    )
+
+    expect(storedSettings.settings?.app?.theme).toBe('dark')
+
+    // Check that the invalid settings were changed to good defaults
+    expect(storedSettings.settings?.modeling?.base_unit).toBe('in')
+    expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
+    expect(storedSettings.settings?.app?.project_directory).toBe('')
+    expect(storedSettings.settings?.project?.default_project_name).toBe(
+      'project-$nnn'
+    )
+  })
 
   // The behavior is actually broken. Parent always takes precedence
   test.fixme(
@@ -382,7 +384,9 @@ test.describe('Testing settings', () => {
       tag: '@electron',
     },
     async ({ context, page, tronApp }, testInfo) => {
-      if (!tronApp) { fail() }
+      if (!tronApp) {
+        fail()
+      }
       await tronApp.cleanProjectDir({
         app: {
           theme_color: '259',
@@ -410,7 +414,9 @@ test.describe('Testing settings', () => {
       tag: '@electron',
     },
     async ({ context, page, tronApp }, testInfo) => {
-      if (!tronApp) { fail() }
+      if (!tronApp) {
+        fail()
+      }
 
       await tronApp.cleanProjectDir({
         app: {
@@ -794,7 +800,9 @@ test.describe('Testing settings', () => {
     homePage,
     tronApp,
   }) => {
-    if (!tronApp) { fail() }
+    if (!tronApp) {
+      fail()
+    }
 
     await tronApp.cleanProjectDir({
       // Override the settings so that the theme is set to `system`
@@ -848,7 +856,9 @@ test.describe('Testing settings', () => {
     homePage,
     tronApp,
   }) => {
-    if (!tronApp) { fail() }
+    if (!tronApp) {
+      fail()
+    }
 
     await tronApp.cleanProjectDir({
       // Override beforeEach test setup

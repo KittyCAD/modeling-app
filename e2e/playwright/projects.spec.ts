@@ -465,7 +465,9 @@ test.describe('Can export from electron app', () => {
       `Can export using ${method}`,
       { tag: ['@electron', '@skipLocalEngine'] },
       async ({ context, page, tronApp }, testInfo) => {
-        if (!tronApp) { fail() }
+        if (!tronApp) {
+          fail()
+        }
 
         await context.folderSetupFn(async (dir) => {
           const bracketDir = path.join(dir, 'bracket')
@@ -1690,7 +1692,9 @@ test(
   'You can change the root projects directory and nothing is lost',
   { tag: '@electron' },
   async ({ context, page, tronApp, homePage }, testInfo) => {
-    if (!tronApp) { fail() }
+    if (!tronApp) {
+      fail()
+    }
 
     await context.folderSetupFn(async (dir) => {
       await Promise.all([

@@ -11,7 +11,9 @@ test(
   'export works on the first try',
   { tag: ['@electron', '@skipLocalEngine'] },
   async ({ page, context, scene, tronApp }, testInfo) => {
-    if (!tronApp) { fail() }
+    if (!tronApp) {
+      fail()
+    }
 
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')

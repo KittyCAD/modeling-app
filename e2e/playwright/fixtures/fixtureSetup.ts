@@ -275,7 +275,7 @@ export class ElectronZoo {
           ...{
             app: {
               project_directory: this.projectDirName,
-            }
+            },
           },
         },
       })
@@ -286,7 +286,7 @@ export class ElectronZoo {
           ...{
             app: {
               project_directory: this.projectDirName,
-            }
+            },
           },
         },
       })
@@ -299,11 +299,19 @@ export class ElectronZoo {
 type FnUse = any
 
 const fixturesForElectron = {
-  page: async ({ tronApp }: { tronApp: ElectronZoo }, use: FnUse, testInfo: TestInfo) => {
+  page: async (
+    { tronApp }: { tronApp: ElectronZoo },
+    use: FnUse,
+    testInfo: TestInfo
+  ) => {
     await tronApp.createInstanceIfMissing(testInfo)
     await use(tronApp.page)
   },
-  context: async ({ tronApp }: { tronApp: ElectronZoo }, use: FnUse, testInfo: TestInfo) => {
+  context: async (
+    { tronApp }: { tronApp: ElectronZoo },
+    use: FnUse,
+    testInfo: TestInfo
+  ) => {
     await tronApp.createInstanceIfMissing(testInfo)
     await use(tronApp.context)
   },

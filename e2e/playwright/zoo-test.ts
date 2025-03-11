@@ -1,9 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
-import {
-  test as playwrightTestFn,
-  ElectronApplication,
-} from '@playwright/test'
+import { test as playwrightTestFn, ElectronApplication } from '@playwright/test'
 
 import {
   fixturesBasedOnProcessEnvPlatform,
@@ -41,8 +38,8 @@ const electronZooInstance = new ElectronZoo()
 // Our custom decorated Zoo test object. Makes it easier to add fixtures, and
 // switch between web and electron if needed.
 const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
-    tronApp?: ElectronZoo
-  }>({
+  tronApp?: ElectronZoo
+}>({
   tronApp: async ({}, use, testInfo) => {
     if (process.env.PLATFORM === 'web') {
       await use(undefined)
@@ -53,8 +50,9 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   },
 })
 
-const test = playwrightTestFnWithFixtures_
-  .extend<Fixtures>(fixturesBasedOnProcessEnvPlatform)
+const test = playwrightTestFnWithFixtures_.extend<Fixtures>(
+  fixturesBasedOnProcessEnvPlatform
+)
 
 test.beforeEach(async ({ context, page }, testInfo) => {
   if (process.env.PLATFORM !== 'web') return

@@ -12,8 +12,8 @@ export const engineCommandManager = new EngineCommandManager()
 
 declare global {
   interface Window {
-    editorManager: EditorManager,
-    engineCommandManager: EngineCommandManager,
+    editorManager: EditorManager
+    engineCommandManager: EngineCommandManager
   }
 }
 
