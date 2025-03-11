@@ -857,7 +857,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "Expected a kcl_lib::std::shapes::SketchOrSurface but found string (text)"
+        "This function expected this argument to be of type SketchOrSurface but it's actually of type string (text)"
     );
 }
 
