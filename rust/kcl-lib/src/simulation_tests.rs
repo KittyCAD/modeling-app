@@ -145,7 +145,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             }
             if export_step {
                 let step = step.unwrap();
-                // We do not use expectorate here becasue the output is non-deterministic
+                // We do not use expectorate here because the output is non-deterministic
                 // due to SSI and GPU.
                 std::fs::write(test.output_dir.join(EXPORTED_STEP_NAME), step).unwrap();
             }
