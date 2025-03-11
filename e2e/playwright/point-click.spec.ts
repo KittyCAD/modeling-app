@@ -2491,7 +2491,6 @@ extrude001 = extrude(sketch001, length = 40)
         currentArgKey: 'thickness',
         currentArgValue: '5',
         headerArguments: {
-          Selection: '1 cap, 1 face',
           Thickness: '5',
         },
         highlightedHeaderArg: 'thickness',
@@ -2502,7 +2501,6 @@ extrude001 = extrude(sketch001, length = 40)
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Selection: '1 cap, 1 face',
           Thickness: '1',
         },
         commandName: 'Shell',

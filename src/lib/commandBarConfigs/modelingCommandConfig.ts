@@ -398,6 +398,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         validation: shellValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       thickness: {
         inputType: 'kcl',
