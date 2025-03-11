@@ -1134,7 +1134,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
         u.getBoundingBox(`[data-overlay-index="${index}"]`)
 
       segmentToDelete = await getOverlayByIndex(14)
-      let ang = await u.getAngle(`[data-overlay-index="${14}"]`)
+      let ang = await u.getAngle('[data-overlay-index="14"]')
 
       await editor.scrollToText('angleEnd')
 
@@ -1544,7 +1544,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
         const hoverPos = await u.getBoundingBox(`[data-overlay-index="0"]`)
-        let ang = await u.getAngle(`[data-overlay-index="${0}"]`)
+        let ang = await u.getAngle('[data-overlay-index="0"]')
         ang += 180
 
         await page.mouse.move(0, 0)
