@@ -5,6 +5,48 @@ use serde_json::{json, Value};
 
 use crate::settings::types::{project::ProjectConfiguration, Configuration};
 
+// Project settings example in TOML format
+const PROJECT_SETTINGS_EXAMPLE: &str = r#"[settings.app]
+# Set the appearance of the application
+name = "My Awesome Project"
+
+[settings.app.appearance]
+# Use dark mode theme
+theme = "dark" 
+# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
+color = 240.0
+
+[settings.modeling]
+# Use inches as the default measurement unit
+base_unit = "in"
+
+# Enable auto-save feature with 5 minute interval
+[settings.project]
+auto_save = true
+auto_save_interval_mins = 5
+"#;
+
+// User settings example in TOML format
+const USER_SETTINGS_EXAMPLE: &str = r#"[settings.app]
+# Set the appearance of the application
+[settings.app.appearance]
+# Use dark mode theme
+theme = "dark"
+# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
+color = 240.0
+
+[settings.modeling]
+# Use millimeters as the default measurement unit
+base_unit = "mm"
+
+[settings.text_editor]
+# Disable text wrapping in the editor
+text_wrapping = false
+# Use 2 spaces for indentation
+tab_size = 2
+use_spaces = true
+"#;
+
 const PROJECT_SETTINGS_DOC_PATH: &str = "../../docs/kcl/settings/project.toml.md";
 const USER_SETTINGS_DOC_PATH: &str = "../../docs/kcl/settings/user.toml.md";
 
@@ -115,7 +157,8 @@ pub fn generate_settings_docs() {
         "description": "Configuration options for KittyCAD modeling app projects.",
         "config_type": "Project Configuration",
         "file_name": "project.toml",
-        "settings": json!(project_schema)
+        "settings": json!(project_schema),
+        "example": PROJECT_SETTINGS_EXAMPLE
     });
 
     let project_output = hbs
@@ -137,7 +180,8 @@ pub fn generate_settings_docs() {
         "description": "User-specific configuration options for the KittyCAD modeling app.",
         "config_type": "User Configuration",
         "file_name": "user.toml",
-        "settings": json!(user_schema)
+        "settings": json!(user_schema),
+        "example": USER_SETTINGS_EXAMPLE
     });
 
     let user_output = hbs
@@ -153,6 +197,16 @@ mod tests {
 
     #[test]
     fn test_generate_settings_docs() {
+        // First verify that our TOML examples are valid
+        let project_toml: toml::Value = toml::from_str(PROJECT_SETTINGS_EXAMPLE)
+            .expect("Project settings example is not valid TOML");
+        let user_toml: toml::Value = toml::from_str(USER_SETTINGS_EXAMPLE)
+            .expect("User settings example is not valid TOML");
+        
+        // Check that they have the expected structures
+        assert!(project_toml.get("settings").is_some(), "Project settings example missing 'settings' table");
+        assert!(user_toml.get("settings").is_some(), "User settings example missing 'settings' table");
+        
         // Expectorate will verify the output matches what we expect,
         // or update it if run with EXPECTORATE=overwrite
         generate_settings_docs();

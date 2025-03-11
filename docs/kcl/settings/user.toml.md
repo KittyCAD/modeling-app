@@ -14,19 +14,24 @@ This document describes the available settings in the `user.toml` configuration 
 
 ```toml
 [settings.app]
-# Application settings
+# Set the appearance of the application
+[settings.app.appearance]
+# Use dark mode theme
+theme &#x3D; &quot;dark&quot;
+# Set the app color to blue (240.0 &#x3D; blue, 0.0 &#x3D; red, 120.0 &#x3D; green)
+color &#x3D; 240.0
 
 [settings.modeling]
-# Modeling behavior settings
+# Use millimeters as the default measurement unit
+base_unit &#x3D; &quot;mm&quot;
 
 [settings.text_editor]
-# Text editor behavior settings
+# Disable text wrapping in the editor
+text_wrapping &#x3D; false
+# Use 2 spaces for indentation
+tab_size &#x3D; 2
+use_spaces &#x3D; true
 
-[settings.command_bar]
-# Command bar behavior settings
-
-[settings.project]
-# Project management settings
 ```
 
 ## Available Settings
@@ -250,22 +255,26 @@ Whether to include settings in the command bar.
 
 
 
-## Example
+## Complete Example
 
 ```toml
 [settings.app]
 # Set the appearance of the application
 [settings.app.appearance]
 # Use dark mode theme
-theme = "dark"
-# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
-color = 240.0
+theme &#x3D; &quot;dark&quot;
+# Set the app color to blue (240.0 &#x3D; blue, 0.0 &#x3D; red, 120.0 &#x3D; green)
+color &#x3D; 240.0
 
 [settings.modeling]
-# Use inches as the default measurement unit
-base_unit = "in"
+# Use millimeters as the default measurement unit
+base_unit &#x3D; &quot;mm&quot;
 
 [settings.text_editor]
 # Disable text wrapping in the editor
-text_wrapping = false
+text_wrapping &#x3D; false
+# Use 2 spaces for indentation
+tab_size &#x3D; 2
+use_spaces &#x3D; true
+
 ```

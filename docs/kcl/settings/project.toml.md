@@ -14,16 +14,24 @@ This document describes the available settings in the `project.toml` configurati
 
 ```toml
 [settings.app]
-# Application settings
+# Set the appearance of the application
+name &#x3D; &quot;My Awesome Project&quot;
+
+[settings.app.appearance]
+# Use dark mode theme
+theme &#x3D; &quot;dark&quot; 
+# Set the app color to blue (240.0 &#x3D; blue, 0.0 &#x3D; red, 120.0 &#x3D; green)
+color &#x3D; 240.0
 
 [settings.modeling]
-# Modeling behavior settings
+# Use inches as the default measurement unit
+base_unit &#x3D; &quot;in&quot;
 
-[settings.text_editor]
-# Text editor behavior settings
+# Enable auto-save feature with 5 minute interval
+[settings.project]
+auto_save &#x3D; true
+auto_save_interval_mins &#x3D; 5
 
-[settings.command_bar]
-# Command bar behavior settings
 ```
 
 ## Available Settings
@@ -187,22 +195,26 @@ Whether to include settings in the command bar.
 
 
 
-## Example
+## Complete Example
 
 ```toml
 [settings.app]
 # Set the appearance of the application
+name &#x3D; &quot;My Awesome Project&quot;
+
 [settings.app.appearance]
 # Use dark mode theme
-theme = "dark"
-# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
-color = 240.0
+theme &#x3D; &quot;dark&quot; 
+# Set the app color to blue (240.0 &#x3D; blue, 0.0 &#x3D; red, 120.0 &#x3D; green)
+color &#x3D; 240.0
 
 [settings.modeling]
 # Use inches as the default measurement unit
-base_unit = "in"
+base_unit &#x3D; &quot;in&quot;
 
-[settings.text_editor]
-# Disable text wrapping in the editor
-text_wrapping = false
+# Enable auto-save feature with 5 minute interval
+[settings.project]
+auto_save &#x3D; true
+auto_save_interval_mins &#x3D; 5
+
 ```
