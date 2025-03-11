@@ -788,7 +788,7 @@ test.describe('Testing settings', () => {
   }) => {
     await tronApp.cleanProjectDir({
       // Override the settings so that the theme is set to `system`
-      appSettings: TEST_SETTINGS_DEFAULT_THEME,
+      ...TEST_SETTINGS_DEFAULT_THEME,
     })
 
     const u = await getUtils(page)
@@ -842,11 +842,9 @@ test.describe('Testing settings', () => {
       // Override beforeEach test setup
       // with debug panel open
       // but "show debug panel" set to false
-      appSettings: {
-        ...TEST_SETTINGS,
-        app: { ...TEST_SETTINGS.app, show_debug_panel: false },
-        modeling: { ...TEST_SETTINGS.modeling },
-      },
+      ...TEST_SETTINGS,
+      app: { ...TEST_SETTINGS.app, show_debug_panel: false },
+      modeling: { ...TEST_SETTINGS.modeling },
     })
 
     const u = await getUtils(page)

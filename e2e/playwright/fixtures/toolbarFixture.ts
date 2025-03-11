@@ -88,10 +88,14 @@ export class ToolbarFixture {
   startSketchPlaneSelection = async () =>
     doAndWaitForImageDiff(this.page, () => this.startSketchBtn.click(), 500)
 
+  waitUntilSketchingReady = async () => {
+    await expect(this.gizmoDisabled).toBeVisible()
+  }
+
   startSketchThenCallbackThenWaitUntilReady = async (cb) => {
     await this.startSketchBtn.click()
     await cb()
-    await expect(this.gizmoDisabled).toBeVisible()
+    await this.waitUntilSketchingReady()
   }
 
   exitSketch = async () => {

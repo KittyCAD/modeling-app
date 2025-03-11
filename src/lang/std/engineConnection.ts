@@ -1914,7 +1914,7 @@ export class EngineCommandManager extends EventTarget {
 
       this.engineConnection?.tearDown(opts)
 
-      // Our window.tearDown assignment causes this case to happen which is
+      // Our window.engineCommandManager.tearDown assignment causes this case to happen which is
       // only really for tests.
       // @ts-ignore
     } else if (this.engineCommandManager?.engineConnection) {

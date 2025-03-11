@@ -504,7 +504,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     ) => {
       if (cdpSession === null) {
         // Use a fail safe if we can't simulate disconnect (on Safari)
-        return page.evaluate('window.tearDown()')
+        return page.evaluate('window.engineCommandManager.tearDown()')
       }
 
       return cdpSession?.send(

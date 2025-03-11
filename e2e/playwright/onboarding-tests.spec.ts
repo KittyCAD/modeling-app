@@ -144,61 +144,59 @@ test.describe('Onboarding tests', () => {
     // saved to the file system, which we have other tests for.
   })
 
-  test(
-    'Click through each onboarding step and back',
-    {
-      appSettings: {
-        app: {
-          onboarding_status: '',
-        },
+  test('Click through each onboarding step and back', async ({
+    context,
+    page,
+    homePage,
+    tronApp,
+  }) => {
+    await tronApp.cleanProjectDir({
+      app: {
+        onboarding_status: '',
       },
-    },
-    async ({ context, page, homePage }) => {
-      // Override beforeEach test setup
-      await context.addInitScript(
-        async ({ settingsKey, settings }) => {
-          // Give no initial code, so that the onboarding start is shown immediately
-          localStorage.setItem('persistCode', '')
-          localStorage.setItem(settingsKey, settings)
-        },
-        {
-          settingsKey: TEST_SETTINGS_KEY,
-          settings: settingsToToml({
-            settings: TEST_SETTINGS_ONBOARDING_START,
-          }),
-        }
-      )
-
-      await page.setBodyDimensions({ width: 1200, height: 1080 })
-      await homePage.goToModelingScene()
-
-      // Test that the onboarding pane loaded
-      await expect(
-        page.getByText('Welcome to Modeling App! This')
-      ).toBeVisible()
-
-      const nextButton = page.getByTestId('onboarding-next')
-      const prevButton = page.getByTestId('onboarding-prev')
-
-      while ((await nextButton.innerText()) !== 'Finish') {
-        await nextButton.hover()
-        await nextButton.click()
+    })
+    // Override beforeEach test setup
+    await context.addInitScript(
+      async ({ settingsKey, settings }) => {
+        // Give no initial code, so that the onboarding start is shown immediately
+        localStorage.setItem('persistCode', '')
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: settingsToToml({
+          settings: TEST_SETTINGS_ONBOARDING_START,
+        }),
       }
+    )
 
-      while ((await prevButton.innerText()) !== 'Dismiss') {
-        await prevButton.hover()
-        await prevButton.click()
-      }
+    await page.setBodyDimensions({ width: 1200, height: 1080 })
+    await homePage.goToModelingScene()
 
-      // Dismiss the onboarding
+    // Test that the onboarding pane loaded
+    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+
+    const nextButton = page.getByTestId('onboarding-next')
+    const prevButton = page.getByTestId('onboarding-prev')
+
+    while ((await nextButton.innerText()) !== 'Finish') {
+      await nextButton.hover()
+      await nextButton.click()
+    }
+
+    while ((await prevButton.innerText()) !== 'Dismiss') {
       await prevButton.hover()
       await prevButton.click()
-
-      // Test that the onboarding pane is gone
-      await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
-      await expect.poll(() => page.url()).not.toContain('/onboarding')
     }
-  )
+
+    // Dismiss the onboarding
+    await prevButton.hover()
+    await prevButton.click()
+
+    // Test that the onboarding pane is gone
+    await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+    await expect.poll(() => page.url()).not.toContain('/onboarding')
+  })
 
   test('Onboarding redirects and code updating', async ({
     context,

@@ -32,7 +32,7 @@ test.beforeEach(async ({ page, context }) => {
 test.afterEach(async ({ page }) => {
   await page.evaluate(() => {
     // @ts-expect-error
-    window.tearDown()
+    window.engineCommandManager.tearDown()
   })
 })
 

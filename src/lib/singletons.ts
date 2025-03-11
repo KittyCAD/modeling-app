@@ -12,7 +12,7 @@ export const engineCommandManager = new EngineCommandManager()
 
 // Accessible for tests mostly
 // @ts-ignore
-window.tearDown = engineCommandManager.tearDown
+window.engineCommandManager = engineCommandManager
 
 // This needs to be after codeManager is created.
 export const kclManager = new KclManager(engineCommandManager)

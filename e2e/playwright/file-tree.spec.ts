@@ -158,11 +158,12 @@ test.describe('when using the file tree to', () => {
       await createNewFile('lee')
 
       await test.step('Postcondition: there are 5 new lee-*.kcl files', async () => {
-        await expect(
+        await expect.poll(() =>
           page
             .locator('[data-testid="file-pane-scroll-container"] button')
             .filter({ hasText: /lee[-]?[0-5]?/ })
-        ).toHaveCount(5)
+            .count()
+        ).toEqual(5)
       })
     }
   )

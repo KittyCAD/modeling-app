@@ -72,26 +72,47 @@ export interface Fixtures {
 }
 
 export class ElectronZoo {
+  public available: boolean = true
   public electron!: ElectronApplication
   public firstUrl = ''
   public viewPortSize = { width: 1200, height: 500 }
   public dir = ''
 
+  public page: Page
+  public context: BrowserContext
+
   constructor() {}
 
-  close = async () => {
-    // await this.electron?.close?.()
-  }
+  async makeAvailableAgain() {
+    // Help remote end by signaling we're done with the connection.
+    await this.page.evaluate(async () => {
+      return new Promise((resolve) => {
+        if (!window.engineCommandManager.engineConnection?.state?.type) {
+          return resolve()
+        }
 
-  debugPause = () =>
-    new Promise(() => {
-      console.log('UN-RESOLVING PROMISE')
+        window.engineCommandManager.tearDown()
+        // Keep polling (per js event tick) until state is Disconnected.
+        const checkDisconnected = () => {
+          // It's possible we never even created an engineConnection
+          // e.g. never left Projects view.
+          if (window.engineCommandManager.engineConnection.state.type === 'disconnected') {
+            return resolve()
+          }
+          setTimeout(checkDisconnected, 0)
+        }
+        checkDisconnected()
+      })
     })
 
-  async createInstanceIfMissing(testInfo: TestInfo) {
-    if (this.electron) return
+    await this.context.tracing.stopChunk({ path: 'trace.zip' });
 
-    // create or otherwise clear the folder
+    // Only after cleanup we're ready.
+    this.available = true
+  }
+
+  async createInstanceIfMissing(testInfo: TestInfo) {
+    // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
     const options = {
@@ -118,13 +139,16 @@ export class ElectronZoo {
     }
 
     // Do this once and then reuse window on subsequent calls.
-    this.electron = await electron.launch(options)
+    if (!this.electron) {
+      this.electron = await electron.launch(options)
+      this.context = this.electron.context()
+      this.page = await this.electron.firstWindow()
+      this.context.on('console', console.log)
+      this.page.on('console', console.log)
+      await this.context.tracing.start({ screenshots: true, snapshots: true })
+    }
 
-    this.context = this.electron.context()
-    this.page = await this.electron.firstWindow()
-
-    this.context.on('console', console.log)
-    this.page.on('console', console.log)
+    await this.context.tracing.startChunk()
 
     await setup(this.context, this.page, testInfo)
 
@@ -257,7 +281,7 @@ export class ElectronZoo {
   }
 }
 
-export const fixtures = {
+export const fixturesForElectron = {
   page: async ({ tronApp }, use, testInfo) => {
     await tronApp.createInstanceIfMissing(testInfo)
     await use(tronApp.page)
@@ -266,6 +290,16 @@ export const fixtures = {
     await tronApp.createInstanceIfMissing(testInfo)
     await use(tronApp.context)
   },
+}
+
+export const fixturesForWeb = {
+  page: async ({ page }: { page: Page }, use: any) => {
+    page.setBodyDimensions = page.setViewportSize
+    await use(page)
+  },
+}
+
+export const fixturesForAll = {
   cmdBar: async ({ page }: { page: Page }, use: any) => {
     await use(new CmdBarFixture(page))
   },
