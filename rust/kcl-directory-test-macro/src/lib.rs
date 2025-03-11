@@ -1,6 +1,7 @@
+use std::fs;
+
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
-use std::fs;
 use syn::{parse_macro_input, LitStr};
 
 /// A macro that generates test functions for each directory within a given path.

@@ -1,17 +1,16 @@
-use std::fs;
-use std::path::PathBuf;
+use std::{fs, path::PathBuf};
+
 use schemars::{gen::SchemaGenerator, JsonSchema};
 use serde_json::{json, Value};
 
-use crate::settings::types::project::ProjectConfiguration;
-use crate::settings::types::Configuration;
+use crate::settings::types::{project::ProjectConfiguration, Configuration};
 
 const PROJECT_SETTINGS_DOC_PATH: &str = "../../docs/kcl/settings/project.toml.md";
 const USER_SETTINGS_DOC_PATH: &str = "../../docs/kcl/settings/user.toml.md";
 
 fn init_handlebars() -> handlebars::Handlebars<'static> {
     let mut hbs = handlebars::Handlebars::new();
-    
+
     // Register helper to pretty-format enum values
     hbs.register_helper(
         "pretty_enum",
@@ -34,12 +33,12 @@ fn init_handlebars() -> handlebars::Handlebars<'static> {
                         return Ok(());
                     }
                 }
-                out.write("No options available")? ;
+                out.write("No options available")?;
                 Ok(())
             },
         ),
     );
-    
+
     // Helper to format default values better
     hbs.register_helper(
         "format_default",
@@ -58,7 +57,8 @@ fn init_handlebars() -> handlebars::Handlebars<'static> {
                         Value::Number(n) => out.write(&n.to_string())?,
                         Value::String(s) => out.write(&format!("`{}`", s))?,
                         Value::Array(arr) => {
-                            let formatted = arr.iter()
+                            let formatted = arr
+                                .iter()
                                 .map(|v| match v {
                                     Value::String(s) => format!("`{}`", s),
                                     _ => format!("{}", v),
@@ -66,7 +66,7 @@ fn init_handlebars() -> handlebars::Handlebars<'static> {
                                 .collect::<Vec<_>>()
                                 .join(", ");
                             out.write(&format!("[{}]", formatted))?;
-                        },
+                        }
                         Value::Object(_) => out.write("(complex default)")?,
                     }
                     return Ok(());
@@ -76,11 +76,11 @@ fn init_handlebars() -> handlebars::Handlebars<'static> {
             },
         ),
     );
-    
+
     // Register the settings template
     hbs.register_template_string("settings", include_str!("templates/settings.hbs"))
         .expect("Failed to register settings template");
-    
+
     hbs
 }
 
@@ -94,21 +94,21 @@ fn ensure_settings_dir() {
 pub fn generate_settings_docs() {
     ensure_settings_dir();
     let hbs = init_handlebars();
-    
+
     // Generate project settings documentation
     let mut settings = schemars::gen::SchemaSettings::default();
     settings.inline_subschemas = true;
-    settings.meta_schema = None;   // We don't need the meta schema for docs
+    settings.meta_schema = None; // We don't need the meta schema for docs
     settings.option_nullable = false; // Important - makes Option fields show properly
     settings.option_add_null_type = false;
-    
+
     let mut generator = SchemaGenerator::new(settings.clone());
     let project_schema = ProjectConfiguration::json_schema(&mut generator);
-    
+
     // For debugging the schema:
     // fs::write("/tmp/project_schema.json", serde_json::to_string_pretty(&project_schema).unwrap())
     //     .expect("Failed to write debug schema");
-    
+
     // Convert the schema to our template format
     let project_data = json!({
         "title": "Project Settings",
@@ -117,20 +117,21 @@ pub fn generate_settings_docs() {
         "file_name": "project.toml",
         "settings": json!(project_schema)
     });
-    
-    let project_output = hbs.render("settings", &project_data)
+
+    let project_output = hbs
+        .render("settings", &project_data)
         .expect("Failed to render project settings documentation");
-    
+
     expectorate::assert_contents(PROJECT_SETTINGS_DOC_PATH, &project_output);
-    
+
     // Generate user settings documentation
     let mut generator = SchemaGenerator::new(settings);
     let user_schema = Configuration::json_schema(&mut generator);
-    
+
     // For debugging the schema:
     // fs::write("/tmp/user_schema.json", serde_json::to_string_pretty(&user_schema).unwrap())
     //     .expect("Failed to write debug schema");
-    
+
     let user_data = json!({
         "title": "User Settings",
         "description": "User-specific configuration options for the KittyCAD modeling app.",
@@ -138,10 +139,11 @@ pub fn generate_settings_docs() {
         "file_name": "user.toml",
         "settings": json!(user_schema)
     });
-    
-    let user_output = hbs.render("settings", &user_data)
+
+    let user_output = hbs
+        .render("settings", &user_data)
         .expect("Failed to render user settings documentation");
-    
+
     expectorate::assert_contents(USER_SETTINGS_DOC_PATH, &user_output);
 }
 
@@ -154,7 +156,7 @@ mod tests {
         // Expectorate will verify the output matches what we expect,
         // or update it if run with EXPECTORATE=overwrite
         generate_settings_docs();
-        
+
         // Verify files exist
         let project_path = PathBuf::from(PROJECT_SETTINGS_DOC_PATH);
         let user_path = PathBuf::from(USER_SETTINGS_DOC_PATH);
