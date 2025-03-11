@@ -66,25 +66,29 @@ jobs:
           fi
 
       - name: Use correct Rust toolchain
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+
       - name: Install rust
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
 
-      # TODO: see if we can fetch from main instead if no diff at rust
       - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
 
       - name: Rust Cache
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust
 
-      - name: Run build:wasm
+      - if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         run: "yarn build:wasm"
 
       - name: Set nightly version, product name, release notes, and icons
