@@ -17,7 +17,12 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
     if (!selectedCommand?.args) return undefined
     const s = { ...selectedCommand.args }
     for (const [name, arg] of Object.entries(s)) {
-      if (arg.hidden) delete s[name]
+      if (
+        typeof arg.hidden === 'function'
+          ? arg.hidden(commandBarState.context)
+          : arg.hidden
+      )
+        delete s[name]
     }
     return s
   }, [selectedCommand])
