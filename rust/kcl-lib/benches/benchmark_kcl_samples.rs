@@ -69,11 +69,11 @@ fn run_benchmarks(c: &mut Criterion) {
 
         //let program = kcl_lib::Program::parse_no_errs(&input_content).unwrap();
 
-        group.bench_function("parse", |b| {
+        group.bench_function(format!("parse_{}", dir_name), |b| {
             b.iter(|| kcl_lib::Program::parse_no_errs(black_box(&input_content)).unwrap())
         });
 
-        /*group.bench_function("execute", |b| {
+        /*group.bench_function(format!("execute_{}", dir_name), |b| {
             b.iter(|| {
                 let mut result = Err(());
                 for _ in 0..5 {
