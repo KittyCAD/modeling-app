@@ -14,6 +14,7 @@ import {
   createProject,
   tomlToSettings,
   settingsToToml,
+  tomlToPerProjectSettings
 } from './test-utils'
 
 const fileExists = async (path) => {
@@ -73,16 +74,20 @@ test.describe('Named view tests', () => {
       projectName,
       PROJECT_SETTINGS_FILE_NAME
     )
-
     await expect(async () => {
       let exists = await fileExists(tempProjectSettingsFilePath)
       expect(exists).toBe(true)
     }).toPass()
-
     const tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-    const settings = tomlToSettings(tomlString)
+    const settings = tomlToPerProjectSettings(tomlString)
+    let namedViewName = null
     if (settings) {
-      const namedView = settings.settings?.app?.named_views?.length
+      const namedViews = settings?.settings?.app?.named_views
+      if (namedViews) {
+        const key = Object.keys(namedViews)
+        namedViewName = namedViews[key[0]]?.name
+      }
     }
+    expect(namedViewName).toBe(myNamedView)
   })
 })
