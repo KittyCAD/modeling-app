@@ -475,9 +475,24 @@ export function addSweep({
   modifiedAst: Node<Program>
   pathToNode: PathToNode
 } {
+  console.log(
+    'addSweep',
+    JSON.stringify({
+      node,
+      targetDeclarator,
+      trajectoryDeclarator,
+      sectional,
+      variableName,
+      insertIndex,
+    })
+  )
   const modifiedAst = structuredClone(node)
+  console.log('modifiedAst')
   const name =
     variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
+  console.log('name', name)
+  console.log('targetDeclarator', JSON.stringify(targetDeclarator))
+  console.log('targetDeclarator.id.name', targetDeclarator.id.name)
   const call = createCallExpressionStdLibKw(
     'sweep',
     createIdentifier(targetDeclarator.id.name),
@@ -486,13 +501,18 @@ export function addSweep({
       createLabeledArg('sectional', createLiteral(sectional)),
     ]
   )
+  console.log('call')
   const variable = createVariableDeclaration(name, call)
+  console.log('variable')
   const insertAt =
     insertIndex !== undefined
       ? insertIndex
       : modifiedAst.body.length
       ? modifiedAst.body.length
       : 0
+
+  console.log('insertAt', insertAt)
+  console.log('modifiedAst.body.length', modifiedAst.body.length)
 
   modifiedAst.body.length
     ? modifiedAst.body.splice(insertAt, 0, variable)

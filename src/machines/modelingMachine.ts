@@ -70,7 +70,7 @@ import {
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, reportRejection, trap } from 'lib/trap'
 import { DefaultPlaneStr } from 'lib/planes'
-import { uuidv4 } from 'lib/utils'
+import { isArray, uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
 import toast from 'react-hot-toast'
@@ -1891,7 +1891,7 @@ export const modelingMachine = setup({
         let variableName: string | undefined = undefined
         let insertIndex: number | undefined = undefined
 
-        // If this is an edit flow, first we're going to remove the old extrusion
+        // If this is an edit flow, first we're going to remove the old one
         if (nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number') {
           // Extract the plane name from the node to edit
           const variableNode = getNodeFromPath<VariableDeclaration>(
@@ -1918,30 +1918,36 @@ export const modelingMachine = setup({
           ast,
           target.graphSelections[0].codeRef.range
         )
-        const targetNode = getNodeFromPath<VariableDeclarator>(
-          ast,
-          targetNodePath,
-          'VariableDeclarator'
-        )
+        // Gotchas, not sure why
+        // - it seems like in some cases we get a list on edit, especially the state that e2e hits
+        // - looking for a VariableDeclaration seems more robust than VariableDeclarator
+        const targetNode = getNodeFromPath<
+          VariableDeclaration | VariableDeclaration[]
+        >(ast, targetNodePath, 'VariableDeclaration')
         if (err(targetNode)) {
           return new Error("Couldn't parse profile selection")
         }
-        const targetDeclarator = targetNode.node
+
+        const targetDeclarator = isArray(targetNode.node)
+          ? targetNode.node[0].declaration
+          : targetNode.node.declaration
 
         // Find the trajectory (or path) declaration
         const trajectoryNodePath = getNodePathFromSourceRange(
           ast,
           trajectory.graphSelections[0].codeRef.range
         )
-        const trajectoryNode = getNodeFromPath<VariableDeclarator>(
+        // Also looking for VariableDeclaration for consistency here
+        const trajectoryNode = getNodeFromPath<VariableDeclaration>(
           ast,
           trajectoryNodePath,
-          'VariableDeclarator'
+          'VariableDeclaration'
         )
         if (err(trajectoryNode)) {
           return new Error("Couldn't parse path selection")
         }
-        const trajectoryDeclarator = trajectoryNode.node
+
+        const trajectoryDeclarator = trajectoryNode.node.declaration
 
         // Perform the sweep
         const addResult = addSweep({
@@ -1966,6 +1972,8 @@ export const modelingMachine = setup({
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
+
+        console.log('end of sweepastmod')
       }
     ),
     loftAstMod: fromPromise(

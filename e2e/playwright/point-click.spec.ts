@@ -1406,7 +1406,7 @@ sketch002 = startSketchOn('XZ')
       })
       await clickOnSketch2()
       await page.waitForTimeout(500)
-      await cmdBar.selectOption({ name: 'False' }).click()
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Sweep',
         headerArguments: {
@@ -1432,23 +1432,20 @@ sketch002 = startSketchOn('XZ')
       await toolbar.closePane('code')
     })
 
-    // TODO: this test hits a case that happens sometimes in manual testing where
-    // we can't edit the sweep right after its creation. As if the codemod didn't fully
-    // register during the initall add flow.
     await test.step('Edit sweep via feature tree selection works', async () => {
       await toolbar.openPane('feature-tree')
       const operationButton = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await operationButton.dblclick({ button: 'left' })
-      await cmdBar.selectOption({ name: 'True' }).click()
       await cmdBar.expectState({
         commandName: 'Sweep',
+        currentArgKey: 'sectional',
+        currentArgValue: '',
         headerArguments: {
           Sectional: '',
         },
-        stage: 'review',
+        highlightedHeaderArg: 'sectional',
+        stage: 'arguments',
       })
-      const submitButton = page.getByRole('button', { name: 'Submit command' })
-      await submitButton.press('Shift+Backspace')
       await cmdBar.selectOption({ name: 'True' }).click()
       await cmdBar.expectState({
         commandName: 'Sweep',
