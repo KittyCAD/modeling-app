@@ -27,7 +27,7 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
-pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.linux.step";
+pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.step";
 
 impl Test {
     fn new(name: &str) -> Self {
@@ -77,7 +77,7 @@ fn read<P>(filename: &str, dir: P) -> String
 where
     P: AsRef<Path>,
 {
-    std::fs::read_to_string(dir.as_ref().join(filename)).unwrap()
+    std::fs::read_to_string(dir.as_ref().join(filename)).expect("Failed to read file: {filename}")
 }
 
 fn parse(test_name: &str) {
@@ -145,13 +145,9 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             }
             if export_step {
                 let step = step.unwrap();
-                let step_str = std::str::from_utf8(&step).unwrap();
-                // We use expectorate here so we can see the diff in ci.
-                expectorate::assert_contents(
-                    test.output_dir
-                        .join(format!("exported_step.{}.step", std::env::consts::OS)),
-                    step_str,
-                );
+                // We do not use expectorate here because the output is non-deterministic
+                // due to SSI and GPU.
+                std::fs::write(test.output_dir.join(EXPORTED_STEP_NAME), step).unwrap();
             }
             let outcome = exec_state.to_wasm_outcome(env_ref);
             assert_common_snapshots(
@@ -2121,6 +2117,28 @@ mod import_file_parse_error {
 
 mod flush_batch_on_end {
     const TEST_NAME: &str = "flush_batch_on_end";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod import_transform {
+    const TEST_NAME: &str = "import_transform";
 
     /// Test parsing KCL.
     #[test]

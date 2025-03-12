@@ -25,10 +25,10 @@ import { reportRejection } from 'lib/trap'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { EngineConnectionStateType } from 'lang/std/engineConnection'
-import { settingsActor, useSettings } from 'machines/appMachine'
-import { useSelector } from '@xstate/react'
+import { settingsActor } from 'machines/appMachine'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
+import { waitFor } from 'xstate'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -125,11 +125,7 @@ export function useNextClick(newStatus: string) {
 
 export function useDismiss() {
   const filePath = useAbsoluteFilePath()
-  const settings = useSettings()
   const send = settingsActor.send
-  const isSettingsActorIdle = useSelector(settingsActor, (s) =>
-    s.matches('idle')
-  )
   const navigate = useNavigate()
 
   const settingsCallback = useCallback(() => {
@@ -137,25 +133,10 @@ export function useDismiss() {
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: 'dismissed' },
     })
+    waitFor(settingsActor, (state) => state.matches('idle'))
+      .then(() => navigate(filePath))
+      .catch(reportRejection)
   }, [send])
-
-  /**
-   * A "listener" for the XState to return to "idle" state
-   * when the user dismisses the onboarding, using the callback above
-   */
-  useEffect(() => {
-    if (
-      settings.app.onboardingStatus.current === 'dismissed' &&
-      isSettingsActorIdle
-    ) {
-      navigate(filePath)
-    }
-  }, [
-    filePath,
-    navigate,
-    isSettingsActorIdle,
-    settings.app.onboardingStatus.current,
-  ])
 
   return settingsCallback
 }
