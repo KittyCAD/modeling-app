@@ -27,11 +27,14 @@ async fn kcl_test_fillet_duplicate_tags() {
     let code = kcl_input!("fillet_duplicate_tags");
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
-    assert!(result.is_err());
+    let err = result.expect_err("Code should have failed due to the duplicate edges being filletted");
+
+    let err = err.as_kcl_error().unwrap();
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([229, 272, 0])], message: "Duplicate tags are not allowed." }"#,
+        err.message(),
+        "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge"
     );
+    assert_eq!(err.source_ranges().len(), 2);
 }
 
 #[tokio::test(flavor = "multi_thread")]
