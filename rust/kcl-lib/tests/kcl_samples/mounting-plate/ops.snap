@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed mounting-plate.kcl
 ---
 [
@@ -273,8 +273,8 @@ description: Operations executed mounting-plate.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1825,
+        1857,
         0
       ]
     }
@@ -345,8 +345,8 @@ description: Operations executed mounting-plate.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1863,
+        2127,
         0
       ]
     }

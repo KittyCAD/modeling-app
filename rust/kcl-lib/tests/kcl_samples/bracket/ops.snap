@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed bracket.kcl
 ---
 [
@@ -274,8 +274,8 @@ description: Operations executed bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1903,
+        2052,
         0
       ]
     }
@@ -724,8 +724,8 @@ description: Operations executed bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        3306,
+        3455,
         0
       ]
     }
