@@ -184,15 +184,17 @@ way:
 ```norun
 startSketchOn('XZ')
   |> startProfileAt(origin, %)
-  |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-  |> angledLine({
+  |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+  |> angledLine(
        angle = segAng(rectangleSegmentA001) - 90,
        length = 196.99,
-     }, %, $rectangleSegmentB001)
-  |> angledLine({
+       tag = $rectangleSegmentB001,
+     )
+  |> angledLine(
        angle = segAng(rectangleSegmentA001),
        length = -segLen(rectangleSegmentA001),
-     }, %, $rectangleSegmentC001)
+       tag = $rectangleSegmentC001,
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 ```
@@ -217,15 +219,17 @@ However if the code was written like this:
 fn rect(origin) {
   return startSketchOn('XZ')
     |> startProfileAt(origin, %)
-    |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-    |> angledLine({
+    |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+    |> angledLine(
          angle = segAng(rectangleSegmentA001) - 90,
-         length = 196.99
-       }, %, $rectangleSegmentB001)
-    |> angledLine({
+         length = 196.99,
+         tag = $rectangleSegmentB001,
+       )
+    |> angledLine(
          angle = segAng(rectangleSegmentA001),
          length = -segLen(rectangleSegmentA001)
-       }, %, $rectangleSegmentC001)
+         tag = $rectangleSegmentC001,
+       )
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 }
@@ -245,15 +249,17 @@ For example the following code works.
 fn rect(origin) {
   return startSketchOn('XZ')
     |> startProfileAt(origin, %)
-    |> angledLine({angle = 0, length = 191.26}, %, $rectangleSegmentA001)
-    |> angledLine({
+    |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+    |> angledLine(
          angle = segAng(rectangleSegmentA001) - 90,
-         length = 196.99
-       }, %, $rectangleSegmentB001)
-    |> angledLine({
+         length = 196.99,
+         tag = $rectangleSegmentB001,
+       )
+    |> angledLine(
          angle = segAng(rectangleSegmentA001),
          length = -segLen(rectangleSegmentA001)
-       }, %, $rectangleSegmentC001)
+         tag = $rectangleSegmentC001,
+       )
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 }

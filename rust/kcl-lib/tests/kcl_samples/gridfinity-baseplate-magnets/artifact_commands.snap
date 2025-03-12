@@ -68,8 +68,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1246,
-      1286,
+      1216,
+      1256,
       0
     ],
     "command": {
@@ -97,8 +97,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1246,
-      1286,
+      1216,
+      1256,
       0
     ],
     "command": {
@@ -196,7 +196,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
     "cmdId": "[uuid]",
     "range": [
       984,
-      1043,
+      1028,
       0
     ],
     "command": {
@@ -216,8 +216,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1051,
-      1078,
+      1036,
+      1063,
       0
     ],
     "command": {
@@ -237,8 +237,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1086,
-      1145,
+      1071,
+      1115,
       0
     ],
     "command": {
@@ -258,8 +258,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1153,
-      1160,
+      1123,
+      1130,
       0
     ],
     "command": {
@@ -270,8 +270,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -290,8 +290,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -304,8 +304,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -315,8 +315,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -327,8 +327,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -340,8 +340,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -354,8 +354,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -368,8 +368,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -382,8 +382,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -396,8 +396,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -410,8 +410,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -424,8 +424,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -438,8 +438,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -452,8 +452,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -466,8 +466,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1233,
-      1331,
+      1203,
+      1301,
       0
     ],
     "command": {
@@ -480,8 +480,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1406,
-      1569,
+      1376,
+      1539,
       0
     ],
     "command": {
@@ -505,8 +505,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1792,
-      1832,
+      1762,
+      1802,
       0
     ],
     "command": {
@@ -534,8 +534,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1792,
-      1832,
+      1762,
+      1802,
       0
     ],
     "command": {
@@ -633,7 +633,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
     "cmdId": "[uuid]",
     "range": [
       984,
-      1043,
+      1028,
       0
     ],
     "command": {
@@ -653,8 +653,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1051,
-      1078,
+      1036,
+      1063,
       0
     ],
     "command": {
@@ -674,8 +674,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1086,
-      1145,
+      1071,
+      1115,
       0
     ],
     "command": {
@@ -695,8 +695,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1153,
-      1160,
+      1123,
+      1130,
       0
     ],
     "command": {
@@ -707,8 +707,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -735,8 +735,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -747,8 +747,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -760,8 +760,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -774,8 +774,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -788,8 +788,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -802,8 +802,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -816,8 +816,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -830,8 +830,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -844,8 +844,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -858,8 +858,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -872,8 +872,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -886,8 +886,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1746,
-      1834,
+      1716,
+      1804,
       0
     ],
     "command": {
@@ -900,8 +900,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1879,
-      2044,
+      1849,
+      2014,
       0
     ],
     "command": {
@@ -925,8 +925,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2107,
-      2237,
+      2077,
+      2207,
       0
     ],
     "command": {
@@ -969,8 +969,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2107,
-      2237,
+      2077,
+      2207,
       0
     ],
     "command": {
@@ -1013,8 +1013,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2107,
-      2237,
+      2077,
+      2207,
       0
     ],
     "command": {
@@ -1057,8 +1057,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2107,
-      2237,
+      2077,
+      2207,
       0
     ],
     "command": {
@@ -1101,8 +1101,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2243,
-      2360,
+      2213,
+      2330,
       0
     ],
     "command": {
@@ -1174,8 +1174,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2243,
-      2360,
+      2213,
+      2330,
       0
     ],
     "command": {
@@ -1247,8 +1247,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2243,
-      2360,
+      2213,
+      2330,
       0
     ],
     "command": {
@@ -1320,8 +1320,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2243,
-      2360,
+      2213,
+      2330,
       0
     ],
     "command": {
@@ -1393,8 +1393,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2243,
-      2360,
+      2213,
+      2330,
       0
     ],
     "command": {
@@ -1466,8 +1466,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2243,
-      2360,
+      2213,
+      2330,
       0
     ],
     "command": {
@@ -1539,8 +1539,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2243,
-      2360,
+      2213,
+      2330,
       0
     ],
     "command": {
@@ -1612,8 +1612,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2243,
-      2360,
+      2213,
+      2330,
       0
     ],
     "command": {
@@ -1685,8 +1685,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2446,
-      2578,
+      2416,
+      2548,
       0
     ],
     "command": {
@@ -1729,8 +1729,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2446,
-      2578,
+      2416,
+      2548,
       0
     ],
     "command": {
@@ -1773,8 +1773,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2446,
-      2578,
+      2416,
+      2548,
       0
     ],
     "command": {
@@ -1817,8 +1817,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2446,
-      2578,
+      2416,
+      2548,
       0
     ],
     "command": {
@@ -1861,8 +1861,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2584,
-      2701,
+      2554,
+      2671,
       0
     ],
     "command": {
@@ -1934,8 +1934,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2584,
-      2701,
+      2554,
+      2671,
       0
     ],
     "command": {
@@ -2007,8 +2007,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2584,
-      2701,
+      2554,
+      2671,
       0
     ],
     "command": {
@@ -2080,8 +2080,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2584,
-      2701,
+      2554,
+      2671,
       0
     ],
     "command": {
@@ -2153,8 +2153,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2584,
-      2701,
+      2554,
+      2671,
       0
     ],
     "command": {
@@ -2226,8 +2226,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2584,
-      2701,
+      2554,
+      2671,
       0
     ],
     "command": {
@@ -2299,8 +2299,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2584,
-      2701,
+      2554,
+      2671,
       0
     ],
     "command": {
@@ -2372,8 +2372,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2584,
-      2701,
+      2554,
+      2671,
       0
     ],
     "command": {
@@ -2445,8 +2445,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4831,
-      4850,
+      4801,
+      4820,
       0
     ],
     "command": {
@@ -2474,8 +2474,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4856,
-      4957,
+      4826,
+      4927,
       0
     ],
     "command": {
@@ -2494,8 +2494,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4856,
-      4957,
+      4826,
+      4927,
       0
     ],
     "command": {
@@ -2505,8 +2505,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4856,
-      4957,
+      4826,
+      4927,
       0
     ],
     "command": {
@@ -2522,8 +2522,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4856,
-      4957,
+      4826,
+      4927,
       0
     ],
     "command": {
@@ -2533,8 +2533,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4856,
-      4957,
+      4826,
+      4927,
       0
     ],
     "command": {
@@ -2562,8 +2562,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4856,
-      4957,
+      4826,
+      4927,
       0
     ],
     "command": {
@@ -2574,8 +2574,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4963,
-      5114,
+      4933,
+      5084,
       0
     ],
     "command": {
@@ -2599,8 +2599,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4457,
-      4477,
+      4427,
+      4447,
       0
     ],
     "command": {
@@ -2628,8 +2628,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4485,
-      4510,
+      4455,
+      4480,
       0
     ],
     "command": {
@@ -2648,8 +2648,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4485,
-      4510,
+      4455,
+      4480,
       0
     ],
     "command": {
@@ -2659,8 +2659,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4485,
-      4510,
+      4455,
+      4480,
       0
     ],
     "command": {
@@ -2676,8 +2676,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4485,
-      4510,
+      4455,
+      4480,
       0
     ],
     "command": {
@@ -2687,8 +2687,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4518,
-      4559,
+      4488,
+      4529,
       0
     ],
     "command": {
@@ -2708,8 +2708,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4567,
-      4608,
+      4537,
+      4578,
       0
     ],
     "command": {
@@ -2729,8 +2729,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4616,
-      4669,
+      4586,
+      4639,
       0
     ],
     "command": {
@@ -2750,8 +2750,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4677,
-      4698,
+      4647,
+      4668,
       0
     ],
     "command": {
@@ -2762,8 +2762,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2802,
-      2822,
+      2772,
+      2792,
       0
     ],
     "command": {
@@ -2791,8 +2791,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2830,
-      2917,
+      2800,
+      2887,
       0
     ],
     "command": {
@@ -2811,8 +2811,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2830,
-      2917,
+      2800,
+      2887,
       0
     ],
     "command": {
@@ -2822,8 +2822,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2830,
-      2917,
+      2800,
+      2887,
       0
     ],
     "command": {
@@ -2839,8 +2839,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2830,
-      2917,
+      2800,
+      2887,
       0
     ],
     "command": {
@@ -2850,8 +2850,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2925,
-      3004,
+      2895,
+      2974,
       0
     ],
     "command": {
@@ -2871,8 +2871,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3012,
-      3118,
+      2982,
+      3088,
       0
     ],
     "command": {
@@ -2900,8 +2900,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3126,
-      3208,
+      3096,
+      3178,
       0
     ],
     "command": {
@@ -2921,8 +2921,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3216,
-      3262,
+      3186,
+      3232,
       0
     ],
     "command": {
@@ -2942,8 +2942,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3270,
-      3349,
+      3240,
+      3319,
       0
     ],
     "command": {
@@ -2963,8 +2963,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3357,
-      3465,
+      3327,
+      3435,
       0
     ],
     "command": {
@@ -2992,8 +2992,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3473,
-      3552,
+      3443,
+      3522,
       0
     ],
     "command": {
@@ -3013,8 +3013,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3560,
-      3606,
+      3530,
+      3576,
       0
     ],
     "command": {
@@ -3034,8 +3034,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3614,
-      3696,
+      3584,
+      3666,
       0
     ],
     "command": {
@@ -3055,8 +3055,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3704,
-      3813,
+      3674,
+      3783,
       0
     ],
     "command": {
@@ -3084,8 +3084,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3821,
-      3900,
+      3791,
+      3870,
       0
     ],
     "command": {
@@ -3105,8 +3105,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3908,
-      3973,
+      3878,
+      3943,
       0
     ],
     "command": {
@@ -3126,8 +3126,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3981,
-      4063,
+      3951,
+      4033,
       0
     ],
     "command": {
@@ -3147,8 +3147,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4071,
-      4180,
+      4041,
+      4150,
       0
     ],
     "command": {
@@ -3176,8 +3176,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4188,
-      4270,
+      4158,
+      4240,
       0
     ],
     "command": {
@@ -3197,8 +3197,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4278,
-      4327,
+      4248,
+      4297,
       0
     ],
     "command": {
@@ -3218,8 +3218,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4342,
+      4305,
+      4312,
       0
     ],
     "command": {
@@ -3230,8 +3230,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4706,
-      4740,
+      4676,
+      4710,
       0
     ],
     "command": {
@@ -3243,8 +3243,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4706,
-      4740,
+      4676,
+      4710,
       0
     ],
     "command": {
@@ -3256,8 +3256,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5201,
-      5223,
+      5171,
+      5193,
       0
     ],
     "command": {
@@ -3269,8 +3269,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5201,
-      5223,
+      5171,
+      5193,
       0
     ],
     "command": {
@@ -3282,8 +3282,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5201,
-      5223,
+      5171,
+      5193,
       0
     ],
     "command": {
@@ -3295,8 +3295,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5201,
-      5223,
+      5171,
+      5193,
       0
     ],
     "command": {
@@ -3308,8 +3308,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5201,
-      5223,
+      5171,
+      5193,
       0
     ],
     "command": {
@@ -3321,8 +3321,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5201,
-      5223,
+      5171,
+      5193,
       0
     ],
     "command": {
@@ -3334,8 +3334,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5201,
-      5223,
+      5171,
+      5193,
       0
     ],
     "command": {
@@ -3347,8 +3347,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5201,
-      5223,
+      5171,
+      5193,
       0
     ],
     "command": {
@@ -3360,8 +3360,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3380,8 +3380,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3394,8 +3394,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3405,8 +3405,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3417,8 +3417,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3430,8 +3430,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3444,8 +3444,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3458,8 +3458,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3472,8 +3472,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3486,8 +3486,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3500,8 +3500,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3514,8 +3514,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3528,8 +3528,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3542,8 +3542,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3556,8 +3556,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3570,8 +3570,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3584,8 +3584,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3598,8 +3598,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3612,8 +3612,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3626,8 +3626,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3640,8 +3640,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3654,8 +3654,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3668,8 +3668,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3682,8 +3682,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3696,8 +3696,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3710,8 +3710,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3724,8 +3724,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3738,8 +3738,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3752,8 +3752,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3766,8 +3766,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3780,8 +3780,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3794,8 +3794,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3808,8 +3808,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3822,8 +3822,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3836,8 +3836,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3850,8 +3850,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3864,8 +3864,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3878,8 +3878,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3892,8 +3892,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3906,8 +3906,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3920,8 +3920,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3934,8 +3934,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3948,8 +3948,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3962,8 +3962,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3976,8 +3976,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -3990,8 +3990,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -4004,8 +4004,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -4018,8 +4018,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -4032,8 +4032,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -4046,8 +4046,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -4060,8 +4060,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -4074,8 +4074,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -4088,8 +4088,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5301,
-      5343,
+      5271,
+      5313,
       0
     ],
     "command": {
@@ -4102,8 +4102,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5476,
-      5535,
+      5446,
+      5505,
       0
     ],
     "command": {
@@ -4116,8 +4116,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5541,
-      5604,
+      5511,
+      5574,
       0
     ],
     "command": {
@@ -4130,8 +4130,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5610,
-      5669,
+      5580,
+      5639,
       0
     ],
     "command": {
@@ -4144,8 +4144,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5675,
-      5738,
+      5645,
+      5708,
       0
     ],
     "command": {
@@ -4158,8 +4158,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5836,
-      5873,
+      5806,
+      5843,
       0
     ],
     "command": {
@@ -4187,8 +4187,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5836,
-      5873,
+      5806,
+      5843,
       0
     ],
     "command": {
@@ -4205,8 +4205,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4485,
-      4510,
+      4455,
+      4480,
       0
     ],
     "command": {
@@ -4225,8 +4225,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4485,
-      4510,
+      4455,
+      4480,
       0
     ],
     "command": {
@@ -4236,8 +4236,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4485,
-      4510,
+      4455,
+      4480,
       0
     ],
     "command": {
@@ -4253,8 +4253,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4485,
-      4510,
+      4455,
+      4480,
       0
     ],
     "command": {
@@ -4264,8 +4264,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4518,
-      4559,
+      4488,
+      4529,
       0
     ],
     "command": {
@@ -4285,8 +4285,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4567,
-      4608,
+      4537,
+      4578,
       0
     ],
     "command": {
@@ -4306,8 +4306,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4616,
-      4669,
+      4586,
+      4639,
       0
     ],
     "command": {
@@ -4327,8 +4327,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4677,
-      4698,
+      4647,
+      4668,
       0
     ],
     "command": {
@@ -4339,8 +4339,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2830,
-      2917,
+      2800,
+      2887,
       0
     ],
     "command": {
@@ -4359,8 +4359,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2830,
-      2917,
+      2800,
+      2887,
       0
     ],
     "command": {
@@ -4370,8 +4370,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2830,
-      2917,
+      2800,
+      2887,
       0
     ],
     "command": {
@@ -4387,8 +4387,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2830,
-      2917,
+      2800,
+      2887,
       0
     ],
     "command": {
@@ -4398,8 +4398,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2925,
-      3004,
+      2895,
+      2974,
       0
     ],
     "command": {
@@ -4419,8 +4419,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3012,
-      3118,
+      2982,
+      3088,
       0
     ],
     "command": {
@@ -4448,8 +4448,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3126,
-      3208,
+      3096,
+      3178,
       0
     ],
     "command": {
@@ -4469,8 +4469,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3216,
-      3262,
+      3186,
+      3232,
       0
     ],
     "command": {
@@ -4490,8 +4490,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3270,
-      3349,
+      3240,
+      3319,
       0
     ],
     "command": {
@@ -4511,8 +4511,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3357,
-      3465,
+      3327,
+      3435,
       0
     ],
     "command": {
@@ -4540,8 +4540,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3473,
-      3552,
+      3443,
+      3522,
       0
     ],
     "command": {
@@ -4561,8 +4561,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3560,
-      3606,
+      3530,
+      3576,
       0
     ],
     "command": {
@@ -4582,8 +4582,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3614,
-      3696,
+      3584,
+      3666,
       0
     ],
     "command": {
@@ -4603,8 +4603,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3704,
-      3813,
+      3674,
+      3783,
       0
     ],
     "command": {
@@ -4632,8 +4632,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3821,
-      3900,
+      3791,
+      3870,
       0
     ],
     "command": {
@@ -4653,8 +4653,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3908,
-      3973,
+      3878,
+      3943,
       0
     ],
     "command": {
@@ -4674,8 +4674,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3981,
-      4063,
+      3951,
+      4033,
       0
     ],
     "command": {
@@ -4695,8 +4695,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4071,
-      4180,
+      4041,
+      4150,
       0
     ],
     "command": {
@@ -4724,8 +4724,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4188,
-      4270,
+      4158,
+      4240,
       0
     ],
     "command": {
@@ -4745,8 +4745,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4278,
-      4327,
+      4248,
+      4297,
       0
     ],
     "command": {
@@ -4766,8 +4766,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4335,
-      4342,
+      4305,
+      4312,
       0
     ],
     "command": {
@@ -4778,8 +4778,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4706,
-      4740,
+      4676,
+      4710,
       0
     ],
     "command": {
@@ -4791,8 +4791,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4706,
-      4740,
+      4676,
+      4710,
       0
     ],
     "command": {
@@ -4804,8 +4804,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4824,8 +4824,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4838,8 +4838,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4849,8 +4849,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4861,8 +4861,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4874,8 +4874,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4888,8 +4888,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4902,8 +4902,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4916,8 +4916,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4930,8 +4930,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4944,8 +4944,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4958,8 +4958,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4972,8 +4972,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -4986,8 +4986,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5000,8 +5000,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5014,8 +5014,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5028,8 +5028,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5042,8 +5042,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5056,8 +5056,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5070,8 +5070,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5084,8 +5084,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5098,8 +5098,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5112,8 +5112,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5126,8 +5126,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5140,8 +5140,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5154,8 +5154,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5168,8 +5168,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5182,8 +5182,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5196,8 +5196,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5210,8 +5210,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5224,8 +5224,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5238,8 +5238,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5252,8 +5252,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5266,8 +5266,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5280,8 +5280,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5294,8 +5294,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5308,8 +5308,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5322,8 +5322,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5336,8 +5336,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5350,8 +5350,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5364,8 +5364,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5378,8 +5378,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5392,8 +5392,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5406,8 +5406,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5420,8 +5420,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5956,
-      6007,
+      5926,
+      5977,
       0
     ],
     "command": {
@@ -5434,8 +5434,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6142,
-      6202,
+      6112,
+      6172,
       0
     ],
     "command": {
@@ -5448,8 +5448,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6208,
-      6272,
+      6178,
+      6242,
       0
     ],
     "command": {
@@ -5462,8 +5462,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6278,
-      6338,
+      6248,
+      6308,
       0
     ],
     "command": {
@@ -5476,8 +5476,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6344,
-      6408,
+      6314,
+      6378,
       0
     ],
     "command": {
@@ -5490,8 +5490,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5406,
-      5744,
+      5376,
+      5714,
       0
     ],
     "command": {
@@ -5506,8 +5506,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5406,
-      5744,
+      5376,
+      5714,
       0
     ],
     "command": {
@@ -5522,8 +5522,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5406,
-      5744,
+      5376,
+      5714,
       0
     ],
     "command": {
@@ -5538,8 +5538,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5406,
-      5744,
+      5376,
+      5714,
       0
     ],
     "command": {
@@ -5554,8 +5554,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6457,
-      6607,
+      6427,
+      6577,
       0
     ],
     "command": {
@@ -5598,8 +5598,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6613,
-      6730,
+      6583,
+      6700,
       0
     ],
     "command": {
@@ -5671,8 +5671,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6613,
-      6730,
+      6583,
+      6700,
       0
     ],
     "command": {
@@ -5744,8 +5744,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6071,
-      6414,
+      6041,
+      6384,
       0
     ],
     "command": {
@@ -5760,8 +5760,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6071,
-      6414,
+      6041,
+      6384,
       0
     ],
     "command": {
@@ -5776,8 +5776,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6071,
-      6414,
+      6041,
+      6384,
       0
     ],
     "command": {
@@ -5792,8 +5792,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6071,
-      6414,
+      6041,
+      6384,
       0
     ],
     "command": {
@@ -5808,8 +5808,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6776,
-      6927,
+      6746,
+      6897,
       0
     ],
     "command": {
@@ -5852,8 +5852,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6933,
-      7050,
+      6903,
+      7020,
       0
     ],
     "command": {
@@ -5925,8 +5925,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6933,
-      7050,
+      6903,
+      7020,
       0
     ],
     "command": {
@@ -6024,8 +6024,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4485,
-      4510,
+      4455,
+      4480,
       0
     ],
     "command": {
@@ -6037,8 +6037,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2830,
-      2917,
+      2800,
+      2887,
       0
     ],
     "command": {

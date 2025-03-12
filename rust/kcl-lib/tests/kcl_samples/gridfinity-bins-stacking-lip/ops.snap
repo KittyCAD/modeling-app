@@ -20,16 +20,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          1597,
-          1618,
+          1567,
+          1588,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      1570,
-      1619,
+      1540,
+      1589,
       0
     ],
     "type": "StdLibCall",
@@ -39,8 +39,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         "value": "YZ"
       },
       "sourceRange": [
-        1582,
-        1586,
+        1552,
+        1556,
         0
       ]
     }
@@ -50,14 +50,14 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "name": "face",
     "functionSourceRange": [
       1133,
-      1506,
+      1476,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1565,
-      1620,
+      1535,
+      1590,
       0
     ]
   },
@@ -98,16 +98,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          1631,
-          1660,
+          1601,
+          1630,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1557,
-      1662,
+      1527,
+      1632,
       0
     ],
     "type": "StdLibCall",
@@ -119,8 +119,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        1565,
-        1620,
+        1535,
+        1590,
         0
       ]
     }
@@ -142,8 +142,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          1785,
-          1788,
+          1755,
+          1758,
           0
         ]
       },
@@ -193,8 +193,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          1799,
-          1808,
+          1769,
+          1778,
           0
         ]
       },
@@ -232,8 +232,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          1821,
-          1900,
+          1791,
+          1870,
           0
         ]
       },
@@ -252,8 +252,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          1916,
-          1917,
+          1886,
+          1887,
           0
         ]
       },
@@ -263,16 +263,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           "value": true
         },
         "sourceRange": [
-          1940,
-          1944,
+          1910,
+          1914,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      1737,
-      1946,
+      1707,
+      1916,
       0
     ],
     "type": "StdLibCall",
@@ -284,8 +284,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        1758,
-        1768,
+        1728,
+        1738,
         0
       ]
     }
@@ -307,16 +307,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          2232,
-          2253,
+          2202,
+          2223,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      2205,
-      2254,
+      2175,
+      2224,
       0
     ],
     "type": "StdLibCall",
@@ -326,8 +326,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         "value": "YZ"
       },
       "sourceRange": [
-        2217,
-        2221,
+        2187,
+        2191,
         0
       ]
     }
@@ -337,14 +337,14 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "name": "face",
     "functionSourceRange": [
       1133,
-      1506,
+      1476,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2200,
-      2255,
+      2170,
+      2225,
       0
     ]
   },
@@ -468,8 +468,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          2167,
-          2198,
+          2137,
+          2168,
           0
         ]
       },
@@ -481,16 +481,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          2200,
-          2255,
+          2170,
+          2225,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      2159,
-      2256,
+      2129,
+      2226,
       0
     ],
     "type": "StdLibCall",
@@ -513,8 +513,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          2351,
-          2354,
+          2321,
+          2324,
           0
         ]
       },
@@ -564,8 +564,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          2365,
-          2374,
+          2335,
+          2344,
           0
         ]
       },
@@ -603,8 +603,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          2387,
-          2466,
+          2357,
+          2436,
           0
         ]
       },
@@ -623,8 +623,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          2482,
-          2483,
+          2452,
+          2453,
           0
         ]
       },
@@ -634,16 +634,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           "value": true
         },
         "sourceRange": [
-          2506,
-          2510,
+          2476,
+          2480,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      2301,
-      2512,
+      2271,
+      2482,
       0
     ],
     "type": "StdLibCall",
@@ -655,8 +655,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        2322,
-        2334,
+        2292,
+        2304,
         0
       ]
     }
@@ -669,16 +669,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           "value": "XY"
         },
         "sourceRange": [
-          2544,
-          2548,
+          2514,
+          2518,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2530,
-      2549,
+      2500,
+      2519,
       0
     ],
     "type": "StdLibCall",
@@ -701,16 +701,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          2892,
-          2898,
+          2862,
+          2868,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2875,
-      2899,
+      2845,
+      2869,
       0
     ],
     "type": "StdLibCall",
@@ -722,8 +722,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        2875,
-        2899,
+        2845,
+        2869,
         0
       ]
     }
@@ -745,8 +745,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          2929,
-          2938,
+          2899,
+          2908,
           0
         ]
       },
@@ -773,16 +773,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          2954,
-          3127,
+          2924,
+          3097,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      2905,
-      3134,
+      2875,
+      3104,
       0
     ],
     "type": "StdLibCall",
@@ -794,8 +794,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        2905,
-        3134,
+        2875,
+        3104,
         0
       ]
     }
@@ -810,8 +810,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          3165,
-          3178,
+          3135,
+          3148,
           0
         ]
       },
@@ -821,16 +821,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           "value": "start"
         },
         "sourceRange": [
-          3180,
-          3187,
+          3150,
+          3157,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3151,
-      3188,
+      3121,
+      3158,
       0
     ],
     "type": "StdLibCall",
@@ -853,16 +853,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          3597,
-          3606,
+          3567,
+          3576,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3580,
-      3607,
+      3550,
+      3577,
       0
     ],
     "type": "StdLibCall",
@@ -897,8 +897,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": [
-        3580,
-        3607,
+        3550,
+        3577,
         0
       ]
     }
@@ -951,8 +951,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          3709,
-          3724,
+          3679,
+          3694,
           0
         ]
       },
@@ -965,8 +965,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          3778,
-          3800,
+          3748,
+          3770,
           0
         ]
       },
@@ -985,16 +985,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          3745,
-          3758,
+          3715,
+          3728,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      3664,
-      3807,
+      3634,
+      3777,
       0
     ],
     "type": "StdLibCall",
@@ -1029,8 +1029,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": [
-        3688,
-        3693,
+        3658,
+        3663,
         0
       ]
     }
@@ -1083,8 +1083,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          3844,
-          3859,
+          3814,
+          3829,
           0
         ]
       },
@@ -1097,8 +1097,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          3914,
-          3936,
+          3884,
+          3906,
           0
         ]
       },
@@ -1117,16 +1117,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          3880,
-          3894,
+          3850,
+          3864,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      3813,
-      3943,
+      3783,
+      3913,
       0
     ],
     "type": "StdLibCall",
@@ -1185,8 +1185,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": [
-        3813,
-        3943,
+        3783,
+        3913,
         0
       ]
     }
@@ -1239,8 +1239,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          4070,
-          4085,
+          4040,
+          4055,
           0
         ]
       },
@@ -1253,8 +1253,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          4139,
-          4161,
+          4109,
+          4131,
           0
         ]
       },
@@ -1273,16 +1273,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          4106,
-          4119,
+          4076,
+          4089,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      4023,
-      4168,
+      3993,
+      4138,
       0
     ],
     "type": "StdLibCall",
@@ -1317,8 +1317,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": [
-        4047,
-        4054,
+        4017,
+        4024,
         0
       ]
     }
@@ -1371,8 +1371,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          4205,
-          4220,
+          4175,
+          4190,
           0
         ]
       },
@@ -1385,8 +1385,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          4275,
-          4297,
+          4245,
+          4267,
           0
         ]
       },
@@ -1405,16 +1405,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          4241,
-          4255,
+          4211,
+          4225,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      4174,
-      4304,
+      4144,
+      4274,
       0
     ],
     "type": "StdLibCall",
@@ -1473,8 +1473,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": [
-        4174,
-        4304,
+        4144,
+        4274,
         0
       ]
     }
@@ -1527,8 +1527,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          4425,
-          4440,
+          4395,
+          4410,
           0
         ]
       },
@@ -1541,8 +1541,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          4494,
-          4516,
+          4464,
+          4486,
           0
         ]
       },
@@ -1561,16 +1561,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          4461,
-          4474,
+          4431,
+          4444,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      4372,
-      4523,
+      4342,
+      4493,
       0
     ],
     "type": "StdLibCall",
@@ -1582,8 +1582,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        4396,
-        4409,
+        4366,
+        4379,
         0
       ]
     }
@@ -1636,8 +1636,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          4560,
-          4575,
+          4530,
+          4545,
           0
         ]
       },
@@ -1650,8 +1650,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          4630,
-          4652,
+          4600,
+          4622,
           0
         ]
       },
@@ -1670,16 +1670,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          4596,
-          4610,
+          4566,
+          4580,
           0
         ]
       }
     },
     "name": "patternLinear3d",
     "sourceRange": [
-      4529,
-      4659,
+      4499,
+      4629,
       0
     ],
     "type": "StdLibCall",
@@ -1702,8 +1702,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": [
-        4529,
-        4659,
+        4499,
+        4629,
         0
       ]
     }
@@ -1725,16 +1725,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          4714,
-          4720,
+          4684,
+          4690,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      4687,
-      4721,
+      4657,
+      4691,
       0
     ],
     "type": "StdLibCall",
@@ -1744,8 +1744,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         "value": "XY"
       },
       "sourceRange": [
-        4699,
-        4703,
+        4669,
+        4673,
         0
       ]
     }
@@ -1758,16 +1758,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          4687,
-          4721,
+          4657,
+          4691,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4673,
-      4722,
+      4643,
+      4692,
       0
     ],
     "type": "StdLibCall",
@@ -1784,16 +1784,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          5019,
-          5045,
+          4989,
+          5015,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      5002,
-      5046,
+      4972,
+      5016,
       0
     ],
     "type": "StdLibCall",
@@ -1805,8 +1805,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        5002,
-        5046,
+        4972,
+        5016,
         0
       ]
     }
@@ -1828,8 +1828,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          5076,
-          5088,
+          5046,
+          5058,
           0
         ]
       },
@@ -1856,16 +1856,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          5104,
-          5277,
+          5074,
+          5247,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      5052,
-      5284,
+      5022,
+      5254,
       0
     ],
     "type": "StdLibCall",
@@ -1877,8 +1877,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        5052,
-        5284,
+        5022,
+        5254,
         0
       ]
     }
@@ -1896,8 +1896,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          5304,
-          5311,
+          5274,
+          5281,
           0
         ]
       },
@@ -1916,16 +1916,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          5325,
-          5331,
+          5295,
+          5301,
           0
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      5290,
-      5332,
+      5260,
+      5302,
       0
     ],
     "type": "StdLibCall",
@@ -1937,8 +1937,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        5290,
-        5332,
+        5260,
+        5302,
         0
       ]
     }
@@ -1947,15 +1947,15 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "type": "UserDefinedFunctionCall",
     "name": "lipFace",
     "functionSourceRange": [
-      5411,
-      6069,
+      5381,
+      6009,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      6826,
-      6843,
+      6766,
+      6783,
       0
     ]
   },
@@ -2143,16 +2143,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          5450,
-          5455,
+          5420,
+          5425,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      5436,
-      5456,
+      5406,
+      5426,
       0
     ],
     "type": "StdLibCall",
@@ -2172,16 +2172,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          6854,
-          6929,
+          6794,
+          6869,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      6818,
-      6930,
+      6758,
+      6870,
       0
     ],
     "type": "StdLibCall",
@@ -2193,8 +2193,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        6826,
-        6843,
+        6766,
+        6783,
         0
       ]
     }
@@ -2203,15 +2203,15 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "type": "UserDefinedFunctionCall",
     "name": "lipFace",
     "functionSourceRange": [
-      5411,
-      6069,
+      5381,
+      6009,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      7004,
-      7021,
+      6944,
+      6961,
       0
     ]
   },
@@ -2399,16 +2399,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          5450,
-          5455,
+          5420,
+          5425,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      5436,
-      5456,
+      5406,
+      5426,
       0
     ],
     "type": "StdLibCall",
@@ -2428,16 +2428,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          7032,
-          7109,
+          6972,
+          7049,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      6996,
-      7110,
+      6936,
+      7050,
       0
     ],
     "type": "StdLibCall",
@@ -2449,8 +2449,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        7004,
-        7021,
+        6944,
+        6961,
         0
       ]
     }
@@ -2472,8 +2472,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          7244,
-          7247,
+          7184,
+          7187,
           0
         ]
       },
@@ -2523,8 +2523,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          7258,
-          7267,
+          7198,
+          7207,
           0
         ]
       },
@@ -2562,8 +2562,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          7280,
-          7392,
+          7220,
+          7332,
           0
         ]
       },
@@ -2582,8 +2582,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          7408,
-          7409,
+          7348,
+          7349,
           0
         ]
       },
@@ -2593,16 +2593,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           "value": true
         },
         "sourceRange": [
-          7432,
-          7436,
+          7372,
+          7376,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      7191,
-      7438,
+      7131,
+      7378,
       0
     ],
     "type": "StdLibCall",
@@ -2614,8 +2614,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        7212,
-        7227,
+        7152,
+        7167,
         0
       ]
     }
@@ -2637,8 +2637,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          7570,
-          7573,
+          7510,
+          7513,
           0
         ]
       },
@@ -2688,8 +2688,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          7584,
-          7593,
+          7524,
+          7533,
           0
         ]
       },
@@ -2727,8 +2727,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          7606,
-          7718,
+          7546,
+          7658,
           0
         ]
       },
@@ -2747,8 +2747,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          7734,
-          7735,
+          7674,
+          7675,
           0
         ]
       },
@@ -2758,16 +2758,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           "value": true
         },
         "sourceRange": [
-          7758,
-          7762,
+          7698,
+          7702,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      7518,
-      7764,
+      7458,
+      7704,
       0
     ],
     "type": "StdLibCall",
@@ -2779,8 +2779,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        7539,
-        7553,
+        7479,
+        7493,
         0
       ]
     }
@@ -2789,15 +2789,15 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "type": "UserDefinedFunctionCall",
     "name": "lipFace",
     "functionSourceRange": [
-      5411,
-      6069,
+      5381,
+      6009,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      7991,
-      8008,
+      7931,
+      7948,
       0
     ]
   },
@@ -2985,16 +2985,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          5450,
-          5455,
+          5420,
+          5425,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      5436,
-      5456,
+      5406,
+      5426,
       0
     ],
     "type": "StdLibCall",
@@ -3097,8 +3097,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          7958,
-          7989,
+          7898,
+          7929,
           0
         ]
       },
@@ -3110,16 +3110,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          7991,
-          8008,
+          7931,
+          7948,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      7950,
-      8009,
+      7890,
+      7949,
       0
     ],
     "type": "StdLibCall",
@@ -3129,15 +3129,15 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "type": "UserDefinedFunctionCall",
     "name": "lipFace",
     "functionSourceRange": [
-      5411,
-      6069,
+      5381,
+      6009,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      8111,
-      8128,
+      8051,
+      8068,
       0
     ]
   },
@@ -3319,16 +3319,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          5450,
-          5455,
+          5420,
+          5425,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      5436,
-      5456,
+      5406,
+      5426,
       0
     ],
     "type": "StdLibCall",
@@ -3431,8 +3431,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          8079,
-          8109,
+          8019,
+          8049,
           0
         ]
       },
@@ -3444,16 +3444,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          8111,
-          8128,
+          8051,
+          8068,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      8071,
-      8129,
+      8011,
+      8069,
       0
     ],
     "type": "StdLibCall",
@@ -3476,8 +3476,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          8239,
-          8242,
+          8179,
+          8182,
           0
         ]
       },
@@ -3527,8 +3527,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          8253,
-          8262,
+          8193,
+          8202,
           0
         ]
       },
@@ -3566,8 +3566,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          8275,
-          8387,
+          8215,
+          8327,
           0
         ]
       },
@@ -3586,8 +3586,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          8403,
-          8404,
+          8343,
+          8344,
           0
         ]
       },
@@ -3597,16 +3597,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           "value": true
         },
         "sourceRange": [
-          8427,
-          8431,
+          8367,
+          8371,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      8180,
-      8433,
+      8120,
+      8373,
       0
     ],
     "type": "StdLibCall",
@@ -3618,8 +3618,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        8201,
-        8222,
+        8141,
+        8162,
         0
       ]
     }
@@ -3641,8 +3641,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          8542,
-          8545,
+          8482,
+          8485,
           0
         ]
       },
@@ -3692,8 +3692,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          8556,
-          8565,
+          8496,
+          8505,
           0
         ]
       },
@@ -3731,8 +3731,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           ]
         },
         "sourceRange": [
-          8578,
-          8690,
+          8518,
+          8630,
           0
         ]
       },
@@ -3751,8 +3751,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           }
         },
         "sourceRange": [
-          8706,
-          8707,
+          8646,
+          8647,
           0
         ]
       },
@@ -3762,16 +3762,16 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           "value": true
         },
         "sourceRange": [
-          8730,
-          8734,
+          8670,
+          8674,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      8484,
-      8736,
+      8424,
+      8676,
       0
     ],
     "type": "StdLibCall",
@@ -3783,8 +3783,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        8505,
-        8525,
+        8445,
+        8465,
         0
       ]
     }

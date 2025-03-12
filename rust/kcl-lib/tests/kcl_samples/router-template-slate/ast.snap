@@ -1426,7 +1426,7 @@ description: Result of parsing router-template-slate.kcl
       },
       {
         "declaration": {
-          "end": 1965,
+          "end": 2017,
           "id": {
             "end": 1417,
             "name": "sketch002",
@@ -1631,71 +1631,84 @@ description: Result of parsing router-template-slate.kcl
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 1672,
-                        "left": {
-                          "arguments": [
-                            {
-                              "end": 1666,
-                              "name": "rectangleSegmentA001",
-                              "start": 1646,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "callee": {
-                            "end": 1645,
-                            "name": "segAng",
-                            "start": 1639,
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1643,
+                      "name": "angle",
+                      "start": 1638,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1679,
+                      "left": {
+                        "arguments": [
+                          {
+                            "end": 1673,
+                            "name": "rectangleSegmentA001",
+                            "start": 1653,
+                            "type": "Identifier",
                             "type": "Identifier"
-                          },
-                          "end": 1667,
-                          "start": 1639,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "operator": "+",
-                        "right": {
-                          "end": 1672,
-                          "raw": "90",
-                          "start": 1670,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 90.0,
-                            "suffix": "None"
                           }
+                        ],
+                        "callee": {
+                          "end": 1652,
+                          "name": "segAng",
+                          "start": 1646,
+                          "type": "Identifier"
                         },
-                        "start": 1639,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "end": 1674,
+                        "start": 1646,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
                       },
-                      {
-                        "end": 1700,
-                        "name": "minClampingDistance",
-                        "start": 1681,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      }
-                    ],
-                    "end": 1707,
-                    "start": 1630,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                      "operator": "+",
+                      "right": {
+                        "end": 1679,
+                        "raw": "90",
+                        "start": 1677,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 90.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1646,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
                   },
                   {
-                    "end": 1710,
-                    "start": 1709,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1694,
+                      "name": "length",
+                      "start": 1688,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1716,
+                      "name": "minClampingDistance",
+                      "start": 1697,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
                   },
                   {
-                    "end": 1733,
-                    "start": 1712,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentB001"
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1728,
+                      "name": "tag",
+                      "start": 1725,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1752,
+                      "start": 1731,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentB001"
+                    }
                   }
                 ],
                 "callee": {
@@ -1704,103 +1717,118 @@ description: Result of parsing router-template-slate.kcl
                   "start": 1619,
                   "type": "Identifier"
                 },
-                "end": 1734,
+                "end": 1760,
                 "start": 1619,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 1787,
-                            "name": "rectangleSegmentA001",
-                            "start": 1767,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          }
-                        ],
-                        "callee": {
-                          "end": 1766,
-                          "name": "segAng",
-                          "start": 1760,
-                          "type": "Identifier"
-                        },
-                        "end": 1788,
-                        "start": 1760,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "argument": {
-                          "arguments": [
-                            {
-                              "end": 1825,
-                              "name": "rectangleSegmentA001",
-                              "start": 1805,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "callee": {
-                            "end": 1804,
-                            "name": "segLen",
-                            "start": 1798,
-                            "type": "Identifier"
-                          },
-                          "end": 1826,
-                          "start": 1798,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "end": 1826,
-                        "operator": "-",
-                        "start": 1797,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    ],
-                    "end": 1833,
-                    "start": 1751,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 1836,
-                    "start": 1835,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 1859,
-                    "start": 1838,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentC001"
-                  }
-                ],
-                "callee": {
-                  "end": 1750,
-                  "name": "angledLine",
-                  "start": 1740,
-                  "type": "Identifier"
-                },
-                "end": 1860,
-                "start": 1740,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1882,
+                      "end": 1790,
+                      "name": "angle",
+                      "start": 1785,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "end": 1820,
+                          "name": "rectangleSegmentA001",
+                          "start": 1800,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "callee": {
+                        "end": 1799,
+                        "name": "segAng",
+                        "start": 1793,
+                        "type": "Identifier"
+                      },
+                      "end": 1821,
+                      "start": 1793,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1836,
+                      "name": "length",
+                      "start": 1830,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "arguments": [
+                          {
+                            "end": 1867,
+                            "name": "rectangleSegmentA001",
+                            "start": 1847,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 1846,
+                          "name": "segLen",
+                          "start": 1840,
+                          "type": "Identifier"
+                        },
+                        "end": 1868,
+                        "start": 1840,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "end": 1868,
+                      "operator": "-",
+                      "start": 1839,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1880,
+                      "name": "tag",
+                      "start": 1877,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1904,
+                      "start": 1883,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentC001"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1776,
+                  "name": "angledLine",
+                  "start": 1766,
+                  "type": "Identifier"
+                },
+                "end": 1912,
+                "start": 1766,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1934,
                       "name": "endAbsolute",
-                      "start": 1871,
+                      "start": 1923,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -1808,59 +1836,59 @@ description: Result of parsing router-template-slate.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1901,
-                              "start": 1900,
+                              "end": 1953,
+                              "start": 1952,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1899,
+                            "end": 1951,
                             "name": "profileStartX",
-                            "start": 1886,
+                            "start": 1938,
                             "type": "Identifier"
                           },
-                          "end": 1902,
-                          "start": 1886,
+                          "end": 1954,
+                          "start": 1938,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1919,
-                              "start": 1918,
+                              "end": 1971,
+                              "start": 1970,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1917,
+                            "end": 1969,
                             "name": "profileStartY",
-                            "start": 1904,
+                            "start": 1956,
                             "type": "Identifier"
                           },
-                          "end": 1920,
-                          "start": 1904,
+                          "end": 1972,
+                          "start": 1956,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 1921,
-                      "start": 1885,
+                      "end": 1973,
+                      "start": 1937,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1870,
+                  "end": 1922,
                   "name": "line",
-                  "start": 1866,
+                  "start": 1918,
                   "type": "Identifier"
                 },
-                "end": 1922,
-                "start": 1866,
+                "end": 1974,
+                "start": 1918,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1868,24 +1896,24 @@ description: Result of parsing router-template-slate.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 1933,
+                  "end": 1985,
                   "name": "close",
-                  "start": 1928,
+                  "start": 1980,
                   "type": "Identifier"
                 },
-                "end": 1935,
-                "start": 1928,
+                "end": 1987,
+                "start": 1980,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 1965,
+            "end": 2017,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
-                    "end": 1965,
-                    "start": 1935,
+                    "end": 2017,
+                    "start": 1987,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1904,7 +1932,7 @@ description: Result of parsing router-template-slate.kcl
           "start": 1408,
           "type": "VariableDeclarator"
         },
-        "end": 1965,
+        "end": 2017,
         "kind": "const",
         "start": 1408,
         "type": "VariableDeclaration",
@@ -1912,11 +1940,11 @@ description: Result of parsing router-template-slate.kcl
       },
       {
         "declaration": {
-          "end": 2011,
+          "end": 2063,
           "id": {
-            "end": 1976,
+            "end": 2028,
             "name": "extrude002",
-            "start": 1966,
+            "start": 2018,
             "type": "Identifier"
           },
           "init": {
@@ -1924,15 +1952,15 @@ description: Result of parsing router-template-slate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2004,
+                  "end": 2056,
                   "name": "length",
-                  "start": 1998,
+                  "start": 2050,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 2010,
+                  "end": 2062,
                   "raw": "7.5",
-                  "start": 2007,
+                  "start": 2059,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1943,39 +1971,39 @@ description: Result of parsing router-template-slate.kcl
               }
             ],
             "callee": {
-              "end": 1986,
+              "end": 2038,
               "name": "extrude",
-              "start": 1979,
+              "start": 2031,
               "type": "Identifier"
             },
-            "end": 2011,
-            "start": 1979,
+            "end": 2063,
+            "start": 2031,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 1996,
+              "end": 2048,
               "name": "sketch002",
-              "start": 1987,
+              "start": 2039,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 1966,
+          "start": 2018,
           "type": "VariableDeclarator"
         },
-        "end": 2011,
+        "end": 2063,
         "kind": "const",
-        "start": 1966,
+        "start": 2018,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2548,
+          "end": 2626,
           "id": {
-            "end": 2049,
+            "end": 2101,
             "name": "sketch003",
-            "start": 2040,
+            "start": 2092,
             "type": "Identifier"
           },
           "init": {
@@ -1983,29 +2011,29 @@ description: Result of parsing router-template-slate.kcl
               {
                 "arguments": [
                   {
-                    "end": 2076,
+                    "end": 2128,
                     "name": "extrude001",
-                    "start": 2066,
+                    "start": 2118,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 2085,
+                    "end": 2137,
                     "raw": "'START'",
-                    "start": 2078,
+                    "start": 2130,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "START"
                   }
                 ],
                 "callee": {
-                  "end": 2065,
+                  "end": 2117,
                   "name": "startSketchOn",
-                  "start": 2052,
+                  "start": 2104,
                   "type": "Identifier"
                 },
-                "end": 2086,
-                "start": 2052,
+                "end": 2138,
+                "start": 2104,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2014,35 +2042,35 @@ description: Result of parsing router-template-slate.kcl
                   {
                     "elements": [
                       {
-                        "end": 2130,
+                        "end": 2182,
                         "name": "slateWidthHalf",
-                        "start": 2116,
+                        "start": 2168,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       {
-                        "end": 2179,
+                        "end": 2231,
                         "left": {
-                          "end": 2155,
+                          "end": 2207,
                           "left": {
                             "argument": {
-                              "end": 2151,
+                              "end": 2203,
                               "name": "templateGap",
-                              "start": 2140,
+                              "start": 2192,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 2151,
+                            "end": 2203,
                             "operator": "-",
-                            "start": 2139,
+                            "start": 2191,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "*",
                           "right": {
-                            "end": 2155,
+                            "end": 2207,
                             "raw": "2",
-                            "start": 2154,
+                            "start": 2206,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2050,25 +2078,25 @@ description: Result of parsing router-template-slate.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 2139,
+                          "start": 2191,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 2179,
+                          "end": 2231,
                           "left": {
-                            "end": 2175,
+                            "end": 2227,
                             "name": "templateDiameter",
-                            "start": 2159,
+                            "start": 2211,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 2179,
+                            "end": 2231,
                             "raw": "2",
-                            "start": 2178,
+                            "start": 2230,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2076,35 +2104,35 @@ description: Result of parsing router-template-slate.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 2159,
+                          "start": 2211,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "start": 2139,
+                        "start": 2191,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 2187,
-                    "start": 2107,
+                    "end": 2239,
+                    "start": 2159,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2190,
-                    "start": 2189,
+                    "end": 2242,
+                    "start": 2241,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2106,
+                  "end": 2158,
                   "name": "startProfileAt",
-                  "start": 2092,
+                  "start": 2144,
                   "type": "Identifier"
                 },
-                "end": 2191,
-                "start": 2092,
+                "end": 2243,
+                "start": 2144,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2113,15 +2141,15 @@ description: Result of parsing router-template-slate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2209,
+                      "end": 2261,
                       "name": "length",
-                      "start": 2203,
+                      "start": 2255,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2213,
+                      "end": 2265,
                       "raw": "7",
-                      "start": 2212,
+                      "start": 2264,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -2133,14 +2161,14 @@ description: Result of parsing router-template-slate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2218,
+                      "end": 2270,
                       "name": "tag",
-                      "start": 2215,
+                      "start": 2267,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2242,
-                      "start": 2221,
+                      "end": 2294,
+                      "start": 2273,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
@@ -2148,13 +2176,13 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
-                  "end": 2202,
+                  "end": 2254,
                   "name": "xLine",
-                  "start": 2197,
+                  "start": 2249,
                   "type": "Identifier"
                 },
-                "end": 2243,
-                "start": 2197,
+                "end": 2295,
+                "start": 2249,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2162,162 +2190,172 @@ description: Result of parsing router-template-slate.kcl
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 2302,
-                        "left": {
-                          "arguments": [
-                            {
-                              "end": 2296,
-                              "name": "rectangleSegmentA002",
-                              "start": 2276,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "callee": {
-                            "end": 2275,
-                            "name": "segAng",
-                            "start": 2269,
-                            "type": "Identifier"
-                          },
-                          "end": 2297,
-                          "start": 2269,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "operator": "-",
-                        "right": {
-                          "end": 2302,
-                          "raw": "90",
-                          "start": 2300,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 90.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 2269,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      {
-                        "end": 2330,
-                        "name": "minClampingDistance",
-                        "start": 2311,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      }
-                    ],
-                    "end": 2337,
-                    "start": 2260,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 2340,
-                    "start": 2339,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 2259,
-                  "name": "angledLine",
-                  "start": 2249,
-                  "type": "Identifier"
-                },
-                "end": 2341,
-                "start": 2249,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2325,
+                      "name": "angle",
+                      "start": 2320,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2361,
+                      "left": {
                         "arguments": [
                           {
-                            "end": 2394,
+                            "end": 2355,
                             "name": "rectangleSegmentA002",
-                            "start": 2374,
+                            "start": 2335,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 2373,
+                          "end": 2334,
                           "name": "segAng",
-                          "start": 2367,
+                          "start": 2328,
                           "type": "Identifier"
                         },
-                        "end": 2395,
-                        "start": 2367,
+                        "end": 2356,
+                        "start": 2328,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      {
-                        "argument": {
-                          "arguments": [
-                            {
-                              "end": 2432,
-                              "name": "rectangleSegmentA002",
-                              "start": 2412,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "callee": {
-                            "end": 2411,
-                            "name": "segLen",
-                            "start": 2405,
-                            "type": "Identifier"
-                          },
-                          "end": 2433,
-                          "start": 2405,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "end": 2433,
-                        "operator": "-",
-                        "start": 2404,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    ],
-                    "end": 2440,
-                    "start": 2358,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                      "operator": "-",
+                      "right": {
+                        "end": 2361,
+                        "raw": "90",
+                        "start": 2359,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 90.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 2328,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
                   },
                   {
-                    "end": 2443,
-                    "start": 2442,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2376,
+                      "name": "length",
+                      "start": 2370,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2398,
+                      "name": "minClampingDistance",
+                      "start": 2379,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 2357,
+                  "end": 2311,
                   "name": "angledLine",
-                  "start": 2347,
+                  "start": 2301,
                   "type": "Identifier"
                 },
-                "end": 2444,
-                "start": 2347,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 2406,
+                "start": 2301,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2466,
+                      "end": 2436,
+                      "name": "angle",
+                      "start": 2431,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "end": 2466,
+                          "name": "rectangleSegmentA002",
+                          "start": 2446,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "callee": {
+                        "end": 2445,
+                        "name": "segAng",
+                        "start": 2439,
+                        "type": "Identifier"
+                      },
+                      "end": 2467,
+                      "start": 2439,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2482,
+                      "name": "length",
+                      "start": 2476,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "arguments": [
+                          {
+                            "end": 2513,
+                            "name": "rectangleSegmentA002",
+                            "start": 2493,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 2492,
+                          "name": "segLen",
+                          "start": 2486,
+                          "type": "Identifier"
+                        },
+                        "end": 2514,
+                        "start": 2486,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "end": 2514,
+                      "operator": "-",
+                      "start": 2485,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2422,
+                  "name": "angledLine",
+                  "start": 2412,
+                  "type": "Identifier"
+                },
+                "end": 2522,
+                "start": 2412,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2544,
                       "name": "endAbsolute",
-                      "start": 2455,
+                      "start": 2533,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -2325,59 +2363,59 @@ description: Result of parsing router-template-slate.kcl
                         {
                           "arguments": [
                             {
-                              "end": 2485,
-                              "start": 2484,
+                              "end": 2563,
+                              "start": 2562,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 2483,
+                            "end": 2561,
                             "name": "profileStartX",
-                            "start": 2470,
+                            "start": 2548,
                             "type": "Identifier"
                           },
-                          "end": 2486,
-                          "start": 2470,
+                          "end": 2564,
+                          "start": 2548,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 2503,
-                              "start": 2502,
+                              "end": 2581,
+                              "start": 2580,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 2501,
+                            "end": 2579,
                             "name": "profileStartY",
-                            "start": 2488,
+                            "start": 2566,
                             "type": "Identifier"
                           },
-                          "end": 2504,
-                          "start": 2488,
+                          "end": 2582,
+                          "start": 2566,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 2505,
-                      "start": 2469,
+                      "end": 2583,
+                      "start": 2547,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2454,
+                  "end": 2532,
                   "name": "line",
-                  "start": 2450,
+                  "start": 2528,
                   "type": "Identifier"
                 },
-                "end": 2506,
-                "start": 2450,
+                "end": 2584,
+                "start": 2528,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2385,24 +2423,24 @@ description: Result of parsing router-template-slate.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 2517,
+                  "end": 2595,
                   "name": "close",
-                  "start": 2512,
+                  "start": 2590,
                   "type": "Identifier"
                 },
-                "end": 2519,
-                "start": 2512,
+                "end": 2597,
+                "start": 2590,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 2548,
+            "end": 2626,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
-                    "end": 2548,
-                    "start": 2519,
+                    "end": 2626,
+                    "start": 2597,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -2414,26 +2452,26 @@ description: Result of parsing router-template-slate.kcl
               },
               "startNodes": []
             },
-            "start": 2052,
+            "start": 2104,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2040,
+          "start": 2092,
           "type": "VariableDeclarator"
         },
-        "end": 2548,
+        "end": 2626,
         "kind": "const",
-        "start": 2040,
+        "start": 2092,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2594,
+          "end": 2672,
           "id": {
-            "end": 2559,
+            "end": 2637,
             "name": "extrude003",
-            "start": 2549,
+            "start": 2627,
             "type": "Identifier"
           },
           "init": {
@@ -2441,15 +2479,15 @@ description: Result of parsing router-template-slate.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2587,
+                  "end": 2665,
                   "name": "length",
-                  "start": 2581,
+                  "start": 2659,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 2593,
+                  "end": 2671,
                   "raw": "7.5",
-                  "start": 2590,
+                  "start": 2668,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2460,34 +2498,34 @@ description: Result of parsing router-template-slate.kcl
               }
             ],
             "callee": {
-              "end": 2569,
+              "end": 2647,
               "name": "extrude",
-              "start": 2562,
+              "start": 2640,
               "type": "Identifier"
             },
-            "end": 2594,
-            "start": 2562,
+            "end": 2672,
+            "start": 2640,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 2579,
+              "end": 2657,
               "name": "sketch003",
-              "start": 2570,
+              "start": 2648,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 2549,
+          "start": 2627,
           "type": "VariableDeclarator"
         },
-        "end": 2594,
+        "end": 2672,
         "kind": "const",
-        "start": 2549,
+        "start": 2627,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 2595,
+    "end": 2673,
     "innerAttrs": [
       {
         "end": 126,
@@ -2549,8 +2587,8 @@ description: Result of parsing router-template-slate.kcl
         ],
         "13": [
           {
-            "end": 2039,
-            "start": 2011,
+            "end": 2091,
+            "start": 2063,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",

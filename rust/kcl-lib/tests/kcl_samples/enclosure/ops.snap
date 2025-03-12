@@ -43,16 +43,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          727,
-          733,
+          797,
+          803,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      699,
-      734,
+      769,
+      804,
       0
     ],
     "type": "StdLibCall",
@@ -64,8 +64,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        707,
-        716,
+        777,
+        786,
         0
       ]
     }
@@ -81,8 +81,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          764,
-          781,
+          834,
+          851,
           0
         ]
       },
@@ -109,16 +109,16 @@ description: Operations executed enclosure.kcl
           ]
         },
         "sourceRange": [
-          797,
-          1014,
+          867,
+          1084,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      740,
-      1021,
+      810,
+      1091,
       0
     ],
     "type": "StdLibCall",
@@ -130,8 +130,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        740,
-        1021,
+        810,
+        1091,
         0
       ]
     }
@@ -149,8 +149,8 @@ description: Operations executed enclosure.kcl
           ]
         },
         "sourceRange": [
-          1122,
-          1129,
+          1192,
+          1199,
           0
         ]
       },
@@ -169,16 +169,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1150,
-          1163,
+          1220,
+          1233,
           0
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1100,
       1170,
+      1240,
       0
     ],
     "type": "StdLibCall",
@@ -190,8 +190,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        1100,
         1170,
+        1240,
         0
       ]
     }
@@ -200,15 +200,15 @@ description: Operations executed enclosure.kcl
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1276,
-      1927,
+      1346,
+      1997,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1973,
-      2050,
+      2043,
+      2120,
       0
     ]
   },
@@ -402,16 +402,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1599,
-          1607,
+          1669,
+          1677,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1585,
-      1608,
+      1655,
+      1678,
       0
     ],
     "type": "StdLibCall",
@@ -427,8 +427,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1739,
-          1833,
+          1809,
+          1903,
           0
         ]
       },
@@ -440,16 +440,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1835,
-          1836,
+          1905,
+          1906,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1734,
-      1837,
+      1804,
+      1907,
       0
     ],
     "type": "StdLibCall",
@@ -472,16 +472,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1881,
-          1903,
+          1951,
+          1973,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1853,
-      1904,
+      1923,
+      1974,
       0
     ],
     "type": "StdLibCall",
@@ -493,314 +493,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        1861,
-        1870,
-        0
-      ]
-    }
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "function001",
-    "functionSourceRange": [
-      1276,
-      1927,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      2051,
-      2139,
-      0
-    ]
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "value": {
-          "type": "Object",
-          "value": {
-            "plane": {
-              "type": "Object",
-              "value": {
-                "origin": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    {
-                      "type": "Number",
-                      "value": 3.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  ]
-                },
-                "xAxis": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  ]
-                },
-                "yAxis": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  ]
-                },
-                "zAxis": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "sourceRange": [
-          1599,
-          1607,
-          0
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      1585,
-      1608,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1739,
-          1833,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1835,
-          1836,
-          0
-        ]
-      }
-    },
-    "name": "hole",
-    "sourceRange": [
-      1734,
-      1837,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 67.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": [
-          1881,
-          1903,
-          0
-        ]
-      }
-    },
-    "name": "extrude",
-    "sourceRange": [
-      1853,
-      1904,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": [
-        1861,
-        1870,
+        1931,
+        1940,
         0
       ]
     }
@@ -812,15 +506,15 @@ description: Operations executed enclosure.kcl
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1276,
-      1927,
+      1346,
+      1997,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2140,
-      2227,
+      2121,
+      2209,
       0
     ]
   },
@@ -1014,16 +708,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1599,
-          1607,
+          1669,
+          1677,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1585,
-      1608,
+      1655,
+      1678,
       0
     ],
     "type": "StdLibCall",
@@ -1039,8 +733,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1739,
-          1833,
+          1809,
+          1903,
           0
         ]
       },
@@ -1052,16 +746,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1835,
-          1836,
+          1905,
+          1906,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1734,
-      1837,
+      1804,
+      1907,
       0
     ],
     "type": "StdLibCall",
@@ -1084,16 +778,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1881,
-          1903,
+          1951,
+          1973,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1853,
-      1904,
+      1923,
+      1974,
       0
     ],
     "type": "StdLibCall",
@@ -1105,8 +799,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        1861,
-        1870,
+        1931,
+        1940,
         0
       ]
     }
@@ -1118,15 +812,15 @@ description: Operations executed enclosure.kcl
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1276,
-      1927,
+      1346,
+      1997,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2228,
-      2326,
+      2210,
+      2297,
       0
     ]
   },
@@ -1320,16 +1014,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1599,
-          1607,
+          1669,
+          1677,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1585,
-      1608,
+      1655,
+      1678,
       0
     ],
     "type": "StdLibCall",
@@ -1345,8 +1039,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1739,
-          1833,
+          1809,
+          1903,
           0
         ]
       },
@@ -1358,16 +1052,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1835,
-          1836,
+          1905,
+          1906,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      1734,
-      1837,
+      1804,
+      1907,
       0
     ],
     "type": "StdLibCall",
@@ -1390,16 +1084,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          1881,
-          1903,
+          1951,
+          1973,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1853,
-      1904,
+      1923,
+      1974,
       0
     ],
     "type": "StdLibCall",
@@ -1411,8 +1105,314 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        1861,
-        1870,
+        1931,
+        1940,
+        0
+      ]
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "function001",
+    "functionSourceRange": [
+      1346,
+      1997,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      2298,
+      2396,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "plane": {
+              "type": "Object",
+              "value": {
+                "origin": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 3.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "xAxis": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "yAxis": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "zAxis": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Mm"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sourceRange": [
+          1669,
+          1677,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      1655,
+      1678,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1809,
+          1903,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1905,
+          1906,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      1804,
+      1907,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 67.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          1951,
+          1973,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      1923,
+      1974,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        1931,
+        1940,
         0
       ]
     }
@@ -1428,16 +1428,16 @@ description: Operations executed enclosure.kcl
           "value": "XY"
         },
         "sourceRange": [
-          2395,
-          2399,
+          2465,
+          2469,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2381,
-      2400,
+      2451,
+      2470,
       0
     ],
     "type": "StdLibCall",
@@ -1453,8 +1453,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          2844,
-          2999,
+          2984,
+          3139,
           0
         ]
       },
@@ -1466,16 +1466,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3001,
-          3002,
+          3141,
+          3142,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2839,
-      3003,
+      2979,
+      3143,
       0
     ],
     "type": "StdLibCall",
@@ -1491,8 +1491,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3014,
-          3180,
+          3154,
+          3320,
           0
         ]
       },
@@ -1504,16 +1504,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3182,
-          3183,
+          3322,
+          3323,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3009,
-      3184,
+      3149,
+      3324,
       0
     ],
     "type": "StdLibCall",
@@ -1529,8 +1529,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3195,
-          3352,
+          3335,
+          3492,
           0
         ]
       },
@@ -1542,16 +1542,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3354,
-          3355,
+          3494,
+          3495,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3190,
-      3356,
+      3330,
+      3496,
       0
     ],
     "type": "StdLibCall",
@@ -1567,8 +1567,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3367,
-          3535,
+          3507,
+          3675,
           0
         ]
       },
@@ -1580,16 +1580,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3537,
-          3538,
+          3677,
+          3678,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3362,
-      3539,
+      3502,
+      3679,
       0
     ],
     "type": "StdLibCall",
@@ -1612,16 +1612,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3581,
-          3594,
+          3721,
+          3734,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3553,
-      3595,
+      3693,
+      3735,
       0
     ],
     "type": "StdLibCall",
@@ -1633,8 +1633,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        3561,
-        3570,
+        3701,
+        3710,
         0
       ]
     }
@@ -1650,8 +1650,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3625,
-          3642,
+          3765,
+          3782,
           0
         ]
       },
@@ -1678,16 +1678,16 @@ description: Operations executed enclosure.kcl
           ]
         },
         "sourceRange": [
-          3658,
-          3875,
+          3798,
+          4015,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      3601,
-      3882,
+      3741,
+      4022,
       0
     ],
     "type": "StdLibCall",
@@ -1699,8 +1699,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        3601,
-        3882,
+        3741,
+        4022,
         0
       ]
     }
@@ -1715,8 +1715,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          3951,
-          3961,
+          4091,
+          4101,
           0
         ]
       },
@@ -1726,16 +1726,16 @@ description: Operations executed enclosure.kcl
           "value": "END"
         },
         "sourceRange": [
-          3963,
-          3968,
+          4103,
+          4108,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3937,
-      3969,
+      4077,
+      4109,
       0
     ],
     "type": "StdLibCall",
@@ -1751,75 +1751,12 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          4506,
-          4677,
+          4716,
+          4887,
           0
         ]
       },
       "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          4679,
-          4680,
-          0
-        ]
-      }
-    },
-    "name": "hole",
-    "sourceRange": [
-      4501,
-      4681,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          4692,
-          4874,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          4876,
-          4877,
-          0
-        ]
-      }
-    },
-    "name": "hole",
-    "sourceRange": [
-      4687,
-      4878,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "holeSketch": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1828,28 +1765,15 @@ description: Operations executed enclosure.kcl
         },
         "sourceRange": [
           4889,
-          5062,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          5064,
-          5065,
+          4890,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      4884,
-      5066,
+      4711,
+      4891,
       0
     ],
     "type": "StdLibCall",
@@ -1865,8 +1789,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          5077,
-          5261,
+          4902,
+          5084,
           0
         ]
       },
@@ -1878,16 +1802,92 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          5263,
-          5264,
+          5086,
+          5087,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      5072,
-      5265,
+      4897,
+      5088,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          5099,
+          5272,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          5274,
+          5275,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      5094,
+      5276,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "holeSketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          5287,
+          5471,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          5473,
+          5474,
+          0
+        ]
+      }
+    },
+    "name": "hole",
+    "sourceRange": [
+      5282,
+      5475,
       0
     ],
     "type": "StdLibCall",
@@ -1910,16 +1910,16 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          5307,
-          5320,
+          5517,
+          5530,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      5279,
-      5321,
+      5489,
+      5531,
       0
     ],
     "type": "StdLibCall",
@@ -1931,8 +1931,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        5287,
-        5296,
+        5497,
+        5506,
         0
       ]
     }
@@ -1948,8 +1948,8 @@ description: Operations executed enclosure.kcl
           }
         },
         "sourceRange": [
-          5351,
-          5368,
+          5561,
+          5578,
           0
         ]
       },
@@ -1976,16 +1976,16 @@ description: Operations executed enclosure.kcl
           ]
         },
         "sourceRange": [
-          5384,
-          5601,
+          5594,
+          5811,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      5327,
-      5608,
+      5537,
+      5818,
       0
     ],
     "type": "StdLibCall",
@@ -1997,8 +1997,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        5327,
-        5608,
+        5537,
+        5818,
         0
       ]
     }

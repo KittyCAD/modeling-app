@@ -68,8 +68,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1424,
-      1443,
+      1422,
+      1441,
       0
     ],
     "command": {
@@ -97,8 +97,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1497,
-      1547,
+      1495,
+      1545,
       0
     ],
     "command": {
@@ -117,8 +117,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1497,
-      1547,
+      1495,
+      1545,
       0
     ],
     "command": {
@@ -128,8 +128,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1497,
-      1547,
+      1495,
+      1545,
       0
     ],
     "command": {
@@ -145,8 +145,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1497,
-      1547,
+      1495,
+      1545,
       0
     ],
     "command": {
@@ -156,8 +156,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1553,
-      1585,
+      1551,
+      1583,
       0
     ],
     "command": {
@@ -177,8 +177,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1591,
-      1628,
+      1589,
+      1626,
       0
     ],
     "command": {
@@ -198,8 +198,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1634,
-      1667,
+      1632,
+      1665,
       0
     ],
     "command": {
@@ -219,8 +219,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1673,
-      1773,
+      1671,
+      1771,
       0
     ],
     "command": {
@@ -248,8 +248,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1779,
-      1786,
+      1777,
+      1784,
       0
     ],
     "command": {
@@ -320,7 +320,7 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [
       1069,
-      1126,
+      1125,
       0
     ],
     "command": {
@@ -340,8 +340,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1134,
-      1197,
+      1133,
+      1196,
       0
     ],
     "command": {
@@ -360,8 +360,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1205,
-      1263,
+      1204,
+      1261,
       0
     ],
     "command": {
@@ -381,8 +381,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1271,
-      1336,
+      1269,
+      1334,
       0
     ],
     "command": {
@@ -402,8 +402,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1344,
-      1351,
+      1342,
+      1349,
       0
     ],
     "command": {
@@ -474,7 +474,7 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [
       1069,
-      1126,
+      1125,
       0
     ],
     "command": {
@@ -494,8 +494,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1134,
-      1197,
+      1133,
+      1196,
       0
     ],
     "command": {
@@ -514,8 +514,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1205,
-      1263,
+      1204,
+      1261,
       0
     ],
     "command": {
@@ -535,8 +535,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1271,
-      1336,
+      1269,
+      1334,
       0
     ],
     "command": {
@@ -556,8 +556,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1344,
-      1351,
+      1342,
+      1349,
       0
     ],
     "command": {
@@ -628,7 +628,7 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [
       1069,
-      1126,
+      1125,
       0
     ],
     "command": {
@@ -648,8 +648,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1134,
-      1197,
+      1133,
+      1196,
       0
     ],
     "command": {
@@ -668,8 +668,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1205,
-      1263,
+      1204,
+      1261,
       0
     ],
     "command": {
@@ -689,8 +689,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1271,
-      1336,
+      1269,
+      1334,
       0
     ],
     "command": {
@@ -710,8 +710,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1344,
-      1351,
+      1342,
+      1349,
       0
     ],
     "command": {
@@ -722,8 +722,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2203,
-      2226,
+      2201,
+      2224,
       0
     ],
     "command": {
@@ -735,8 +735,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2203,
-      2226,
+      2201,
+      2224,
       0
     ],
     "command": {
@@ -748,8 +748,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2232,
-      2255,
+      2230,
+      2253,
       0
     ],
     "command": {
@@ -761,8 +761,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2232,
-      2255,
+      2230,
+      2253,
       0
     ],
     "command": {
@@ -774,8 +774,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2261,
-      2284,
+      2259,
+      2282,
       0
     ],
     "command": {
@@ -787,8 +787,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2261,
-      2284,
+      2259,
+      2282,
       0
     ],
     "command": {
@@ -800,8 +800,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -820,8 +820,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -834,8 +834,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -845,8 +845,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -857,8 +857,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -870,8 +870,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -884,8 +884,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -898,8 +898,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -912,8 +912,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -926,8 +926,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -940,8 +940,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -954,8 +954,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -968,8 +968,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -982,8 +982,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -996,8 +996,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1010,8 +1010,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1024,8 +1024,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1038,8 +1038,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1052,8 +1052,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1066,8 +1066,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1080,8 +1080,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1094,8 +1094,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1108,8 +1108,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1122,8 +1122,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1136,8 +1136,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1150,8 +1150,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1164,8 +1164,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1178,8 +1178,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1192,8 +1192,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1206,8 +1206,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1220,8 +1220,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1234,8 +1234,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1248,8 +1248,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1262,8 +1262,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1276,8 +1276,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1290,8 +1290,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1304,8 +1304,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1318,8 +1318,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1332,8 +1332,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "command": {
@@ -1346,8 +1346,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2502,
-      2531,
+      2500,
+      2529,
       0
     ],
     "command": {
@@ -1360,8 +1360,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2537,
-      2570,
+      2535,
+      2568,
       0
     ],
     "command": {
@@ -1374,8 +1374,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2670,
-      2714,
+      2668,
+      2712,
       0
     ],
     "command": {
@@ -1403,8 +1403,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2670,
-      2714,
+      2668,
+      2712,
       0
     ],
     "command": {
@@ -1421,8 +1421,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2775,
-      2825,
+      2773,
+      2823,
       0
     ],
     "command": {
@@ -1441,8 +1441,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2775,
-      2825,
+      2773,
+      2823,
       0
     ],
     "command": {
@@ -1452,8 +1452,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2775,
-      2825,
+      2773,
+      2823,
       0
     ],
     "command": {
@@ -1469,8 +1469,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2775,
-      2825,
+      2773,
+      2823,
       0
     ],
     "command": {
@@ -1480,8 +1480,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2831,
-      2890,
+      2829,
+      2888,
       0
     ],
     "command": {
@@ -1501,8 +1501,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2896,
-      2931,
+      2894,
+      2929,
       0
     ],
     "command": {
@@ -1522,8 +1522,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2937,
-      2970,
+      2935,
+      2968,
       0
     ],
     "command": {
@@ -1543,8 +1543,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2976,
-      3035,
+      2974,
+      3033,
       0
     ],
     "command": {
@@ -1564,8 +1564,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3041,
-      3077,
+      3039,
+      3075,
       0
     ],
     "command": {
@@ -1585,8 +1585,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3083,
-      3107,
+      3081,
+      3105,
       0
     ],
     "command": {
@@ -1606,8 +1606,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3113,
-      3120,
+      3111,
+      3118,
       0
     ],
     "command": {
@@ -1618,8 +1618,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1638,8 +1638,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1652,8 +1652,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1663,8 +1663,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1675,8 +1675,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1688,8 +1688,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1702,8 +1702,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1716,8 +1716,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1730,8 +1730,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1744,8 +1744,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1758,8 +1758,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1772,8 +1772,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1786,8 +1786,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1800,8 +1800,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1814,8 +1814,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1828,8 +1828,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1842,8 +1842,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1856,8 +1856,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1870,8 +1870,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "command": {
@@ -1884,8 +1884,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3299,
-      3336,
+      3297,
+      3334,
       0
     ],
     "command": {
@@ -1898,8 +1898,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3342,
-      3376,
+      3340,
+      3374,
       0
     ],
     "command": {
@@ -1912,8 +1912,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3674,
-      3700,
+      3672,
+      3698,
       0
     ],
     "command": {
@@ -1941,8 +1941,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3748,
-      3794,
+      3746,
+      3792,
       0
     ],
     "command": {
@@ -1961,8 +1961,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3748,
-      3794,
+      3746,
+      3792,
       0
     ],
     "command": {
@@ -1972,8 +1972,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3748,
-      3794,
+      3746,
+      3792,
       0
     ],
     "command": {
@@ -1989,8 +1989,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3748,
-      3794,
+      3746,
+      3792,
       0
     ],
     "command": {
@@ -2000,8 +2000,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3800,
-      3850,
+      3798,
+      3848,
       0
     ],
     "command": {
@@ -2021,8 +2021,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3856,
-      3955,
+      3854,
+      3953,
       0
     ],
     "command": {
@@ -2050,8 +2050,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3961,
-      4012,
+      3959,
+      4010,
       0
     ],
     "command": {
@@ -2071,8 +2071,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4018,
-      4116,
+      4016,
+      4114,
       0
     ],
     "command": {
@@ -2100,8 +2100,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4122,
-      4175,
+      4120,
+      4173,
       0
     ],
     "command": {
@@ -2121,8 +2121,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4181,
-      4281,
+      4179,
+      4279,
       0
     ],
     "command": {
@@ -2150,8 +2150,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4287,
-      4361,
+      4285,
+      4359,
       0
     ],
     "command": {
@@ -2171,8 +2171,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4367,
-      4468,
+      4365,
+      4466,
       0
     ],
     "command": {
@@ -2200,8 +2200,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4474,
-      4481,
+      4472,
+      4479,
       0
     ],
     "command": {
@@ -2212,8 +2212,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2232,8 +2232,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2246,8 +2246,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2257,8 +2257,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2269,8 +2269,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2282,8 +2282,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2296,8 +2296,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2310,8 +2310,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2324,8 +2324,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2338,8 +2338,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2352,8 +2352,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2366,8 +2366,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2380,8 +2380,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2394,8 +2394,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2408,8 +2408,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2422,8 +2422,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2436,8 +2436,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2450,8 +2450,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2464,8 +2464,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2478,8 +2478,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2492,8 +2492,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "command": {
@@ -2562,7 +2562,7 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [
       1069,
-      1126,
+      1125,
       0
     ],
     "command": {
@@ -2582,8 +2582,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1134,
-      1197,
+      1133,
+      1196,
       0
     ],
     "command": {
@@ -2602,8 +2602,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1205,
-      1263,
+      1204,
+      1261,
       0
     ],
     "command": {
@@ -2623,8 +2623,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1271,
-      1336,
+      1269,
+      1334,
       0
     ],
     "command": {
@@ -2644,8 +2644,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1344,
-      1351,
+      1342,
+      1349,
       0
     ],
     "command": {
@@ -2656,8 +2656,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2672,8 +2672,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2686,8 +2686,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2697,8 +2697,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2709,8 +2709,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2722,8 +2722,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2736,8 +2736,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2750,8 +2750,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2764,8 +2764,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2778,8 +2778,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2792,8 +2792,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2806,8 +2806,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2820,8 +2820,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "command": {
@@ -2834,8 +2834,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2436,
-      2576,
+      2434,
+      2574,
       0
     ],
     "command": {
@@ -2850,8 +2850,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2436,
-      2576,
+      2434,
+      2574,
       0
     ],
     "command": {
@@ -2866,8 +2866,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2775,
-      2825,
+      2773,
+      2823,
       0
     ],
     "command": {
@@ -2879,8 +2879,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3252,
-      3382,
+      3250,
+      3380,
       0
     ],
     "command": {
@@ -2895,8 +2895,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3252,
-      3382,
+      3250,
+      3380,
       0
     ],
     "command": {
@@ -2911,8 +2911,8 @@ description: Artifact commands food-service-spatula.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3748,
-      3794,
+      3746,
+      3792,
       0
     ],
     "command": {

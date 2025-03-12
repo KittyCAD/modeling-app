@@ -123,16 +123,16 @@ description: Operations executed router-template-cross-bar.kcl
           }
         },
         "sourceRange": [
-          2235,
-          2237,
+          2305,
+          2307,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2207,
-      2238,
+      2277,
+      2308,
       0
     ],
     "type": "StdLibCall",
@@ -144,8 +144,8 @@ description: Operations executed router-template-cross-bar.kcl
         }
       },
       "sourceRange": [
-        2215,
-        2224,
+        2285,
+        2294,
         0
       ]
     }
@@ -160,8 +160,8 @@ description: Operations executed router-template-cross-bar.kcl
           }
         },
         "sourceRange": [
-          2266,
-          2276,
+          2336,
+          2346,
           0
         ]
       },
@@ -171,16 +171,16 @@ description: Operations executed router-template-cross-bar.kcl
           "value": "START"
         },
         "sourceRange": [
-          2278,
-          2285,
+          2348,
+          2355,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2252,
-      2286,
+      2322,
+      2356,
       0
     ],
     "type": "StdLibCall",
@@ -203,16 +203,16 @@ description: Operations executed router-template-cross-bar.kcl
           }
         },
         "sourceRange": [
-          2766,
-          2768,
+          2906,
+          2908,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2738,
-      2769,
+      2878,
+      2909,
       0
     ],
     "type": "StdLibCall",
@@ -224,8 +224,8 @@ description: Operations executed router-template-cross-bar.kcl
         }
       },
       "sourceRange": [
-        2746,
-        2755,
+        2886,
+        2895,
         0
       ]
     }
@@ -240,8 +240,8 @@ description: Operations executed router-template-cross-bar.kcl
           }
         },
         "sourceRange": [
-          2797,
-          2807,
+          2937,
+          2947,
           0
         ]
       },
@@ -251,16 +251,16 @@ description: Operations executed router-template-cross-bar.kcl
           "value": "END"
         },
         "sourceRange": [
-          2809,
-          2814,
+          2949,
+          2954,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2783,
-      2815,
+      2923,
+      2955,
       0
     ],
     "type": "StdLibCall",
@@ -283,16 +283,16 @@ description: Operations executed router-template-cross-bar.kcl
           }
         },
         "sourceRange": [
-          3301,
-          3302,
+          3511,
+          3512,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3273,
-      3303,
+      3483,
+      3513,
       0
     ],
     "type": "StdLibCall",
@@ -304,8 +304,8 @@ description: Operations executed router-template-cross-bar.kcl
         }
       },
       "sourceRange": [
-        3281,
-        3290,
+        3491,
+        3500,
         0
       ]
     }

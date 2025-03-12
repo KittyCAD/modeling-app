@@ -11,16 +11,16 @@ description: Operations executed food-service-spatula.kcl
           "value": "XY"
         },
         "sourceRange": [
-          1438,
-          1442,
+          1436,
+          1440,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1424,
-      1443,
+      1422,
+      1441,
       0
     ],
     "type": "StdLibCall",
@@ -31,14 +31,14 @@ description: Operations executed food-service-spatula.kcl
     "name": "slot",
     "functionSourceRange": [
       481,
-      1373,
+      1371,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1839,
-      1892,
+      1837,
+      1890,
       0
     ]
   },
@@ -88,14 +88,14 @@ description: Operations executed food-service-spatula.kcl
     "name": "slot",
     "functionSourceRange": [
       481,
-      1373,
+      1371,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1947,
-      2002,
+      1945,
+      2000,
       0
     ]
   },
@@ -145,14 +145,14 @@ description: Operations executed food-service-spatula.kcl
     "name": "slot",
     "functionSourceRange": [
       481,
-      1373,
+      1371,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2060,
-      2117,
+      2058,
+      2115,
       0
     ]
   },
@@ -207,29 +207,29 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          2208,
+          2206,
+          2220,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
           2222,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          2224,
-          2225,
+          2223,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2203,
-      2226,
+      2201,
+      2224,
       0
     ],
     "type": "StdLibCall",
@@ -245,29 +245,29 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          2237,
+          2235,
+          2249,
+          0
+        ]
+      },
+      "sketch": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
           2251,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          2253,
-          2254,
+          2252,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2232,
-      2255,
+      2230,
+      2253,
       0
     ],
     "type": "StdLibCall",
@@ -283,8 +283,8 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          2266,
-          2280,
+          2264,
+          2278,
           0
         ]
       },
@@ -296,16 +296,16 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          2282,
-          2283,
+          2280,
+          2281,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2261,
-      2284,
+      2259,
+      2282,
       0
     ],
     "type": "StdLibCall",
@@ -328,16 +328,16 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          2382,
-          2398,
+          2380,
+          2396,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2349,
-      2399,
+      2347,
+      2397,
       0
     ],
     "type": "StdLibCall",
@@ -349,8 +349,8 @@ description: Operations executed food-service-spatula.kcl
         }
       },
       "sourceRange": [
-        2357,
-        2371,
+        2355,
+        2369,
         0
       ]
     }
@@ -372,8 +372,8 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          2466,
-          2485,
+          2464,
+          2483,
           0
         ]
       },
@@ -392,16 +392,16 @@ description: Operations executed food-service-spatula.kcl
           ]
         },
         "sourceRange": [
-          2496,
-          2574,
+          2494,
+          2572,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      2436,
-      2576,
+      2434,
+      2574,
       0
     ],
     "type": "StdLibCall",
@@ -413,8 +413,8 @@ description: Operations executed food-service-spatula.kcl
         }
       },
       "sourceRange": [
-        2446,
-        2453,
+        2444,
+        2451,
         0
       ]
     }
@@ -430,16 +430,16 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          2697,
-          2713,
+          2695,
+          2711,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      2670,
-      2714,
+      2668,
+      2712,
       0
     ],
     "type": "StdLibCall",
@@ -449,8 +449,8 @@ description: Operations executed food-service-spatula.kcl
         "value": "XZ"
       },
       "sourceRange": [
-        2682,
-        2686,
+        2680,
+        2684,
         0
       ]
     }
@@ -463,16 +463,16 @@ description: Operations executed food-service-spatula.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          2670,
-          2714,
+          2668,
+          2712,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2656,
-      2715,
+      2654,
+      2713,
       0
     ],
     "type": "StdLibCall",
@@ -495,16 +495,16 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          3197,
-          3208,
+          3195,
+          3206,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3165,
-      3209,
+      3163,
+      3207,
       0
     ],
     "type": "StdLibCall",
@@ -516,8 +516,8 @@ description: Operations executed food-service-spatula.kcl
         }
       },
       "sourceRange": [
-        3173,
-        3186,
+        3171,
+        3184,
         0
       ]
     }
@@ -539,8 +539,8 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          3281,
-          3282,
+          3279,
+          3280,
           0
         ]
       },
@@ -559,16 +559,16 @@ description: Operations executed food-service-spatula.kcl
           ]
         },
         "sourceRange": [
-          3293,
-          3380,
+          3291,
+          3378,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      3252,
-      3382,
+      3250,
+      3380,
       0
     ],
     "type": "StdLibCall",
@@ -580,8 +580,8 @@ description: Operations executed food-service-spatula.kcl
         }
       },
       "sourceRange": [
-        3262,
-        3268,
+        3260,
+        3266,
         0
       ]
     }
@@ -776,16 +776,16 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          3688,
-          3699,
+          3686,
+          3697,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3674,
-      3700,
+      3672,
+      3698,
       0
     ],
     "type": "StdLibCall",
@@ -808,16 +808,16 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          4567,
-          4578,
+          4565,
+          4576,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4537,
-      4579,
+      4535,
+      4577,
       0
     ],
     "type": "StdLibCall",
@@ -829,8 +829,8 @@ description: Operations executed food-service-spatula.kcl
         }
       },
       "sourceRange": [
-        4545,
-        4556,
+        4543,
+        4554,
         0
       ]
     }
@@ -845,8 +845,8 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          4651,
-          4655,
+          4649,
+          4653,
           0
         ]
       },
@@ -857,16 +857,16 @@ description: Operations executed food-service-spatula.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          4657,
-          4668,
+          4655,
+          4666,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4637,
-      4669,
+      4635,
+      4667,
       0
     ],
     "type": "StdLibCall",
@@ -877,14 +877,14 @@ description: Operations executed food-service-spatula.kcl
     "name": "slot",
     "functionSourceRange": [
       481,
-      1373,
+      1371,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      4727,
-      4777,
+      4725,
+      4775,
       0
     ]
   },
@@ -946,16 +946,16 @@ description: Operations executed food-service-spatula.kcl
           }
         },
         "sourceRange": [
-          4839,
-          4852,
+          4837,
+          4850,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4805,
-      4853,
+      4803,
+      4851,
       0
     ],
     "type": "StdLibCall",
@@ -967,8 +967,8 @@ description: Operations executed food-service-spatula.kcl
         }
       },
       "sourceRange": [
-        4813,
-        4828,
+        4811,
+        4826,
         0
       ]
     }

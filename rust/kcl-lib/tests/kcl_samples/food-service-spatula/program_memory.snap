@@ -29,8 +29,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1553,
-            1585,
+            1551,
+            1583,
             0
           ],
           "tag": null,
@@ -40,13 +40,13 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1591,
-            1628,
+            1589,
+            1626,
             0
           ],
           "tag": {
-            "end": 1627,
-            "start": 1618,
+            "end": 1625,
+            "start": 1616,
             "type": "TagDeclarator",
             "value": "backEdge"
           },
@@ -56,8 +56,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1634,
-            1667,
+            1632,
+            1665,
             0
           ],
           "tag": null,
@@ -67,8 +67,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1673,
-            1773,
+            1671,
+            1771,
             0
           ],
           "tag": null,
@@ -78,8 +78,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1779,
-            1786,
+            1777,
+            1784,
             0
           ],
           "tag": null,
@@ -94,8 +94,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1553,
-                1585,
+                1551,
+                1583,
                 0
               ]
             },
@@ -117,8 +117,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1591,
-                1628,
+                1589,
+                1626,
                 0
               ]
             },
@@ -127,8 +127,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               -30.0
             ],
             "tag": {
-              "end": 1627,
-              "start": 1618,
+              "end": 1625,
+              "start": 1616,
               "type": "TagDeclarator",
               "value": "backEdge"
             },
@@ -145,8 +145,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1634,
-                1667,
+                1632,
+                1665,
                 0
               ]
             },
@@ -168,8 +168,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1673,
-                1773,
+                1671,
+                1771,
                 0
               ]
             },
@@ -197,8 +197,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1779,
-                1786,
+                1777,
+                1784,
                 0
               ]
             },
@@ -262,8 +262,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1497,
-              1547,
+              1495,
+              1545,
               0
             ]
           }
@@ -324,8 +324,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1553,
-              1585,
+              1551,
+              1583,
               0
             ]
           },
@@ -347,8 +347,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1591,
-              1628,
+              1589,
+              1626,
               0
             ]
           },
@@ -357,8 +357,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             -30.0
           ],
           "tag": {
-            "end": 1627,
-            "start": 1618,
+            "end": 1625,
+            "start": 1616,
             "type": "TagDeclarator",
             "value": "backEdge"
           },
@@ -375,8 +375,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1634,
-              1667,
+              1632,
+              1665,
               0
             ]
           },
@@ -398,8 +398,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1673,
-              1773,
+              1671,
+              1771,
               0
             ]
           },
@@ -427,8 +427,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1779,
-              1786,
+              1777,
+              1784,
               0
             ]
           },
@@ -492,8 +492,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            1497,
-            1547,
+            1495,
+            1545,
             0
           ]
         }
@@ -548,8 +548,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3800,
-            3850,
+            3798,
+            3848,
             0
           ],
           "tag": null,
@@ -559,8 +559,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3856,
-            3955,
+            3854,
+            3953,
             0
           ],
           "tag": null,
@@ -570,8 +570,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3961,
-            4012,
+            3959,
+            4010,
             0
           ],
           "tag": null,
@@ -581,8 +581,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4018,
-            4116,
+            4016,
+            4114,
             0
           ],
           "tag": null,
@@ -592,8 +592,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4122,
-            4175,
+            4120,
+            4173,
             0
           ],
           "tag": null,
@@ -603,8 +603,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4181,
-            4281,
+            4179,
+            4279,
             0
           ],
           "tag": null,
@@ -614,13 +614,13 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4287,
-            4361,
+            4285,
+            4359,
             0
           ],
           "tag": {
-            "end": 4360,
-            "start": 4348,
+            "end": 4358,
+            "start": 4346,
             "type": "TagDeclarator",
             "value": "gripEdgeTop"
           },
@@ -630,8 +630,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4367,
-            4468,
+            4365,
+            4466,
             0
           ],
           "tag": null,
@@ -646,8 +646,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3800,
-                3850,
+                3798,
+                3848,
                 0
               ]
             },
@@ -669,8 +669,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3856,
-                3955,
+                3854,
+                3953,
                 0
               ]
             },
@@ -698,8 +698,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3961,
-                4012,
+                3959,
+                4010,
                 0
               ]
             },
@@ -721,8 +721,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4018,
-                4116,
+                4016,
+                4114,
                 0
               ]
             },
@@ -750,8 +750,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4122,
-                4175,
+                4120,
+                4173,
                 0
               ]
             },
@@ -773,8 +773,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4181,
-                4281,
+                4179,
+                4279,
                 0
               ]
             },
@@ -802,8 +802,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4287,
-                4361,
+                4285,
+                4359,
                 0
               ]
             },
@@ -812,8 +812,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               7.0
             ],
             "tag": {
-              "end": 4360,
-              "start": 4348,
+              "end": 4358,
+              "start": 4346,
               "type": "TagDeclarator",
               "value": "gripEdgeTop"
             },
@@ -830,8 +830,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4367,
-                4468,
+                4365,
+                4466,
                 0
               ]
             },
@@ -859,8 +859,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4474,
-                4481,
+                4472,
+                4479,
                 0
               ]
             },
@@ -924,8 +924,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3748,
-              3794,
+              3746,
+              3792,
               0
             ]
           }
@@ -992,7 +992,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "id": "[uuid]",
             "sourceRange": [
               1069,
-              1126,
+              1125,
               0
             ]
           },
@@ -1001,8 +1001,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             200.0
           ],
           "tag": {
-            "end": 1125,
-            "start": 1117,
+            "end": 1124,
+            "start": 1116,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -1019,8 +1019,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1134,
-              1197,
+              1133,
+              1196,
               0
             ]
           },
@@ -1034,8 +1034,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             210.0
           ],
           "tag": {
-            "end": 1196,
-            "start": 1189,
+            "end": 1195,
+            "start": 1188,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -1052,8 +1052,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1205,
-              1263,
+              1204,
+              1261,
               0
             ]
           },
@@ -1062,8 +1062,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             210.0
           ],
           "tag": {
-            "end": 1262,
-            "start": 1254,
+            "end": 1260,
+            "start": 1252,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -1080,8 +1080,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1271,
-              1336,
+              1269,
+              1334,
               0
             ]
           },
@@ -1095,8 +1095,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             200.0
           ],
           "tag": {
-            "end": 1335,
-            "start": 1328,
+            "end": 1333,
+            "start": 1326,
             "type": "TagDeclarator",
             "value": "arc001"
           },
@@ -1113,8 +1113,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1344,
-              1351,
+              1342,
+              1349,
               0
             ]
           },
@@ -1162,8 +1162,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                3800,
-                3850,
+                3798,
+                3848,
                 0
               ],
               "tag": null,
@@ -1173,8 +1173,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                3856,
-                3955,
+                3854,
+                3953,
                 0
               ],
               "tag": null,
@@ -1184,8 +1184,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                3961,
-                4012,
+                3959,
+                4010,
                 0
               ],
               "tag": null,
@@ -1195,8 +1195,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                4018,
-                4116,
+                4016,
+                4114,
                 0
               ],
               "tag": null,
@@ -1206,8 +1206,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                4122,
-                4175,
+                4120,
+                4173,
                 0
               ],
               "tag": null,
@@ -1217,8 +1217,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                4181,
-                4281,
+                4179,
+                4279,
                 0
               ],
               "tag": null,
@@ -1228,13 +1228,13 @@ description: Variables in memory after executing food-service-spatula.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                4287,
-                4361,
+                4285,
+                4359,
                 0
               ],
               "tag": {
-                "end": 4360,
-                "start": 4348,
+                "end": 4358,
+                "start": 4346,
                 "type": "TagDeclarator",
                 "value": "gripEdgeTop"
               },
@@ -1244,8 +1244,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                4367,
-                4468,
+                4365,
+                4466,
                 0
               ],
               "tag": null,
@@ -1260,8 +1260,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    3800,
-                    3850,
+                    3798,
+                    3848,
                     0
                   ]
                 },
@@ -1283,8 +1283,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    3856,
-                    3955,
+                    3854,
+                    3953,
                     0
                   ]
                 },
@@ -1312,8 +1312,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    3961,
-                    4012,
+                    3959,
+                    4010,
                     0
                   ]
                 },
@@ -1335,8 +1335,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    4018,
-                    4116,
+                    4016,
+                    4114,
                     0
                   ]
                 },
@@ -1364,8 +1364,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    4122,
-                    4175,
+                    4120,
+                    4173,
                     0
                   ]
                 },
@@ -1387,8 +1387,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    4181,
-                    4281,
+                    4179,
+                    4279,
                     0
                   ]
                 },
@@ -1416,8 +1416,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    4287,
-                    4361,
+                    4285,
+                    4359,
                     0
                   ]
                 },
@@ -1426,8 +1426,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   7.0
                 ],
                 "tag": {
-                  "end": 4360,
-                  "start": 4348,
+                  "end": 4358,
+                  "start": 4346,
                   "type": "TagDeclarator",
                   "value": "gripEdgeTop"
                 },
@@ -1444,8 +1444,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    4367,
-                    4468,
+                    4365,
+                    4466,
                     0
                   ]
                 },
@@ -1473,8 +1473,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    4474,
-                    4481,
+                    4472,
+                    4479,
                     0
                   ]
                 },
@@ -1538,8 +1538,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  3748,
-                  3794,
+                  3746,
+                  3792,
                   0
                 ]
               }
@@ -1637,8 +1637,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3800,
-              3850,
+              3798,
+              3848,
               0
             ]
           },
@@ -1660,8 +1660,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3856,
-              3955,
+              3854,
+              3953,
               0
             ]
           },
@@ -1689,8 +1689,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3961,
-              4012,
+              3959,
+              4010,
               0
             ]
           },
@@ -1712,8 +1712,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4018,
-              4116,
+              4016,
+              4114,
               0
             ]
           },
@@ -1741,8 +1741,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4122,
-              4175,
+              4120,
+              4173,
               0
             ]
           },
@@ -1764,8 +1764,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4181,
-              4281,
+              4179,
+              4279,
               0
             ]
           },
@@ -1793,8 +1793,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4287,
-              4361,
+              4285,
+              4359,
               0
             ]
           },
@@ -1803,8 +1803,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             7.0
           ],
           "tag": {
-            "end": 4360,
-            "start": 4348,
+            "end": 4358,
+            "start": 4346,
             "type": "TagDeclarator",
             "value": "gripEdgeTop"
           },
@@ -1821,8 +1821,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4367,
-              4468,
+              4365,
+              4466,
               0
             ]
           },
@@ -1850,8 +1850,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4474,
-              4481,
+              4472,
+              4479,
               0
             ]
           },
@@ -1915,8 +1915,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            3748,
-            3794,
+            3746,
+            3792,
             0
           ]
         }
@@ -1971,13 +1971,13 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2831,
-            2890,
+            2829,
+            2888,
             0
           ],
           "tag": {
-            "end": 2889,
-            "start": 2872,
+            "end": 2887,
+            "start": 2870,
             "type": "TagDeclarator",
             "value": "handleBottomEdge"
           },
@@ -1987,8 +1987,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2896,
-            2931,
+            2894,
+            2929,
             0
           ],
           "tag": null,
@@ -1998,8 +1998,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2937,
-            2970,
+            2935,
+            2968,
             0
           ],
           "tag": null,
@@ -2009,13 +2009,13 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2976,
-            3035,
+            2974,
+            3033,
             0
           ],
           "tag": {
-            "end": 3034,
-            "start": 3020,
+            "end": 3032,
+            "start": 3018,
             "type": "TagDeclarator",
             "value": "handleTopEdge"
           },
@@ -2025,8 +2025,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3041,
-            3077,
+            3039,
+            3075,
             0
           ],
           "tag": null,
@@ -2036,8 +2036,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3083,
-            3107,
+            3081,
+            3105,
             0
           ],
           "tag": null,
@@ -2047,8 +2047,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3113,
-            3120,
+            3111,
+            3118,
             0
           ],
           "tag": null,
@@ -2063,8 +2063,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2831,
-                2890,
+                2829,
+                2888,
                 0
               ]
             },
@@ -2073,8 +2073,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               3.5
             ],
             "tag": {
-              "end": 2889,
-              "start": 2872,
+              "end": 2887,
+              "start": 2870,
               "type": "TagDeclarator",
               "value": "handleBottomEdge"
             },
@@ -2091,8 +2091,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2896,
-                2931,
+                2894,
+                2929,
                 0
               ]
             },
@@ -2114,8 +2114,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2937,
-                2970,
+                2935,
+                2968,
                 0
               ]
             },
@@ -2137,8 +2137,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2976,
-                3035,
+                2974,
+                3033,
                 0
               ]
             },
@@ -2147,8 +2147,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               91.3213
             ],
             "tag": {
-              "end": 3034,
-              "start": 3020,
+              "end": 3032,
+              "start": 3018,
               "type": "TagDeclarator",
               "value": "handleTopEdge"
             },
@@ -2165,8 +2165,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3041,
-                3077,
+                3039,
+                3075,
                 0
               ]
             },
@@ -2188,8 +2188,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3083,
-                3107,
+                3081,
+                3105,
                 0
               ]
             },
@@ -2211,8 +2211,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3113,
-                3120,
+                3111,
+                3118,
                 0
               ]
             },
@@ -2276,8 +2276,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2775,
-              2825,
+              2773,
+              2823,
               0
             ]
           }
@@ -2507,8 +2507,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2831,
-              2890,
+              2829,
+              2888,
               0
             ]
           },
@@ -2517,8 +2517,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             3.5
           ],
           "tag": {
-            "end": 2889,
-            "start": 2872,
+            "end": 2887,
+            "start": 2870,
             "type": "TagDeclarator",
             "value": "handleBottomEdge"
           },
@@ -2535,8 +2535,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2896,
-              2931,
+              2894,
+              2929,
               0
             ]
           },
@@ -2558,8 +2558,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2937,
-              2970,
+              2935,
+              2968,
               0
             ]
           },
@@ -2581,8 +2581,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2976,
-              3035,
+              2974,
+              3033,
               0
             ]
           },
@@ -2591,8 +2591,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             91.3213
           ],
           "tag": {
-            "end": 3034,
-            "start": 3020,
+            "end": 3032,
+            "start": 3018,
             "type": "TagDeclarator",
             "value": "handleTopEdge"
           },
@@ -2609,8 +2609,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3041,
-              3077,
+              3039,
+              3075,
               0
             ]
           },
@@ -2632,8 +2632,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3083,
-              3107,
+              3081,
+              3105,
               0
             ]
           },
@@ -2655,8 +2655,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3113,
-              3120,
+              3111,
+              3118,
               0
             ]
           },
@@ -2720,8 +2720,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2775,
-            2825,
+            2773,
+            2823,
             0
           ]
         }
@@ -2894,8 +2894,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              3800,
-              3850,
+              3798,
+              3848,
               0
             ],
             "tag": null,
@@ -2905,8 +2905,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              3856,
-              3955,
+              3854,
+              3953,
               0
             ],
             "tag": null,
@@ -2916,8 +2916,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              3961,
-              4012,
+              3959,
+              4010,
               0
             ],
             "tag": null,
@@ -2927,8 +2927,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              4018,
-              4116,
+              4016,
+              4114,
               0
             ],
             "tag": null,
@@ -2938,8 +2938,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              4122,
-              4175,
+              4120,
+              4173,
               0
             ],
             "tag": null,
@@ -2949,8 +2949,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              4181,
-              4281,
+              4179,
+              4279,
               0
             ],
             "tag": null,
@@ -2960,13 +2960,13 @@ description: Variables in memory after executing food-service-spatula.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              4287,
-              4361,
+              4285,
+              4359,
               0
             ],
             "tag": {
-              "end": 4360,
-              "start": 4348,
+              "end": 4358,
+              "start": 4346,
               "type": "TagDeclarator",
               "value": "gripEdgeTop"
             },
@@ -2976,8 +2976,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "faceId": "[uuid]",
             "id": "[uuid]",
             "sourceRange": [
-              4367,
-              4468,
+              4365,
+              4466,
               0
             ],
             "tag": null,
@@ -2992,8 +2992,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  3800,
-                  3850,
+                  3798,
+                  3848,
                   0
                 ]
               },
@@ -3015,8 +3015,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  3856,
-                  3955,
+                  3854,
+                  3953,
                   0
                 ]
               },
@@ -3044,8 +3044,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  3961,
-                  4012,
+                  3959,
+                  4010,
                   0
                 ]
               },
@@ -3067,8 +3067,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4018,
-                  4116,
+                  4016,
+                  4114,
                   0
                 ]
               },
@@ -3096,8 +3096,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4122,
-                  4175,
+                  4120,
+                  4173,
                   0
                 ]
               },
@@ -3119,8 +3119,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4181,
-                  4281,
+                  4179,
+                  4279,
                   0
                 ]
               },
@@ -3148,8 +3148,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4287,
-                  4361,
+                  4285,
+                  4359,
                   0
                 ]
               },
@@ -3158,8 +3158,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 7.0
               ],
               "tag": {
-                "end": 4360,
-                "start": 4348,
+                "end": 4358,
+                "start": 4346,
                 "type": "TagDeclarator",
                 "value": "gripEdgeTop"
               },
@@ -3176,8 +3176,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4367,
-                  4468,
+                  4365,
+                  4466,
                   0
                 ]
               },
@@ -3205,8 +3205,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4474,
-                  4481,
+                  4472,
+                  4479,
                   0
                 ]
               },
@@ -3270,8 +3270,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3748,
-                3794,
+                3746,
+                3792,
                 0
               ]
             }
@@ -3314,7 +3314,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "id": "[uuid]",
             "sourceRange": [
               1069,
-              1126,
+              1125,
               0
             ]
           },
@@ -3323,8 +3323,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             5.0
           ],
           "tag": {
-            "end": 1125,
-            "start": 1117,
+            "end": 1124,
+            "start": 1116,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -3341,8 +3341,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1134,
-              1197,
+              1133,
+              1196,
               0
             ]
           },
@@ -3356,8 +3356,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             5.0
           ],
           "tag": {
-            "end": 1196,
-            "start": 1189,
+            "end": 1195,
+            "start": 1188,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -3374,8 +3374,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1205,
-              1263,
+              1204,
+              1261,
               0
             ]
           },
@@ -3384,8 +3384,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             -5.0
           ],
           "tag": {
-            "end": 1262,
-            "start": 1254,
+            "end": 1260,
+            "start": 1252,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -3402,8 +3402,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1271,
-              1336,
+              1269,
+              1334,
               0
             ]
           },
@@ -3417,8 +3417,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             -5.0
           ],
           "tag": {
-            "end": 1335,
-            "start": 1328,
+            "end": 1333,
+            "start": 1326,
             "type": "TagDeclarator",
             "value": "arc001"
           },
@@ -3435,8 +3435,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1344,
-              1351,
+              1342,
+              1349,
               0
             ]
           },
@@ -3542,7 +3542,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "id": "[uuid]",
             "sourceRange": [
               1069,
-              1126,
+              1125,
               0
             ]
           },
@@ -3551,8 +3551,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             22.9972
           ],
           "tag": {
-            "end": 1125,
-            "start": 1117,
+            "end": 1124,
+            "start": 1116,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -3569,8 +3569,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1134,
-              1197,
+              1133,
+              1196,
               0
             ]
           },
@@ -3584,8 +3584,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             23.9972
           ],
           "tag": {
-            "end": 1196,
-            "start": 1189,
+            "end": 1195,
+            "start": 1188,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -3602,8 +3602,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1205,
-              1263,
+              1204,
+              1261,
               0
             ]
           },
@@ -3612,8 +3612,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             14.0028
           ],
           "tag": {
-            "end": 1262,
-            "start": 1254,
+            "end": 1260,
+            "start": 1252,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -3630,8 +3630,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1271,
-              1336,
+              1269,
+              1334,
               0
             ]
           },
@@ -3645,8 +3645,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             13.0028
           ],
           "tag": {
-            "end": 1335,
-            "start": 1328,
+            "end": 1333,
+            "start": 1326,
             "type": "TagDeclarator",
             "value": "arc001"
           },
@@ -3663,8 +3663,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1344,
-              1351,
+              1342,
+              1349,
               0
             ]
           },
@@ -3770,7 +3770,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "id": "[uuid]",
             "sourceRange": [
               1069,
-              1126,
+              1125,
               0
             ]
           },
@@ -3779,8 +3779,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             -13.0028
           ],
           "tag": {
-            "end": 1125,
-            "start": 1117,
+            "end": 1124,
+            "start": 1116,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -3797,8 +3797,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1134,
-              1197,
+              1133,
+              1196,
               0
             ]
           },
@@ -3812,8 +3812,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             -14.0028
           ],
           "tag": {
-            "end": 1196,
-            "start": 1189,
+            "end": 1195,
+            "start": 1188,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -3830,8 +3830,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1205,
-              1263,
+              1204,
+              1261,
               0
             ]
           },
@@ -3840,8 +3840,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             -23.9972
           ],
           "tag": {
-            "end": 1262,
-            "start": 1254,
+            "end": 1260,
+            "start": 1252,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -3858,8 +3858,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1271,
-              1336,
+              1269,
+              1334,
               0
             ]
           },
@@ -3873,8 +3873,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             -22.9972
           ],
           "tag": {
-            "end": 1335,
-            "start": 1328,
+            "end": 1333,
+            "start": 1326,
             "type": "TagDeclarator",
             "value": "arc001"
           },
@@ -3891,8 +3891,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1344,
-              1351,
+              1342,
+              1349,
               0
             ]
           },
@@ -3997,8 +3997,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1553,
-              1585,
+              1551,
+              1583,
               0
             ]
           },
@@ -4020,8 +4020,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1591,
-              1628,
+              1589,
+              1626,
               0
             ]
           },
@@ -4030,8 +4030,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             -30.0
           ],
           "tag": {
-            "end": 1627,
-            "start": 1618,
+            "end": 1625,
+            "start": 1616,
             "type": "TagDeclarator",
             "value": "backEdge"
           },
@@ -4048,8 +4048,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1634,
-              1667,
+              1632,
+              1665,
               0
             ]
           },
@@ -4071,8 +4071,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1673,
-              1773,
+              1671,
+              1771,
               0
             ]
           },
@@ -4100,8 +4100,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1779,
-              1786,
+              1777,
+              1784,
               0
             ]
           },
@@ -4165,8 +4165,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            1497,
-            1547,
+            1495,
+            1545,
             0
           ]
         }

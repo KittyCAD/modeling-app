@@ -70,26 +70,26 @@ fn capScrew(start, length, dia) {
          start[2]
        ], %)
     |> yLine(length = -hexWallLength / 2)
-    |> angledLine({
+    |> angledLine(
          angle = hexStartingAngle,
          length = hexWallLength
-       }, %)
-    |> angledLine({
+       )
+    |> angledLine(
          angle = hexStartingAngle - hexChangeAngle,
          length = hexWallLength
-       }, %)
-    |> angledLine({
+       )
+    |> angledLine(
          angle = hexStartingAngle - (2 * hexChangeAngle),
          length = hexWallLength
-       }, %)
-    |> angledLine({
+       )
+    |> angledLine(
          angle = hexStartingAngle - (3 * hexChangeAngle),
          length = hexWallLength
-       }, %)
-    |> angledLine({
+       )
+    |> angledLine(
          angle = hexStartingAngle - (4 * hexChangeAngle),
          length = hexWallLength
-       }, %)
+       )
     |> close()
   hexPattern = extrude(hexPatternSketch, length = -headLength * 0.75)
 
@@ -135,23 +135,23 @@ fn hexNut(start, thk, innerDia) {
          }
        })
     |> startProfileAt([0 + innerDia * hexNutScale, 0], %)
-    |> angledLine({
+    |> angledLine(
          angle = 240,
          length = innerDia * hexNutScale
-       }, %)
-    |> angledLine({
+       )
+    |> angledLine(
          angle = 180,
          length = innerDia * hexNutScale
-       }, %)
-    |> angledLine({
+       )
+    |> angledLine(
          angle = 120,
          length = innerDia * hexNutScale
-       }, %)
-    |> angledLine({
+       )
+    |> angledLine(
          angle = 60,
          length = innerDia * hexNutScale
-       }, %)
-    |> angledLine({ angle = 0, length = innerDia * .90 }, %)
+       )
+    |> angledLine(angle = 0, length = innerDia * .90)
     |> close()
     |> hole(circle(
          center = [0, 0],
@@ -178,17 +178,17 @@ mountingHolePattern = startSketchOn('XZ')
 pipe = startSketchOn('XY')
   |> startProfileAt([flangePipeDia / 2 - tol, 0], %)
   |> line(end = [0, -2])
-  |> angledLine({ angle = -60, length = .5 }, %)
+  |> angledLine(angle = -60, length = .5)
   |> line(end = [0, -1])
   |> line(end = [-flangeThickness, 0])
   |> line(end = [0, 1])
-  |> angledLine({ angle = -240, length = .5 }, %)
+  |> angledLine(angle = -240, length = .5)
   |> line(end = [0, 5])
-  |> angledLine({ angle = 60, length = .5 }, %)
+  |> angledLine(angle = 60, length = .5)
   |> line(end = [0, 1])
   |> line(end = [flangeThickness, 0])
   |> line(end = [0, -1])
-  |> angledLine({ angle = 240, length = .5 }, %)
+  |> angledLine(angle = 240, length = .5)
   |> close()
   |> revolve({ axis = 'y' }, %)
   |> appearance(color = "#7b79d7")

@@ -145,7 +145,7 @@ description: Artifact commands tan_arc_x_line.kcl
     "cmdId": "[uuid]",
     "range": [
       130,
-      185,
+      178,
       0
     ],
     "command": {
@@ -165,8 +165,8 @@ description: Artifact commands tan_arc_x_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      191,
-      252,
+      184,
+      245,
       0
     ],
     "command": {
@@ -185,8 +185,8 @@ description: Artifact commands tan_arc_x_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      258,
-      344,
+      251,
+      337,
       0
     ],
     "command": {
@@ -205,8 +205,8 @@ description: Artifact commands tan_arc_x_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      350,
-      437,
+      343,
+      430,
       0
     ],
     "command": {
@@ -225,8 +225,8 @@ description: Artifact commands tan_arc_x_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      443,
-      465,
+      436,
+      458,
       0
     ],
     "command": {

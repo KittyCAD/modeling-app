@@ -410,7 +410,7 @@ description: Artifact commands color-cube.kcl
     "cmdId": "[uuid]",
     "range": [
       824,
-      871,
+      889,
       0
     ],
     "command": {
@@ -430,8 +430,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      977,
+      895,
+      1021,
       0
     ],
     "command": {
@@ -451,8 +451,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      983,
-      1103,
+      1027,
+      1173,
       0
     ],
     "command": {
@@ -472,8 +472,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1109,
-      1165,
+      1179,
+      1235,
       0
     ],
     "command": {
@@ -493,8 +493,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1171,
-      1178,
+      1241,
+      1248,
       0
     ],
     "command": {
@@ -505,8 +505,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -525,8 +525,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -539,8 +539,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -550,8 +550,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -562,8 +562,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -575,8 +575,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -589,8 +589,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -603,8 +603,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -617,8 +617,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -631,8 +631,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -645,8 +645,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -659,8 +659,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -673,8 +673,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -687,8 +687,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1224,
-      1307,
+      1294,
+      1377,
       0
     ],
     "command": {
@@ -768,7 +768,7 @@ description: Artifact commands color-cube.kcl
     "cmdId": "[uuid]",
     "range": [
       824,
-      871,
+      889,
       0
     ],
     "command": {
@@ -788,8 +788,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      977,
+      895,
+      1021,
       0
     ],
     "command": {
@@ -809,8 +809,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      983,
-      1103,
+      1027,
+      1173,
       0
     ],
     "command": {
@@ -830,8 +830,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1109,
-      1165,
+      1179,
+      1235,
       0
     ],
     "command": {
@@ -851,8 +851,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1171,
-      1178,
+      1241,
+      1248,
       0
     ],
     "command": {
@@ -863,8 +863,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -883,8 +883,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -897,8 +897,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -908,8 +908,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -920,8 +920,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -933,8 +933,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -947,8 +947,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -961,8 +961,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -975,8 +975,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -989,8 +989,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1003,8 +1003,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1017,8 +1017,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1031,8 +1031,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1045,8 +1045,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1224,
-      1307,
+      1294,
+      1377,
       0
     ],
     "command": {
@@ -1126,7 +1126,7 @@ description: Artifact commands color-cube.kcl
     "cmdId": "[uuid]",
     "range": [
       824,
-      871,
+      889,
       0
     ],
     "command": {
@@ -1146,8 +1146,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      977,
+      895,
+      1021,
       0
     ],
     "command": {
@@ -1167,8 +1167,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      983,
-      1103,
+      1027,
+      1173,
       0
     ],
     "command": {
@@ -1188,8 +1188,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1109,
-      1165,
+      1179,
+      1235,
       0
     ],
     "command": {
@@ -1209,8 +1209,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1171,
-      1178,
+      1241,
+      1248,
       0
     ],
     "command": {
@@ -1221,8 +1221,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1241,8 +1241,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1255,8 +1255,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1266,8 +1266,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1278,8 +1278,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1291,8 +1291,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1305,8 +1305,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1319,8 +1319,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1333,8 +1333,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1347,8 +1347,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1361,8 +1361,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1375,8 +1375,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1389,8 +1389,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1403,8 +1403,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1224,
-      1307,
+      1294,
+      1377,
       0
     ],
     "command": {
@@ -1484,7 +1484,7 @@ description: Artifact commands color-cube.kcl
     "cmdId": "[uuid]",
     "range": [
       824,
-      871,
+      889,
       0
     ],
     "command": {
@@ -1504,8 +1504,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      977,
+      895,
+      1021,
       0
     ],
     "command": {
@@ -1525,8 +1525,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      983,
-      1103,
+      1027,
+      1173,
       0
     ],
     "command": {
@@ -1546,8 +1546,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1109,
-      1165,
+      1179,
+      1235,
       0
     ],
     "command": {
@@ -1567,8 +1567,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1171,
-      1178,
+      1241,
+      1248,
       0
     ],
     "command": {
@@ -1579,8 +1579,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1599,8 +1599,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1613,8 +1613,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1624,8 +1624,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1636,8 +1636,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1649,8 +1649,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1663,8 +1663,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1677,8 +1677,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1691,8 +1691,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1705,8 +1705,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1719,8 +1719,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1733,8 +1733,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1747,8 +1747,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1761,8 +1761,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1224,
-      1307,
+      1294,
+      1377,
       0
     ],
     "command": {
@@ -1842,7 +1842,7 @@ description: Artifact commands color-cube.kcl
     "cmdId": "[uuid]",
     "range": [
       824,
-      871,
+      889,
       0
     ],
     "command": {
@@ -1862,8 +1862,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      977,
+      895,
+      1021,
       0
     ],
     "command": {
@@ -1883,8 +1883,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      983,
-      1103,
+      1027,
+      1173,
       0
     ],
     "command": {
@@ -1904,8 +1904,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1109,
-      1165,
+      1179,
+      1235,
       0
     ],
     "command": {
@@ -1925,8 +1925,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1171,
-      1178,
+      1241,
+      1248,
       0
     ],
     "command": {
@@ -1937,8 +1937,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1957,8 +1957,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1971,8 +1971,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1982,8 +1982,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -1994,8 +1994,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2007,8 +2007,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2021,8 +2021,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2035,8 +2035,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2049,8 +2049,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2063,8 +2063,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2077,8 +2077,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2091,8 +2091,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2105,8 +2105,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2119,8 +2119,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1224,
-      1307,
+      1294,
+      1377,
       0
     ],
     "command": {
@@ -2200,7 +2200,7 @@ description: Artifact commands color-cube.kcl
     "cmdId": "[uuid]",
     "range": [
       824,
-      871,
+      889,
       0
     ],
     "command": {
@@ -2220,8 +2220,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      977,
+      895,
+      1021,
       0
     ],
     "command": {
@@ -2241,8 +2241,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      983,
-      1103,
+      1027,
+      1173,
       0
     ],
     "command": {
@@ -2262,8 +2262,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1109,
-      1165,
+      1179,
+      1235,
       0
     ],
     "command": {
@@ -2283,8 +2283,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1171,
-      1178,
+      1241,
+      1248,
       0
     ],
     "command": {
@@ -2295,8 +2295,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2315,8 +2315,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2329,8 +2329,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2340,8 +2340,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2352,8 +2352,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2365,8 +2365,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2379,8 +2379,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2393,8 +2393,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2407,8 +2407,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2421,8 +2421,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2435,8 +2435,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2449,8 +2449,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2463,8 +2463,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "command": {
@@ -2477,8 +2477,8 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1224,
-      1307,
+      1294,
+      1377,
       0
     ],
     "command": {

@@ -891,7 +891,7 @@ description: Artifact commands router-template-slate.kcl
     "cmdId": "[uuid]",
     "range": [
       1619,
-      1734,
+      1760,
       0
     ],
     "command": {
@@ -911,8 +911,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1740,
-      1860,
+      1766,
+      1912,
       0
     ],
     "command": {
@@ -932,8 +932,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1866,
-      1922,
+      1918,
+      1974,
       0
     ],
     "command": {
@@ -953,8 +953,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1928,
-      1935,
+      1980,
+      1987,
       0
     ],
     "command": {
@@ -965,8 +965,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -981,8 +981,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -995,8 +995,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1006,8 +1006,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1018,8 +1018,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1031,8 +1031,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1045,8 +1045,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1059,8 +1059,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1073,8 +1073,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1087,8 +1087,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1101,8 +1101,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1115,8 +1115,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1129,8 +1129,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "command": {
@@ -1143,8 +1143,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2092,
-      2191,
+      2144,
+      2243,
       0
     ],
     "command": {
@@ -1159,8 +1159,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2092,
-      2191,
+      2144,
+      2243,
       0
     ],
     "command": {
@@ -1170,8 +1170,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2092,
-      2191,
+      2144,
+      2243,
       0
     ],
     "command": {
@@ -1187,8 +1187,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2092,
-      2191,
+      2144,
+      2243,
       0
     ],
     "command": {
@@ -1198,8 +1198,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2197,
-      2243,
+      2249,
+      2295,
       0
     ],
     "command": {
@@ -1219,8 +1219,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2249,
-      2341,
+      2301,
+      2406,
       0
     ],
     "command": {
@@ -1240,8 +1240,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2347,
-      2444,
+      2412,
+      2522,
       0
     ],
     "command": {
@@ -1261,8 +1261,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2450,
-      2506,
+      2528,
+      2584,
       0
     ],
     "command": {
@@ -1282,8 +1282,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2512,
-      2519,
+      2590,
+      2597,
       0
     ],
     "command": {
@@ -1294,8 +1294,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1310,8 +1310,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1324,8 +1324,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1335,8 +1335,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1347,8 +1347,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1360,8 +1360,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1374,8 +1374,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1388,8 +1388,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1402,8 +1402,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1416,8 +1416,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1430,8 +1430,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1444,8 +1444,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {
@@ -1458,8 +1458,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "command": {

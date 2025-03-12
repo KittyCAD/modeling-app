@@ -11,16 +11,16 @@ description: Operations executed pipe-flange-assembly.kcl
           "value": "XZ"
         },
         "sourceRange": [
-          4346,
-          4350,
+          4294,
+          4298,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4332,
-      4351,
+      4280,
+      4299,
       0
     ],
     "type": "StdLibCall",
@@ -34,16 +34,16 @@ description: Operations executed pipe-flange-assembly.kcl
           "value": "XY"
         },
         "sourceRange": [
-          4641,
-          4645,
+          4589,
+          4593,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4627,
-      4646,
+      4575,
+      4594,
       0
     ],
     "type": "StdLibCall",
@@ -62,8 +62,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          5146,
-          5160,
+          5066,
+          5080,
           0
         ]
       },
@@ -75,16 +75,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          5162,
-          5163,
+          5082,
+          5083,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      5138,
-      5164,
+      5058,
+      5084,
       0
     ],
     "type": "StdLibCall",
@@ -98,16 +98,16 @@ description: Operations executed pipe-flange-assembly.kcl
           "value": "XZ"
         },
         "sourceRange": [
-          5253,
-          5257,
+          5173,
+          5177,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      5239,
-      5258,
+      5159,
+      5178,
       0
     ],
     "type": "StdLibCall",
@@ -164,8 +164,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          5388,
-          5407,
+          5308,
+          5327,
           0
         ]
       },
@@ -177,16 +177,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          5409,
-          5410,
+          5329,
+          5330,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      5383,
-      5411,
+      5303,
+      5331,
       0
     ],
     "type": "StdLibCall",
@@ -202,8 +202,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          5422,
-          5494,
+          5342,
+          5414,
           0
         ]
       },
@@ -215,16 +215,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          5496,
-          5497,
+          5416,
+          5417,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      5417,
-      5498,
+      5337,
+      5418,
       0
     ],
     "type": "StdLibCall",
@@ -247,16 +247,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          5521,
-          5534,
+          5441,
+          5454,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      5504,
-      5535,
+      5424,
+      5455,
       0
     ],
     "type": "StdLibCall",
@@ -268,8 +268,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        5504,
-        5535,
+        5424,
+        5455,
         0
       ]
     }
@@ -282,16 +282,16 @@ description: Operations executed pipe-flange-assembly.kcl
           "value": "XZ"
         },
         "sourceRange": [
-          5632,
-          5636,
+          5552,
+          5556,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      5618,
-      5637,
+      5538,
+      5557,
       0
     ],
     "type": "StdLibCall",
@@ -348,8 +348,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          5722,
-          5741,
+          5642,
+          5661,
           0
         ]
       },
@@ -361,16 +361,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          5743,
-          5744,
+          5663,
+          5664,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      5717,
-      5745,
+      5637,
+      5665,
       0
     ],
     "type": "StdLibCall",
@@ -386,8 +386,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          5756,
-          5828,
+          5676,
+          5748,
           0
         ]
       },
@@ -399,16 +399,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          5830,
-          5831,
+          5750,
+          5751,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      5751,
-      5832,
+      5671,
+      5752,
       0
     ],
     "type": "StdLibCall",
@@ -431,16 +431,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          5855,
-          5871,
+          5775,
+          5791,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      5838,
-      5872,
+      5758,
+      5792,
       0
     ],
     "type": "StdLibCall",
@@ -452,8 +452,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        5838,
-        5872,
+        5758,
+        5792,
         0
       ]
     }
@@ -462,15 +462,15 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "washer",
     "functionSourceRange": [
-      2891,
-      3222,
+      2866,
+      3197,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      5960,
-      6043,
+      5880,
+      5963,
       0
     ]
   },
@@ -664,16 +664,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          2964,
-          2969,
+          2939,
+          2944,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2950,
-      2970,
+      2925,
+      2945,
       0
     ],
     "type": "StdLibCall",
@@ -689,8 +689,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          3078,
-          3165,
+          3053,
+          3140,
           0
         ]
       },
@@ -702,16 +702,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          3167,
-          3168,
+          3142,
+          3143,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3073,
-      3169,
+      3048,
+      3144,
       0
     ],
     "type": "StdLibCall",
@@ -734,16 +734,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          3194,
-          3197,
+          3169,
+          3172,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3177,
-      3198,
+      3152,
+      3173,
       0
     ],
     "type": "StdLibCall",
@@ -755,8 +755,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        3177,
-        3198,
+        3152,
+        3173,
         0
       ]
     }
@@ -781,8 +781,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          6162,
-          6165,
+          6082,
+          6085,
           0
         ]
       },
@@ -832,8 +832,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          6082,
-          6091,
+          6002,
+          6011,
           0
         ]
       },
@@ -883,8 +883,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          6109,
-          6118,
+          6029,
+          6038,
           0
         ]
       },
@@ -903,8 +903,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          6139,
-          6140,
+          6059,
+          6060,
           0
         ]
       },
@@ -914,16 +914,16 @@ description: Operations executed pipe-flange-assembly.kcl
           "value": true
         },
         "sourceRange": [
-          6193,
-          6197,
+          6113,
+          6117,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      6049,
-      6204,
+      5969,
+      6124,
       0
     ],
     "type": "StdLibCall",
@@ -935,8 +935,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        6049,
-        6204,
+        5969,
+        6124,
         0
       ]
     }
@@ -946,14 +946,14 @@ description: Operations executed pipe-flange-assembly.kcl
     "name": "capScrew",
     "functionSourceRange": [
       1201,
-      2663,
+      2638,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      6295,
-      6401,
+      6215,
+      6321,
       0
     ]
   },
@@ -1272,16 +1272,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          2621,
-          2639,
+          2596,
+          2614,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2586,
-      2640,
+      2561,
+      2615,
       0
     ],
     "type": "StdLibCall",
@@ -1293,8 +1293,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        2594,
-        2610,
+        2569,
+        2585,
         0
       ]
     }
@@ -1319,8 +1319,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          6520,
-          6523,
+          6440,
+          6443,
           0
         ]
       },
@@ -1370,8 +1370,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          6440,
-          6449,
+          6360,
+          6369,
           0
         ]
       },
@@ -1421,8 +1421,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          6467,
-          6476,
+          6387,
+          6396,
           0
         ]
       },
@@ -1441,8 +1441,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          6497,
-          6498,
+          6417,
+          6418,
           0
         ]
       },
@@ -1452,16 +1452,16 @@ description: Operations executed pipe-flange-assembly.kcl
           "value": true
         },
         "sourceRange": [
-          6551,
-          6555,
+          6471,
+          6475,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      6407,
-      6562,
+      6327,
+      6482,
       0
     ],
     "type": "StdLibCall",
@@ -1473,8 +1473,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        6407,
-        6562,
+        6327,
+        6482,
         0
       ]
     }
@@ -1669,16 +1669,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          6631,
-          6641,
+          6551,
+          6561,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      6617,
-      6642,
+      6537,
+      6562,
       0
     ],
     "type": "StdLibCall",
@@ -1701,16 +1701,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          6762,
-          6774,
+          6682,
+          6694,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      6728,
-      6775,
+      6648,
+      6695,
       0
     ],
     "type": "StdLibCall",
@@ -1722,8 +1722,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        6736,
-        6751,
+        6656,
+        6671,
         0
       ]
     }
@@ -1745,8 +1745,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          6894,
-          6897,
+          6814,
+          6817,
           0
         ]
       },
@@ -1796,8 +1796,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          6814,
-          6823,
+          6734,
+          6743,
           0
         ]
       },
@@ -1847,8 +1847,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          6841,
-          6850,
+          6761,
+          6770,
           0
         ]
       },
@@ -1867,8 +1867,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          6871,
-          6872,
+          6791,
+          6792,
           0
         ]
       },
@@ -1878,16 +1878,16 @@ description: Operations executed pipe-flange-assembly.kcl
           "value": true
         },
         "sourceRange": [
-          6925,
-          6929,
+          6845,
+          6849,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      6781,
-      6936,
+      6701,
+      6856,
       0
     ],
     "type": "StdLibCall",
@@ -1899,8 +1899,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        6781,
-        6936,
+        6701,
+        6856,
         0
       ]
     }
@@ -1909,15 +1909,15 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "washer",
     "functionSourceRange": [
-      2891,
-      3222,
+      2866,
+      3197,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      7330,
-      7420,
+      7250,
+      7340,
       0
     ]
   },
@@ -2111,16 +2111,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          2964,
-          2969,
+          2939,
+          2944,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2950,
-      2970,
+      2925,
+      2945,
       0
     ],
     "type": "StdLibCall",
@@ -2136,8 +2136,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          3078,
-          3165,
+          3053,
+          3140,
           0
         ]
       },
@@ -2149,16 +2149,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          3167,
-          3168,
+          3142,
+          3143,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      3073,
-      3169,
+      3048,
+      3144,
       0
     ],
     "type": "StdLibCall",
@@ -2181,16 +2181,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          3194,
-          3197,
+          3169,
+          3172,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3177,
-      3198,
+      3152,
+      3173,
       0
     ],
     "type": "StdLibCall",
@@ -2202,8 +2202,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        3177,
-        3198,
+        3152,
+        3173,
         0
       ]
     }
@@ -2228,8 +2228,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          7539,
-          7542,
+          7459,
+          7462,
           0
         ]
       },
@@ -2279,8 +2279,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          7459,
-          7468,
+          7379,
+          7388,
           0
         ]
       },
@@ -2330,8 +2330,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          7486,
-          7495,
+          7406,
+          7415,
           0
         ]
       },
@@ -2350,8 +2350,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          7516,
-          7517,
+          7436,
+          7437,
           0
         ]
       },
@@ -2361,16 +2361,16 @@ description: Operations executed pipe-flange-assembly.kcl
           "value": true
         },
         "sourceRange": [
-          7570,
-          7574,
+          7490,
+          7494,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      7426,
-      7581,
+      7346,
+      7501,
       0
     ],
     "type": "StdLibCall",
@@ -2382,8 +2382,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        7426,
-        7581,
+        7346,
+        7501,
         0
       ]
     }
@@ -2392,15 +2392,15 @@ description: Operations executed pipe-flange-assembly.kcl
     "type": "UserDefinedFunctionCall",
     "name": "hexNut",
     "functionSourceRange": [
-      3253,
-      4282,
+      3228,
+      4230,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      7670,
-      7772,
+      7590,
+      7692,
       0
     ]
   },
@@ -2594,16 +2594,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          3309,
-          3620,
+          3284,
+          3595,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3295,
-      3621,
+      3270,
+      3596,
       0
     ],
     "type": "StdLibCall",
@@ -2619,8 +2619,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          4151,
-          4224,
+          4099,
+          4172,
           0
         ]
       },
@@ -2632,16 +2632,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          4226,
-          4227,
+          4174,
+          4175,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      4146,
-      4228,
+      4094,
+      4176,
       0
     ],
     "type": "StdLibCall",
@@ -2664,16 +2664,16 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          4253,
-          4257,
+          4201,
+          4205,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4236,
-      4258,
+      4184,
+      4206,
       0
     ],
     "type": "StdLibCall",
@@ -2685,8 +2685,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        4236,
-        4258,
+        4184,
+        4206,
         0
       ]
     }
@@ -2711,8 +2711,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          7891,
-          7894,
+          7811,
+          7814,
           0
         ]
       },
@@ -2762,8 +2762,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          7811,
-          7820,
+          7731,
+          7740,
           0
         ]
       },
@@ -2813,8 +2813,8 @@ description: Operations executed pipe-flange-assembly.kcl
           ]
         },
         "sourceRange": [
-          7838,
-          7847,
+          7758,
+          7767,
           0
         ]
       },
@@ -2833,8 +2833,8 @@ description: Operations executed pipe-flange-assembly.kcl
           }
         },
         "sourceRange": [
-          7868,
-          7869,
+          7788,
+          7789,
           0
         ]
       },
@@ -2844,16 +2844,16 @@ description: Operations executed pipe-flange-assembly.kcl
           "value": true
         },
         "sourceRange": [
-          7922,
-          7926,
+          7842,
+          7846,
           0
         ]
       }
     },
     "name": "patternCircular3d",
     "sourceRange": [
-      7778,
-      7933,
+      7698,
+      7853,
       0
     ],
     "type": "StdLibCall",
@@ -2865,8 +2865,8 @@ description: Operations executed pipe-flange-assembly.kcl
         }
       },
       "sourceRange": [
-        7778,
-        7933,
+        7698,
+        7853,
         0
       ]
     }

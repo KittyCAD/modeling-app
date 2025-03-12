@@ -123,16 +123,16 @@ description: Operations executed router-template-slate.kcl
           }
         },
         "sourceRange": [
-          2007,
-          2010,
+          2059,
+          2062,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1979,
-      2011,
+      2031,
+      2063,
       0
     ],
     "type": "StdLibCall",
@@ -144,8 +144,8 @@ description: Operations executed router-template-slate.kcl
         }
       },
       "sourceRange": [
-        1987,
-        1996,
+        2039,
+        2048,
         0
       ]
     }
@@ -160,8 +160,8 @@ description: Operations executed router-template-slate.kcl
           }
         },
         "sourceRange": [
-          2066,
-          2076,
+          2118,
+          2128,
           0
         ]
       },
@@ -171,16 +171,16 @@ description: Operations executed router-template-slate.kcl
           "value": "START"
         },
         "sourceRange": [
-          2078,
-          2085,
+          2130,
+          2137,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2052,
-      2086,
+      2104,
+      2138,
       0
     ],
     "type": "StdLibCall",
@@ -203,16 +203,16 @@ description: Operations executed router-template-slate.kcl
           }
         },
         "sourceRange": [
-          2590,
-          2593,
+          2668,
+          2671,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2562,
-      2594,
+      2640,
+      2672,
       0
     ],
     "type": "StdLibCall",
@@ -224,8 +224,8 @@ description: Operations executed router-template-slate.kcl
         }
       },
       "sourceRange": [
-        2570,
-        2579,
+        2648,
+        2657,
         0
       ]
     }

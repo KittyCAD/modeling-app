@@ -676,12 +676,12 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "id": "[uuid]",
           "sourceRange": [
             2052,
-            2099,
+            2117,
             0
           ],
           "tag": {
-            "end": 2098,
-            "start": 2077,
+            "end": 2116,
+            "start": 2095,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -691,8 +691,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2105,
-            2182,
+            2123,
+            2191,
             0
           ],
           "tag": null,
@@ -702,7 +702,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2188,
+            2197,
             2285,
             0
           ],
@@ -730,7 +730,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [
                 2052,
-                2099,
+                2117,
                 0
               ]
             },
@@ -739,8 +739,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -6.39
             ],
             "tag": {
-              "end": 2098,
-              "start": 2077,
+              "end": 2116,
+              "start": 2095,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -757,8 +757,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2105,
-                2182,
+                2123,
+                2191,
                 0
               ]
             },
@@ -780,7 +780,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2188,
+                2197,
                 2285,
                 0
               ]
@@ -1441,7 +1441,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "id": "[uuid]",
             "sourceRange": [
               514,
-              561,
+              579,
               0
             ]
           },
@@ -1450,8 +1450,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             13.3
           ],
           "tag": {
-            "end": 560,
-            "start": 539,
+            "end": 578,
+            "start": 557,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -1468,8 +1468,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              567,
-              644,
+              585,
+              653,
               0
             ]
           },
@@ -1491,7 +1491,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              650,
+              659,
               747,
               0
             ]
@@ -3459,7 +3459,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "id": "[uuid]",
             "sourceRange": [
               2052,
-              2099,
+              2117,
               0
             ]
           },
@@ -3468,8 +3468,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -6.39
           ],
           "tag": {
-            "end": 2098,
-            "start": 2077,
+            "end": 2116,
+            "start": 2095,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -3486,8 +3486,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2105,
-              2182,
+              2123,
+              2191,
               0
             ]
           },
@@ -3509,7 +3509,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2188,
+              2197,
               2285,
               0
             ]

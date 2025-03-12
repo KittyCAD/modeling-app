@@ -1397,8 +1397,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "backSlats",
     "functionSourceRange": [
-      2993,
-      3084,
+      3029,
+      3120,
       3
     ],
     "unlabeledArg": null,
@@ -1414,14 +1414,14 @@ description: Operations executed bench.kcl
     "name": "backSlatsSketch",
     "functionSourceRange": [
       2580,
-      2972,
+      3008,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3017,
-      3039,
+      3053,
+      3075,
       3
     ]
   },
@@ -1468,16 +1468,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3064,
-          3070,
+          3100,
+          3106,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3047,
-      3071,
+      3083,
+      3107,
       3
     ],
     "type": "StdLibCall",
@@ -1500,8 +1500,8 @@ description: Operations executed bench.kcl
         ]
       },
       "sourceRange": [
-        3047,
-        3071,
+        3083,
+        3107,
         3
       ]
     }
@@ -1513,8 +1513,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRest",
     "functionSourceRange": [
-      3671,
-      3861,
+      3707,
+      3897,
       3
     ],
     "unlabeledArg": null,
@@ -1536,16 +1536,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3740,
-          3746,
+          3776,
+          3782,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3712,
-      3747,
+      3748,
+      3783,
       3
     ],
     "type": "StdLibCall",
@@ -1555,8 +1555,8 @@ description: Operations executed bench.kcl
         "value": "-YZ"
       },
       "sourceRange": [
-        3724,
-        3729,
+        3760,
+        3765,
         3
       ]
     }
@@ -1565,15 +1565,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestPath",
     "functionSourceRange": [
-      3100,
-      3325,
+      3136,
+      3361,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3698,
-      3748,
+      3734,
+      3784,
       3
     ]
   },
@@ -1585,16 +1585,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3138,
-          3143,
+          3174,
+          3179,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3124,
-      3144,
+      3160,
+      3180,
       3
     ],
     "type": "StdLibCall",
@@ -1620,16 +1620,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3806,
-          3808,
+          3842,
+          3844,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3778,
-      3809,
+      3814,
+      3845,
       3
     ],
     "type": "StdLibCall",
@@ -1639,8 +1639,8 @@ description: Operations executed bench.kcl
         "value": "-XZ"
       },
       "sourceRange": [
-        3790,
-        3795,
+        3826,
+        3831,
         3
       ]
     }
@@ -1649,15 +1649,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestProfile",
     "functionSourceRange": [
-      3344,
-      3652,
+      3380,
+      3688,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3761,
-      3818,
+      3797,
+      3854,
       3
     ]
   },
@@ -1669,16 +1669,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3390,
-          3395,
+          3426,
+          3431,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3376,
-      3396,
+      3412,
+      3432,
       3
     ],
     "type": "StdLibCall",
@@ -1697,16 +1697,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3843,
-          3847,
+          3879,
+          3883,
           3
         ]
       }
     },
     "name": "sweep",
     "sourceRange": [
-      3821,
-      3848,
+      3857,
+      3884,
       3
     ],
     "type": "StdLibCall",
@@ -1718,8 +1718,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        3827,
-        3834,
+        3863,
+        3870,
         3
       ]
     }
@@ -1731,8 +1731,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRest",
     "functionSourceRange": [
-      3671,
-      3861,
+      3707,
+      3897,
       3
     ],
     "unlabeledArg": null,
@@ -1754,16 +1754,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3740,
-          3746,
+          3776,
+          3782,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3712,
-      3747,
+      3748,
+      3783,
       3
     ],
     "type": "StdLibCall",
@@ -1773,8 +1773,8 @@ description: Operations executed bench.kcl
         "value": "-YZ"
       },
       "sourceRange": [
-        3724,
-        3729,
+        3760,
+        3765,
         3
       ]
     }
@@ -1783,15 +1783,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestPath",
     "functionSourceRange": [
-      3100,
-      3325,
+      3136,
+      3361,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3698,
-      3748,
+      3734,
+      3784,
       3
     ]
   },
@@ -1803,16 +1803,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3138,
-          3143,
+          3174,
+          3179,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3124,
-      3144,
+      3160,
+      3180,
       3
     ],
     "type": "StdLibCall",
@@ -1838,16 +1838,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3806,
-          3808,
+          3842,
+          3844,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3778,
-      3809,
+      3814,
+      3845,
       3
     ],
     "type": "StdLibCall",
@@ -1857,8 +1857,8 @@ description: Operations executed bench.kcl
         "value": "-XZ"
       },
       "sourceRange": [
-        3790,
-        3795,
+        3826,
+        3831,
         3
       ]
     }
@@ -1867,15 +1867,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestProfile",
     "functionSourceRange": [
-      3344,
-      3652,
+      3380,
+      3688,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3761,
-      3818,
+      3797,
+      3854,
       3
     ]
   },
@@ -1887,16 +1887,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3390,
-          3395,
+          3426,
+          3431,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3376,
-      3396,
+      3412,
+      3432,
       3
     ],
     "type": "StdLibCall",
@@ -1915,16 +1915,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3843,
-          3847,
+          3879,
+          3883,
           3
         ]
       }
     },
     "name": "sweep",
     "sourceRange": [
-      3821,
-      3848,
+      3857,
+      3884,
       3
     ],
     "type": "StdLibCall",
@@ -1936,8 +1936,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        3827,
-        3834,
+        3863,
+        3870,
         3
       ]
     }
