@@ -184,7 +184,7 @@ impl Args {
         T::from_kcl_val(&arg.value).ok_or_else(|| {
             let expected_type_name = tynm::type_name::<T>();
             let actual_type_name = arg.value.human_friendly_type();
-            let msg_base = format!("This function expected this argument to be of type {expected_type_name} but it's actually of type {actual_type_name}");
+            let msg_base = format!("This function expected the unlabeled argument to be of type {expected_type_name} but it's actually of type {actual_type_name}");
             let suggestion = match (expected_type_name.as_str(), actual_type_name) {
                 ("SolidSet", "Sketch") => Some(
                     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
