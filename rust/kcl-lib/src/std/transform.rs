@@ -73,6 +73,17 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     scale = [1.0, 1.0, 2.5],
 ///     )
 /// ```
+///
+/// ```no_run
+/// // Scale an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> scale(
+///     scale = [1.0, 1.0, 2.5],
+///     )
+/// ```
 #[stdlib {
     name = "scale",
     feature_tree_operation = false,
@@ -162,6 +173,17 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///         )              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
+///     |> translate(
+///     translate = [1.0, 1.0, 2.5],
+///     )
+/// ```
+///
+/// ```no_run
+/// // Move an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
 ///     |> translate(
 ///     translate = [1.0, 1.0, 2.5],
 ///     )
@@ -420,6 +442,18 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///         )              
 ///     |> hole(pipeHole, %)
 ///     |> sweep(path = sweepPath)   
+///     |> rotate(
+///     axis =  [0, 0, 1.0],
+///     angle = 90,
+///     )
+/// ```
+///
+/// ```no_run
+/// // Rotate an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
 ///     angle = 90,
