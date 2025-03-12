@@ -483,6 +483,7 @@ export function addShell({
       createLabeledArg('thickness', thickness),
     ]
   )
+
   const variable = createVariableDeclaration(name, shell)
   const insertAt =
     insertIndex !== undefined
@@ -491,9 +492,12 @@ export function addShell({
       ? modifiedAst.body.length
       : 0
 
-  modifiedAst.body.length
-    ? modifiedAst.body.splice(insertAt, 0, variable)
-    : modifiedAst.body.push(variable)
+  if (modifiedAst.body.length) {
+    modifiedAst.body.splice(insertAt, 0, variable)
+  } else {
+    modifiedAst.body.push(variable)
+  }
+
   const argIndex = 0
   const pathToNode: PathToNode = [
     ['body', ''],

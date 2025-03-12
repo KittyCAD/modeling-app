@@ -2361,7 +2361,7 @@ extrude001 = extrude(sketch001, length = 30)
           'Shell',
           0
         )
-        await operationButton.dblclick({ button: 'left' })
+        await operationButton.dblclick()
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'thickness',

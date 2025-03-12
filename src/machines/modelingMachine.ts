@@ -2034,12 +2034,6 @@ export const modelingMachine = setup({
             graphSelection,
             engineCommandManager.artifactGraph
           )
-          // TODO: this one returns empty paths on edit after creation in the cap e2e tests
-          // and *sometimes* when trying in the app manually. No idea why.
-          console.log(
-            'extrudeLookupResult',
-            JSON.stringify(extrudeLookupResult)
-          )
           if (err(extrudeLookupResult)) {
             return new Error(
               "Couldn't find extrude paths from getPathToExtrudeForSegmentSelection",
@@ -2047,34 +2041,36 @@ export const modelingMachine = setup({
             )
           }
 
-          // TODO: this assumes the segment is piped directly from the sketch, with no intermediate `VariableDeclarator` between.
-          // We must find a technique for these situations that is robust to intermediate declarations
-          const extrudeNode = getNodeFromPath<VariableDeclarator>(
+          const extrudeNode = getNodeFromPath<VariableDeclaration>(
             ast,
             extrudeLookupResult.pathToExtrudeNode,
-            'VariableDeclarator'
+            'VariableDeclaration'
           )
           if (err(extrudeNode)) {
             return new Error("Couldn't find extrude node from selection", {
               cause: extrudeNode,
             })
           }
-          const segmentNode = getNodeFromPath<VariableDeclarator>(
+
+          const segmentNode = getNodeFromPath<VariableDeclaration>(
             ast,
             extrudeLookupResult.pathToSegmentNode,
-            'VariableDeclarator'
+            'VariableDeclaration'
           )
           if (err(segmentNode)) {
             return new Error("Couldn't find segment node from selection", {
               cause: segmentNode,
             })
           }
+
           if (
-            extrudeNode.node.init.type === 'CallExpression' ||
-            extrudeNode.node.init.type === 'CallExpressionKw'
+            extrudeNode.node.declaration.init.type === 'CallExpression' ||
+            extrudeNode.node.declaration.init.type === 'CallExpressionKw'
           ) {
             pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
-          } else if (segmentNode.node.init.type === 'PipeExpression') {
+          } else if (
+            segmentNode.node.declaration.init.type === 'PipeExpression'
+          ) {
             pathToExtrudeNode = extrudeLookupResult.pathToSegmentNode
           } else {
             return new Error(
@@ -2097,12 +2093,16 @@ export const modelingMachine = setup({
               ast,
               extrudeLookupResult.pathToSegmentNode
             )
-            if (err(tagResult)) return tagResult
+            if (err(tagResult)) {
+              return tagResult
+            }
+
             const { tag } = tagResult
             expr = createIdentifier(tag)
           } else {
             return new Error('Artifact is neither a cap nor a wall')
           }
+
           faces.push(expr)
         }
 

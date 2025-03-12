@@ -162,6 +162,7 @@ const prepareToEditShell: PrepareToEditCallback =
         if (err(codeRef)) {
           return baseCommand
         }
+
         candidates.set(artifact.subType, {
           artifact,
           codeRef,
@@ -178,6 +179,7 @@ const prepareToEditShell: PrepareToEditCallback =
         if (err(segArtifact)) {
           return baseCommand
         }
+
         const { codeRef } = segArtifact
         candidates.set(artifact.segId, {
           artifact,
