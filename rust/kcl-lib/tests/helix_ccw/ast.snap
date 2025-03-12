@@ -28,10 +28,17 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 23,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 23,
+                    "name": "startSketchOn",
+                    "start": 10,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 29,
                 "start": 10,
@@ -101,10 +108,17 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 41,
-                  "name": "circle",
+                  "name": {
+                    "end": 41,
+                    "name": "circle",
+                    "start": 35,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 35,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 71,
                 "start": 35,
@@ -136,10 +150,17 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 84,
-                  "name": "extrude",
+                  "name": {
+                    "end": 84,
+                    "name": "extrude",
+                    "start": 77,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 77,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 97,
                 "start": 77,
@@ -228,10 +249,17 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 119,
-                  "name": "helixRevolutions",
+                  "name": {
+                    "end": 119,
+                    "name": "helixRevolutions",
+                    "start": 103,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 103,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 198,
                 "start": 103,

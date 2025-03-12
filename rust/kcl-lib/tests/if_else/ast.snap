@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing if_else.kcl
 ---
 {
@@ -128,11 +128,18 @@ description: Result of parsing if_else.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 115,
-              "name": "a",
+              "name": {
+                "end": 115,
+                "name": "a",
+                "start": 114,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 114,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 118,
@@ -166,10 +173,17 @@ description: Result of parsing if_else.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 113,
-            "name": "assertEqual",
+            "name": {
+              "end": 113,
+              "name": "assertEqual",
+              "start": 102,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 102,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 159,
           "start": 102,
@@ -303,11 +317,18 @@ description: Result of parsing if_else.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 229,
-              "name": "b",
+              "name": {
+                "end": 229,
+                "name": "b",
+                "start": 228,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 228,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 232,
@@ -341,10 +362,17 @@ description: Result of parsing if_else.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 227,
-            "name": "assertEqual",
+            "name": {
+              "end": 227,
+              "name": "assertEqual",
+              "start": 216,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 216,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 278,
           "start": 216,
@@ -478,11 +506,18 @@ description: Result of parsing if_else.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 349,
-              "name": "c",
+              "name": {
+                "end": 349,
+                "name": "c",
+                "start": 348,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 348,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 352,
@@ -516,10 +551,17 @@ description: Result of parsing if_else.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 347,
-            "name": "assertEqual",
+            "name": {
+              "end": 347,
+              "name": "assertEqual",
+              "start": 336,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 336,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 395,
           "start": 336,

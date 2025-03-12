@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing multi-axis-robot.kcl
 ---
 {
@@ -84,11 +84,18 @@ description: Result of parsing multi-axis-robot.kcl
       {
         "end": 400,
         "expression": {
+          "abs_path": false,
           "end": 400,
-          "name": "robotArmBase",
+          "name": {
+            "end": 400,
+            "name": "robotArmBase",
+            "start": 388,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 388,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 388,
         "type": "ExpressionStatement",
@@ -97,11 +104,18 @@ description: Result of parsing multi-axis-robot.kcl
       {
         "end": 413,
         "expression": {
+          "abs_path": false,
           "end": 413,
-          "name": "rotatingBase",
+          "name": {
+            "end": 413,
+            "name": "rotatingBase",
+            "start": 401,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 401,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 401,
         "type": "ExpressionStatement",
@@ -110,11 +124,18 @@ description: Result of parsing multi-axis-robot.kcl
       {
         "end": 424,
         "expression": {
+          "abs_path": false,
           "end": 424,
-          "name": "j2RobotArm",
+          "name": {
+            "end": 424,
+            "name": "j2RobotArm",
+            "start": 414,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 414,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 414,
         "type": "ExpressionStatement",
@@ -123,11 +144,18 @@ description: Result of parsing multi-axis-robot.kcl
       {
         "end": 435,
         "expression": {
+          "abs_path": false,
           "end": 435,
-          "name": "j3RobotArm",
+          "name": {
+            "end": 435,
+            "name": "j3RobotArm",
+            "start": 425,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 425,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 425,
         "type": "ExpressionStatement",
@@ -156,11 +184,18 @@ description: Result of parsing multi-axis-robot.kcl
             "start": 189,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 211,
-              "name": "in",
+              "name": {
+                "end": 211,
+                "name": "in",
+                "start": 209,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 209,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

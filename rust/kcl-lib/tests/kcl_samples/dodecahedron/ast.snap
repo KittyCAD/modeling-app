@@ -46,11 +46,18 @@ description: Result of parsing dodecahedron.kcl
           "init": {
             "end": 448,
             "left": {
+              "abs_path": false,
               "end": 442,
-              "name": "circR",
+              "name": {
+                "end": 442,
+                "name": "circR",
+                "start": 437,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 437,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "*",
             "right": {
@@ -106,10 +113,17 @@ description: Result of parsing dodecahedron.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 506,
-                      "name": "sqrt",
+                      "name": {
+                        "end": 506,
+                        "name": "sqrt",
+                        "start": 502,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 502,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 509,
                     "start": 502,
@@ -140,10 +154,17 @@ description: Result of parsing dodecahedron.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 499,
-              "name": "acos",
+              "name": {
+                "end": 499,
+                "name": "acos",
+                "start": 495,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 495,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 515,
             "start": 495,
@@ -173,11 +194,18 @@ description: Result of parsing dodecahedron.kcl
             "left": {
               "end": 555,
               "left": {
+                "abs_path": false,
                 "end": 550,
-                "name": "circR",
+                "name": {
+                  "end": 550,
+                  "name": "circR",
+                  "start": 545,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 545,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "/",
               "right": {
@@ -241,10 +269,17 @@ description: Result of parsing dodecahedron.kcl
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 577,
-                        "name": "sqrt",
+                        "name": {
+                          "end": 577,
+                          "name": "sqrt",
+                          "start": 573,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 573,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 580,
                       "start": 573,
@@ -261,10 +296,17 @@ description: Result of parsing dodecahedron.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 562,
-                "name": "sqrt",
+                "name": {
+                  "end": 562,
+                  "name": "sqrt",
+                  "start": 558,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 558,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 581,
               "start": 558,
@@ -310,11 +352,18 @@ description: Result of parsing dodecahedron.kcl
               },
               "operator": "*",
               "right": {
+                "abs_path": false,
                 "end": 624,
-                "name": "circR",
+                "name": {
+                  "end": 624,
+                  "name": "circR",
+                  "start": 619,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 619,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 615,
               "type": "BinaryExpression",
@@ -338,10 +387,17 @@ description: Result of parsing dodecahedron.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 632,
-                  "name": "sqrt",
+                  "name": {
+                    "end": 632,
+                    "name": "sqrt",
+                    "start": 628,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 628,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 635,
                 "start": 628,
@@ -378,10 +434,17 @@ description: Result of parsing dodecahedron.kcl
                     }
                   ],
                   "callee": {
+                    "abs_path": false,
                     "end": 647,
-                    "name": "sqrt",
+                    "name": {
+                      "end": 647,
+                      "name": "sqrt",
+                      "start": 643,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 643,
-                    "type": "Identifier"
+                    "type": "Name"
                   },
                   "end": 650,
                   "start": 643,
@@ -423,11 +486,18 @@ description: Result of parsing dodecahedron.kcl
             "left": {
               "end": 690,
               "left": {
+                "abs_path": false,
                 "end": 686,
-                "name": "edgeL",
+                "name": {
+                  "end": 686,
+                  "name": "edgeL",
+                  "start": 681,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 681,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "/",
               "right": {
@@ -463,10 +533,17 @@ description: Result of parsing dodecahedron.kcl
                     }
                   ],
                   "callee": {
+                    "abs_path": false,
                     "end": 706,
-                    "name": "toRadians",
+                    "name": {
+                      "end": 706,
+                      "name": "toRadians",
+                      "start": 697,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 697,
-                    "type": "Identifier"
+                    "type": "Name"
                   },
                   "end": 710,
                   "start": 697,
@@ -475,10 +552,17 @@ description: Result of parsing dodecahedron.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 696,
-                "name": "sin",
+                "name": {
+                  "end": 696,
+                  "name": "sin",
+                  "start": 693,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 693,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 711,
               "start": 693,
@@ -539,11 +623,18 @@ description: Result of parsing dodecahedron.kcl
                             "end": 850,
                             "left": {
                               "argument": {
+                                "abs_path": false,
                                 "end": 807,
-                                "name": "inscR",
+                                "name": {
+                                  "end": 807,
+                                  "name": "inscR",
+                                  "start": 802,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 802,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "end": 807,
                               "operator": "-",
@@ -561,18 +652,32 @@ description: Result of parsing dodecahedron.kcl
                                       "left": {
                                         "arguments": [
                                           {
+                                            "abs_path": false,
                                             "end": 842,
-                                            "name": "dihedral",
+                                            "name": {
+                                              "end": 842,
+                                              "name": "dihedral",
+                                              "start": 834,
+                                              "type": "Identifier"
+                                            },
+                                            "path": [],
                                             "start": 834,
-                                            "type": "Identifier",
-                                            "type": "Identifier"
+                                            "type": "Name",
+                                            "type": "Name"
                                           }
                                         ],
                                         "callee": {
+                                          "abs_path": false,
                                           "end": 833,
-                                          "name": "toDegrees",
+                                          "name": {
+                                            "end": 833,
+                                            "name": "toDegrees",
+                                            "start": 824,
+                                            "type": "Identifier"
+                                          },
+                                          "path": [],
                                           "start": 824,
-                                          "type": "Identifier"
+                                          "type": "Name"
                                         },
                                         "end": 843,
                                         "start": 824,
@@ -597,10 +702,17 @@ description: Result of parsing dodecahedron.kcl
                                     }
                                   ],
                                   "callee": {
+                                    "abs_path": false,
                                     "end": 823,
-                                    "name": "toRadians",
+                                    "name": {
+                                      "end": 823,
+                                      "name": "toRadians",
+                                      "start": 814,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 814,
-                                    "type": "Identifier"
+                                    "type": "Name"
                                   },
                                   "end": 849,
                                   "start": 814,
@@ -609,10 +721,17 @@ description: Result of parsing dodecahedron.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 813,
-                                "name": "cos",
+                                "name": {
+                                  "end": 813,
+                                  "name": "cos",
+                                  "start": 810,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 810,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 850,
                               "start": 810,
@@ -637,21 +756,35 @@ description: Result of parsing dodecahedron.kcl
                           {
                             "end": 924,
                             "left": {
+                              "abs_path": false,
                               "end": 872,
-                              "name": "inscR",
+                              "name": {
+                                "end": 872,
+                                "name": "inscR",
+                                "start": 867,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 867,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "-",
                             "right": {
                               "end": 924,
                               "left": {
+                                "abs_path": false,
                                 "end": 881,
-                                "name": "inscR",
+                                "name": {
+                                  "end": 881,
+                                  "name": "inscR",
+                                  "start": 876,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 876,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "*",
                               "right": {
@@ -663,18 +796,32 @@ description: Result of parsing dodecahedron.kcl
                                         "left": {
                                           "arguments": [
                                             {
+                                              "abs_path": false,
                                               "end": 916,
-                                              "name": "dihedral",
+                                              "name": {
+                                                "end": 916,
+                                                "name": "dihedral",
+                                                "start": 908,
+                                                "type": "Identifier"
+                                              },
+                                              "path": [],
                                               "start": 908,
-                                              "type": "Identifier",
-                                              "type": "Identifier"
+                                              "type": "Name",
+                                              "type": "Name"
                                             }
                                           ],
                                           "callee": {
+                                            "abs_path": false,
                                             "end": 907,
-                                            "name": "toDegrees",
+                                            "name": {
+                                              "end": 907,
+                                              "name": "toDegrees",
+                                              "start": 898,
+                                              "type": "Identifier"
+                                            },
+                                            "path": [],
                                             "start": 898,
-                                            "type": "Identifier"
+                                            "type": "Name"
                                           },
                                           "end": 917,
                                           "start": 898,
@@ -699,10 +846,17 @@ description: Result of parsing dodecahedron.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 897,
-                                      "name": "toRadians",
+                                      "name": {
+                                        "end": 897,
+                                        "name": "toRadians",
+                                        "start": 888,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 888,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 923,
                                     "start": 888,
@@ -711,10 +865,17 @@ description: Result of parsing dodecahedron.kcl
                                   }
                                 ],
                                 "callee": {
+                                  "abs_path": false,
                                   "end": 887,
-                                  "name": "sin",
+                                  "name": {
+                                    "end": 887,
+                                    "name": "sin",
+                                    "start": 884,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 884,
-                                  "type": "Identifier"
+                                  "type": "Name"
                                 },
                                 "end": 924,
                                 "start": 884,
@@ -751,18 +912,32 @@ description: Result of parsing dodecahedron.kcl
                           {
                             "arguments": [
                               {
+                                "abs_path": false,
                                 "end": 958,
-                                "name": "dihedral",
+                                "name": {
+                                  "end": 958,
+                                  "name": "dihedral",
+                                  "start": 950,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 950,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             ],
                             "callee": {
+                              "abs_path": false,
                               "end": 949,
-                              "name": "cos",
+                              "name": {
+                                "end": 949,
+                                "name": "cos",
+                                "start": 946,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 946,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
                             "end": 959,
                             "start": 946,
@@ -783,18 +958,32 @@ description: Result of parsing dodecahedron.kcl
                           {
                             "arguments": [
                               {
+                                "abs_path": false,
                                 "end": 978,
-                                "name": "dihedral",
+                                "name": {
+                                  "end": 978,
+                                  "name": "dihedral",
+                                  "start": 970,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 970,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             ],
                             "callee": {
+                              "abs_path": false,
                               "end": 969,
-                              "name": "sin",
+                              "name": {
+                                "end": 969,
+                                "name": "sin",
+                                "start": 966,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 966,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
                             "end": 979,
                             "start": 966,
@@ -875,18 +1064,32 @@ description: Result of parsing dodecahedron.kcl
                           {
                             "arguments": [
                               {
+                                "abs_path": false,
                                 "end": 1030,
-                                "name": "dihedral",
+                                "name": {
+                                  "end": 1030,
+                                  "name": "dihedral",
+                                  "start": 1022,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1022,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             ],
                             "callee": {
+                              "abs_path": false,
                               "end": 1021,
-                              "name": "sin",
+                              "name": {
+                                "end": 1021,
+                                "name": "sin",
+                                "start": 1018,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1018,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
                             "end": 1031,
                             "start": 1018,
@@ -908,18 +1111,32 @@ description: Result of parsing dodecahedron.kcl
                             "argument": {
                               "arguments": [
                                 {
+                                  "abs_path": false,
                                   "end": 1049,
-                                  "name": "dihedral",
+                                  "name": {
+                                    "end": 1049,
+                                    "name": "dihedral",
+                                    "start": 1041,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1041,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 1040,
-                                "name": "cos",
+                                "name": {
+                                  "end": 1040,
+                                  "name": "cos",
+                                  "start": 1037,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1037,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1050,
                               "start": 1037,
@@ -982,10 +1199,17 @@ description: Result of parsing dodecahedron.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1152,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1152,
+                    "name": "startSketchOn",
+                    "start": 1139,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1139,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1158,
                 "start": 1139,
@@ -1008,11 +1232,18 @@ description: Result of parsing dodecahedron.kcl
                         "start": 1181,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 1195,
-                          "name": "pentR",
+                          "name": {
+                            "end": 1195,
+                            "name": "pentR",
+                            "start": 1190,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1190,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       },
                       {
@@ -1110,10 +1341,17 @@ description: Result of parsing dodecahedron.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1171,
-                  "name": "polygon",
+                  "name": {
+                    "end": 1171,
+                    "name": "polygon",
+                    "start": 1164,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1164,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1276,
                 "start": 1164,
@@ -1149,18 +1387,32 @@ description: Result of parsing dodecahedron.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 1314,
-                    "name": "plane",
+                    "name": {
+                      "end": 1314,
+                      "name": "plane",
+                      "start": 1309,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1309,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1308,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1308,
+                    "name": "startSketchOn",
+                    "start": 1295,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1295,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1315,
                 "start": 1295,
@@ -1183,11 +1435,18 @@ description: Result of parsing dodecahedron.kcl
                         "start": 1338,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 1352,
-                          "name": "pentR",
+                          "name": {
+                            "end": 1352,
+                            "name": "pentR",
+                            "start": 1347,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1347,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       },
                       {
@@ -1285,10 +1544,17 @@ description: Result of parsing dodecahedron.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1328,
-                  "name": "polygon",
+                  "name": {
+                    "end": 1328,
+                    "name": "polygon",
+                    "start": 1321,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1321,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1433,
                 "start": 1321,
@@ -1347,30 +1613,51 @@ description: Result of parsing dodecahedron.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "end": 1521,
-                  "name": "wallThickness",
+                  "name": {
+                    "end": 1521,
+                    "name": "wallThickness",
+                    "start": 1508,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1508,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1486,
-              "name": "extrude",
+              "name": {
+                "end": 1486,
+                "name": "extrude",
+                "start": 1479,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1479,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1522,
             "start": 1479,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 1497,
-              "name": "bottomFace",
+              "name": {
+                "end": 1497,
+                "name": "bottomFace",
+                "start": 1487,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1487,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 1470,
@@ -1402,30 +1689,51 @@ description: Result of parsing dodecahedron.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "end": 1582,
-                  "name": "wallThickness",
+                  "name": {
+                    "end": 1582,
+                    "name": "wallThickness",
+                    "start": 1569,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1569,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1543,
-              "name": "extrude",
+              "name": {
+                "end": 1543,
+                "name": "extrude",
+                "start": 1536,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1536,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1583,
             "start": 1536,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 1558,
-              "name": "bottomSideFace",
+              "name": {
+                "end": 1558,
+                "name": "bottomSideFace",
+                "start": 1544,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1544,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 1523,
@@ -1607,21 +1915,35 @@ description: Result of parsing dodecahedron.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1667,
-              "name": "patternCircular3d",
+              "name": {
+                "end": 1667,
+                "name": "patternCircular3d",
+                "start": 1650,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1650,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1789,
             "start": 1650,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 1681,
-              "name": "bottomSide",
+              "name": {
+                "end": 1681,
+                "name": "bottomSide",
+                "start": 1671,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1671,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 1637,
@@ -1740,11 +2062,18 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
+                    "abs_path": false,
                     "end": 1925,
-                    "name": "inscR",
+                    "name": {
+                      "end": 1925,
+                      "name": "inscR",
+                      "start": 1920,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1920,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "end": 1926,
@@ -1792,21 +2121,35 @@ description: Result of parsing dodecahedron.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1853,
-            "name": "patternCircular3d",
+            "name": {
+              "end": 1853,
+              "name": "patternCircular3d",
+              "start": 1836,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1836,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1975,
           "start": 1836,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
+            "abs_path": false,
             "end": 1863,
-            "name": "bottom",
+            "name": {
+              "end": 1863,
+              "name": "bottom",
+              "start": 1857,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1857,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           }
         },
         "start": 1836,
@@ -1920,11 +2263,18 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
+                    "abs_path": false,
                     "end": 2123,
-                    "name": "inscR",
+                    "name": {
+                      "end": 2123,
+                      "name": "inscR",
+                      "start": 2118,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2118,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "end": 2124,
@@ -1972,21 +2322,35 @@ description: Result of parsing dodecahedron.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 2047,
-            "name": "patternCircular3d",
+            "name": {
+              "end": 2047,
+              "name": "patternCircular3d",
+              "start": 2030,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 2030,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 2173,
           "start": 2030,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
+            "abs_path": false,
             "end": 2061,
-            "name": "bottomBowl",
+            "name": {
+              "end": 2061,
+              "name": "bottomBowl",
+              "start": 2051,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 2051,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           }
         },
         "start": 2030,
@@ -2016,11 +2380,18 @@ description: Result of parsing dodecahedron.kcl
             "start": 282,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 304,
-              "name": "in",
+              "name": {
+                "end": 304,
+                "name": "in",
+                "start": 302,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 302,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

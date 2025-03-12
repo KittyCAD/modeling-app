@@ -11,7 +11,7 @@ import { getNodeFromPath } from 'lang/queryAst'
 import { err } from 'lib/trap'
 import {
   createLiteral,
-  createIdentifier,
+  createLocalName,
   findUniqueName,
   createArrayExpression,
   createVariableDeclaration,
@@ -90,7 +90,7 @@ export function addShell({
       )
       if (err(tagResult)) return tagResult
       const { tag } = tagResult
-      expr = createIdentifier(tag)
+      expr = createLocalName(tag)
     } else {
       continue
     }
@@ -111,7 +111,7 @@ export function addShell({
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
   const shell = createCallExpressionStdLibKw(
     'shell',
-    createIdentifier(extrudeNode.node.id.name),
+    createLocalName(extrudeNode.node.id.name),
     [
       createLabeledArg('faces', createArrayExpression(expressions)),
       createLabeledArg('thickness', thickness),

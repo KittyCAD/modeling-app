@@ -28,10 +28,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 25,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 25,
+                    "name": "startSketchOn",
+                    "start": 12,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 31,
                 "start": 12,
@@ -78,10 +85,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 51,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 51,
+                    "name": "startProfileAt",
+                    "start": 37,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 37,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 65,
                 "start": 37,
@@ -135,10 +149,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 81,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 81,
+                    "name": "angledLine",
+                    "start": 71,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 71,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 121,
                 "start": 71,
@@ -154,18 +175,32 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         "left": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 174,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 174,
+                                "name": "rectangleSegmentA001",
+                                "start": 154,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 154,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 153,
-                            "name": "segAng",
+                            "name": {
+                              "end": 153,
+                              "name": "segAng",
+                              "start": 147,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 147,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 175,
                           "start": 147,
@@ -220,10 +255,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 137,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 137,
+                    "name": "angledLine",
+                    "start": 127,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 127,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 227,
                 "start": 127,
@@ -237,18 +279,32 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 280,
-                            "name": "rectangleSegmentA001",
+                            "name": {
+                              "end": 280,
+                              "name": "rectangleSegmentA001",
+                              "start": 260,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 260,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 259,
-                          "name": "segAng",
+                          "name": {
+                            "end": 259,
+                            "name": "segAng",
+                            "start": 253,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 253,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 281,
                         "start": 253,
@@ -259,18 +315,32 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 318,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 318,
+                                "name": "rectangleSegmentA001",
+                                "start": 298,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 298,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 297,
-                            "name": "segLen",
+                            "name": {
+                              "end": 297,
+                              "name": "segLen",
+                              "start": 291,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 291,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 319,
                           "start": 291,
@@ -304,10 +374,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 243,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 243,
+                    "name": "angledLine",
+                    "start": 233,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 233,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 353,
                 "start": 233,
@@ -336,10 +413,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 392,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 392,
+                              "name": "profileStartX",
+                              "start": 379,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 379,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 395,
                           "start": 379,
@@ -356,10 +440,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 410,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 410,
+                              "name": "profileStartY",
+                              "start": 397,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 397,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 413,
                           "start": 397,
@@ -375,10 +466,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 363,
-                  "name": "line",
+                  "name": {
+                    "end": 363,
+                    "name": "line",
+                    "start": 359,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 359,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 415,
                 "start": 359,
@@ -389,10 +487,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 426,
-                  "name": "close",
+                  "name": {
+                    "end": 426,
+                    "name": "close",
+                    "start": 421,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 421,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 428,
                 "start": 421,
@@ -437,10 +542,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 454,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 454,
+                    "name": "startSketchOn",
+                    "start": 441,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 441,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 461,
                 "start": 441,
@@ -487,10 +599,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 481,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 481,
+                    "name": "startProfileAt",
+                    "start": 467,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 467,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 496,
                 "start": 467,
@@ -540,10 +659,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 506,
-                  "name": "line",
+                  "name": {
+                    "end": 506,
+                    "name": "line",
+                    "start": 502,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 502,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 527,
                 "start": 502,
@@ -591,10 +717,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 548,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 548,
+                    "name": "tangentialArcTo",
+                    "start": 533,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 533,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 559,
                 "start": 533,
@@ -648,10 +781,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 580,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 580,
+                    "name": "tangentialArcTo",
+                    "start": 565,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 565,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 597,
                 "start": 565,

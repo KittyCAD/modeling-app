@@ -307,29 +307,50 @@ description: Result of parsing flange-with-patterns.kcl
           "init": {
             "end": 649,
             "left": {
+              "abs_path": false,
               "end": 614,
-              "name": "totalThickness",
+              "name": {
+                "end": 614,
+                "name": "totalThickness",
+                "start": 600,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 600,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "-",
             "right": {
               "end": 649,
               "left": {
+                "abs_path": false,
                 "end": 633,
-                "name": "bottomThickness",
+                "name": {
+                  "end": 633,
+                  "name": "bottomThickness",
+                  "start": 618,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 618,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "+",
               "right": {
+                "abs_path": false,
                 "end": 649,
-                "name": "baseThickness",
+                "name": {
+                  "end": 649,
+                  "name": "baseThickness",
+                  "start": 636,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 636,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 618,
               "type": "BinaryExpression",
@@ -360,11 +381,18 @@ description: Result of parsing flange-with-patterns.kcl
           "init": {
             "end": 676,
             "left": {
+              "abs_path": false,
               "end": 672,
-              "name": "baseDia",
+              "name": {
+                "end": 672,
+                "name": "baseDia",
+                "start": 665,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 665,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "-",
             "right": {
@@ -425,11 +453,18 @@ description: Result of parsing flange-with-patterns.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 766,
-              "name": "nHoles",
+              "name": {
+                "end": 766,
+                "name": "nHoles",
+                "start": 760,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 760,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 769,
@@ -452,10 +487,17 @@ description: Result of parsing flange-with-patterns.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 759,
-            "name": "assertGreaterThan",
+            "name": {
+              "end": 759,
+              "name": "assertGreaterThan",
+              "start": 742,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 742,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 803,
           "start": 742,
@@ -489,10 +531,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 882,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 882,
+                    "name": "startSketchOn",
+                    "start": 869,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 869,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 888,
                 "start": 869,
@@ -514,11 +563,18 @@ description: Result of parsing flange-with-patterns.kcl
                         {
                           "end": 952,
                           "left": {
+                            "abs_path": false,
                             "end": 948,
-                            "name": "mountingHolePlacementDiameter",
+                            "name": {
+                              "end": 948,
+                              "name": "mountingHolePlacementDiameter",
+                              "start": 919,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 919,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -565,11 +621,18 @@ description: Result of parsing flange-with-patterns.kcl
                     "arg": {
                       "end": 993,
                       "left": {
+                        "abs_path": false,
                         "end": 989,
-                        "name": "mountingHoleDia",
+                        "name": {
+                          "end": 989,
+                          "name": "mountingHoleDia",
+                          "start": 974,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 974,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -590,10 +653,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 900,
-                  "name": "circle",
+                  "name": {
+                    "end": 900,
+                    "name": "circle",
+                    "start": 894,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 894,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1000,
                 "start": 894,
@@ -671,11 +741,18 @@ description: Result of parsing flange-with-patterns.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1099,
-                      "name": "nHoles",
+                      "name": {
+                        "end": 1099,
+                        "name": "nHoles",
+                        "start": 1093,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1093,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -697,10 +774,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1023,
-                  "name": "patternCircular2d",
+                  "name": {
+                    "end": 1023,
+                    "name": "patternCircular2d",
+                    "start": 1006,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1006,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1138,
                 "start": 1006,
@@ -763,10 +847,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1226,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1226,
+                    "name": "startSketchOn",
+                    "start": 1213,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1213,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1232,
                 "start": 1213,
@@ -825,11 +916,18 @@ description: Result of parsing flange-with-patterns.kcl
                     "arg": {
                       "end": 1297,
                       "left": {
+                        "abs_path": false,
                         "end": 1293,
-                        "name": "baseDia",
+                        "name": {
+                          "end": 1293,
+                          "name": "baseDia",
+                          "start": 1286,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1286,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -850,10 +948,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1244,
-                  "name": "circle",
+                  "name": {
+                    "end": 1244,
+                    "name": "circle",
+                    "start": 1238,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1238,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1304,
                 "start": 1238,
@@ -864,11 +969,18 @@ description: Result of parsing flange-with-patterns.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 1322,
-                    "name": "circles",
+                    "name": {
+                      "end": 1322,
+                      "name": "circles",
+                      "start": 1315,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1315,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 1325,
@@ -878,10 +990,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1314,
-                  "name": "hole",
+                  "name": {
+                    "end": 1314,
+                    "name": "hole",
+                    "start": 1310,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1310,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1326,
                 "start": 1310,
@@ -942,11 +1061,18 @@ description: Result of parsing flange-with-patterns.kcl
                         "arg": {
                           "end": 1396,
                           "left": {
+                            "abs_path": false,
                             "end": 1392,
-                            "name": "pipeDia",
+                            "name": {
+                              "end": 1392,
+                              "name": "pipeDia",
+                              "start": 1385,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1385,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -967,10 +1093,17 @@ description: Result of parsing flange-with-patterns.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1343,
-                      "name": "circle",
+                      "name": {
+                        "end": 1343,
+                        "name": "circle",
+                        "start": 1337,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1337,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1403,
                     "start": 1337,
@@ -986,10 +1119,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1336,
-                  "name": "hole",
+                  "name": {
+                    "end": 1336,
+                    "name": "hole",
+                    "start": 1332,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1332,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1407,
                 "start": 1332,
@@ -1007,19 +1147,33 @@ description: Result of parsing flange-with-patterns.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1443,
-                      "name": "baseThickness",
+                      "name": {
+                        "end": 1443,
+                        "name": "baseThickness",
+                        "start": 1430,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1430,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1420,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1420,
+                    "name": "extrude",
+                    "start": 1413,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1413,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1444,
                 "start": 1413,
@@ -1152,11 +1306,18 @@ description: Result of parsing flange-with-patterns.kcl
                             "start": 1526,
                             "type": "ObjectProperty",
                             "value": {
+                              "abs_path": false,
                               "end": 1543,
-                              "name": "baseThickness",
+                              "name": {
+                                "end": 1543,
+                                "name": "baseThickness",
+                                "start": 1530,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1530,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
@@ -1454,18 +1615,32 @@ description: Result of parsing flange-with-patterns.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 1759,
-                    "name": "topFacePlane",
+                    "name": {
+                      "end": 1759,
+                      "name": "topFacePlane",
+                      "start": 1747,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1747,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1746,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1746,
+                    "name": "startSketchOn",
+                    "start": 1733,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1733,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1760,
                 "start": 1733,
@@ -1524,11 +1699,18 @@ description: Result of parsing flange-with-patterns.kcl
                     "arg": {
                       "end": 1834,
                       "left": {
+                        "abs_path": false,
                         "end": 1830,
-                        "name": "topTotalDiameter",
+                        "name": {
+                          "end": 1830,
+                          "name": "topTotalDiameter",
+                          "start": 1814,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1814,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -1549,10 +1731,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1772,
-                  "name": "circle",
+                  "name": {
+                    "end": 1772,
+                    "name": "circle",
+                    "start": 1766,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1766,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1841,
                 "start": 1766,
@@ -1614,11 +1803,18 @@ description: Result of parsing flange-with-patterns.kcl
                         "arg": {
                           "end": 1911,
                           "left": {
+                            "abs_path": false,
                             "end": 1907,
-                            "name": "pipeDia",
+                            "name": {
+                              "end": 1907,
+                              "name": "pipeDia",
+                              "start": 1900,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1900,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1639,10 +1835,17 @@ description: Result of parsing flange-with-patterns.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1858,
-                      "name": "circle",
+                      "name": {
+                        "end": 1858,
+                        "name": "circle",
+                        "start": 1852,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1852,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1918,
                     "start": 1852,
@@ -1658,10 +1861,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1851,
-                  "name": "hole",
+                  "name": {
+                    "end": 1851,
+                    "name": "hole",
+                    "start": 1847,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1847,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1922,
                 "start": 1847,
@@ -1679,19 +1889,33 @@ description: Result of parsing flange-with-patterns.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1962,
-                      "name": "topTotalThickness",
+                      "name": {
+                        "end": 1962,
+                        "name": "topTotalThickness",
+                        "start": 1945,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1945,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1935,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1935,
+                    "name": "extrude",
+                    "start": 1928,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1928,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1963,
                 "start": 1928,
@@ -1754,10 +1978,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2053,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2053,
+                    "name": "startSketchOn",
+                    "start": 2040,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2040,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2059,
                 "start": 2040,
@@ -1816,11 +2047,18 @@ description: Result of parsing flange-with-patterns.kcl
                     "arg": {
                       "end": 2136,
                       "left": {
+                        "abs_path": false,
                         "end": 2132,
-                        "name": "bottomTotalDiameter",
+                        "name": {
+                          "end": 2132,
+                          "name": "bottomTotalDiameter",
+                          "start": 2113,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2113,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -1841,10 +2079,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2071,
-                  "name": "circle",
+                  "name": {
+                    "end": 2071,
+                    "name": "circle",
+                    "start": 2065,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2065,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2143,
                 "start": 2065,
@@ -1906,11 +2151,18 @@ description: Result of parsing flange-with-patterns.kcl
                         "arg": {
                           "end": 2213,
                           "left": {
+                            "abs_path": false,
                             "end": 2209,
-                            "name": "pipeDia",
+                            "name": {
+                              "end": 2209,
+                              "name": "pipeDia",
+                              "start": 2202,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2202,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1931,10 +2183,17 @@ description: Result of parsing flange-with-patterns.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2160,
-                      "name": "circle",
+                      "name": {
+                        "end": 2160,
+                        "name": "circle",
+                        "start": 2154,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2154,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2220,
                     "start": 2154,
@@ -1950,10 +2209,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2153,
-                  "name": "hole",
+                  "name": {
+                    "end": 2153,
+                    "name": "hole",
+                    "start": 2149,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2149,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2224,
                 "start": 2149,
@@ -1972,11 +2238,18 @@ description: Result of parsing flange-with-patterns.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 2263,
-                        "name": "bottomThickness",
+                        "name": {
+                          "end": 2263,
+                          "name": "bottomThickness",
+                          "start": 2248,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2248,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 2263,
                       "operator": "-",
@@ -1987,10 +2260,17 @@ description: Result of parsing flange-with-patterns.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2237,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2237,
+                    "name": "extrude",
+                    "start": 2230,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2230,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2264,
                 "start": 2230,
@@ -2036,11 +2316,18 @@ description: Result of parsing flange-with-patterns.kcl
             "start": 310,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 332,
-              "name": "in",
+              "name": {
+                "end": 332,
+                "name": "in",
+                "start": 330,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 330,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

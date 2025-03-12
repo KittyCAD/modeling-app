@@ -135,6 +135,16 @@ impl<T> Node<T> {
             outer_attrs: self.outer_attrs,
         }
     }
+
+    pub fn map_ref<'a, U: 'a>(&'a self, f: fn(&'a T) -> U) -> Node<U> {
+        Node {
+            inner: f(&self.inner),
+            start: self.start,
+            end: self.end,
+            module_id: self.module_id,
+            outer_attrs: self.outer_attrs.clone(),
+        }
+    }
 }
 
 impl<T> Deref for Node<T> {
@@ -681,7 +691,7 @@ impl From<&BodyItem> for SourceRange {
 #[allow(clippy::large_enum_variant)]
 pub enum Expr {
     Literal(BoxNode<Literal>),
-    Identifier(BoxNode<Identifier>),
+    Name(BoxNode<Name>),
     TagDeclarator(BoxNode<TagDeclarator>),
     BinaryExpression(BoxNode<BinaryExpression>),
     FunctionExpression(BoxNode<FunctionExpression>),
@@ -733,7 +743,7 @@ impl Expr {
             Expr::FunctionExpression(_func_exp) => None,
             Expr::CallExpression(_call_exp) => None,
             Expr::CallExpressionKw(_call_exp) => None,
-            Expr::Identifier(_ident) => None,
+            Expr::Name(_ident) => None,
             Expr::TagDeclarator(_tag) => None,
             Expr::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
             Expr::UnaryExpression(_unary_exp) => None,
@@ -761,7 +771,7 @@ impl Expr {
             Expr::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
             Expr::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::CallExpressionKw(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
-            Expr::Identifier(_) => {}
+            Expr::Name(_) => {}
             Expr::TagDeclarator(_) => {}
             Expr::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
             Expr::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
@@ -776,7 +786,7 @@ impl Expr {
     pub fn start(&self) -> usize {
         match self {
             Expr::Literal(literal) => literal.start,
-            Expr::Identifier(identifier) => identifier.start,
+            Expr::Name(identifier) => identifier.start,
             Expr::TagDeclarator(tag) => tag.start,
             Expr::BinaryExpression(binary_expression) => binary_expression.start,
             Expr::FunctionExpression(function_expression) => function_expression.start,
@@ -799,7 +809,7 @@ impl Expr {
     pub fn end(&self) -> usize {
         match self {
             Expr::Literal(literal) => literal.end,
-            Expr::Identifier(identifier) => identifier.end,
+            Expr::Name(identifier) => identifier.end,
             Expr::TagDeclarator(tag) => tag.end,
             Expr::BinaryExpression(binary_expression) => binary_expression.end,
             Expr::FunctionExpression(function_expression) => function_expression.end,
@@ -823,7 +833,7 @@ impl Expr {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
             Expr::Literal(_literal) => {}
-            Expr::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            Expr::Name(ref mut identifier) => identifier.rename(old_name, new_name),
             Expr::TagDeclarator(ref mut tag) => tag.rename(old_name, new_name),
             Expr::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
@@ -853,7 +863,7 @@ impl Expr {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
             Expr::Literal(literal) => literal.get_constraint_level(),
-            Expr::Identifier(identifier) => identifier.get_constraint_level(),
+            Expr::Name(identifier) => identifier.get_constraint_level(),
             Expr::TagDeclarator(tag) => tag.get_constraint_level(),
             Expr::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
@@ -895,7 +905,7 @@ impl Expr {
                 LiteralValue::String(_) => "string (text)",
                 LiteralValue::Bool(_) => "boolean (true/false value)",
             },
-            Expr::Identifier(_) => "named constant",
+            Expr::Name(_) => "named constant",
             Expr::TagDeclarator(_) => "tag declarator",
             Expr::BinaryExpression(_) => "expression",
             Expr::FunctionExpression(_) => "function definition",
@@ -947,7 +957,7 @@ impl Expr {
 
     pub fn ident_name(&self) -> Option<&str> {
         match self {
-            Expr::Identifier(ident) => Some(&ident.name),
+            Expr::Name(ident) => Some(&ident.name.name),
             _ => None,
         }
     }
@@ -1021,7 +1031,7 @@ impl Ascription {
 #[serde(tag = "type")]
 pub enum BinaryPart {
     Literal(BoxNode<Literal>),
-    Identifier(BoxNode<Identifier>),
+    Name(BoxNode<Name>),
     BinaryExpression(BoxNode<BinaryExpression>),
     CallExpression(BoxNode<CallExpression>),
     CallExpressionKw(BoxNode<CallExpressionKw>),
@@ -1047,7 +1057,7 @@ impl BinaryPart {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
             BinaryPart::Literal(literal) => literal.get_constraint_level(),
-            BinaryPart::Identifier(identifier) => identifier.get_constraint_level(),
+            BinaryPart::Name(identifier) => identifier.get_constraint_level(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
             BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
@@ -1060,7 +1070,7 @@ impl BinaryPart {
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         match self {
             BinaryPart::Literal(_) => {}
-            BinaryPart::Identifier(_) => {}
+            BinaryPart::Name(_) => {}
             BinaryPart::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.replace_value(source_range, new_value)
             }
@@ -1081,7 +1091,7 @@ impl BinaryPart {
     pub fn start(&self) -> usize {
         match self {
             BinaryPart::Literal(literal) => literal.start,
-            BinaryPart::Identifier(identifier) => identifier.start,
+            BinaryPart::Name(identifier) => identifier.start,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.start,
             BinaryPart::CallExpression(call_expression) => call_expression.start,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.start,
@@ -1094,7 +1104,7 @@ impl BinaryPart {
     pub fn end(&self) -> usize {
         match self {
             BinaryPart::Literal(literal) => literal.end,
-            BinaryPart::Identifier(identifier) => identifier.end,
+            BinaryPart::Name(identifier) => identifier.end,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.end,
             BinaryPart::CallExpression(call_expression) => call_expression.end,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.end,
@@ -1108,7 +1118,7 @@ impl BinaryPart {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
             BinaryPart::Literal(_literal) => {}
-            BinaryPart::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            BinaryPart::Name(ref mut identifier) => identifier.rename(old_name, new_name),
             BinaryPart::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
@@ -1320,13 +1330,13 @@ impl Annotation {
     pub fn new_from_meta_settings(settings: &crate::execution::MetaSettings) -> Annotation {
         let mut properties: Vec<Node<ObjectProperty>> = vec![ObjectProperty::new(
             Identifier::new(annotations::SETTINGS_UNIT_LENGTH),
-            Expr::Identifier(Box::new(Identifier::new(&settings.default_length_units.to_string()))),
+            Expr::Name(Box::new(Name::new(&settings.default_length_units.to_string()))),
         )];
 
         if settings.default_angle_units != Default::default() {
             properties.push(ObjectProperty::new(
                 Identifier::new(annotations::SETTINGS_UNIT_ANGLE),
-                Expr::Identifier(Box::new(Identifier::new(&settings.default_angle_units.to_string()))),
+                Expr::Name(Box::new(Name::new(&settings.default_angle_units.to_string()))),
             ));
         }
         Annotation {
@@ -1591,7 +1601,7 @@ pub struct ExpressionStatement {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct CallExpression {
-    pub callee: Node<Identifier>,
+    pub callee: Node<Name>,
     pub arguments: Vec<Expr>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1603,7 +1613,7 @@ pub struct CallExpression {
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
-    pub callee: Node<Identifier>,
+    pub callee: Node<Name>,
     pub unlabeled: Option<Expr>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub arguments: Vec<LabeledArg>,
@@ -1677,7 +1687,7 @@ impl Node<CallExpressionKw> {
 impl CallExpression {
     pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Node<Self>, KclError> {
         Ok(Node::no_src(Self {
-            callee: Identifier::new(name),
+            callee: Name::new(name),
             arguments,
             digest: None,
         }))
@@ -1709,7 +1719,7 @@ impl CallExpression {
 impl CallExpressionKw {
     pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Result<Node<Self>, KclError> {
         Ok(Node::no_src(Self {
-            callee: Identifier::new(name),
+            callee: Name::new(name),
             unlabeled,
             arguments,
             digest: None,
@@ -2116,6 +2126,94 @@ impl Identifier {
         if self.name == old_name {
             self.name = new_name.to_string();
         }
+    }
+}
+
+/// A qualified name, e.g., `foo`, `bar::foo`, or `::bar::foo`.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct Name {
+    pub name: Node<Identifier>,
+    // The qualifying parts of the name.
+    pub path: NodeList<Identifier>,
+    // The path starts with `::`.
+    pub abs_path: bool,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl Node<Name> {
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
+}
+
+impl Name {
+    pub fn new(name: &str) -> Node<Self> {
+        Node::no_src(Name {
+            name: Node::no_src(Identifier {
+                name: name.to_string(),
+                digest: None,
+            }),
+            path: Vec::new(),
+            abs_path: false,
+            digest: None,
+        })
+    }
+
+    pub fn local_ident(&self) -> Option<Node<&str>> {
+        if self.path.is_empty() && !self.abs_path {
+            Some(self.name.map_ref(|n| &n.name))
+        } else {
+            None
+        }
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename(&mut self, old_name: &str, new_name: &str) {
+        if let Some(n) = self.local_ident() {
+            if n.inner == old_name {
+                self.name.name = new_name.to_owned();
+            }
+        }
+    }
+}
+
+impl From<Node<Identifier>> for Node<Name> {
+    fn from(value: Node<Identifier>) -> Self {
+        let start = value.start;
+        let end = value.end;
+        let mod_id = value.module_id;
+
+        Node::new(
+            Name {
+                name: value,
+                path: Vec::new(),
+                abs_path: false,
+                digest: None,
+            },
+            start,
+            end,
+            mod_id,
+        )
+    }
+}
+
+impl fmt::Display for Name {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.abs_path {
+            f.write_str("::")?;
+        }
+        for p in &self.path {
+            f.write_str(&p.name)?;
+            f.write_str("::")?;
+        }
+        f.write_str(&self.name.name)
     }
 }
 

@@ -21,19 +21,33 @@ description: Result of parsing kw_fn_with_defaults.kcl
                   "argument": {
                     "end": 43,
                     "left": {
+                      "abs_path": false,
                       "end": 38,
-                      "name": "x",
+                      "name": {
+                        "end": 38,
+                        "name": "x",
+                        "start": 37,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 37,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "end": 43,
-                      "name": "by",
+                      "name": {
+                        "end": 43,
+                        "name": "by",
+                        "start": 41,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 41,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 37,
                     "type": "BinaryExpression",
@@ -118,10 +132,17 @@ description: Result of parsing kw_fn_with_defaults.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 62,
-              "name": "increment",
+              "name": {
+                "end": 62,
+                "name": "increment",
+                "start": 53,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 53,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 65,
             "start": 53,
@@ -170,10 +191,17 @@ description: Result of parsing kw_fn_with_defaults.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 87,
-              "name": "increment",
+              "name": {
+                "end": 87,
+                "name": "increment",
+                "start": 78,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 78,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 99,
             "start": 78,

@@ -127,10 +127,17 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 558,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 558,
+                              "name": "startSketchOn",
+                              "start": 545,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 545,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 565,
                           "start": 545,
@@ -170,11 +177,18 @@ description: Result of parsing hex-nut.kcl
                                   },
                                   "operator": "+",
                                   "right": {
+                                    "abs_path": false,
                                     "end": 608,
-                                    "name": "innerDia",
+                                    "name": {
+                                      "end": 608,
+                                      "name": "innerDia",
+                                      "start": 600,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 600,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 589,
                                   "type": "BinaryExpression",
@@ -219,10 +233,17 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 587,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 587,
+                              "name": "startProfileAt",
+                              "start": 573,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 573,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 623,
                           "start": 573,
@@ -267,11 +288,18 @@ description: Result of parsing hex-nut.kcl
                                   "start": 657,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 674,
-                                    "name": "innerDia",
+                                    "name": {
+                                      "end": 674,
+                                      "name": "innerDia",
+                                      "start": 666,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 666,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -287,10 +315,17 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 641,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 641,
+                              "name": "angledLine",
+                              "start": 631,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 631,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 680,
                           "start": 631,
@@ -335,11 +370,18 @@ description: Result of parsing hex-nut.kcl
                                   "start": 714,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 731,
-                                    "name": "innerDia",
+                                    "name": {
+                                      "end": 731,
+                                      "name": "innerDia",
+                                      "start": 723,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 723,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -355,10 +397,17 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 698,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 698,
+                              "name": "angledLine",
+                              "start": 688,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 688,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 737,
                           "start": 688,
@@ -403,11 +452,18 @@ description: Result of parsing hex-nut.kcl
                                   "start": 771,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 788,
-                                    "name": "innerDia",
+                                    "name": {
+                                      "end": 788,
+                                      "name": "innerDia",
+                                      "start": 780,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 780,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -423,10 +479,17 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 755,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 755,
+                              "name": "angledLine",
+                              "start": 745,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 745,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 794,
                           "start": 745,
@@ -471,11 +534,18 @@ description: Result of parsing hex-nut.kcl
                                   "start": 827,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 844,
-                                    "name": "innerDia",
+                                    "name": {
+                                      "end": 844,
+                                      "name": "innerDia",
+                                      "start": 836,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 836,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -491,10 +561,17 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 812,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 812,
+                              "name": "angledLine",
+                              "start": 802,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 802,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 850,
                           "start": 802,
@@ -541,11 +618,18 @@ description: Result of parsing hex-nut.kcl
                                   "value": {
                                     "end": 905,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 899,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 899,
+                                        "name": "innerDia",
+                                        "start": 891,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 891,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "*",
                                     "right": {
@@ -577,10 +661,17 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 868,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 868,
+                              "name": "angledLine",
+                              "start": 858,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 858,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 911,
                           "start": 858,
@@ -590,10 +681,17 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "abs_path": false,
                             "end": 924,
-                            "name": "close",
+                            "name": {
+                              "end": 924,
+                              "name": "close",
+                              "start": 919,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 919,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 926,
                           "start": 919,
@@ -682,11 +780,18 @@ description: Result of parsing hex-nut.kcl
                                   "arg": {
                                     "end": 1017,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 1013,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 1013,
+                                        "name": "innerDia",
+                                        "start": 1005,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1005,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "/",
                                     "right": {
@@ -707,10 +812,17 @@ description: Result of parsing hex-nut.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 945,
-                                "name": "circle",
+                                "name": {
+                                  "end": 945,
+                                  "name": "circle",
+                                  "start": 939,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 939,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1026,
                               "start": 939,
@@ -726,10 +838,17 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 938,
-                            "name": "hole",
+                            "name": {
+                              "end": 938,
+                              "name": "hole",
+                              "start": 934,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 934,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1030,
                           "start": 934,
@@ -747,19 +866,33 @@ description: Result of parsing hex-nut.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "end": 1058,
-                                "name": "thk",
+                                "name": {
+                                  "end": 1058,
+                                  "name": "thk",
+                                  "start": 1055,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1055,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1045,
-                            "name": "extrude",
+                            "name": {
+                              "end": 1045,
+                              "name": "extrude",
+                              "start": 1038,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1038,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1059,
                           "start": 1038,
@@ -784,11 +917,18 @@ description: Result of parsing hex-nut.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 1081,
-                    "name": "hexNutSketch",
+                    "name": {
+                      "end": 1081,
+                      "name": "hexNutSketch",
+                      "start": 1069,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1069,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 1081,
                   "start": 1062,
@@ -877,25 +1017,46 @@ description: Result of parsing hex-nut.kcl
               "type": "ArrayExpression"
             },
             {
+              "abs_path": false,
               "end": 1129,
-              "name": "thickness",
+              "name": {
+                "end": 1129,
+                "name": "thickness",
+                "start": 1120,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1120,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
+              "abs_path": false,
               "end": 1139,
-              "name": "diameter",
+              "name": {
+                "end": 1139,
+                "name": "diameter",
+                "start": 1131,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1131,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1111,
-            "name": "hexNut",
+            "name": {
+              "end": 1111,
+              "name": "hexNut",
+              "start": 1105,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1105,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1140,
           "start": 1105,
@@ -929,11 +1090,18 @@ description: Result of parsing hex-nut.kcl
             "start": 327,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 349,
-              "name": "in",
+              "name": {
+                "end": 349,
+                "name": "in",
+                "start": 347,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 347,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

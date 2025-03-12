@@ -3,9 +3,9 @@ import {
   createBinaryExpression,
   createCallExpressionStdLib,
   createCallExpressionStdLibKw,
-  createIdentifier,
   createLabeledArg,
   createLiteral,
+  createLocalName,
   createPipeSubstitution,
   createTagDeclarator,
   createUnaryExpression,
@@ -51,7 +51,7 @@ export const getRectangleCallExpressions = (
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
       createBinaryExpression([
-        createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
+        createCallExpressionStdLib('segAng', [createLocalName(tag)]),
         '+',
         createLiteral(90),
       ]), // 90 offset from the previous line
@@ -61,9 +61,9 @@ export const getRectangleCallExpressions = (
   ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
-      createCallExpressionStdLib('segAng', [createIdentifier(tag)]), // same angle as the first line
+      createCallExpressionStdLib('segAng', [createLocalName(tag)]), // same angle as the first line
       createUnaryExpression(
-        createCallExpressionStdLib('segLen', [createIdentifier(tag)]),
+        createCallExpressionStdLib('segLen', [createLocalName(tag)]),
         '-'
       ), // negative height
     ]),
@@ -102,7 +102,7 @@ export function updateRectangleSketch(
   ;((pipeExpression.body[2] as CallExpression)
     .arguments[0] as ArrayExpression) = createArrayExpression([
     createBinaryExpression([
-      createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
+      createCallExpressionStdLib('segAng', [createLocalName(tag)]),
       Math.sign(y) === Math.sign(x) ? '+' : '-',
       createLiteral(90),
     ]), // 90 offset from the previous line
@@ -166,7 +166,7 @@ export function updateCenterRectangleSketch(
       if (isBinaryExpression(binaryExpression)) {
         callExpression.arguments[0] = createArrayExpression([
           createBinaryExpression([
-            createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
+            createCallExpressionStdLib('segAng', [createLocalName(tag)]),
             binaryExpression.operator,
             createLiteral(90),
           ]), // 90 offset from the previous line

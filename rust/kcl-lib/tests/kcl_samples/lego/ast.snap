@@ -224,11 +224,18 @@ description: Result of parsing lego.kcl
               "left": {
                 "end": 463,
                 "left": {
+                  "abs_path": false,
                   "end": 446,
-                  "name": "pitch",
+                  "name": {
+                    "end": 446,
+                    "name": "pitch",
+                    "start": 441,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 441,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "-",
                 "right": {
@@ -246,11 +253,18 @@ description: Result of parsing lego.kcl
                   },
                   "operator": "*",
                   "right": {
+                    "abs_path": false,
                     "end": 463,
-                    "name": "clearance",
+                    "name": {
+                      "end": 463,
+                      "name": "clearance",
+                      "start": 454,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 454,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 450,
                   "type": "BinaryExpression",
@@ -262,11 +276,18 @@ description: Result of parsing lego.kcl
               },
               "operator": "-",
               "right": {
+                "abs_path": false,
                 "end": 475,
-                "name": "bumpDiam",
+                "name": {
+                  "end": 475,
+                  "name": "bumpDiam",
+                  "start": 467,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 467,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 441,
               "type": "BinaryExpression",
@@ -309,19 +330,33 @@ description: Result of parsing lego.kcl
           "init": {
             "end": 503,
             "left": {
+              "abs_path": false,
               "end": 499,
-              "name": "pitch",
+              "name": {
+                "end": 499,
+                "name": "pitch",
+                "start": 494,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 494,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "-",
             "right": {
+              "abs_path": false,
               "end": 503,
-              "name": "t",
+              "name": {
+                "end": 503,
+                "name": "t",
+                "start": 502,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 502,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 494,
             "type": "BinaryExpression",
@@ -350,19 +385,33 @@ description: Result of parsing lego.kcl
             "left": {
               "end": 552,
               "left": {
+                "abs_path": false,
                 "end": 544,
-                "name": "lbumps",
+                "name": {
+                  "end": 544,
+                  "name": "lbumps",
+                  "start": 538,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 538,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "*",
               "right": {
+                "abs_path": false,
                 "end": 552,
-                "name": "pitch",
+                "name": {
+                  "end": 552,
+                  "name": "pitch",
+                  "start": 547,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 547,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 538,
               "type": "BinaryExpression",
@@ -384,11 +433,18 @@ description: Result of parsing lego.kcl
               },
               "operator": "*",
               "right": {
+                "abs_path": false,
                 "end": 571,
-                "name": "clearance",
+                "name": {
+                  "end": 571,
+                  "name": "clearance",
+                  "start": 562,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 562,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 556,
               "type": "BinaryExpression",
@@ -421,19 +477,33 @@ description: Result of parsing lego.kcl
             "left": {
               "end": 600,
               "left": {
+                "abs_path": false,
                 "end": 592,
-                "name": "wbumps",
+                "name": {
+                  "end": 592,
+                  "name": "wbumps",
+                  "start": 586,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 586,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "*",
               "right": {
+                "abs_path": false,
                 "end": 600,
-                "name": "pitch",
+                "name": {
+                  "end": 600,
+                  "name": "pitch",
+                  "start": 595,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 595,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 586,
               "type": "BinaryExpression",
@@ -455,11 +525,18 @@ description: Result of parsing lego.kcl
               },
               "operator": "*",
               "right": {
+                "abs_path": false,
                 "end": 619,
-                "name": "clearance",
+                "name": {
+                  "end": 619,
+                  "name": "clearance",
+                  "start": 610,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 610,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 604,
               "type": "BinaryExpression",
@@ -490,19 +567,33 @@ description: Result of parsing lego.kcl
           "init": {
             "end": 714,
             "left": {
+              "abs_path": false,
               "end": 705,
-              "name": "totalLength",
+              "name": {
+                "end": 705,
+                "name": "totalLength",
+                "start": 694,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 694,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
+              "abs_path": false,
               "end": 714,
-              "name": "lbumps",
+              "name": {
+                "end": 714,
+                "name": "lbumps",
+                "start": 708,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 708,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 694,
             "type": "BinaryExpression",
@@ -529,19 +620,33 @@ description: Result of parsing lego.kcl
           "init": {
             "end": 746,
             "left": {
+              "abs_path": false,
               "end": 737,
-              "name": "totalWidth",
+              "name": {
+                "end": 737,
+                "name": "totalWidth",
+                "start": 727,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 727,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
+              "abs_path": false,
               "end": 746,
-              "name": "wbumps",
+              "name": {
+                "end": 746,
+                "name": "wbumps",
+                "start": 740,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 740,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 727,
             "type": "BinaryExpression",
@@ -561,11 +666,18 @@ description: Result of parsing lego.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 844,
-              "name": "lbumps",
+              "name": {
+                "end": 844,
+                "name": "lbumps",
+                "start": 838,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 838,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 847,
@@ -588,10 +700,17 @@ description: Result of parsing lego.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 837,
-            "name": "assertGreaterThan",
+            "name": {
+              "end": 837,
+              "name": "assertGreaterThan",
+              "start": 820,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 820,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 881,
           "start": 820,
@@ -607,11 +726,18 @@ description: Result of parsing lego.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 906,
-              "name": "wbumps",
+              "name": {
+                "end": 906,
+                "name": "wbumps",
+                "start": 900,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 900,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 909,
@@ -634,10 +760,17 @@ description: Result of parsing lego.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 899,
-            "name": "assertGreaterThan",
+            "name": {
+              "end": 899,
+              "name": "assertGreaterThan",
+              "start": 882,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 882,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 943,
           "start": 882,
@@ -741,11 +874,18 @@ description: Result of parsing lego.kcl
                             "start": 1114,
                             "type": "ObjectProperty",
                             "value": {
+                              "abs_path": false,
                               "end": 1124,
-                              "name": "height",
+                              "name": {
+                                "end": 1124,
+                                "name": "height",
+                                "start": 1118,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1118,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
@@ -1124,19 +1264,33 @@ description: Result of parsing lego.kcl
                             "value": {
                               "end": 1439,
                               "left": {
+                                "abs_path": false,
                                 "end": 1435,
-                                "name": "height",
+                                "name": {
+                                  "end": 1435,
+                                  "name": "height",
+                                  "start": 1429,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1429,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "-",
                               "right": {
+                                "abs_path": false,
                                 "end": 1439,
-                                "name": "t",
+                                "name": {
+                                  "end": 1439,
+                                  "name": "t",
+                                  "start": 1438,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1438,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 1429,
                               "type": "BinaryExpression",
@@ -1447,10 +1601,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1594,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1594,
+                    "name": "startSketchOn",
+                    "start": 1581,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1581,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1600,
                 "start": 1581,
@@ -1465,11 +1626,18 @@ description: Result of parsing lego.kcl
                         "end": 1637,
                         "left": {
                           "argument": {
+                            "abs_path": false,
                             "end": 1633,
-                            "name": "totalWidth",
+                            "name": {
+                              "end": 1633,
+                              "name": "totalWidth",
+                              "start": 1623,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1623,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 1633,
                           "operator": "-",
@@ -1497,11 +1665,18 @@ description: Result of parsing lego.kcl
                         "end": 1655,
                         "left": {
                           "argument": {
+                            "abs_path": false,
                             "end": 1651,
-                            "name": "totalLength",
+                            "name": {
+                              "end": 1651,
+                              "name": "totalLength",
+                              "start": 1640,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1640,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 1651,
                           "operator": "-",
@@ -1539,10 +1714,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1620,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1620,
+                    "name": "startProfileAt",
+                    "start": 1606,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1606,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1660,
                 "start": 1606,
@@ -1562,11 +1744,18 @@ description: Result of parsing lego.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 1688,
-                          "name": "totalWidth",
+                          "name": {
+                            "end": 1688,
+                            "name": "totalWidth",
+                            "start": 1678,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1678,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 1691,
@@ -1588,10 +1777,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1670,
-                  "name": "line",
+                  "name": {
+                    "end": 1670,
+                    "name": "line",
+                    "start": 1666,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1666,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1693,
                 "start": 1666,
@@ -1623,11 +1819,18 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 1725,
-                          "name": "totalLength",
+                          "name": {
+                            "end": 1725,
+                            "name": "totalLength",
+                            "start": 1714,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1714,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 1726,
@@ -1638,10 +1841,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1703,
-                  "name": "line",
+                  "name": {
+                    "end": 1703,
+                    "name": "line",
+                    "start": 1699,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1699,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1727,
                 "start": 1699,
@@ -1663,11 +1873,18 @@ description: Result of parsing lego.kcl
                       "elements": [
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 1756,
-                            "name": "totalWidth",
+                            "name": {
+                              "end": 1756,
+                              "name": "totalWidth",
+                              "start": 1746,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1746,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 1756,
                           "operator": "-",
@@ -1695,10 +1912,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1737,
-                  "name": "line",
+                  "name": {
+                    "end": 1737,
+                    "name": "line",
+                    "start": 1733,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1733,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1761,
                 "start": 1733,
@@ -1709,10 +1933,17 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 1772,
-                  "name": "close",
+                  "name": {
+                    "end": 1772,
+                    "name": "close",
+                    "start": 1767,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1767,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1774,
                 "start": 1767,
@@ -1730,19 +1961,33 @@ description: Result of parsing lego.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1803,
-                      "name": "height",
+                      "name": {
+                        "end": 1803,
+                        "name": "height",
+                        "start": 1797,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1797,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1787,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1787,
+                    "name": "extrude",
+                    "start": 1780,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1780,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1804,
                 "start": 1780,
@@ -1796,11 +2041,18 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 1966,
-                    "name": "s",
+                    "name": {
+                      "end": 1966,
+                      "name": "s",
+                      "start": 1965,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1965,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 1975,
@@ -1812,10 +2064,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1964,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1964,
+                    "name": "startSketchOn",
+                    "start": 1951,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1951,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1976,
                 "start": 1951,
@@ -1832,11 +2091,18 @@ description: Result of parsing lego.kcl
                           "left": {
                             "end": 2022,
                             "left": {
+                              "abs_path": false,
                               "end": 2018,
-                              "name": "totalWidth",
+                              "name": {
+                                "end": 2018,
+                                "name": "totalWidth",
+                                "start": 2008,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2008,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -1856,11 +2122,18 @@ description: Result of parsing lego.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 2026,
-                            "name": "t",
+                            "name": {
+                              "end": 2026,
+                              "name": "t",
+                              "start": 2025,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2025,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 2008,
                           "type": "BinaryExpression",
@@ -1878,11 +2151,18 @@ description: Result of parsing lego.kcl
                           "left": {
                             "end": 2053,
                             "left": {
+                              "abs_path": false,
                               "end": 2049,
-                              "name": "totalLength",
+                              "name": {
+                                "end": 2049,
+                                "name": "totalLength",
+                                "start": 2038,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2038,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -1902,11 +2182,18 @@ description: Result of parsing lego.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 2057,
-                            "name": "t",
+                            "name": {
+                              "end": 2057,
+                              "name": "t",
+                              "start": 2056,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2056,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 2038,
                           "type": "BinaryExpression",
@@ -1932,10 +2219,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1996,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1996,
+                    "name": "startProfileAt",
+                    "start": 1982,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1982,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2069,
                 "start": 1982,
@@ -1957,11 +2251,18 @@ description: Result of parsing lego.kcl
                         {
                           "end": 2106,
                           "left": {
+                            "abs_path": false,
                             "end": 2097,
-                            "name": "totalWidth",
+                            "name": {
+                              "end": 2097,
+                              "name": "totalWidth",
+                              "start": 2087,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2087,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
@@ -1979,11 +2280,18 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "*",
                             "right": {
+                              "abs_path": false,
                               "end": 2106,
-                              "name": "t",
+                              "name": {
+                                "end": 2106,
+                                "name": "t",
+                                "start": 2105,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2105,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 2101,
                             "type": "BinaryExpression",
@@ -2013,10 +2321,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2079,
-                  "name": "line",
+                  "name": {
+                    "end": 2079,
+                    "name": "line",
+                    "start": 2075,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2075,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2112,
                 "start": 2075,
@@ -2050,11 +2365,18 @@ description: Result of parsing lego.kcl
                         {
                           "end": 2153,
                           "left": {
+                            "abs_path": false,
                             "end": 2144,
-                            "name": "totalLength",
+                            "name": {
+                              "end": 2144,
+                              "name": "totalLength",
+                              "start": 2133,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2133,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
@@ -2072,11 +2394,18 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "*",
                             "right": {
+                              "abs_path": false,
                               "end": 2153,
-                              "name": "t",
+                              "name": {
+                                "end": 2153,
+                                "name": "t",
+                                "start": 2152,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2152,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 2148,
                             "type": "BinaryExpression",
@@ -2095,10 +2424,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2122,
-                  "name": "line",
+                  "name": {
+                    "end": 2122,
+                    "name": "line",
+                    "start": 2118,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2118,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2156,
                 "start": 2118,
@@ -2122,11 +2458,18 @@ description: Result of parsing lego.kcl
                           "argument": {
                             "end": 2195,
                             "left": {
+                              "abs_path": false,
                               "end": 2186,
-                              "name": "totalWidth",
+                              "name": {
+                                "end": 2186,
+                                "name": "totalWidth",
+                                "start": 2176,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2176,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "-",
                             "right": {
@@ -2144,11 +2487,18 @@ description: Result of parsing lego.kcl
                               },
                               "operator": "*",
                               "right": {
+                                "abs_path": false,
                                 "end": 2195,
-                                "name": "t",
+                                "name": {
+                                  "end": 2195,
+                                  "name": "t",
+                                  "start": 2194,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2194,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 2190,
                               "type": "BinaryExpression",
@@ -2184,10 +2534,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2166,
-                  "name": "line",
+                  "name": {
+                    "end": 2166,
+                    "name": "line",
+                    "start": 2162,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2162,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2202,
                 "start": 2162,
@@ -2198,10 +2555,17 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2213,
-                  "name": "close",
+                  "name": {
+                    "end": 2213,
+                    "name": "close",
+                    "start": 2208,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2208,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2215,
                 "start": 2208,
@@ -2222,19 +2586,33 @@ description: Result of parsing lego.kcl
                       "argument": {
                         "end": 2250,
                         "left": {
+                          "abs_path": false,
                           "end": 2246,
-                          "name": "height",
+                          "name": {
+                            "end": 2246,
+                            "name": "height",
+                            "start": 2240,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2240,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
+                          "abs_path": false,
                           "end": 2250,
-                          "name": "t",
+                          "name": {
+                            "end": 2250,
+                            "name": "t",
+                            "start": 2249,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2249,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 2240,
                         "type": "BinaryExpression",
@@ -2249,10 +2627,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2228,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2228,
+                    "name": "extrude",
+                    "start": 2221,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2221,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2252,
                 "start": 2221,
@@ -2306,11 +2691,18 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2317,
-                    "name": "s",
+                    "name": {
+                      "end": 2317,
+                      "name": "s",
+                      "start": 2316,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2316,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 2324,
@@ -2322,10 +2714,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2315,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2315,
+                    "name": "startSketchOn",
+                    "start": 2302,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2302,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2325,
                 "start": 2302,
@@ -2350,21 +2749,35 @@ description: Result of parsing lego.kcl
                             "left": {
                               "end": 2387,
                               "left": {
+                                "abs_path": false,
                                 "end": 2373,
-                                "name": "pitch",
+                                "name": {
+                                  "end": 2373,
+                                  "name": "pitch",
+                                  "start": 2368,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2368,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "*",
                               "right": {
                                 "end": 2387,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 2383,
-                                  "name": "wbumps",
+                                  "name": {
+                                    "end": 2383,
+                                    "name": "wbumps",
+                                    "start": 2377,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 2377,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "-",
                                 "right": {
@@ -2414,21 +2827,35 @@ description: Result of parsing lego.kcl
                             "left": {
                               "end": 2425,
                               "left": {
+                                "abs_path": false,
                                 "end": 2411,
-                                "name": "pitch",
+                                "name": {
+                                  "end": 2411,
+                                  "name": "pitch",
+                                  "start": 2406,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2406,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "*",
                               "right": {
                                 "end": 2425,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 2421,
-                                  "name": "lbumps",
+                                  "name": {
+                                    "end": 2421,
+                                    "name": "lbumps",
+                                    "start": 2415,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 2415,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "-",
                                 "right": {
@@ -2490,11 +2917,18 @@ description: Result of parsing lego.kcl
                     "arg": {
                       "end": 2470,
                       "left": {
+                        "abs_path": false,
                         "end": 2466,
-                        "name": "bumpDiam",
+                        "name": {
+                          "end": 2466,
+                          "name": "bumpDiam",
+                          "start": 2458,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2458,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -2515,10 +2949,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2337,
-                  "name": "circle",
+                  "name": {
+                    "end": 2337,
+                    "name": "circle",
+                    "start": 2331,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2331,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2477,
                 "start": 2331,
@@ -2576,11 +3017,18 @@ description: Result of parsing lego.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2547,
-                      "name": "wbumps",
+                      "name": {
+                        "end": 2547,
+                        "name": "wbumps",
+                        "start": 2541,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2541,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -2592,19 +3040,33 @@ description: Result of parsing lego.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2572,
-                      "name": "pitch",
+                      "name": {
+                        "end": 2572,
+                        "name": "pitch",
+                        "start": 2567,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2567,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2498,
-                  "name": "patternLinear2d",
+                  "name": {
+                    "end": 2498,
+                    "name": "patternLinear2d",
+                    "start": 2483,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2483,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2579,
                 "start": 2483,
@@ -2662,11 +3124,18 @@ description: Result of parsing lego.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2649,
-                      "name": "lbumps",
+                      "name": {
+                        "end": 2649,
+                        "name": "lbumps",
+                        "start": 2643,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2643,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -2678,19 +3147,33 @@ description: Result of parsing lego.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2674,
-                      "name": "pitch",
+                      "name": {
+                        "end": 2674,
+                        "name": "pitch",
+                        "start": 2669,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2669,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2600,
-                  "name": "patternLinear2d",
+                  "name": {
+                    "end": 2600,
+                    "name": "patternLinear2d",
+                    "start": 2585,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2585,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2681,
                 "start": 2585,
@@ -2709,19 +3192,33 @@ description: Result of parsing lego.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2714,
-                      "name": "bumpHeight",
+                      "name": {
+                        "end": 2714,
+                        "name": "bumpHeight",
+                        "start": 2704,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2704,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2694,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2694,
+                    "name": "extrude",
+                    "start": 2687,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2687,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2715,
                 "start": 2687,
@@ -2775,18 +3272,32 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2798,
-                    "name": "tubeFace",
+                    "name": {
+                      "end": 2798,
+                      "name": "tubeFace",
+                      "start": 2790,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2790,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2789,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2789,
+                    "name": "startSketchOn",
+                    "start": 2776,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2776,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2799,
                 "start": 2776,
@@ -2813,21 +3324,35 @@ description: Result of parsing lego.kcl
                               "left": {
                                 "end": 2861,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 2847,
-                                  "name": "pitch",
+                                  "name": {
+                                    "end": 2847,
+                                    "name": "pitch",
+                                    "start": 2842,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 2842,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
                                   "end": 2861,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 2857,
-                                    "name": "wbumps",
+                                    "name": {
+                                      "end": 2857,
+                                      "name": "wbumps",
+                                      "start": 2851,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 2851,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "-",
                                   "right": {
@@ -2869,11 +3394,18 @@ description: Result of parsing lego.kcl
                             "right": {
                               "end": 2879,
                               "left": {
+                                "abs_path": false,
                                 "end": 2875,
-                                "name": "pitch",
+                                "name": {
+                                  "end": 2875,
+                                  "name": "pitch",
+                                  "start": 2870,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2870,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -2909,21 +3441,35 @@ description: Result of parsing lego.kcl
                               "left": {
                                 "end": 2913,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 2899,
-                                  "name": "pitch",
+                                  "name": {
+                                    "end": 2899,
+                                    "name": "pitch",
+                                    "start": 2894,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 2894,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
                                   "end": 2913,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 2909,
-                                    "name": "lbumps",
+                                    "name": {
+                                      "end": 2909,
+                                      "name": "lbumps",
+                                      "start": 2903,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 2903,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "-",
                                   "right": {
@@ -2965,11 +3511,18 @@ description: Result of parsing lego.kcl
                             "right": {
                               "end": 2931,
                               "left": {
+                                "abs_path": false,
                                 "end": 2927,
-                                "name": "pitch",
+                                "name": {
+                                  "end": 2927,
+                                  "name": "pitch",
+                                  "start": 2922,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2922,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -3015,11 +3568,18 @@ description: Result of parsing lego.kcl
                     "arg": {
                       "end": 2972,
                       "left": {
+                        "abs_path": false,
                         "end": 2968,
-                        "name": "bumpDiam",
+                        "name": {
+                          "end": 2968,
+                          "name": "bumpDiam",
+                          "start": 2960,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2960,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -3040,10 +3600,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2811,
-                  "name": "circle",
+                  "name": {
+                    "end": 2811,
+                    "name": "circle",
+                    "start": 2805,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2805,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2979,
                 "start": 2805,
@@ -3103,11 +3670,18 @@ description: Result of parsing lego.kcl
                     "arg": {
                       "end": 3053,
                       "left": {
+                        "abs_path": false,
                         "end": 3049,
-                        "name": "wbumps",
+                        "name": {
+                          "end": 3049,
+                          "name": "wbumps",
+                          "start": 3043,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3043,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
@@ -3135,19 +3709,33 @@ description: Result of parsing lego.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3078,
-                      "name": "pitch",
+                      "name": {
+                        "end": 3078,
+                        "name": "pitch",
+                        "start": 3073,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3073,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3000,
-                  "name": "patternLinear2d",
+                  "name": {
+                    "end": 3000,
+                    "name": "patternLinear2d",
+                    "start": 2985,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2985,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3085,
                 "start": 2985,
@@ -3207,11 +3795,18 @@ description: Result of parsing lego.kcl
                     "arg": {
                       "end": 3159,
                       "left": {
+                        "abs_path": false,
                         "end": 3155,
-                        "name": "lbumps",
+                        "name": {
+                          "end": 3155,
+                          "name": "lbumps",
+                          "start": 3149,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3149,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
@@ -3239,19 +3834,33 @@ description: Result of parsing lego.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3184,
-                      "name": "pitch",
+                      "name": {
+                        "end": 3184,
+                        "name": "pitch",
+                        "start": 3179,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3179,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3106,
-                  "name": "patternLinear2d",
+                  "name": {
+                    "end": 3106,
+                    "name": "patternLinear2d",
+                    "start": 3091,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3091,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3191,
                 "start": 3091,
@@ -3271,11 +3880,18 @@ description: Result of parsing lego.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 3225,
-                        "name": "bumpHeight",
+                        "name": {
+                          "end": 3225,
+                          "name": "bumpHeight",
+                          "start": 3215,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3215,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 3225,
                       "operator": "-",
@@ -3286,10 +3902,17 @@ description: Result of parsing lego.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3204,
-                  "name": "extrude",
+                  "name": {
+                    "end": 3204,
+                    "name": "extrude",
+                    "start": 3197,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3197,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3226,
                 "start": 3197,
@@ -3335,11 +3958,18 @@ description: Result of parsing lego.kcl
             "start": 248,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 270,
-              "name": "in",
+              "name": {
+                "end": 270,
+                "name": "in",
+                "start": 268,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 268,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing array_range_expr.kcl
 ---
 {
@@ -113,10 +113,17 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 23,
-            "name": "assertEqual",
+            "name": {
+              "end": 23,
+              "name": "assertEqual",
+              "start": 12,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 12,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 70,
           "start": 12,
@@ -197,20 +204,34 @@ description: Result of parsing array_range_expr.kcl
           "init": {
             "end": 107,
             "endElement": {
+              "abs_path": false,
               "end": 106,
-              "name": "four",
+              "name": {
+                "end": 106,
+                "name": "four",
+                "start": 102,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 102,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "endInclusive": true,
             "start": 95,
             "startElement": {
+              "abs_path": false,
               "end": 100,
-              "name": "zero",
+              "name": {
+                "end": 100,
+                "name": "zero",
+                "start": 96,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 96,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"
@@ -285,10 +306,17 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 119,
-            "name": "assertEqual",
+            "name": {
+              "end": 119,
+              "name": "assertEqual",
+              "start": 108,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 108,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 166,
           "start": 108,
@@ -313,11 +341,18 @@ description: Result of parsing array_range_expr.kcl
               {
                 "end": 187,
                 "left": {
+                  "abs_path": false,
                   "end": 183,
-                  "name": "four",
+                  "name": {
+                    "end": 183,
+                    "name": "four",
+                    "start": 179,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 179,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "+",
                 "right": {
@@ -337,10 +372,17 @@ description: Result of parsing array_range_expr.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 178,
-              "name": "int",
+              "name": {
+                "end": 178,
+                "name": "int",
+                "start": 175,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 175,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 188,
             "start": 175,
@@ -368,20 +410,34 @@ description: Result of parsing array_range_expr.kcl
           "init": {
             "end": 206,
             "endElement": {
+              "abs_path": false,
               "end": 205,
-              "name": "five",
+              "name": {
+                "end": 205,
+                "name": "five",
+                "start": 201,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 201,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "endInclusive": true,
             "start": 194,
             "startElement": {
+              "abs_path": false,
               "end": 199,
-              "name": "zero",
+              "name": {
+                "end": 199,
+                "name": "zero",
+                "start": 195,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 195,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"
@@ -456,10 +512,17 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 218,
-            "name": "assertEqual",
+            "name": {
+              "end": 218,
+              "name": "assertEqual",
+              "start": 207,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 207,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 275,
           "start": 207,
@@ -531,10 +594,17 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 287,
-            "name": "assertEqual",
+            "name": {
+              "end": 287,
+              "name": "assertEqual",
+              "start": 276,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 276,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 334,
           "start": 276,
@@ -561,11 +631,18 @@ description: Result of parsing array_range_expr.kcl
                 {
                   "end": 371,
                   "left": {
+                    "abs_path": false,
                     "end": 367,
-                    "name": "five",
+                    "name": {
+                      "end": 367,
+                      "name": "five",
+                      "start": 363,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 363,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "-",
                   "right": {
@@ -585,10 +662,17 @@ description: Result of parsing array_range_expr.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 362,
-                "name": "int",
+                "name": {
+                  "end": 362,
+                  "name": "int",
+                  "start": 359,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 359,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 372,
               "start": 359,
@@ -602,11 +686,18 @@ description: Result of parsing array_range_expr.kcl
                 {
                   "end": 354,
                   "left": {
+                    "abs_path": false,
                     "end": 350,
-                    "name": "zero",
+                    "name": {
+                      "end": 350,
+                      "name": "zero",
+                      "start": 346,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 346,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "+",
                   "right": {
@@ -626,10 +717,17 @@ description: Result of parsing array_range_expr.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 345,
-                "name": "int",
+                "name": {
+                  "end": 345,
+                  "name": "int",
+                  "start": 342,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 342,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 355,
               "start": 342,
@@ -709,10 +807,17 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 385,
-            "name": "assertEqual",
+            "name": {
+              "end": 385,
+              "name": "assertEqual",
+              "start": 374,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 374,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 426,
           "start": 374,
@@ -784,10 +889,17 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 438,
-            "name": "assertEqual",
+            "name": {
+              "end": 438,
+              "name": "assertEqual",
+              "start": 427,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 427,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 488,
           "start": 427,
@@ -859,10 +971,17 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 500,
-            "name": "assertEqual",
+            "name": {
+              "end": 500,
+              "name": "assertEqual",
+              "start": 489,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 489,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 540,
           "start": 489,

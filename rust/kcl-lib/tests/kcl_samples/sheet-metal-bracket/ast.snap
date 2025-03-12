@@ -75,19 +75,33 @@ description: Result of parsing sheet-metal-bracket.kcl
           "init": {
             "end": 528,
             "left": {
+              "abs_path": false,
               "end": 516,
-              "name": "bendRad",
+              "name": {
+                "end": 516,
+                "name": "bendRad",
+                "start": 509,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 509,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "+",
             "right": {
+              "abs_path": false,
               "end": 528,
-              "name": "thickness",
+              "name": {
+                "end": 528,
+                "name": "thickness",
+                "start": 519,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 519,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 509,
             "type": "BinaryExpression",
@@ -270,10 +284,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 717,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 717,
+                    "name": "startSketchOn",
+                    "start": 704,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 704,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 724,
                 "start": 704,
@@ -320,10 +341,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 744,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 744,
+                    "name": "startProfileAt",
+                    "start": 730,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 730,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 755,
                 "start": 730,
@@ -354,11 +382,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 785,
-                          "name": "thickness",
+                          "name": {
+                            "end": 785,
+                            "name": "thickness",
+                            "start": 776,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 776,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 786,
@@ -385,10 +420,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 765,
-                  "name": "line",
+                  "name": {
+                    "end": 765,
+                    "name": "line",
+                    "start": 761,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 761,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 798,
                 "start": 761,
@@ -409,11 +451,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 828,
-                          "name": "flangeLength",
+                          "name": {
+                            "end": 828,
+                            "name": "flangeLength",
+                            "start": 816,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 816,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 831,
@@ -451,10 +500,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 808,
-                  "name": "line",
+                  "name": {
+                    "end": 808,
+                    "name": "line",
+                    "start": 804,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 804,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 844,
                 "start": 804,
@@ -486,11 +542,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 874,
-                          "name": "hatHeight",
+                          "name": {
+                            "end": 874,
+                            "name": "hatHeight",
+                            "start": 865,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 865,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 875,
@@ -517,10 +580,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 854,
-                  "name": "line",
+                  "name": {
+                    "end": 854,
+                    "name": "line",
+                    "start": 850,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 850,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 887,
                 "start": 850,
@@ -541,11 +611,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 913,
-                          "name": "hatWidth",
+                          "name": {
+                            "end": 913,
+                            "name": "hatWidth",
+                            "start": 905,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 905,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 916,
@@ -583,10 +660,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 897,
-                  "name": "line",
+                  "name": {
+                    "end": 897,
+                    "name": "line",
+                    "start": 893,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 893,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 929,
                 "start": 893,
@@ -619,11 +703,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 960,
-                            "name": "hatHeight",
+                            "name": {
+                              "end": 960,
+                              "name": "hatHeight",
+                              "start": 951,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 951,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 960,
                           "operator": "-",
@@ -656,10 +747,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 939,
-                  "name": "line",
+                  "name": {
+                    "end": 939,
+                    "name": "line",
+                    "start": 935,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 935,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 973,
                 "start": 935,
@@ -680,11 +778,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 1003,
-                          "name": "flangeLength",
+                          "name": {
+                            "end": 1003,
+                            "name": "flangeLength",
+                            "start": 991,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 991,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 1006,
@@ -722,10 +827,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 983,
-                  "name": "line",
+                  "name": {
+                    "end": 983,
+                    "name": "line",
+                    "start": 979,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 979,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1019,
                 "start": 979,
@@ -758,11 +870,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 1050,
-                            "name": "thickness",
+                            "name": {
+                              "end": 1050,
+                              "name": "thickness",
+                              "start": 1041,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1041,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 1050,
                           "operator": "-",
@@ -795,10 +914,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1029,
-                  "name": "line",
+                  "name": {
+                    "end": 1029,
+                    "name": "line",
+                    "start": 1025,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1025,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1063,
                 "start": 1025,
@@ -822,11 +948,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "end": 1106,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 1094,
-                              "name": "flangeLength",
+                              "name": {
+                                "end": 1094,
+                                "name": "flangeLength",
+                                "start": 1082,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1082,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 1094,
                             "operator": "-",
@@ -836,11 +969,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 1106,
-                            "name": "thickness",
+                            "name": {
+                              "end": 1106,
+                              "name": "thickness",
+                              "start": 1097,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1097,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 1081,
                           "type": "BinaryExpression",
@@ -882,10 +1022,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1073,
-                  "name": "line",
+                  "name": {
+                    "end": 1073,
+                    "name": "line",
+                    "start": 1069,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1069,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1122,
                 "start": 1069,
@@ -917,11 +1064,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 1152,
-                          "name": "hatHeight",
+                          "name": {
+                            "end": 1152,
+                            "name": "hatHeight",
+                            "start": 1143,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1143,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 1153,
@@ -948,10 +1102,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1132,
-                  "name": "line",
+                  "name": {
+                    "end": 1132,
+                    "name": "line",
+                    "start": 1128,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1128,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1165,
                 "start": 1128,
@@ -975,11 +1136,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "end": 1208,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 1192,
-                              "name": "hatWidth",
+                              "name": {
+                                "end": 1192,
+                                "name": "hatWidth",
+                                "start": 1184,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1184,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 1192,
                             "operator": "-",
@@ -1003,11 +1171,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                             },
                             "operator": "*",
                             "right": {
+                              "abs_path": false,
                               "end": 1208,
-                              "name": "thickness",
+                              "name": {
+                                "end": 1208,
+                                "name": "thickness",
+                                "start": 1199,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1199,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 1195,
                             "type": "BinaryExpression",
@@ -1053,10 +1228,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1175,
-                  "name": "line",
+                  "name": {
+                    "end": 1175,
+                    "name": "line",
+                    "start": 1171,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1171,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1225,
                 "start": 1171,
@@ -1089,11 +1271,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 1256,
-                            "name": "hatHeight",
+                            "name": {
+                              "end": 1256,
+                              "name": "hatHeight",
+                              "start": 1247,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1247,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 1256,
                           "operator": "-",
@@ -1126,10 +1315,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1235,
-                  "name": "line",
+                  "name": {
+                    "end": 1235,
+                    "name": "line",
+                    "start": 1231,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1231,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1270,
                 "start": 1231,
@@ -1157,10 +1353,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1281,
-                  "name": "close",
+                  "name": {
+                    "end": 1281,
+                    "name": "close",
+                    "start": 1276,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1276,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1293,
                 "start": 1276,
@@ -1179,19 +1382,33 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1324,
-                      "name": "hatWidth",
+                      "name": {
+                        "end": 1324,
+                        "name": "hatWidth",
+                        "start": 1316,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1316,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1306,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1306,
+                    "name": "extrude",
+                    "start": 1299,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1299,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1325,
                 "start": 1299,
@@ -1210,11 +1427,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1362,
-                      "name": "bendRad",
+                      "name": {
+                        "end": 1362,
+                        "name": "bendRad",
+                        "start": 1355,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1355,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1230,18 +1454,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1401,
-                              "name": "e2",
+                              "name": {
+                                "end": 1401,
+                                "name": "e2",
+                                "start": 1399,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1399,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1398,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1398,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1379,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1379,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1402,
                           "start": 1379,
@@ -1257,10 +1495,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1337,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1337,
+                    "name": "fillet",
+                    "start": 1331,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1331,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1410,
                 "start": 1331,
@@ -1279,11 +1524,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1454,
-                      "name": "outsideBendRad",
+                      "name": {
+                        "end": 1454,
+                        "name": "outsideBendRad",
+                        "start": 1440,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1440,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1299,18 +1551,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1493,
-                              "name": "e3",
+                              "name": {
+                                "end": 1493,
+                                "name": "e3",
+                                "start": 1491,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1491,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1490,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1490,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1471,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1471,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1494,
                           "start": 1471,
@@ -1326,10 +1592,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1422,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1422,
+                    "name": "fillet",
+                    "start": 1416,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1416,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1502,
                 "start": 1416,
@@ -1348,11 +1621,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1546,
-                      "name": "outsideBendRad",
+                      "name": {
+                        "end": 1546,
+                        "name": "outsideBendRad",
+                        "start": 1532,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1532,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1368,18 +1648,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1585,
-                              "name": "e4",
+                              "name": {
+                                "end": 1585,
+                                "name": "e4",
+                                "start": 1583,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1583,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1582,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1582,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1563,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1563,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1586,
                           "start": 1563,
@@ -1395,10 +1689,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1514,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1514,
+                    "name": "fillet",
+                    "start": 1508,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1508,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1594,
                 "start": 1508,
@@ -1417,11 +1718,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1631,
-                      "name": "bendRad",
+                      "name": {
+                        "end": 1631,
+                        "name": "bendRad",
+                        "start": 1624,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1624,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1437,18 +1745,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1670,
-                              "name": "e5",
+                              "name": {
+                                "end": 1670,
+                                "name": "e5",
+                                "start": 1668,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1668,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1667,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1667,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1648,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1648,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1671,
                           "start": 1648,
@@ -1464,10 +1786,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1606,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1606,
+                    "name": "fillet",
+                    "start": 1600,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1600,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1679,
                 "start": 1600,
@@ -1486,11 +1815,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1723,
-                      "name": "outsideBendRad",
+                      "name": {
+                        "end": 1723,
+                        "name": "outsideBendRad",
+                        "start": 1709,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1709,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1506,18 +1842,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1762,
-                              "name": "e8",
+                              "name": {
+                                "end": 1762,
+                                "name": "e8",
+                                "start": 1760,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1760,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1759,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1759,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1740,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1740,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1763,
                           "start": 1740,
@@ -1533,10 +1883,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1691,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1691,
+                    "name": "fillet",
+                    "start": 1685,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1685,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1771,
                 "start": 1685,
@@ -1555,11 +1912,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1808,
-                      "name": "bendRad",
+                      "name": {
+                        "end": 1808,
+                        "name": "bendRad",
+                        "start": 1801,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1801,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1575,18 +1939,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1847,
-                              "name": "e9",
+                              "name": {
+                                "end": 1847,
+                                "name": "e9",
+                                "start": 1845,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1845,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1844,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1844,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1825,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1825,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1848,
                           "start": 1825,
@@ -1602,10 +1980,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1783,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1783,
+                    "name": "fillet",
+                    "start": 1777,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1777,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1856,
                 "start": 1777,
@@ -1624,11 +2009,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1893,
-                      "name": "bendRad",
+                      "name": {
+                        "end": 1893,
+                        "name": "bendRad",
+                        "start": 1886,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1886,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1644,18 +2036,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1933,
-                              "name": "e10",
+                              "name": {
+                                "end": 1933,
+                                "name": "e10",
+                                "start": 1930,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1930,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1929,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1929,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1910,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1910,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1934,
                           "start": 1910,
@@ -1671,10 +2077,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1868,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1868,
+                    "name": "fillet",
+                    "start": 1862,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1862,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1942,
                 "start": 1862,
@@ -1693,11 +2106,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1986,
-                      "name": "outsideBendRad",
+                      "name": {
+                        "end": 1986,
+                        "name": "outsideBendRad",
+                        "start": 1972,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1972,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1713,18 +2133,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2026,
-                              "name": "e11",
+                              "name": {
+                                "end": 2026,
+                                "name": "e11",
+                                "start": 2023,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2023,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2022,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 2022,
+                              "name": "getNextAdjacentEdge",
+                              "start": 2003,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2003,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2027,
                           "start": 2003,
@@ -1740,10 +2174,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1954,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1954,
+                    "name": "fillet",
+                    "start": 1948,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1948,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2035,
                 "start": 1948,
@@ -1806,10 +2247,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2107,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2107,
+                    "name": "startSketchOn",
+                    "start": 2094,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2094,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2113,
                 "start": 2094,
@@ -1856,10 +2304,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2133,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2133,
+                    "name": "startProfileAt",
+                    "start": 2119,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2119,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2144,
                 "start": 2119,
@@ -1890,11 +2345,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 2173,
-                          "name": "hatWidth",
+                          "name": {
+                            "end": 2173,
+                            "name": "hatWidth",
+                            "start": 2165,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2165,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 2174,
@@ -1905,10 +2367,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2154,
-                  "name": "line",
+                  "name": {
+                    "end": 2154,
+                    "name": "line",
+                    "start": 2150,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2150,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2175,
                 "start": 2150,
@@ -1929,11 +2398,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 2204,
-                          "name": "flangeWidth",
+                          "name": {
+                            "end": 2204,
+                            "name": "flangeWidth",
+                            "start": 2193,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2193,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 2207,
@@ -1971,10 +2447,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2185,
-                  "name": "line",
+                  "name": {
+                    "end": 2185,
+                    "name": "line",
+                    "start": 2181,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2181,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2221,
                 "start": 2181,
@@ -2007,11 +2490,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 2251,
-                            "name": "hatWidth",
+                            "name": {
+                              "end": 2251,
+                              "name": "hatWidth",
+                              "start": 2243,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2243,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 2251,
                           "operator": "-",
@@ -2044,10 +2534,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2231,
-                  "name": "line",
+                  "name": {
+                    "end": 2231,
+                    "name": "line",
+                    "start": 2227,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2227,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2265,
                 "start": 2227,
@@ -2058,10 +2555,17 @@ description: Result of parsing sheet-metal-bracket.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2276,
-                  "name": "close",
+                  "name": {
+                    "end": 2276,
+                    "name": "close",
+                    "start": 2271,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2271,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2278,
                 "start": 2271,
@@ -2120,19 +2624,33 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "end": 2348,
-                          "name": "boltSize",
+                          "name": {
+                            "end": 2348,
+                            "name": "boltSize",
+                            "start": 2340,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2340,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2295,
-                      "name": "circle",
+                      "name": {
+                        "end": 2295,
+                        "name": "circle",
+                        "start": 2289,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2289,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2355,
                     "start": 2289,
@@ -2148,10 +2666,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2288,
-                  "name": "hole",
+                  "name": {
+                    "end": 2288,
+                    "name": "hole",
+                    "start": 2284,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2284,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2359,
                 "start": 2284,
@@ -2210,19 +2735,33 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "end": 2429,
-                          "name": "boltSize",
+                          "name": {
+                            "end": 2429,
+                            "name": "boltSize",
+                            "start": 2421,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2421,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2376,
-                      "name": "circle",
+                      "name": {
+                        "end": 2376,
+                        "name": "circle",
+                        "start": 2370,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2370,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2436,
                     "start": 2370,
@@ -2238,10 +2777,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2369,
-                  "name": "hole",
+                  "name": {
+                    "end": 2369,
+                    "name": "hole",
+                    "start": 2365,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2365,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2440,
                 "start": 2365,
@@ -2259,19 +2805,33 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2472,
-                      "name": "thickness",
+                      "name": {
+                        "end": 2472,
+                        "name": "thickness",
+                        "start": 2463,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2463,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2453,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2453,
+                    "name": "extrude",
+                    "start": 2446,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2446,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2473,
                 "start": 2446,
@@ -2314,18 +2874,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2556,
-                              "name": "e13",
+                              "name": {
+                                "end": 2556,
+                                "name": "e13",
+                                "start": 2553,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2553,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2552,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 2552,
+                              "name": "getNextAdjacentEdge",
+                              "start": 2533,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2533,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2557,
                           "start": 2533,
@@ -2335,18 +2909,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2591,
-                              "name": "e14",
+                              "name": {
+                                "end": 2591,
+                                "name": "e14",
+                                "start": 2588,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2588,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2587,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 2587,
+                              "name": "getNextAdjacentEdge",
+                              "start": 2568,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2568,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2592,
                           "start": 2568,
@@ -2362,10 +2950,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2485,
-                  "name": "fillet",
+                  "name": {
+                    "end": 2485,
+                    "name": "fillet",
+                    "start": 2479,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2479,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2608,
                 "start": 2479,
@@ -2411,10 +3006,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2633,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2633,
+                    "name": "startSketchOn",
+                    "start": 2620,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2620,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2639,
                 "start": 2620,
@@ -2468,10 +3070,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2659,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2659,
+                    "name": "startProfileAt",
+                    "start": 2645,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2645,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2671,
                 "start": 2645,
@@ -2502,11 +3111,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 2700,
-                          "name": "hatWidth",
+                          "name": {
+                            "end": 2700,
+                            "name": "hatWidth",
+                            "start": 2692,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2692,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 2701,
@@ -2517,10 +3133,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2681,
-                  "name": "line",
+                  "name": {
+                    "end": 2681,
+                    "name": "line",
+                    "start": 2677,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2677,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2702,
                 "start": 2677,
@@ -2542,11 +3165,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "elements": [
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 2732,
-                            "name": "flangeWidth",
+                            "name": {
+                              "end": 2732,
+                              "name": "flangeWidth",
+                              "start": 2721,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2721,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 2732,
                           "operator": "-",
@@ -2590,10 +3220,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2712,
-                  "name": "line",
+                  "name": {
+                    "end": 2712,
+                    "name": "line",
+                    "start": 2708,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2708,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2749,
                 "start": 2708,
@@ -2626,11 +3263,18 @@ description: Result of parsing sheet-metal-bracket.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 2779,
-                            "name": "hatWidth",
+                            "name": {
+                              "end": 2779,
+                              "name": "hatWidth",
+                              "start": 2771,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2771,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 2779,
                           "operator": "-",
@@ -2663,10 +3307,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2759,
-                  "name": "line",
+                  "name": {
+                    "end": 2759,
+                    "name": "line",
+                    "start": 2755,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2755,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2793,
                 "start": 2755,
@@ -2677,10 +3328,17 @@ description: Result of parsing sheet-metal-bracket.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2804,
-                  "name": "close",
+                  "name": {
+                    "end": 2804,
+                    "name": "close",
+                    "start": 2799,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2799,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2806,
                 "start": 2799,
@@ -2746,19 +3404,33 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "end": 2877,
-                          "name": "boltSize",
+                          "name": {
+                            "end": 2877,
+                            "name": "boltSize",
+                            "start": 2869,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2869,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2823,
-                      "name": "circle",
+                      "name": {
+                        "end": 2823,
+                        "name": "circle",
+                        "start": 2817,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2817,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2884,
                     "start": 2817,
@@ -2774,10 +3446,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2816,
-                  "name": "hole",
+                  "name": {
+                    "end": 2816,
+                    "name": "hole",
+                    "start": 2812,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2812,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2888,
                 "start": 2812,
@@ -2843,19 +3522,33 @@ description: Result of parsing sheet-metal-bracket.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "end": 2959,
-                          "name": "boltSize",
+                          "name": {
+                            "end": 2959,
+                            "name": "boltSize",
+                            "start": 2951,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2951,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2905,
-                      "name": "circle",
+                      "name": {
+                        "end": 2905,
+                        "name": "circle",
+                        "start": 2899,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2899,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2966,
                     "start": 2899,
@@ -2871,10 +3564,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2898,
-                  "name": "hole",
+                  "name": {
+                    "end": 2898,
+                    "name": "hole",
+                    "start": 2894,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2894,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2970,
                 "start": 2894,
@@ -2892,19 +3592,33 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3002,
-                      "name": "thickness",
+                      "name": {
+                        "end": 3002,
+                        "name": "thickness",
+                        "start": 2993,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2993,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2983,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2983,
+                    "name": "extrude",
+                    "start": 2976,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2976,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3003,
                 "start": 2976,
@@ -2947,18 +3661,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 3087,
-                              "name": "e15",
+                              "name": {
+                                "end": 3087,
+                                "name": "e15",
+                                "start": 3084,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3084,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3083,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 3083,
+                              "name": "getNextAdjacentEdge",
+                              "start": 3064,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3064,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3088,
                           "start": 3064,
@@ -2968,18 +3696,32 @@ description: Result of parsing sheet-metal-bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 3122,
-                              "name": "e16",
+                              "name": {
+                                "end": 3122,
+                                "name": "e16",
+                                "start": 3119,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3119,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3118,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 3118,
+                              "name": "getNextAdjacentEdge",
+                              "start": 3099,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3099,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3123,
                           "start": 3099,
@@ -2995,10 +3737,17 @@ description: Result of parsing sheet-metal-bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3015,
-                  "name": "fillet",
+                  "name": {
+                    "end": 3015,
+                    "name": "fillet",
+                    "start": 3009,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3009,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3139,
                 "start": 3009,
@@ -3044,11 +3793,18 @@ description: Result of parsing sheet-metal-bracket.kcl
             "start": 330,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 352,
-              "name": "in",
+              "name": {
+                "end": 352,
+                "name": "in",
+                "start": 350,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 350,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

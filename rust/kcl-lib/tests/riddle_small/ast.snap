@@ -54,19 +54,33 @@ description: Result of parsing riddle_small.kcl
                       "left": {
                         "end": 46,
                         "left": {
+                          "abs_path": false,
                           "end": 42,
-                          "name": "ANSWER",
+                          "name": {
+                            "end": 42,
+                            "name": "ANSWER",
+                            "start": 36,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 36,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
+                          "abs_path": false,
                           "end": 46,
-                          "name": "s",
+                          "name": {
+                            "end": 46,
+                            "name": "s",
+                            "start": 45,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 45,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 36,
                         "type": "BinaryExpression",
@@ -224,18 +238,32 @@ description: Result of parsing riddle_small.kcl
               "left": {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 106,
-                    "name": "xs",
+                    "name": {
+                      "end": 106,
+                      "name": "xs",
+                      "start": 104,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 104,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 103,
-                  "name": "t",
+                  "name": {
+                    "end": 103,
+                    "name": "t",
+                    "start": 102,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 102,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 107,
                 "start": 102,
@@ -299,18 +327,32 @@ description: Result of parsing riddle_small.kcl
               "left": {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 129,
-                    "name": "ys",
+                    "name": {
+                      "end": 129,
+                      "name": "ys",
+                      "start": 127,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 127,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 126,
-                  "name": "t",
+                  "name": {
+                    "end": 126,
+                    "name": "t",
+                    "start": 125,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 125,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 130,
                 "start": 125,
@@ -369,10 +411,17 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 154,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 154,
+                    "name": "startSketchOn",
+                    "start": 141,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 141,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 160,
                 "start": 141,
@@ -384,18 +433,32 @@ description: Result of parsing riddle_small.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 184,
-                        "name": "ox",
+                        "name": {
+                          "end": 184,
+                          "name": "ox",
+                          "start": 182,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 182,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
+                        "abs_path": false,
                         "end": 188,
-                        "name": "oy",
+                        "name": {
+                          "end": 188,
+                          "name": "oy",
+                          "start": 186,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 186,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 189,
@@ -411,10 +474,17 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 180,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 180,
+                    "name": "startProfileAt",
+                    "start": 166,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 166,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 193,
                 "start": 166,
@@ -464,10 +534,17 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 203,
-                  "name": "line",
+                  "name": {
+                    "end": 203,
+                    "name": "line",
+                    "start": 199,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 199,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 217,
                 "start": 199,
@@ -525,10 +602,17 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 227,
-                  "name": "line",
+                  "name": {
+                    "end": 227,
+                    "name": "line",
+                    "start": 223,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 223,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 242,
                 "start": 223,
@@ -586,10 +670,17 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 252,
-                  "name": "line",
+                  "name": {
+                    "end": 252,
+                    "name": "line",
+                    "start": 248,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 248,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 267,
                 "start": 248,
@@ -607,10 +698,17 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 278,
-                  "name": "close",
+                  "name": {
+                    "end": 278,
+                    "name": "close",
+                    "start": 273,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 273,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 281,
                 "start": 273,
@@ -641,10 +739,17 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 294,
-                  "name": "extrude",
+                  "name": {
+                    "end": 294,
+                    "name": "extrude",
+                    "start": 287,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 287,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 306,
                 "start": 287,

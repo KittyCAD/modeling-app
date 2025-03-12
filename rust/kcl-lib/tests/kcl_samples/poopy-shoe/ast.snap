@@ -231,10 +231,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 271,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 271,
+                    "name": "startSketchOn",
+                    "start": 258,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 258,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 278,
                 "start": 258,
@@ -248,11 +255,18 @@ description: Result of parsing poopy-shoe.kcl
                       {
                         "end": 314,
                         "left": {
+                          "abs_path": false,
                           "end": 310,
-                          "name": "wallsWidth",
+                          "name": {
+                            "end": 310,
+                            "name": "wallsWidth",
+                            "start": 300,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 300,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -295,10 +309,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 298,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 298,
+                    "name": "startProfileAt",
+                    "start": 284,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 284,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 322,
                 "start": 284,
@@ -318,11 +339,18 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "end": 360,
                       "left": {
+                        "abs_path": false,
                         "end": 356,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 356,
+                          "name": "wallThickness",
+                          "start": 343,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 343,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -343,10 +371,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 333,
-                  "name": "xLine",
+                  "name": {
+                    "end": 333,
+                    "name": "xLine",
+                    "start": 328,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 328,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 361,
                 "start": 328,
@@ -392,11 +427,18 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 395,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 410,
-                          "name": "wallsWidth",
+                          "name": {
+                            "end": 410,
+                            "name": "wallsWidth",
+                            "start": 400,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 400,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -419,10 +461,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 380,
-                  "name": "angledLineToX",
+                  "name": {
+                    "end": 380,
+                    "name": "angledLineToX",
+                    "start": 367,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 367,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 424,
                 "start": 367,
@@ -440,19 +489,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 456,
-                      "name": "height",
+                      "name": {
+                        "end": 456,
+                        "name": "height",
+                        "start": 450,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 450,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 435,
-                  "name": "yLine",
+                  "name": {
+                    "end": 435,
+                    "name": "yLine",
+                    "start": 430,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 430,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 457,
                 "start": 430,
@@ -472,11 +535,18 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 492,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 492,
+                          "name": "wallThickness",
+                          "start": 479,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 479,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 492,
                       "operator": "-",
@@ -487,10 +557,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 468,
-                  "name": "xLine",
+                  "name": {
+                    "end": 468,
+                    "name": "xLine",
+                    "start": 463,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 463,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 493,
                 "start": 463,
@@ -511,18 +588,32 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "abs_path": false,
                           "end": 532,
-                          "name": "seg01",
+                          "name": {
+                            "end": 532,
+                            "name": "seg01",
+                            "start": 527,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 527,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 526,
-                        "name": "segEndY",
+                        "name": {
+                          "end": 526,
+                          "name": "segEndY",
+                          "start": 519,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 519,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 533,
                       "start": 519,
@@ -532,10 +623,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 504,
-                  "name": "yLine",
+                  "name": {
+                    "end": 504,
+                    "name": "yLine",
+                    "start": 499,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 499,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 534,
                 "start": 499,
@@ -585,11 +683,18 @@ description: Result of parsing poopy-shoe.kcl
                           "left": {
                             "end": 601,
                             "left": {
+                              "abs_path": false,
                               "end": 597,
-                              "name": "wallsWidth",
+                              "name": {
+                                "end": 597,
+                                "name": "wallsWidth",
+                                "start": 587,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 587,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -611,11 +716,18 @@ description: Result of parsing poopy-shoe.kcl
                           "right": {
                             "end": 621,
                             "left": {
+                              "abs_path": false,
                               "end": 617,
-                              "name": "wallThickness",
+                              "name": {
+                                "end": 617,
+                                "name": "wallThickness",
+                                "start": 604,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 604,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -651,10 +763,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 553,
-                  "name": "angledLineToX",
+                  "name": {
+                    "end": 553,
+                    "name": "angledLineToX",
+                    "start": 540,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 540,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 632,
                 "start": 540,
@@ -673,11 +792,18 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 667,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 667,
+                          "name": "wallThickness",
+                          "start": 654,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 654,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 667,
                       "operator": "-",
@@ -688,10 +814,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 643,
-                  "name": "xLine",
+                  "name": {
+                    "end": 643,
+                    "name": "xLine",
+                    "start": 638,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 638,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 668,
                 "start": 638,
@@ -755,11 +888,18 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 708,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 726,
-                          "name": "wallThickness",
+                          "name": {
+                            "end": 726,
+                            "name": "wallThickness",
+                            "start": 713,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 713,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -775,10 +915,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 687,
-                  "name": "angledLineToX",
+                  "name": {
+                    "end": 687,
+                    "name": "angledLineToX",
+                    "start": 674,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 674,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 732,
                 "start": 674,
@@ -796,19 +943,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 764,
-                      "name": "height",
+                      "name": {
+                        "end": 764,
+                        "name": "height",
+                        "start": 758,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 758,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 743,
-                  "name": "yLine",
+                  "name": {
+                    "end": 743,
+                    "name": "yLine",
+                    "start": 738,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 738,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 765,
                 "start": 738,
@@ -840,10 +1001,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 776,
-                  "name": "xLine",
+                  "name": {
+                    "end": 776,
+                    "name": "xLine",
+                    "start": 771,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 771,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 793,
                 "start": 771,
@@ -864,18 +1032,32 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "abs_path": false,
                           "end": 832,
-                          "name": "seg01",
+                          "name": {
+                            "end": 832,
+                            "name": "seg01",
+                            "start": 827,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 827,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 826,
-                        "name": "segEndY",
+                        "name": {
+                          "end": 826,
+                          "name": "segEndY",
+                          "start": 819,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 819,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 833,
                       "start": 819,
@@ -885,10 +1067,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 804,
-                  "name": "yLine",
+                  "name": {
+                    "end": 804,
+                    "name": "yLine",
+                    "start": 799,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 799,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 834,
                 "start": 799,
@@ -976,10 +1165,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 853,
-                  "name": "angledLineToY",
+                  "name": {
+                    "end": 853,
+                    "name": "angledLineToY",
+                    "start": 840,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 840,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 886,
                 "start": 840,
@@ -989,10 +1185,17 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 897,
-                  "name": "close",
+                  "name": {
+                    "end": 897,
+                    "name": "close",
+                    "start": 892,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 892,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 899,
                 "start": 892,
@@ -1143,11 +1346,18 @@ description: Result of parsing poopy-shoe.kcl
                                     {
                                       "end": 1020,
                                       "left": {
+                                        "abs_path": false,
                                         "end": 1012,
-                                        "name": "height",
+                                        "name": {
+                                          "end": 1012,
+                                          "name": "height",
+                                          "start": 1006,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 1006,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "operator": "+",
                                       "right": {
@@ -1190,18 +1400,32 @@ description: Result of parsing poopy-shoe.kcl
                 "type": "ObjectExpression"
               },
               {
+                "abs_path": false,
                 "end": 1044,
-                "name": "sketch001",
+                "name": {
+                  "end": 1044,
+                  "name": "sketch001",
+                  "start": 1035,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1035,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 917,
-              "name": "revolve",
+              "name": {
+                "end": 917,
+                "name": "revolve",
+                "start": 910,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 910,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1045,
             "start": 910,
@@ -1240,10 +1464,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1072,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1072,
+                    "name": "startSketchOn",
+                    "start": 1059,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1059,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1079,
                 "start": 1059,
@@ -1257,11 +1488,18 @@ description: Result of parsing poopy-shoe.kcl
                       {
                         "end": 1115,
                         "left": {
+                          "abs_path": false,
                           "end": 1111,
-                          "name": "wallsWidth",
+                          "name": {
+                            "end": 1111,
+                            "name": "wallsWidth",
+                            "start": 1101,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1101,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -1304,10 +1542,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1099,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1099,
+                    "name": "startProfileAt",
+                    "start": 1085,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1085,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1123,
                 "start": 1085,
@@ -1327,11 +1572,18 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "end": 1161,
                       "left": {
+                        "abs_path": false,
                         "end": 1157,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 1157,
+                          "name": "wallThickness",
+                          "start": 1144,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1144,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -1352,10 +1604,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1134,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1134,
+                    "name": "xLine",
+                    "start": 1129,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1129,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1162,
                 "start": 1129,
@@ -1401,11 +1660,18 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 1196,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 1211,
-                          "name": "wallsWidth",
+                          "name": {
+                            "end": 1211,
+                            "name": "wallsWidth",
+                            "start": 1201,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1201,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -1428,10 +1694,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1181,
-                  "name": "angledLineToX",
+                  "name": {
+                    "end": 1181,
+                    "name": "angledLineToX",
+                    "start": 1168,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1168,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1225,
                 "start": 1168,
@@ -1449,19 +1722,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1257,
-                      "name": "height",
+                      "name": {
+                        "end": 1257,
+                        "name": "height",
+                        "start": 1251,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1251,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1236,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1236,
+                    "name": "yLine",
+                    "start": 1231,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1231,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1258,
                 "start": 1231,
@@ -1481,11 +1768,18 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 1293,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 1293,
+                          "name": "wallThickness",
+                          "start": 1280,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1280,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 1293,
                       "operator": "-",
@@ -1496,10 +1790,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1269,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1269,
+                    "name": "xLine",
+                    "start": 1264,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1264,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1294,
                 "start": 1264,
@@ -1520,18 +1821,32 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "abs_path": false,
                           "end": 1333,
-                          "name": "seg01",
+                          "name": {
+                            "end": 1333,
+                            "name": "seg01",
+                            "start": 1328,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1328,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 1327,
-                        "name": "segEndY",
+                        "name": {
+                          "end": 1327,
+                          "name": "segEndY",
+                          "start": 1320,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1320,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 1334,
                       "start": 1320,
@@ -1541,10 +1856,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1305,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1305,
+                    "name": "yLine",
+                    "start": 1300,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1300,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1335,
                 "start": 1300,
@@ -1594,11 +1916,18 @@ description: Result of parsing poopy-shoe.kcl
                           "left": {
                             "end": 1402,
                             "left": {
+                              "abs_path": false,
                               "end": 1398,
-                              "name": "wallsWidth",
+                              "name": {
+                                "end": 1398,
+                                "name": "wallsWidth",
+                                "start": 1388,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1388,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -1620,11 +1949,18 @@ description: Result of parsing poopy-shoe.kcl
                           "right": {
                             "end": 1422,
                             "left": {
+                              "abs_path": false,
                               "end": 1418,
-                              "name": "wallThickness",
+                              "name": {
+                                "end": 1418,
+                                "name": "wallThickness",
+                                "start": 1405,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1405,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -1660,10 +1996,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1354,
-                  "name": "angledLineToX",
+                  "name": {
+                    "end": 1354,
+                    "name": "angledLineToX",
+                    "start": 1341,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1341,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1433,
                 "start": 1341,
@@ -1682,11 +2025,18 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 1468,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 1468,
+                          "name": "wallThickness",
+                          "start": 1455,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1455,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 1468,
                       "operator": "-",
@@ -1697,10 +2047,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1444,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1444,
+                    "name": "xLine",
+                    "start": 1439,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1439,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1469,
                 "start": 1439,
@@ -1764,11 +2121,18 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 1509,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 1527,
-                          "name": "wallThickness",
+                          "name": {
+                            "end": 1527,
+                            "name": "wallThickness",
+                            "start": 1514,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1514,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -1784,10 +2148,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1488,
-                  "name": "angledLineToX",
+                  "name": {
+                    "end": 1488,
+                    "name": "angledLineToX",
+                    "start": 1475,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1475,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1533,
                 "start": 1475,
@@ -1805,19 +2176,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1565,
-                      "name": "height",
+                      "name": {
+                        "end": 1565,
+                        "name": "height",
+                        "start": 1559,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1559,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1544,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1544,
+                    "name": "yLine",
+                    "start": 1539,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1539,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1566,
                 "start": 1539,
@@ -1849,10 +2234,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1577,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1577,
+                    "name": "xLine",
+                    "start": 1572,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1572,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1594,
                 "start": 1572,
@@ -1873,18 +2265,32 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "abs_path": false,
                           "end": 1633,
-                          "name": "seg02",
+                          "name": {
+                            "end": 1633,
+                            "name": "seg02",
+                            "start": 1628,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1628,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 1627,
-                        "name": "segEndY",
+                        "name": {
+                          "end": 1627,
+                          "name": "segEndY",
+                          "start": 1620,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1620,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 1634,
                       "start": 1620,
@@ -1894,10 +2300,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1605,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1605,
+                    "name": "yLine",
+                    "start": 1600,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1600,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1635,
                 "start": 1600,
@@ -1985,10 +2398,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1654,
-                  "name": "angledLineToY",
+                  "name": {
+                    "end": 1654,
+                    "name": "angledLineToY",
+                    "start": 1641,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1641,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1687,
                 "start": 1641,
@@ -1998,10 +2418,17 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 1698,
-                  "name": "close",
+                  "name": {
+                    "end": 1698,
+                    "name": "close",
+                    "start": 1693,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1693,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1700,
                 "start": 1693,
@@ -2021,19 +2448,33 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "end": 1742,
                       "left": {
+                        "abs_path": false,
                         "end": 1733,
-                        "name": "backLength",
+                        "name": {
+                          "end": 1733,
+                          "name": "backLength",
+                          "start": 1723,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1723,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
+                        "abs_path": false,
                         "end": 1742,
-                        "name": "height",
+                        "name": {
+                          "end": 1742,
+                          "name": "height",
+                          "start": 1736,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1736,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 1723,
                       "type": "BinaryExpression",
@@ -2042,10 +2483,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1713,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1713,
+                    "name": "extrude",
+                    "start": 1706,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1706,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1743,
                 "start": 1706,
@@ -2144,11 +2592,18 @@ description: Result of parsing poopy-shoe.kcl
                                 "left": {
                                   "end": 1827,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 1823,
-                                    "name": "wallsWidth",
+                                    "name": {
+                                      "end": 1823,
+                                      "name": "wallsWidth",
+                                      "start": 1813,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1813,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "/",
                                   "right": {
@@ -2170,11 +2625,18 @@ description: Result of parsing poopy-shoe.kcl
                                 "right": {
                                   "end": 1848,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 1844,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 1844,
+                                      "name": "wallThickness",
+                                      "start": 1831,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1831,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "/",
                                   "right": {
@@ -2527,18 +2989,32 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2025,
-                    "name": "customPlane",
+                    "name": {
+                      "end": 2025,
+                      "name": "customPlane",
+                      "start": 2014,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2014,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2013,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2013,
+                    "name": "startSketchOn",
+                    "start": 2000,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2000,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2026,
                 "start": 2000,
@@ -2585,10 +3061,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2046,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2046,
+                    "name": "startProfileAt",
+                    "start": 2032,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2032,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2057,
                 "start": 2032,
@@ -2633,11 +3116,18 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 2092,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 2107,
-                          "name": "height",
+                          "name": {
+                            "end": 2107,
+                            "name": "height",
+                            "start": 2101,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2101,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -2653,10 +3143,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2076,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 2076,
+                    "name": "tangentialArc",
+                    "start": 2063,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2063,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2113,
                 "start": 2063,
@@ -2725,10 +3222,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2132,
-                  "name": "angledLineToY",
+                  "name": {
+                    "end": 2132,
+                    "name": "angledLineToY",
+                    "start": 2119,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2119,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2159,
                 "start": 2119,
@@ -2738,10 +3242,17 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2170,
-                  "name": "close",
+                  "name": {
+                    "end": 2170,
+                    "name": "close",
+                    "start": 2165,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2165,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2172,
                 "start": 2165,
@@ -2759,19 +3270,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2208,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 2208,
+                        "name": "wallThickness",
+                        "start": 2195,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2195,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2185,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2185,
+                    "name": "extrude",
+                    "start": 2178,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2178,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2209,
                 "start": 2178,
@@ -2808,11 +3333,18 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2246,
-                    "name": "sketch002",
+                    "name": {
+                      "end": 2246,
+                      "name": "sketch002",
+                      "start": 2237,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2237,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 2253,
@@ -2824,10 +3356,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2236,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2236,
+                    "name": "startSketchOn",
+                    "start": 2223,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2223,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2254,
                 "start": 2223,
@@ -2874,10 +3413,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2274,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2274,
+                    "name": "startProfileAt",
+                    "start": 2260,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2260,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2285,
                 "start": 2260,
@@ -2895,19 +3441,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2317,
-                      "name": "height",
+                      "name": {
+                        "end": 2317,
+                        "name": "height",
+                        "start": 2311,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2311,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2296,
-                  "name": "yLine",
+                  "name": {
+                    "end": 2296,
+                    "name": "yLine",
+                    "start": 2291,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2291,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2318,
                 "start": 2291,
@@ -2926,19 +3486,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2357,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 2357,
+                        "name": "wallThickness",
+                        "start": 2344,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2344,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2329,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2329,
+                    "name": "xLine",
+                    "start": 2324,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2324,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2358,
                 "start": 2324,
@@ -2959,18 +3533,32 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "abs_path": false,
                           "end": 2397,
-                          "name": "seg01",
+                          "name": {
+                            "end": 2397,
+                            "name": "seg01",
+                            "start": 2392,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2392,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 2391,
-                        "name": "segEndY",
+                        "name": {
+                          "end": 2391,
+                          "name": "segEndY",
+                          "start": 2384,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2384,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 2398,
                       "start": 2384,
@@ -2980,10 +3568,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2369,
-                  "name": "yLine",
+                  "name": {
+                    "end": 2369,
+                    "name": "yLine",
+                    "start": 2364,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2364,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2399,
                 "start": 2364,
@@ -3051,11 +3646,18 @@ description: Result of parsing poopy-shoe.kcl
                           "left": {
                             "end": 2472,
                             "left": {
+                              "abs_path": false,
                               "end": 2468,
-                              "name": "wallsWidth",
+                              "name": {
+                                "end": 2468,
+                                "name": "wallsWidth",
+                                "start": 2458,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2458,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -3077,11 +3679,18 @@ description: Result of parsing poopy-shoe.kcl
                           "right": {
                             "end": 2493,
                             "left": {
+                              "abs_path": false,
                               "end": 2489,
-                              "name": "wallThickness",
+                              "name": {
+                                "end": 2489,
+                                "name": "wallThickness",
+                                "start": 2476,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2476,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -3117,10 +3726,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2418,
-                  "name": "angledLineToX",
+                  "name": {
+                    "end": 2418,
+                    "name": "angledLineToX",
+                    "start": 2405,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2405,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2505,
                 "start": 2405,
@@ -3138,19 +3754,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2539,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 2539,
+                        "name": "wallThickness",
+                        "start": 2526,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2526,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2516,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2516,
+                    "name": "xLine",
+                    "start": 2511,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2511,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2540,
                 "start": 2511,
@@ -3198,18 +3828,32 @@ description: Result of parsing poopy-shoe.kcl
                         "value": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2592,
-                              "name": "seg01",
+                              "name": {
+                                "end": 2592,
+                                "name": "seg01",
+                                "start": 2587,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2587,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2586,
-                            "name": "segEndY",
+                            "name": {
+                              "end": 2586,
+                              "name": "segEndY",
+                              "start": 2579,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2579,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2593,
                           "start": 2579,
@@ -3230,10 +3874,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2559,
-                  "name": "angledLineToY",
+                  "name": {
+                    "end": 2559,
+                    "name": "angledLineToY",
+                    "start": 2546,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2546,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2599,
                 "start": 2546,
@@ -3251,19 +3902,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2631,
-                      "name": "height",
+                      "name": {
+                        "end": 2631,
+                        "name": "height",
+                        "start": 2625,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2625,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2610,
-                  "name": "yLine",
+                  "name": {
+                    "end": 2610,
+                    "name": "yLine",
+                    "start": 2605,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2605,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2632,
                 "start": 2605,
@@ -3282,19 +3947,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2666,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 2666,
+                        "name": "wallThickness",
+                        "start": 2653,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2653,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2643,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2643,
+                    "name": "xLine",
+                    "start": 2638,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2638,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2667,
                 "start": 2638,
@@ -3313,19 +3992,33 @@ description: Result of parsing poopy-shoe.kcl
                           "left": {
                             "end": 2723,
                             "left": {
+                              "abs_path": false,
                               "end": 2710,
-                              "name": "frontLength",
+                              "name": {
+                                "end": 2710,
+                                "name": "frontLength",
+                                "start": 2699,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2699,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "-",
                             "right": {
+                              "abs_path": false,
                               "end": 2723,
-                              "name": "wallsWidth",
+                              "name": {
+                                "end": 2723,
+                                "name": "wallsWidth",
+                                "start": 2713,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2713,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 2699,
                             "type": "BinaryExpression",
@@ -3349,11 +4042,18 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "abs_path": false,
                           "end": 2741,
-                          "name": "wallsWidth",
+                          "name": {
+                            "end": 2741,
+                            "name": "wallsWidth",
+                            "start": 2731,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2731,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 2699,
                         "type": "BinaryExpression",
@@ -3362,11 +4062,18 @@ description: Result of parsing poopy-shoe.kcl
                       {
                         "end": 2785,
                         "left": {
+                          "abs_path": false,
                           "end": 2756,
-                          "name": "height",
+                          "name": {
+                            "end": 2756,
+                            "name": "height",
+                            "start": 2750,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2750,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
@@ -3374,19 +4081,33 @@ description: Result of parsing poopy-shoe.kcl
                           "left": {
                             "end": 2780,
                             "left": {
+                              "abs_path": false,
                               "end": 2767,
-                              "name": "height",
+                              "name": {
+                                "end": 2767,
+                                "name": "height",
+                                "start": 2761,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2761,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "-",
                             "right": {
+                              "abs_path": false,
                               "end": 2780,
-                              "name": "exitHeight",
+                              "name": {
+                                "end": 2780,
+                                "name": "exitHeight",
+                                "start": 2770,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2770,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 2761,
                             "type": "BinaryExpression",
@@ -3426,10 +4147,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2688,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 2688,
+                    "name": "tangentialArcTo",
+                    "start": 2673,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2673,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2797,
                 "start": 2673,
@@ -3441,18 +4169,32 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 2831,
-                        "name": "frontLength",
+                        "name": {
+                          "end": 2831,
+                          "name": "frontLength",
+                          "start": 2820,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2820,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
+                        "abs_path": false,
                         "end": 2843,
-                        "name": "exitHeight",
+                        "name": {
+                          "end": 2843,
+                          "name": "exitHeight",
+                          "start": 2833,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2833,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 2844,
@@ -3468,10 +4210,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2818,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 2818,
+                    "name": "tangentialArcTo",
+                    "start": 2803,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2803,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2848,
                 "start": 2803,
@@ -3502,10 +4251,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2859,
-                  "name": "yLine",
+                  "name": {
+                    "end": 2859,
+                    "name": "yLine",
+                    "start": 2854,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2854,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2876,
                 "start": 2854,
@@ -3533,10 +4289,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2887,
-                  "name": "close",
+                  "name": {
+                    "end": 2887,
+                    "name": "close",
+                    "start": 2882,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2882,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2901,
                 "start": 2882,
@@ -3555,19 +4318,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2937,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 2937,
+                        "name": "wallThickness",
+                        "start": 2924,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2924,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2914,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2914,
+                    "name": "extrude",
+                    "start": 2907,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2907,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2938,
                 "start": 2907,
@@ -3664,19 +4441,33 @@ description: Result of parsing poopy-shoe.kcl
                                 "left": {
                                   "end": 3019,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 3010,
-                                    "name": "backLength",
+                                    "name": {
+                                      "end": 3010,
+                                      "name": "backLength",
+                                      "start": 3000,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 3000,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "-",
                                   "right": {
+                                    "abs_path": false,
                                     "end": 3019,
-                                    "name": "height",
+                                    "name": {
+                                      "end": 3019,
+                                      "name": "height",
+                                      "start": 3013,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 3013,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 3000,
                                   "type": "BinaryExpression",
@@ -3684,11 +4475,18 @@ description: Result of parsing poopy-shoe.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 3032,
-                                  "name": "wallsWidth",
+                                  "name": {
+                                    "end": 3032,
+                                    "name": "wallsWidth",
+                                    "start": 3022,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3022,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 3000,
                                 "type": "BinaryExpression",
@@ -4045,18 +4843,32 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 3222,
-                    "name": "customPlane2",
+                    "name": {
+                      "end": 3222,
+                      "name": "customPlane2",
+                      "start": 3210,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 3210,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3209,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 3209,
+                    "name": "startSketchOn",
+                    "start": 3196,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3196,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3223,
                 "start": 3196,
@@ -4103,10 +4915,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3243,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 3243,
+                    "name": "startProfileAt",
+                    "start": 3229,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3229,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3254,
                 "start": 3229,
@@ -4124,19 +4943,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3286,
-                      "name": "height",
+                      "name": {
+                        "end": 3286,
+                        "name": "height",
+                        "start": 3280,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3280,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3265,
-                  "name": "yLine",
+                  "name": {
+                    "end": 3265,
+                    "name": "yLine",
+                    "start": 3260,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3260,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3287,
                 "start": 3260,
@@ -4155,19 +4988,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3323,
-                      "name": "wallsWidth",
+                      "name": {
+                        "end": 3323,
+                        "name": "wallsWidth",
+                        "start": 3313,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3313,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3298,
-                  "name": "xLine",
+                  "name": {
+                    "end": 3298,
+                    "name": "xLine",
+                    "start": 3293,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3293,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3324,
                 "start": 3293,
@@ -4186,19 +5033,33 @@ description: Result of parsing poopy-shoe.kcl
                           "left": {
                             "end": 3380,
                             "left": {
+                              "abs_path": false,
                               "end": 3367,
-                              "name": "frontLength",
+                              "name": {
+                                "end": 3367,
+                                "name": "frontLength",
+                                "start": 3356,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3356,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "-",
                             "right": {
+                              "abs_path": false,
                               "end": 3380,
-                              "name": "wallsWidth",
+                              "name": {
+                                "end": 3380,
+                                "name": "wallsWidth",
+                                "start": 3370,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3370,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 3356,
                             "type": "BinaryExpression",
@@ -4222,11 +5083,18 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "abs_path": false,
                           "end": 3398,
-                          "name": "wallsWidth",
+                          "name": {
+                            "end": 3398,
+                            "name": "wallsWidth",
+                            "start": 3388,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3388,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 3356,
                         "type": "BinaryExpression",
@@ -4235,11 +5103,18 @@ description: Result of parsing poopy-shoe.kcl
                       {
                         "end": 3442,
                         "left": {
+                          "abs_path": false,
                           "end": 3413,
-                          "name": "height",
+                          "name": {
+                            "end": 3413,
+                            "name": "height",
+                            "start": 3407,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3407,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
@@ -4247,19 +5122,33 @@ description: Result of parsing poopy-shoe.kcl
                           "left": {
                             "end": 3437,
                             "left": {
+                              "abs_path": false,
                               "end": 3424,
-                              "name": "height",
+                              "name": {
+                                "end": 3424,
+                                "name": "height",
+                                "start": 3418,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3418,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "-",
                             "right": {
+                              "abs_path": false,
                               "end": 3437,
-                              "name": "exitHeight",
+                              "name": {
+                                "end": 3437,
+                                "name": "exitHeight",
+                                "start": 3427,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3427,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 3418,
                             "type": "BinaryExpression",
@@ -4299,10 +5188,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3345,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 3345,
+                    "name": "tangentialArcTo",
+                    "start": 3330,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3330,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3454,
                 "start": 3330,
@@ -4314,18 +5210,32 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 3488,
-                        "name": "frontLength",
+                        "name": {
+                          "end": 3488,
+                          "name": "frontLength",
+                          "start": 3477,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3477,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
+                        "abs_path": false,
                         "end": 3500,
-                        "name": "exitHeight",
+                        "name": {
+                          "end": 3500,
+                          "name": "exitHeight",
+                          "start": 3490,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3490,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 3501,
@@ -4341,10 +5251,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3475,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 3475,
+                    "name": "tangentialArcTo",
+                    "start": 3460,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3460,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3505,
                 "start": 3460,
@@ -4391,10 +5308,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3516,
-                  "name": "yLine",
+                  "name": {
+                    "end": 3516,
+                    "name": "yLine",
+                    "start": 3511,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3511,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3547,
                 "start": 3511,
@@ -4405,10 +5329,17 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 3558,
-                  "name": "close",
+                  "name": {
+                    "end": 3558,
+                    "name": "close",
+                    "start": 3553,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3553,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3560,
                 "start": 3553,
@@ -4426,19 +5357,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3596,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 3596,
+                        "name": "wallThickness",
+                        "start": 3583,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3583,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3573,
-                  "name": "extrude",
+                  "name": {
+                    "end": 3573,
+                    "name": "extrude",
+                    "start": 3566,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3566,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3597,
                 "start": 3566,
@@ -4475,25 +5420,46 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 3634,
-                    "name": "sketch005",
+                    "name": {
+                      "end": 3634,
+                      "name": "sketch005",
+                      "start": 3625,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 3625,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "end": 3641,
-                    "name": "seg03",
+                    "name": {
+                      "end": 3641,
+                      "name": "seg03",
+                      "start": 3636,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 3636,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3624,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 3624,
+                    "name": "startSketchOn",
+                    "start": 3611,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3611,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3642,
                 "start": 3611,
@@ -4539,19 +5505,33 @@ description: Result of parsing poopy-shoe.kcl
                         "right": {
                           "end": 3692,
                           "left": {
+                            "abs_path": false,
                             "end": 3683,
-                            "name": "backLength",
+                            "name": {
+                              "end": 3683,
+                              "name": "backLength",
+                              "start": 3673,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3673,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 3692,
-                            "name": "height",
+                            "name": {
+                              "end": 3692,
+                              "name": "height",
+                              "start": 3686,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3686,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 3673,
                           "type": "BinaryExpression",
@@ -4575,10 +5555,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3662,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 3662,
+                    "name": "startProfileAt",
+                    "start": 3648,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3648,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3698,
                 "start": 3648,
@@ -4597,11 +5584,18 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 3735,
-                        "name": "exitHeight",
+                        "name": {
+                          "end": 3735,
+                          "name": "exitHeight",
+                          "start": 3725,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3725,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 3735,
                       "operator": "-",
@@ -4612,10 +5606,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3709,
-                  "name": "xLine",
+                  "name": {
+                    "end": 3709,
+                    "name": "xLine",
+                    "start": 3704,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3704,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3736,
                 "start": 3704,
@@ -4635,11 +5636,18 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 3768,
-                        "name": "wallsWidth",
+                        "name": {
+                          "end": 3768,
+                          "name": "wallsWidth",
+                          "start": 3758,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3758,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 3768,
                       "operator": "-",
@@ -4650,10 +5658,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3747,
-                  "name": "yLine",
+                  "name": {
+                    "end": 3747,
+                    "name": "yLine",
+                    "start": 3742,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3742,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3769,
                 "start": 3742,
@@ -4685,10 +5700,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3780,
-                  "name": "xLine",
+                  "name": {
+                    "end": 3780,
+                    "name": "xLine",
+                    "start": 3775,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3775,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3797,
                 "start": 3775,
@@ -4699,10 +5721,17 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 3808,
-                  "name": "close",
+                  "name": {
+                    "end": 3808,
+                    "name": "close",
+                    "start": 3803,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3803,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3810,
                 "start": 3803,
@@ -4720,19 +5749,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3846,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 3846,
+                        "name": "wallThickness",
+                        "start": 3833,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3833,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3823,
-                  "name": "extrude",
+                  "name": {
+                    "end": 3823,
+                    "name": "extrude",
+                    "start": 3816,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3816,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3847,
                 "start": 3816,
@@ -4769,11 +5812,18 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 3884,
-                    "name": "sketch004",
+                    "name": {
+                      "end": 3884,
+                      "name": "sketch004",
+                      "start": 3875,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 3875,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 3891,
@@ -4785,10 +5835,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3874,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 3874,
+                    "name": "startSketchOn",
+                    "start": 3861,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3861,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3892,
                 "start": 3861,
@@ -4835,10 +5892,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3912,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 3912,
+                    "name": "startProfileAt",
+                    "start": 3898,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3898,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3923,
                 "start": 3898,
@@ -4856,19 +5920,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3962,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 3962,
+                        "name": "wallThickness",
+                        "start": 3949,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3949,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3934,
-                  "name": "xLine",
+                  "name": {
+                    "end": 3934,
+                    "name": "xLine",
+                    "start": 3929,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3929,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3963,
                 "start": 3929,
@@ -4887,19 +5965,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3995,
-                      "name": "height",
+                      "name": {
+                        "end": 3995,
+                        "name": "height",
+                        "start": 3989,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3989,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3974,
-                  "name": "yLine",
+                  "name": {
+                    "end": 3974,
+                    "name": "yLine",
+                    "start": 3969,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3969,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3996,
                 "start": 3969,
@@ -4931,10 +6023,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4007,
-                  "name": "xLine",
+                  "name": {
+                    "end": 4007,
+                    "name": "xLine",
+                    "start": 4002,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4002,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4024,
                 "start": 4002,
@@ -4945,10 +6044,17 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 4035,
-                  "name": "close",
+                  "name": {
+                    "end": 4035,
+                    "name": "close",
+                    "start": 4030,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4030,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4037,
                 "start": 4030,
@@ -4968,11 +6074,18 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "end": 4091,
                       "left": {
+                        "abs_path": false,
                         "end": 4070,
-                        "name": "wallsWidth",
+                        "name": {
+                          "end": 4070,
+                          "name": "wallsWidth",
+                          "start": 4060,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4060,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
@@ -4990,11 +6103,18 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "abs_path": false,
                           "end": 4091,
-                          "name": "wallThickness",
+                          "name": {
+                            "end": 4091,
+                            "name": "wallThickness",
+                            "start": 4078,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4078,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 4074,
                         "type": "BinaryExpression",
@@ -5007,10 +6127,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4050,
-                  "name": "extrude",
+                  "name": {
+                    "end": 4050,
+                    "name": "extrude",
+                    "start": 4043,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4043,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4093,
                 "start": 4043,
@@ -5107,19 +6234,33 @@ description: Result of parsing poopy-shoe.kcl
                                 "left": {
                                   "end": 4174,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 4165,
-                                    "name": "backLength",
+                                    "name": {
+                                      "end": 4165,
+                                      "name": "backLength",
+                                      "start": 4155,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 4155,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "-",
                                   "right": {
+                                    "abs_path": false,
                                     "end": 4174,
-                                    "name": "height",
+                                    "name": {
+                                      "end": 4174,
+                                      "name": "height",
+                                      "start": 4168,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 4168,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 4155,
                                   "type": "BinaryExpression",
@@ -5127,11 +6268,18 @@ description: Result of parsing poopy-shoe.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 4187,
-                                  "name": "wallsWidth",
+                                  "name": {
+                                    "end": 4187,
+                                    "name": "wallsWidth",
+                                    "start": 4177,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 4177,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 4155,
                                 "type": "BinaryExpression",
@@ -5175,11 +6323,18 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 4209,
                             "type": "ObjectProperty",
                             "value": {
+                              "abs_path": false,
                               "end": 4226,
-                              "name": "wallThickness",
+                              "name": {
+                                "end": 4226,
+                                "name": "wallThickness",
+                                "start": 4213,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 4213,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
@@ -5484,18 +6639,32 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 4390,
-                    "name": "customPlane3",
+                    "name": {
+                      "end": 4390,
+                      "name": "customPlane3",
+                      "start": 4378,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 4378,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4377,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 4377,
+                    "name": "startSketchOn",
+                    "start": 4364,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4364,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4391,
                 "start": 4364,
@@ -5507,18 +6676,32 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 4426,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 4426,
+                          "name": "wallThickness",
+                          "start": 4413,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4413,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
+                        "abs_path": false,
                         "end": 4441,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 4441,
+                          "name": "wallThickness",
+                          "start": 4428,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4428,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 4442,
@@ -5534,10 +6717,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4411,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 4411,
+                    "name": "startProfileAt",
+                    "start": 4397,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4397,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4446,
                 "start": 4397,
@@ -5555,19 +6745,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 4483,
-                      "name": "frontLength",
+                      "name": {
+                        "end": 4483,
+                        "name": "frontLength",
+                        "start": 4472,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 4472,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4457,
-                  "name": "xLine",
+                  "name": {
+                    "end": 4457,
+                    "name": "xLine",
+                    "start": 4452,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4452,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4484,
                 "start": 4452,
@@ -5588,11 +6792,18 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "end": 4536,
                       "left": {
+                        "abs_path": false,
                         "end": 4515,
-                        "name": "wallsWidth",
+                        "name": {
+                          "end": 4515,
+                          "name": "wallsWidth",
+                          "start": 4505,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4505,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
@@ -5610,11 +6821,18 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "abs_path": false,
                           "end": 4536,
-                          "name": "wallThickness",
+                          "name": {
+                            "end": 4536,
+                            "name": "wallThickness",
+                            "start": 4523,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4523,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 4519,
                         "type": "BinaryExpression",
@@ -5627,10 +6845,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4495,
-                  "name": "yLine",
+                  "name": {
+                    "end": 4495,
+                    "name": "yLine",
+                    "start": 4490,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4490,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4538,
                 "start": 4490,
@@ -5649,19 +6874,33 @@ description: Result of parsing poopy-shoe.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 4577,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 4577,
+                        "name": "wallThickness",
+                        "start": 4564,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 4564,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4549,
-                  "name": "xLine",
+                  "name": {
+                    "end": 4549,
+                    "name": "xLine",
+                    "start": 4544,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4544,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4578,
                 "start": 4544,
@@ -5672,10 +6911,17 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 4589,
-                  "name": "close",
+                  "name": {
+                    "end": 4589,
+                    "name": "close",
+                    "start": 4584,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4584,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4591,
                 "start": 4584,
@@ -5694,11 +6940,18 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 4628,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 4628,
+                          "name": "wallThickness",
+                          "start": 4615,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4615,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 4628,
                       "operator": "-",
@@ -5709,10 +6962,17 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4604,
-                  "name": "extrude",
+                  "name": {
+                    "end": 4604,
+                    "name": "extrude",
+                    "start": 4597,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4597,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4629,
                 "start": 4597,
@@ -5758,11 +7018,18 @@ description: Result of parsing poopy-shoe.kcl
             "start": 101,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 123,
-              "name": "in",
+              "name": {
+                "end": 123,
+                "name": "in",
+                "start": 121,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 121,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

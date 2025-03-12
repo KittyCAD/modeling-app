@@ -230,19 +230,33 @@ description: Result of parsing parametric.kcl
                       "left": {
                         "end": 175,
                         "left": {
+                          "abs_path": false,
                           "end": 171,
-                          "name": "distance",
+                          "name": {
+                            "end": 171,
+                            "name": "distance",
+                            "start": 163,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 163,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
+                          "abs_path": false,
                           "end": 175,
-                          "name": "p",
+                          "name": {
+                            "end": 175,
+                            "name": "p",
+                            "start": 174,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 174,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 163,
                         "type": "BinaryExpression",
@@ -250,11 +264,18 @@ description: Result of parsing parametric.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "abs_path": false,
                         "end": 181,
-                        "name": "FOS",
+                        "name": {
+                          "end": 181,
+                          "name": "FOS",
+                          "start": 178,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 178,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 163,
                       "type": "BinaryExpression",
@@ -278,11 +299,18 @@ description: Result of parsing parametric.kcl
                   },
                   "operator": "/",
                   "right": {
+                    "abs_path": false,
                     "end": 198,
-                    "name": "sigmaAllow",
+                    "name": {
+                      "end": 198,
+                      "name": "sigmaAllow",
+                      "start": 188,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 188,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 163,
                   "type": "BinaryExpression",
@@ -290,11 +318,18 @@ description: Result of parsing parametric.kcl
                 },
                 "operator": "/",
                 "right": {
+                  "abs_path": false,
                   "end": 206,
-                  "name": "width",
+                  "name": {
+                    "end": 206,
+                    "name": "width",
+                    "start": 201,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 201,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "start": 163,
                 "type": "BinaryExpression",
@@ -302,10 +337,17 @@ description: Result of parsing parametric.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 162,
-              "name": "sqrt",
+              "name": {
+                "end": 162,
+                "name": "sqrt",
+                "start": 158,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 158,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 207,
             "start": 158,
@@ -344,10 +386,17 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 241,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 241,
+                    "name": "startSketchOn",
+                    "start": 228,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 228,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 247,
                 "start": 228,
@@ -394,10 +443,17 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 267,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 267,
+                    "name": "startProfileAt",
+                    "start": 253,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 253,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 278,
                 "start": 253,
@@ -428,11 +484,18 @@ description: Result of parsing parametric.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 303,
-                          "name": "leg1",
+                          "name": {
+                            "end": 303,
+                            "name": "leg1",
+                            "start": 299,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 299,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 304,
@@ -443,10 +506,17 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 288,
-                  "name": "line",
+                  "name": {
+                    "end": 288,
+                    "name": "line",
+                    "start": 284,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 284,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 305,
                 "start": 284,
@@ -467,11 +537,18 @@ description: Result of parsing parametric.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 327,
-                          "name": "leg2",
+                          "name": {
+                            "end": 327,
+                            "name": "leg2",
+                            "start": 323,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 323,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 330,
@@ -493,10 +570,17 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 315,
-                  "name": "line",
+                  "name": {
+                    "end": 315,
+                    "name": "line",
+                    "start": 311,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 311,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 332,
                 "start": 311,
@@ -529,11 +613,18 @@ description: Result of parsing parametric.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 363,
-                            "name": "thickness",
+                            "name": {
+                              "end": 363,
+                              "name": "thickness",
+                              "start": 354,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 354,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 363,
                           "operator": "-",
@@ -550,10 +641,17 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 342,
-                  "name": "line",
+                  "name": {
+                    "end": 342,
+                    "name": "line",
+                    "start": 338,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 338,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 365,
                 "start": 338,
@@ -577,11 +675,18 @@ description: Result of parsing parametric.kcl
                           "end": 400,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 388,
-                              "name": "leg2",
+                              "name": {
+                                "end": 388,
+                                "name": "leg2",
+                                "start": 384,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 384,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 388,
                             "operator": "-",
@@ -591,11 +696,18 @@ description: Result of parsing parametric.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 400,
-                            "name": "thickness",
+                            "name": {
+                              "end": 400,
+                              "name": "thickness",
+                              "start": 391,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 391,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 383,
                           "type": "BinaryExpression",
@@ -621,10 +733,17 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 375,
-                  "name": "line",
+                  "name": {
+                    "end": 375,
+                    "name": "line",
+                    "start": 371,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 371,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 405,
                 "start": 371,
@@ -659,11 +778,18 @@ description: Result of parsing parametric.kcl
                           "end": 443,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 431,
-                              "name": "leg1",
+                              "name": {
+                                "end": 431,
+                                "name": "leg1",
+                                "start": 427,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 427,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 431,
                             "operator": "-",
@@ -673,11 +799,18 @@ description: Result of parsing parametric.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 443,
-                            "name": "thickness",
+                            "name": {
+                              "end": 443,
+                              "name": "thickness",
+                              "start": 434,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 434,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 426,
                           "type": "BinaryExpression",
@@ -692,10 +825,17 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 415,
-                  "name": "line",
+                  "name": {
+                    "end": 415,
+                    "name": "line",
+                    "start": 411,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 411,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 445,
                 "start": 411,
@@ -713,10 +853,17 @@ description: Result of parsing parametric.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 456,
-                  "name": "close",
+                  "name": {
+                    "end": 456,
+                    "name": "close",
+                    "start": 451,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 451,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 459,
                 "start": 451,
@@ -734,19 +881,33 @@ description: Result of parsing parametric.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 487,
-                      "name": "width",
+                      "name": {
+                        "end": 487,
+                        "name": "width",
+                        "start": 482,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 482,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 472,
-                  "name": "extrude",
+                  "name": {
+                    "end": 472,
+                    "name": "extrude",
+                    "start": 465,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 465,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 488,
                 "start": 465,

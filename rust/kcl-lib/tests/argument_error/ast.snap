@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing argument_error.kcl
 ---
 {
@@ -68,11 +68,18 @@ description: Result of parsing argument_error.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 29,
-              "name": "f",
+              "name": {
+                "end": 29,
+                "name": "f",
+                "start": 28,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 28,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "elements": [
@@ -106,10 +113,17 @@ description: Result of parsing argument_error.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 27,
-            "name": "map",
+            "name": {
+              "end": 27,
+              "name": "map",
+              "start": 24,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 24,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 38,
           "start": 24,

@@ -29,11 +29,18 @@ description: Result of parsing import_transform.kcl
         "expression": {
           "body": [
             {
+              "abs_path": false,
               "end": 50,
-              "name": "screw",
+              "name": {
+                "end": 50,
+                "name": "screw",
+                "start": 45,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 45,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "arguments": [
@@ -99,10 +106,17 @@ description: Result of parsing import_transform.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 62,
-                "name": "rotate",
+                "name": {
+                  "end": 62,
+                  "name": "rotate",
+                  "start": 56,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 56,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 140,
               "start": 56,
@@ -169,10 +183,17 @@ description: Result of parsing import_transform.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 155,
-                "name": "translate",
+                "name": {
+                  "end": 155,
+                  "name": "translate",
+                  "start": 146,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 146,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 190,
               "start": 146,
@@ -239,10 +260,17 @@ description: Result of parsing import_transform.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 201,
-                "name": "scale",
+                "name": {
+                  "end": 201,
+                  "name": "scale",
+                  "start": 196,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 196,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 232,
               "start": 196,

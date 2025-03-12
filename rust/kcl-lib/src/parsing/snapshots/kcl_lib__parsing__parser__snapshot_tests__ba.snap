@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -27,10 +27,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 26,
-                "name": "startSketchOn",
+                "name": {
+                  "end": 26,
+                  "name": "startSketchOn",
+                  "start": 13,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 13,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 32,
               "start": 13,
@@ -47,10 +54,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 123,
-                "name": "startProfileAt",
+                "name": {
+                  "end": 123,
+                  "name": "startProfileAt",
+                  "start": 109,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 109,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 126,
               "start": 109,

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing comparisons.kcl
 ---
 {
@@ -48,10 +48,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 6,
-            "name": "assert",
+            "name": {
+              "end": 6,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 26,
           "start": 0,
@@ -105,10 +112,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 33,
-            "name": "assert",
+            "name": {
+              "end": 33,
+              "name": "assert",
+              "start": 27,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 27,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 67,
           "start": 27,
@@ -162,10 +176,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 74,
-            "name": "assert",
+            "name": {
+              "end": 74,
+              "name": "assert",
+              "start": 68,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 68,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 98,
           "start": 68,
@@ -219,10 +240,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 105,
-            "name": "assert",
+            "name": {
+              "end": 105,
+              "name": "assert",
+              "start": 99,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 99,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 143,
           "start": 99,
@@ -276,10 +304,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 150,
-            "name": "assert",
+            "name": {
+              "end": 150,
+              "name": "assert",
+              "start": 144,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 144,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 163,
           "start": 144,
@@ -333,10 +368,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 170,
-            "name": "assert",
+            "name": {
+              "end": 170,
+              "name": "assert",
+              "start": 164,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 164,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 201,
           "start": 164,
@@ -390,10 +432,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 208,
-            "name": "assert",
+            "name": {
+              "end": 208,
+              "name": "assert",
+              "start": 202,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 202,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 239,
           "start": 202,
@@ -447,10 +496,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 246,
-            "name": "assert",
+            "name": {
+              "end": 246,
+              "name": "assert",
+              "start": 240,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 240,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 259,
           "start": 240,
@@ -504,10 +560,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 266,
-            "name": "assert",
+            "name": {
+              "end": 266,
+              "name": "assert",
+              "start": 260,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 260,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 297,
           "start": 260,
@@ -561,10 +624,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 304,
-            "name": "assert",
+            "name": {
+              "end": 304,
+              "name": "assert",
+              "start": 298,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 298,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 335,
           "start": 298,
@@ -618,10 +688,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 343,
-            "name": "assert",
+            "name": {
+              "end": 343,
+              "name": "assert",
+              "start": 337,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 337,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 375,
           "start": 337,
@@ -682,10 +759,17 @@ description: Result of parsing comparisons.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 382,
-            "name": "assert",
+            "name": {
+              "end": 382,
+              "name": "assert",
+              "start": 376,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 376,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 428,
           "start": 376,

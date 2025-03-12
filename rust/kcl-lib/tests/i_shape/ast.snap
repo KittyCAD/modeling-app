@@ -315,18 +315,32 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 415,
-                    "name": "XY",
+                    "name": {
+                      "end": 415,
+                      "name": "XY",
+                      "start": 413,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 413,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 412,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 412,
+                    "name": "startSketchOn",
+                    "start": 399,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 399,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 416,
                 "start": 399,
@@ -338,11 +352,18 @@ description: Result of parsing i_shape.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 451,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 451,
+                          "name": "corner_radius",
+                          "start": 438,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 438,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
                         "end": 454,
@@ -369,10 +390,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 436,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 436,
+                    "name": "startProfileAt",
+                    "start": 422,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 422,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 459,
                 "start": 422,
@@ -394,19 +422,33 @@ description: Result of parsing i_shape.kcl
                         {
                           "end": 498,
                           "left": {
+                            "abs_path": false,
                             "end": 482,
-                            "name": "width",
+                            "name": {
+                              "end": 482,
+                              "name": "width",
+                              "start": 477,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 477,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 498,
-                            "name": "corner_radius",
+                            "name": {
+                              "end": 498,
+                              "name": "corner_radius",
+                              "start": 485,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 485,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 477,
                           "type": "BinaryExpression",
@@ -432,10 +474,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 469,
-                  "name": "line",
+                  "name": {
+                    "end": 469,
+                    "name": "line",
+                    "start": 465,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 465,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 505,
                 "start": 465,
@@ -448,18 +497,32 @@ description: Result of parsing i_shape.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 549,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 549,
+                          "name": "corner_radius",
+                          "start": 536,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 536,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
+                        "abs_path": false,
                         "end": 564,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 564,
+                          "name": "corner_radius",
+                          "start": 551,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 551,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 565,
@@ -475,10 +538,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 534,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 534,
+                    "name": "tangentialArcToRelative",
+                    "start": 511,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 511,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 569,
                 "start": 511,
@@ -510,11 +580,18 @@ description: Result of parsing i_shape.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "abs_path": false,
                         "end": 610,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 610,
+                          "name": "corner_radius",
+                          "start": 597,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 597,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 590,
                       "type": "BinaryExpression",
@@ -523,10 +600,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 580,
-                  "name": "yLine",
+                  "name": {
+                    "end": 580,
+                    "name": "yLine",
+                    "start": 575,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 575,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 611,
                 "start": 575,
@@ -540,11 +624,18 @@ description: Result of parsing i_shape.kcl
                     "elements": [
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 656,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 656,
+                            "name": "corner_radius",
+                            "start": 643,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 643,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 656,
                         "operator": "-",
@@ -553,11 +644,18 @@ description: Result of parsing i_shape.kcl
                         "type": "UnaryExpression"
                       },
                       {
+                        "abs_path": false,
                         "end": 671,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 671,
+                          "name": "corner_radius",
+                          "start": 658,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 658,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 672,
@@ -573,10 +671,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 640,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 640,
+                    "name": "tangentialArcToRelative",
+                    "start": 617,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 617,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 676,
                 "start": 617,
@@ -625,11 +730,18 @@ description: Result of parsing i_shape.kcl
                         "right": {
                           "end": 744,
                           "left": {
+                            "abs_path": false,
                             "end": 740,
-                            "name": "corner_radius",
+                            "name": {
+                              "end": 740,
+                              "name": "corner_radius",
+                              "start": 727,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 727,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "*",
                           "right": {
@@ -660,10 +772,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 687,
-                  "name": "xLine",
+                  "name": {
+                    "end": 687,
+                    "name": "xLine",
+                    "start": 682,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 682,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 747,
                 "start": 682,
@@ -677,11 +796,18 @@ description: Result of parsing i_shape.kcl
                     "elements": [
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 792,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 792,
+                            "name": "corner_radius",
+                            "start": 779,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 779,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 792,
                         "operator": "-",
@@ -690,11 +816,18 @@ description: Result of parsing i_shape.kcl
                         "type": "UnaryExpression"
                       },
                       {
+                        "abs_path": false,
                         "end": 807,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 807,
+                          "name": "corner_radius",
+                          "start": 794,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 794,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 808,
@@ -710,10 +843,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 776,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 776,
+                    "name": "tangentialArcToRelative",
+                    "start": 753,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 753,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 812,
                 "start": 753,
@@ -737,11 +877,18 @@ description: Result of parsing i_shape.kcl
                         "left": {
                           "end": 846,
                           "left": {
+                            "abs_path": false,
                             "end": 839,
-                            "name": "length",
+                            "name": {
+                              "end": 839,
+                              "name": "length",
+                              "start": 833,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 833,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
@@ -779,11 +926,18 @@ description: Result of parsing i_shape.kcl
                       "right": {
                         "end": 874,
                         "left": {
+                          "abs_path": false,
                           "end": 870,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 870,
+                            "name": "corner_radius",
+                            "start": 857,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 857,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -808,10 +962,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 823,
-                  "name": "yLine",
+                  "name": {
+                    "end": 823,
+                    "name": "yLine",
+                    "start": 818,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 818,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 876,
                 "start": 818,
@@ -824,18 +985,32 @@ description: Result of parsing i_shape.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 920,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 920,
+                          "name": "corner_radius",
+                          "start": 907,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 907,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
+                        "abs_path": false,
                         "end": 935,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 935,
+                          "name": "corner_radius",
+                          "start": 922,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 922,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 936,
@@ -851,10 +1026,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 905,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 905,
+                    "name": "tangentialArcToRelative",
+                    "start": 882,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 882,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 940,
                 "start": 882,
@@ -888,11 +1070,18 @@ description: Result of parsing i_shape.kcl
                       "right": {
                         "end": 986,
                         "left": {
+                          "abs_path": false,
                           "end": 982,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 982,
+                            "name": "corner_radius",
+                            "start": 969,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 969,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -917,10 +1106,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 951,
-                  "name": "xLine",
+                  "name": {
+                    "end": 951,
+                    "name": "xLine",
+                    "start": 946,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 946,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 988,
                 "start": 946,
@@ -933,18 +1129,32 @@ description: Result of parsing i_shape.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 1032,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 1032,
+                          "name": "corner_radius",
+                          "start": 1019,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1019,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
+                        "abs_path": false,
                         "end": 1047,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 1047,
+                          "name": "corner_radius",
+                          "start": 1034,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1034,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 1048,
@@ -960,10 +1170,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1017,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 1017,
+                    "name": "tangentialArcToRelative",
+                    "start": 994,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 994,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1052,
                 "start": 994,
@@ -995,11 +1212,18 @@ description: Result of parsing i_shape.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "abs_path": false,
                         "end": 1093,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 1093,
+                          "name": "corner_radius",
+                          "start": 1080,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1080,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 1073,
                       "type": "BinaryExpression",
@@ -1008,10 +1232,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1063,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1063,
+                    "name": "yLine",
+                    "start": 1058,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1058,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1094,
                 "start": 1058,
@@ -1025,11 +1256,18 @@ description: Result of parsing i_shape.kcl
                     "elements": [
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1139,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1139,
+                            "name": "corner_radius",
+                            "start": 1126,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1126,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1139,
                         "operator": "-",
@@ -1038,11 +1276,18 @@ description: Result of parsing i_shape.kcl
                         "type": "UnaryExpression"
                       },
                       {
+                        "abs_path": false,
                         "end": 1154,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 1154,
+                          "name": "corner_radius",
+                          "start": 1141,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1141,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 1155,
@@ -1058,10 +1303,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1123,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 1123,
+                    "name": "tangentialArcToRelative",
+                    "start": 1100,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1100,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1159,
                 "start": 1100,
@@ -1086,11 +1338,18 @@ description: Result of parsing i_shape.kcl
                           "left": {
                             "end": 1203,
                             "left": {
+                              "abs_path": false,
                               "end": 1196,
-                              "name": "hand_thickness",
+                              "name": {
+                                "end": 1196,
+                                "name": "hand_thickness",
+                                "start": 1182,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1182,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
@@ -1128,11 +1387,18 @@ description: Result of parsing i_shape.kcl
                         "right": {
                           "end": 1231,
                           "left": {
+                            "abs_path": false,
                             "end": 1227,
-                            "name": "corner_radius",
+                            "name": {
+                              "end": 1227,
+                              "name": "corner_radius",
+                              "start": 1214,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1214,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "*",
                           "right": {
@@ -1163,10 +1429,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1170,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1170,
+                    "name": "xLine",
+                    "start": 1165,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1165,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1234,
                 "start": 1165,
@@ -1180,11 +1453,18 @@ description: Result of parsing i_shape.kcl
                     "elements": [
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1279,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1279,
+                            "name": "corner_radius",
+                            "start": 1266,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1266,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1279,
                         "operator": "-",
@@ -1194,11 +1474,18 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1295,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1295,
+                            "name": "corner_radius",
+                            "start": 1282,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1282,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1295,
                         "operator": "-",
@@ -1220,10 +1507,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1263,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 1263,
+                    "name": "tangentialArcToRelative",
+                    "start": 1240,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1240,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1300,
                 "start": 1240,
@@ -1256,11 +1550,18 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "abs_path": false,
                           "end": 1343,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1343,
+                            "name": "corner_radius",
+                            "start": 1330,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1330,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 1323,
                         "type": "BinaryExpression",
@@ -1275,10 +1576,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1311,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1311,
+                    "name": "yLine",
+                    "start": 1306,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1306,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1345,
                 "start": 1306,
@@ -1291,19 +1599,33 @@ description: Result of parsing i_shape.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 1389,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 1389,
+                          "name": "corner_radius",
+                          "start": 1376,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1376,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1405,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1405,
+                            "name": "corner_radius",
+                            "start": 1392,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1392,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1405,
                         "operator": "-",
@@ -1325,10 +1647,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1374,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 1374,
+                    "name": "tangentialArcToRelative",
+                    "start": 1351,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1351,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1410,
                 "start": 1351,
@@ -1362,11 +1691,18 @@ description: Result of parsing i_shape.kcl
                       "right": {
                         "end": 1456,
                         "left": {
+                          "abs_path": false,
                           "end": 1452,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1452,
+                            "name": "corner_radius",
+                            "start": 1439,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1439,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -1391,10 +1727,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1421,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1421,
+                    "name": "xLine",
+                    "start": 1416,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1416,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1458,
                 "start": 1416,
@@ -1407,19 +1750,33 @@ description: Result of parsing i_shape.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 1502,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 1502,
+                          "name": "corner_radius",
+                          "start": 1489,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1489,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1518,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1518,
+                            "name": "corner_radius",
+                            "start": 1505,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1505,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1518,
                         "operator": "-",
@@ -1441,10 +1798,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1487,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 1487,
+                    "name": "tangentialArcToRelative",
+                    "start": 1464,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1464,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1523,
                 "start": 1464,
@@ -1469,11 +1833,18 @@ description: Result of parsing i_shape.kcl
                           "left": {
                             "end": 1559,
                             "left": {
+                              "abs_path": false,
                               "end": 1552,
-                              "name": "length",
+                              "name": {
+                                "end": 1552,
+                                "name": "length",
+                                "start": 1546,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1546,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "-",
                             "right": {
@@ -1511,11 +1882,18 @@ description: Result of parsing i_shape.kcl
                         "right": {
                           "end": 1587,
                           "left": {
+                            "abs_path": false,
                             "end": 1583,
-                            "name": "corner_radius",
+                            "name": {
+                              "end": 1583,
+                              "name": "corner_radius",
+                              "start": 1570,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1570,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "*",
                           "right": {
@@ -1546,10 +1924,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1534,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1534,
+                    "name": "yLine",
+                    "start": 1529,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1529,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1590,
                 "start": 1529,
@@ -1563,11 +1948,18 @@ description: Result of parsing i_shape.kcl
                     "elements": [
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1635,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1635,
+                            "name": "corner_radius",
+                            "start": 1622,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1622,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1635,
                         "operator": "-",
@@ -1577,11 +1969,18 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1651,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1651,
+                            "name": "corner_radius",
+                            "start": 1638,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1638,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1651,
                         "operator": "-",
@@ -1603,10 +2002,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1619,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 1619,
+                    "name": "tangentialArcToRelative",
+                    "start": 1596,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1596,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1656,
                 "start": 1596,
@@ -1719,11 +2125,18 @@ description: Result of parsing i_shape.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 1774,
-                            "name": "hand_thickness",
+                            "name": {
+                              "end": 1774,
+                              "name": "hand_thickness",
+                              "start": 1760,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1760,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 1679,
                           "type": "BinaryExpression",
@@ -1731,11 +2144,18 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "abs_path": false,
                           "end": 1790,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1790,
+                            "name": "corner_radius",
+                            "start": 1777,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1777,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 1679,
                         "type": "BinaryExpression",
@@ -1750,10 +2170,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1667,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1667,
+                    "name": "xLine",
+                    "start": 1662,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1662,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1792,
                 "start": 1662,
@@ -1767,11 +2194,18 @@ description: Result of parsing i_shape.kcl
                     "elements": [
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1837,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1837,
+                            "name": "corner_radius",
+                            "start": 1824,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1824,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1837,
                         "operator": "-",
@@ -1781,11 +2215,18 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1853,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1853,
+                            "name": "corner_radius",
+                            "start": 1840,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1840,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1853,
                         "operator": "-",
@@ -1807,10 +2248,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1821,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 1821,
+                    "name": "tangentialArcToRelative",
+                    "start": 1798,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1798,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1858,
                 "start": 1798,
@@ -1843,11 +2291,18 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "abs_path": false,
                           "end": 1901,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1901,
+                            "name": "corner_radius",
+                            "start": 1888,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1888,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 1881,
                         "type": "BinaryExpression",
@@ -1862,10 +2317,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1869,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1869,
+                    "name": "yLine",
+                    "start": 1864,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1864,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1903,
                 "start": 1864,
@@ -1878,19 +2340,33 @@ description: Result of parsing i_shape.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 1947,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 1947,
+                          "name": "corner_radius",
+                          "start": 1934,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1934,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1963,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 1963,
+                            "name": "corner_radius",
+                            "start": 1950,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1950,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1963,
                         "operator": "-",
@@ -1912,10 +2388,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1932,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 1932,
+                    "name": "tangentialArcToRelative",
+                    "start": 1909,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1909,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1968,
                 "start": 1909,
@@ -1932,10 +2415,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1979,
-                  "name": "close",
+                  "name": {
+                    "end": 1979,
+                    "name": "close",
+                    "start": 1974,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1974,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1982,
                 "start": 1974,
@@ -1971,18 +2461,32 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2008,
-                    "name": "XY",
+                    "name": {
+                      "end": 2008,
+                      "name": "XY",
+                      "start": 2006,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2006,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2005,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2005,
+                    "name": "startSketchOn",
+                    "start": 1992,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1992,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2009,
                 "start": 1992,
@@ -2029,10 +2533,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2029,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2029,
+                    "name": "startProfileAt",
+                    "start": 2015,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2015,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2040,
                 "start": 2015,
@@ -2063,10 +2574,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2051,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2051,
+                    "name": "xLine",
+                    "start": 2046,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2046,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2065,
                 "start": 2046,
@@ -2079,18 +2597,32 @@ description: Result of parsing i_shape.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 2109,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 2109,
+                          "name": "corner_radius",
+                          "start": 2096,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2096,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
+                        "abs_path": false,
                         "end": 2124,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 2124,
+                          "name": "corner_radius",
+                          "start": 2111,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2111,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 2125,
@@ -2106,10 +2638,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2094,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 2094,
+                    "name": "tangentialArcToRelative",
+                    "start": 2071,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2071,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2129,
                 "start": 2071,
@@ -2143,11 +2682,18 @@ description: Result of parsing i_shape.kcl
                       "right": {
                         "end": 2175,
                         "left": {
+                          "abs_path": false,
                           "end": 2171,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 2171,
+                            "name": "corner_radius",
+                            "start": 2158,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2158,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -2172,10 +2718,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2140,
-                  "name": "yLine",
+                  "name": {
+                    "end": 2140,
+                    "name": "yLine",
+                    "start": 2135,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2135,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2177,
                 "start": 2135,
@@ -2189,11 +2742,18 @@ description: Result of parsing i_shape.kcl
                     "elements": [
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 2222,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 2222,
+                            "name": "corner_radius",
+                            "start": 2209,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2209,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 2222,
                         "operator": "-",
@@ -2202,11 +2762,18 @@ description: Result of parsing i_shape.kcl
                         "type": "UnaryExpression"
                       },
                       {
+                        "abs_path": false,
                         "end": 2237,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 2237,
+                          "name": "corner_radius",
+                          "start": 2224,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2224,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 2238,
@@ -2222,10 +2789,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2206,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 2206,
+                    "name": "tangentialArcToRelative",
+                    "start": 2183,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2183,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2242,
                 "start": 2183,
@@ -2263,10 +2837,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2253,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2253,
+                    "name": "xLine",
+                    "start": 2248,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2248,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2268,
                 "start": 2248,
@@ -2280,11 +2861,18 @@ description: Result of parsing i_shape.kcl
                     "elements": [
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 2313,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 2313,
+                            "name": "corner_radius",
+                            "start": 2300,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2300,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 2313,
                         "operator": "-",
@@ -2294,11 +2882,18 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 2329,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 2329,
+                            "name": "corner_radius",
+                            "start": 2316,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2316,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 2329,
                         "operator": "-",
@@ -2320,10 +2915,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2297,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 2297,
+                    "name": "tangentialArcToRelative",
+                    "start": 2274,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2274,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2334,
                 "start": 2274,
@@ -2358,11 +2960,18 @@ description: Result of parsing i_shape.kcl
                         "right": {
                           "end": 2382,
                           "left": {
+                            "abs_path": false,
                             "end": 2378,
-                            "name": "corner_radius",
+                            "name": {
+                              "end": 2378,
+                              "name": "corner_radius",
+                              "start": 2365,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2365,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "*",
                           "right": {
@@ -2393,10 +3002,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2345,
-                  "name": "yLine",
+                  "name": {
+                    "end": 2345,
+                    "name": "yLine",
+                    "start": 2340,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2340,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2385,
                 "start": 2340,
@@ -2409,19 +3025,33 @@ description: Result of parsing i_shape.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 2429,
-                        "name": "corner_radius",
+                        "name": {
+                          "end": 2429,
+                          "name": "corner_radius",
+                          "start": 2416,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2416,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 2445,
-                          "name": "corner_radius",
+                          "name": {
+                            "end": 2445,
+                            "name": "corner_radius",
+                            "start": 2432,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2432,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 2445,
                         "operator": "-",
@@ -2443,10 +3073,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2414,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 2414,
+                    "name": "tangentialArcToRelative",
+                    "start": 2391,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2391,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2450,
                 "start": 2391,
@@ -2463,10 +3100,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2461,
-                  "name": "close",
+                  "name": {
+                    "end": 2461,
+                    "name": "close",
+                    "start": 2456,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2456,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2464,
                 "start": 2456,
@@ -2500,20 +3144,34 @@ description: Result of parsing i_shape.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "end": 2484,
-                "name": "brace_base",
+                "name": {
+                  "end": 2484,
+                  "name": "brace_base",
+                  "start": 2474,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 2474,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2500,
-                    "name": "inner",
+                    "name": {
+                      "end": 2500,
+                      "name": "inner",
+                      "start": 2495,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2495,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 2503,
@@ -2523,10 +3181,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2494,
-                  "name": "hole",
+                  "name": {
+                    "end": 2494,
+                    "name": "hole",
+                    "start": 2490,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2490,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2504,
                 "start": 2490,
@@ -2557,10 +3222,17 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2517,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2517,
+                    "name": "extrude",
+                    "start": 2510,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2510,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2531,
                 "start": 2510,

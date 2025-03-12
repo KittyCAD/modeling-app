@@ -40,10 +40,17 @@ description: Result of parsing function_sketch.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 41,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 41,
+                              "name": "startSketchOn",
+                              "start": 28,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 28,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 47,
                           "start": 28,
@@ -90,10 +97,17 @@ description: Result of parsing function_sketch.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 69,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 69,
+                              "name": "startProfileAt",
+                              "start": 55,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 55,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 80,
                           "start": 55,
@@ -124,11 +138,18 @@ description: Result of parsing function_sketch.kcl
                                     }
                                   },
                                   {
+                                    "abs_path": false,
                                     "end": 104,
-                                    "name": "l",
+                                    "name": {
+                                      "end": 104,
+                                      "name": "l",
+                                      "start": 103,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 103,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 ],
                                 "end": 105,
@@ -139,10 +160,17 @@ description: Result of parsing function_sketch.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 92,
-                            "name": "line",
+                            "name": {
+                              "end": 92,
+                              "name": "line",
+                              "start": 88,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 88,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 106,
                           "start": 88,
@@ -163,11 +191,18 @@ description: Result of parsing function_sketch.kcl
                               "arg": {
                                 "elements": [
                                   {
+                                    "abs_path": false,
                                     "end": 127,
-                                    "name": "w",
+                                    "name": {
+                                      "end": 127,
+                                      "name": "w",
+                                      "start": 126,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 126,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   {
                                     "end": 130,
@@ -189,10 +224,17 @@ description: Result of parsing function_sketch.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 118,
-                            "name": "line",
+                            "name": {
+                              "end": 118,
+                              "name": "line",
+                              "start": 114,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 114,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 132,
                           "start": 114,
@@ -225,11 +267,18 @@ description: Result of parsing function_sketch.kcl
                                   },
                                   {
                                     "argument": {
+                                      "abs_path": false,
                                       "end": 157,
-                                      "name": "l",
+                                      "name": {
+                                        "end": 157,
+                                        "name": "l",
+                                        "start": 156,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 156,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "end": 157,
                                     "operator": "-",
@@ -246,10 +295,17 @@ description: Result of parsing function_sketch.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 144,
-                            "name": "line",
+                            "name": {
+                              "end": 144,
+                              "name": "line",
+                              "start": 140,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 140,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 159,
                           "start": 140,
@@ -267,10 +323,17 @@ description: Result of parsing function_sketch.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 172,
-                            "name": "close",
+                            "name": {
+                              "end": 172,
+                              "name": "close",
+                              "start": 167,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 167,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 175,
                           "start": 167,
@@ -288,19 +351,33 @@ description: Result of parsing function_sketch.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "end": 201,
-                                "name": "h",
+                                "name": {
+                                  "end": 201,
+                                  "name": "h",
+                                  "start": 200,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 200,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 190,
-                            "name": "extrude",
+                            "name": {
+                              "end": 190,
+                              "name": "extrude",
+                              "start": 183,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 183,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 202,
                           "start": 183,
@@ -325,11 +402,18 @@ description: Result of parsing function_sketch.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 218,
-                    "name": "myBox",
+                    "name": {
+                      "end": 218,
+                      "name": "myBox",
+                      "start": 213,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 213,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 218,
                   "start": 206,
@@ -444,10 +528,17 @@ description: Result of parsing function_sketch.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 233,
-              "name": "box",
+              "name": {
+                "end": 233,
+                "name": "box",
+                "start": 230,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 230,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 243,
             "start": 230,

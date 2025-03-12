@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_whole.kcl
 ---
 {
@@ -14,8 +14,8 @@ description: Variables in memory after executing import_whole.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            61,
-            97,
+            85,
+            121,
             3
           ],
           "tag": null,
@@ -30,8 +30,8 @@ description: Variables in memory after executing import_whole.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                61,
-                97,
+                85,
+                121,
                 3
               ]
             },
@@ -102,8 +102,8 @@ description: Variables in memory after executing import_whole.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              61,
-              97,
+              85,
+              121,
               3
             ]
           }
@@ -116,8 +116,8 @@ description: Variables in memory after executing import_whole.kcl
         "__meta": [
           {
             "sourceRange": [
-              61,
-              97,
+              85,
+              121,
               3
             ]
           }
@@ -132,8 +132,8 @@ description: Variables in memory after executing import_whole.kcl
       "__meta": [
         {
           "sourceRange": [
-            61,
-            97,
+            85,
+            121,
             3
           ]
         }

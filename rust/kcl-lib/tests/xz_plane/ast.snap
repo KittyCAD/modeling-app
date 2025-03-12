@@ -28,10 +28,17 @@ description: Result of parsing xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 23,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 23,
+                    "name": "startSketchOn",
+                    "start": 10,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 29,
                 "start": 10,
@@ -78,10 +85,17 @@ description: Result of parsing xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 49,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 49,
+                    "name": "startProfileAt",
+                    "start": 35,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 35,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 60,
                 "start": 35,
@@ -131,10 +145,17 @@ description: Result of parsing xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 70,
-                  "name": "line",
+                  "name": {
+                    "end": 70,
+                    "name": "line",
+                    "start": 66,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 66,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 96,
                 "start": 66,
@@ -185,10 +206,17 @@ description: Result of parsing xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 106,
-                  "name": "line",
+                  "name": {
+                    "end": 106,
+                    "name": "line",
+                    "start": 102,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 102,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 130,
                 "start": 102,
@@ -206,10 +234,17 @@ description: Result of parsing xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 141,
-                  "name": "close",
+                  "name": {
+                    "end": 141,
+                    "name": "close",
+                    "start": 136,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 136,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 144,
                 "start": 136,
@@ -258,10 +293,17 @@ description: Result of parsing xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 157,
-                  "name": "extrude",
+                  "name": {
+                    "end": 157,
+                    "name": "extrude",
+                    "start": 150,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 150,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 173,
                 "start": 150,

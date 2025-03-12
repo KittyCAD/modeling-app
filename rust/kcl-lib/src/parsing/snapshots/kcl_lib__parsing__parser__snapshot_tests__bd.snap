@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -28,18 +28,32 @@ expression: actual
               "cond": {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 57,
-                    "name": "radius",
+                    "name": {
+                      "end": 57,
+                      "name": "radius",
+                      "start": 51,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 51,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 50,
-                  "name": "func",
+                  "name": {
+                    "end": 50,
+                    "name": "func",
+                    "start": 46,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 46,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 58,
                 "start": 46,

@@ -18,18 +18,32 @@ expression: actual
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "end": 24,
-                  "name": "XY",
+                  "name": {
+                    "end": 24,
+                    "name": "XY",
+                    "start": 22,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 22,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 21,
-                "name": "startSketchOn",
+                "name": {
+                  "end": 21,
+                  "name": "startSketchOn",
+                  "start": 8,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 8,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 25,
               "start": 8,
@@ -39,11 +53,18 @@ expression: actual
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "end": 45,
-                  "name": "p",
+                  "name": {
+                    "end": 45,
+                    "name": "p",
+                    "start": 44,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 44,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 {
                   "end": 48,
@@ -53,10 +74,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 43,
-                "name": "startProfileAt",
+                "name": {
+                  "end": 43,
+                  "name": "startProfileAt",
+                  "start": 29,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 29,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 49,
               "start": 29,

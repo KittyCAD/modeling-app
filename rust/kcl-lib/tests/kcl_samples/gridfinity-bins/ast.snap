@@ -454,19 +454,33 @@ description: Result of parsing gridfinity-bins.kcl
             "left": {
               "end": 786,
               "left": {
+                "abs_path": false,
                 "end": 773,
-                "name": "firstStep",
+                "name": {
+                  "end": 773,
+                  "name": "firstStep",
+                  "start": 764,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 764,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "+",
               "right": {
+                "abs_path": false,
                 "end": 786,
-                "name": "secondStep",
+                "name": {
+                  "end": 786,
+                  "name": "secondStep",
+                  "start": 776,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 776,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 764,
               "type": "BinaryExpression",
@@ -474,11 +488,18 @@ description: Result of parsing gridfinity-bins.kcl
             },
             "operator": "+",
             "right": {
+              "abs_path": false,
               "end": 798,
-              "name": "thirdStep",
+              "name": {
+                "end": 798,
+                "name": "thirdStep",
+                "start": 789,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 789,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 764,
             "type": "BinaryExpression",
@@ -519,18 +540,32 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 918,
-                              "name": "plane",
+                              "name": {
+                                "end": 918,
+                                "name": "plane",
+                                "start": 913,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 913,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 912,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 912,
+                              "name": "startSketchOn",
+                              "start": 899,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 899,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 919,
                           "start": 899,
@@ -544,19 +579,33 @@ description: Result of parsing gridfinity-bins.kcl
                                 {
                                   "end": 965,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 956,
-                                    "name": "binBaseLength",
+                                    "name": {
+                                      "end": 956,
+                                      "name": "binBaseLength",
+                                      "start": 943,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 943,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "+",
                                   "right": {
+                                    "abs_path": false,
                                     "end": 965,
-                                    "name": "binTol",
+                                    "name": {
+                                      "end": 965,
+                                      "name": "binTol",
+                                      "start": 959,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 959,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 943,
                                   "type": "BinaryExpression",
@@ -587,10 +636,17 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 941,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 941,
+                              "name": "startProfileAt",
+                              "start": 927,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 927,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 973,
                           "start": 927,
@@ -608,19 +664,33 @@ description: Result of parsing gridfinity-bins.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "end": 1002,
-                                "name": "height",
+                                "name": {
+                                  "end": 1002,
+                                  "name": "height",
+                                  "start": 996,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 996,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 986,
-                            "name": "yLine",
+                            "name": {
+                              "end": 986,
+                              "name": "yLine",
+                              "start": 981,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 981,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1003,
                           "start": 981,
@@ -640,11 +710,18 @@ description: Result of parsing gridfinity-bins.kcl
                               },
                               "arg": {
                                 "argument": {
+                                  "abs_path": false,
                                   "end": 1040,
-                                  "name": "binBaseLength",
+                                  "name": {
+                                    "end": 1040,
+                                    "name": "binBaseLength",
+                                    "start": 1027,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1027,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "end": 1040,
                                 "operator": "-",
@@ -655,10 +732,17 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1016,
-                            "name": "xLine",
+                            "name": {
+                              "end": 1016,
+                              "name": "xLine",
+                              "start": 1011,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1011,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1041,
                           "start": 1011,
@@ -711,11 +795,18 @@ description: Result of parsing gridfinity-bins.kcl
                                   "start": 1084,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1102,
-                                    "name": "thirdStep",
+                                    "name": {
+                                      "end": 1102,
+                                      "name": "thirdStep",
+                                      "start": 1093,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1093,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -731,10 +822,17 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1068,
-                            "name": "angledLineOfYLength",
+                            "name": {
+                              "end": 1068,
+                              "name": "angledLineOfYLength",
+                              "start": 1049,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1049,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1108,
                           "start": 1049,
@@ -753,11 +851,18 @@ description: Result of parsing gridfinity-bins.kcl
                               },
                               "arg": {
                                 "argument": {
+                                  "abs_path": false,
                                   "end": 1142,
-                                  "name": "secondStep",
+                                  "name": {
+                                    "end": 1142,
+                                    "name": "secondStep",
+                                    "start": 1132,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1132,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "end": 1142,
                                 "operator": "-",
@@ -768,10 +873,17 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1121,
-                            "name": "yLine",
+                            "name": {
+                              "end": 1121,
+                              "name": "yLine",
+                              "start": 1116,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1116,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1143,
                           "start": 1116,
@@ -824,11 +936,18 @@ description: Result of parsing gridfinity-bins.kcl
                                   "start": 1186,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1204,
-                                    "name": "firstStep",
+                                    "name": {
+                                      "end": 1204,
+                                      "name": "firstStep",
+                                      "start": 1195,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1195,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -844,10 +963,17 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1170,
-                            "name": "angledLineOfYLength",
+                            "name": {
+                              "end": 1170,
+                              "name": "angledLineOfYLength",
+                              "start": 1151,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1151,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1210,
                           "start": 1151,
@@ -857,10 +983,17 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "abs_path": false,
                             "end": 1223,
-                            "name": "close",
+                            "name": {
+                              "end": 1223,
+                              "name": "close",
+                              "start": 1218,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1218,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1225,
                           "start": 1218,
@@ -884,11 +1017,18 @@ description: Result of parsing gridfinity-bins.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 1245,
-                    "name": "faceSketch",
+                    "name": {
+                      "end": 1245,
+                      "name": "faceSketch",
+                      "start": 1235,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1235,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 1245,
                   "start": 1228,
@@ -946,21 +1086,35 @@ description: Result of parsing gridfinity-bins.kcl
                 "arg": {
                   "end": 1401,
                   "left": {
+                    "abs_path": false,
                     "end": 1381,
-                    "name": "binLength",
+                    "name": {
+                      "end": 1381,
+                      "name": "binLength",
+                      "start": 1372,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1372,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "-",
                   "right": {
                     "end": 1401,
                     "left": {
+                      "abs_path": false,
                       "end": 1397,
-                      "name": "cornerRadius",
+                      "name": {
+                        "end": 1397,
+                        "name": "cornerRadius",
+                        "start": 1385,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1385,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "*",
                     "right": {
@@ -985,10 +1139,17 @@ description: Result of parsing gridfinity-bins.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1305,
-              "name": "extrude",
+              "name": {
+                "end": 1305,
+                "name": "extrude",
+                "start": 1298,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1298,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1405,
             "start": 1298,
@@ -1009,19 +1170,33 @@ description: Result of parsing gridfinity-bins.kcl
                       "arg": {
                         "end": 1359,
                         "left": {
+                          "abs_path": false,
                           "end": 1350,
-                          "name": "cornerRadius",
+                          "name": {
+                            "end": 1350,
+                            "name": "cornerRadius",
+                            "start": 1338,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1338,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "+",
                         "right": {
+                          "abs_path": false,
                           "end": 1359,
-                          "name": "binTol",
+                          "name": {
+                            "end": 1359,
+                            "name": "binTol",
+                            "start": 1353,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1353,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 1338,
                         "type": "BinaryExpression",
@@ -1030,10 +1205,17 @@ description: Result of parsing gridfinity-bins.kcl
                     }
                   ],
                   "callee": {
+                    "abs_path": false,
                     "end": 1322,
-                    "name": "offsetPlane",
+                    "name": {
+                      "end": 1322,
+                      "name": "offsetPlane",
+                      "start": 1311,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1311,
-                    "type": "Identifier"
+                    "type": "Name"
                   },
                   "end": 1360,
                   "start": 1311,
@@ -1050,10 +1232,17 @@ description: Result of parsing gridfinity-bins.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 1310,
-                "name": "face",
+                "name": {
+                  "end": 1310,
+                  "name": "face",
+                  "start": 1306,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1306,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 1361,
               "start": 1306,
@@ -1166,11 +1355,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "left": {
                         "end": 1593,
                         "left": {
+                          "abs_path": false,
                           "end": 1580,
-                          "name": "binLength",
+                          "name": {
+                            "end": 1580,
+                            "name": "binLength",
+                            "start": 1571,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1571,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "+",
                         "right": {
@@ -1188,11 +1384,18 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "abs_path": false,
                             "end": 1593,
-                            "name": "binTol",
+                            "name": {
+                              "end": 1593,
+                              "name": "binTol",
+                              "start": 1587,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1587,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 1583,
                           "type": "BinaryExpression",
@@ -1223,11 +1426,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "left": {
                         "end": 1627,
                         "left": {
+                          "abs_path": false,
                           "end": 1614,
-                          "name": "binLength",
+                          "name": {
+                            "end": 1614,
+                            "name": "binLength",
+                            "start": 1605,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1605,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "+",
                         "right": {
@@ -1245,11 +1455,18 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "abs_path": false,
                             "end": 1627,
-                            "name": "binTol",
+                            "name": {
+                              "end": 1627,
+                              "name": "binTol",
+                              "start": 1621,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1621,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 1617,
                           "type": "BinaryExpression",
@@ -1332,21 +1549,35 @@ description: Result of parsing gridfinity-bins.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1497,
-              "name": "patternCircular3d",
+              "name": {
+                "end": 1497,
+                "name": "patternCircular3d",
+                "start": 1480,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1480,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1689,
             "start": 1480,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 1511,
-              "name": "singleSide",
+              "name": {
+                "end": 1511,
+                "name": "singleSide",
+                "start": 1501,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1501,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 1472,
@@ -1439,19 +1670,33 @@ description: Result of parsing gridfinity-bins.kcl
                           {
                             "end": 1807,
                             "left": {
+                              "abs_path": false,
                               "end": 1798,
-                              "name": "cornerRadius",
+                              "name": {
+                                "end": 1798,
+                                "name": "cornerRadius",
+                                "start": 1786,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1786,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "end": 1807,
-                              "name": "binTol",
+                              "name": {
+                                "end": 1807,
+                                "name": "binTol",
+                                "start": 1801,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1801,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 1786,
                             "type": "BinaryExpression",
@@ -1460,19 +1705,33 @@ description: Result of parsing gridfinity-bins.kcl
                           {
                             "end": 1836,
                             "left": {
+                              "abs_path": false,
                               "end": 1827,
-                              "name": "cornerRadius",
+                              "name": {
+                                "end": 1827,
+                                "name": "cornerRadius",
+                                "start": 1815,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1815,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "end": 1836,
-                              "name": "binTol",
+                              "name": {
+                                "end": 1836,
+                                "name": "binTol",
+                                "start": 1830,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1830,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 1815,
                             "type": "BinaryExpression",
@@ -1559,11 +1818,18 @@ description: Result of parsing gridfinity-bins.kcl
                     "start": 1925,
                     "type": "ObjectProperty",
                     "value": {
+                      "abs_path": false,
                       "end": 1939,
-                      "name": "axis000",
+                      "name": {
+                        "end": 1939,
+                        "name": "axis000",
+                        "start": 1932,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1932,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
@@ -1586,19 +1852,33 @@ description: Result of parsing gridfinity-bins.kcl
                         "arg": {
                           "end": 1996,
                           "left": {
+                            "abs_path": false,
                             "end": 1987,
-                            "name": "cornerRadius",
+                            "name": {
+                              "end": 1987,
+                              "name": "cornerRadius",
+                              "start": 1975,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1975,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 1996,
-                            "name": "binTol",
+                            "name": {
+                              "end": 1996,
+                              "name": "binTol",
+                              "start": 1990,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1990,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 1975,
                           "type": "BinaryExpression",
@@ -1607,10 +1887,17 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1959,
-                      "name": "offsetPlane",
+                      "name": {
+                        "end": 1959,
+                        "name": "offsetPlane",
+                        "start": 1948,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1948,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1997,
                     "start": 1948,
@@ -1627,10 +1914,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1947,
-                  "name": "face",
+                  "name": {
+                    "end": 1947,
+                    "name": "face",
+                    "start": 1943,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1943,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1998,
                 "start": 1943,
@@ -1639,10 +1933,17 @@ description: Result of parsing gridfinity-bins.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1909,
-              "name": "revolve",
+              "name": {
+                "end": 1909,
+                "name": "revolve",
+                "start": 1902,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1902,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1999,
             "start": 1902,
@@ -1754,11 +2055,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "left": {
                         "end": 2159,
                         "left": {
+                          "abs_path": false,
                           "end": 2146,
-                          "name": "binLength",
+                          "name": {
+                            "end": 2146,
+                            "name": "binLength",
+                            "start": 2137,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2137,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "+",
                         "right": {
@@ -1776,11 +2084,18 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "abs_path": false,
                             "end": 2159,
-                            "name": "binTol",
+                            "name": {
+                              "end": 2159,
+                              "name": "binTol",
+                              "start": 2153,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2153,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 2149,
                           "type": "BinaryExpression",
@@ -1811,11 +2126,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "left": {
                         "end": 2193,
                         "left": {
+                          "abs_path": false,
                           "end": 2180,
-                          "name": "binLength",
+                          "name": {
+                            "end": 2180,
+                            "name": "binLength",
+                            "start": 2171,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2171,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "+",
                         "right": {
@@ -1833,11 +2155,18 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "abs_path": false,
                             "end": 2193,
-                            "name": "binTol",
+                            "name": {
+                              "end": 2193,
+                              "name": "binTol",
+                              "start": 2187,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2187,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 2183,
                           "type": "BinaryExpression",
@@ -1920,21 +2249,35 @@ description: Result of parsing gridfinity-bins.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 2061,
-              "name": "patternCircular3d",
+              "name": {
+                "end": 2061,
+                "name": "patternCircular3d",
+                "start": 2044,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2044,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 2255,
             "start": 2044,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 2077,
-              "name": "singleCorner",
+              "name": {
+                "end": 2077,
+                "name": "singleCorner",
+                "start": 2065,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2065,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 2034,
@@ -1969,10 +2312,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2286,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2286,
+                    "name": "startSketchOn",
+                    "start": 2273,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2273,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2292,
                 "start": 2273,
@@ -1986,19 +2336,33 @@ description: Result of parsing gridfinity-bins.kcl
                       {
                         "end": 2344,
                         "left": {
+                          "abs_path": false,
                           "end": 2335,
-                          "name": "binBaseLength",
+                          "name": {
+                            "end": 2335,
+                            "name": "binBaseLength",
+                            "start": 2322,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2322,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "+",
                         "right": {
+                          "abs_path": false,
                           "end": 2344,
-                          "name": "binTol",
+                          "name": {
+                            "end": 2344,
+                            "name": "binTol",
+                            "start": 2338,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2338,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 2322,
                         "type": "BinaryExpression",
@@ -2007,19 +2371,33 @@ description: Result of parsing gridfinity-bins.kcl
                       {
                         "end": 2375,
                         "left": {
+                          "abs_path": false,
                           "end": 2366,
-                          "name": "binBaseLength",
+                          "name": {
+                            "end": 2366,
+                            "name": "binBaseLength",
+                            "start": 2353,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2353,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "+",
                         "right": {
+                          "abs_path": false,
                           "end": 2375,
-                          "name": "binTol",
+                          "name": {
+                            "end": 2375,
+                            "name": "binTol",
+                            "start": 2369,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2369,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 2353,
                         "type": "BinaryExpression",
@@ -2039,10 +2417,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2312,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2312,
+                    "name": "startProfileAt",
+                    "start": 2298,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2298,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2386,
                 "start": 2298,
@@ -2064,21 +2449,35 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "end": 2434,
                           "left": {
+                            "abs_path": false,
                             "end": 2413,
-                            "name": "binLength",
+                            "name": {
+                              "end": 2413,
+                              "name": "binLength",
+                              "start": 2404,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2404,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
                             "end": 2434,
                             "left": {
+                              "abs_path": false,
                               "end": 2430,
-                              "name": "binBaseLength",
+                              "name": {
+                                "end": 2430,
+                                "name": "binBaseLength",
+                                "start": 2417,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2417,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "*",
                             "right": {
@@ -2136,10 +2535,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2396,
-                  "name": "line",
+                  "name": {
+                    "end": 2396,
+                    "name": "line",
+                    "start": 2392,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2392,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2456,
                 "start": 2392,
@@ -2173,21 +2579,35 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "end": 2507,
                           "left": {
+                            "abs_path": false,
                             "end": 2486,
-                            "name": "binLength",
+                            "name": {
+                              "end": 2486,
+                              "name": "binLength",
+                              "start": 2477,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2477,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
                             "end": 2507,
                             "left": {
+                              "abs_path": false,
                               "end": 2503,
-                              "name": "binBaseLength",
+                              "name": {
+                                "end": 2503,
+                                "name": "binBaseLength",
+                                "start": 2490,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2490,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "*",
                             "right": {
@@ -2234,10 +2654,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2466,
-                  "name": "line",
+                  "name": {
+                    "end": 2466,
+                    "name": "line",
+                    "start": 2462,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2462,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2526,
                 "start": 2462,
@@ -2265,10 +2692,17 @@ description: Result of parsing gridfinity-bins.kcl
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 2565,
-                        "name": "profileStartX",
+                        "name": {
+                          "end": 2565,
+                          "name": "profileStartX",
+                          "start": 2552,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2552,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 2568,
                       "start": 2552,
@@ -2294,10 +2728,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2537,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2537,
+                    "name": "xLine",
+                    "start": 2532,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2532,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2585,
                 "start": 2532,
@@ -2325,10 +2766,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2596,
-                  "name": "close",
+                  "name": {
+                    "end": 2596,
+                    "name": "close",
+                    "start": 2591,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2591,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2612,
                 "start": 2591,
@@ -2347,19 +2795,33 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2641,
-                      "name": "height",
+                      "name": {
+                        "end": 2641,
+                        "name": "height",
+                        "start": 2635,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2635,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2625,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2625,
+                    "name": "extrude",
+                    "start": 2618,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2618,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2642,
                 "start": 2618,
@@ -2378,11 +2840,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2681,
-                      "name": "firstStep",
+                      "name": {
+                        "end": 2681,
+                        "name": "firstStep",
+                        "start": 2672,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2672,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -2398,18 +2867,32 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2735,
-                              "name": "line000",
+                              "name": {
+                                "end": 2735,
+                                "name": "line000",
+                                "start": 2728,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2728,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2727,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 2727,
+                              "name": "getNextAdjacentEdge",
+                              "start": 2708,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2708,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2736,
                           "start": 2708,
@@ -2419,18 +2902,32 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2778,
-                              "name": "line000",
+                              "name": {
+                                "end": 2778,
+                                "name": "line000",
+                                "start": 2771,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2771,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2770,
-                            "name": "getPreviousAdjacentEdge",
+                            "name": {
+                              "end": 2770,
+                              "name": "getPreviousAdjacentEdge",
+                              "start": 2747,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2747,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2779,
                           "start": 2747,
@@ -2440,18 +2937,32 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2817,
-                              "name": "line002",
+                              "name": {
+                                "end": 2817,
+                                "name": "line002",
+                                "start": 2810,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2810,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2809,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 2809,
+                              "name": "getNextAdjacentEdge",
+                              "start": 2790,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2790,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2818,
                           "start": 2790,
@@ -2461,18 +2972,32 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2860,
-                              "name": "line002",
+                              "name": {
+                                "end": 2860,
+                                "name": "line002",
+                                "start": 2853,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2853,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2852,
-                            "name": "getPreviousAdjacentEdge",
+                            "name": {
+                              "end": 2852,
+                              "name": "getPreviousAdjacentEdge",
+                              "start": 2829,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2829,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2861,
                           "start": 2829,
@@ -2488,10 +3013,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2654,
-                  "name": "fillet",
+                  "name": {
+                    "end": 2654,
+                    "name": "fillet",
+                    "start": 2648,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2648,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2877,
                 "start": 2648,
@@ -2528,11 +3060,18 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2921,
-                    "name": "singleBinFill",
+                    "name": {
+                      "end": 2921,
+                      "name": "singleBinFill",
+                      "start": 2908,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2908,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 2930,
@@ -2544,10 +3083,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2907,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2907,
+                    "name": "startSketchOn",
+                    "start": 2894,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2894,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2931,
                 "start": 2894,
@@ -2572,11 +3118,18 @@ description: Result of parsing gridfinity-bins.kcl
                             "end": 2998,
                             "left": {
                               "argument": {
+                                "abs_path": false,
                                 "end": 2982,
-                                "name": "magOffset",
+                                "name": {
+                                  "end": 2982,
+                                  "name": "magOffset",
+                                  "start": 2973,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2973,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "end": 2982,
                               "operator": "-",
@@ -2586,11 +3139,18 @@ description: Result of parsing gridfinity-bins.kcl
                             },
                             "operator": "-",
                             "right": {
+                              "abs_path": false,
                               "end": 2998,
-                              "name": "binBaseLength",
+                              "name": {
+                                "end": 2998,
+                                "name": "binBaseLength",
+                                "start": 2985,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2985,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 2972,
                             "type": "BinaryExpression",
@@ -2598,11 +3158,18 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 3007,
-                            "name": "binTol",
+                            "name": {
+                              "end": 3007,
+                              "name": "binTol",
+                              "start": 3001,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3001,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 2972,
                           "type": "BinaryExpression",
@@ -2613,19 +3180,33 @@ description: Result of parsing gridfinity-bins.kcl
                           "left": {
                             "end": 3043,
                             "left": {
+                              "abs_path": false,
                               "end": 3027,
-                              "name": "magOffset",
+                              "name": {
+                                "end": 3027,
+                                "name": "magOffset",
+                                "start": 3018,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3018,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "end": 3043,
-                              "name": "binBaseLength",
+                              "name": {
+                                "end": 3043,
+                                "name": "binBaseLength",
+                                "start": 3030,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3030,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 3018,
                             "type": "BinaryExpression",
@@ -2633,11 +3214,18 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 3052,
-                            "name": "binTol",
+                            "name": {
+                              "end": 3052,
+                              "name": "binTol",
+                              "start": 3046,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3046,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 3018,
                           "type": "BinaryExpression",
@@ -2661,11 +3249,18 @@ description: Result of parsing gridfinity-bins.kcl
                     "arg": {
                       "end": 3095,
                       "left": {
+                        "abs_path": false,
                         "end": 3091,
-                        "name": "magOuterDiam",
+                        "name": {
+                          "end": 3091,
+                          "name": "magOuterDiam",
+                          "start": 3079,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3079,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -2686,10 +3281,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2943,
-                  "name": "circle",
+                  "name": {
+                    "end": 2943,
+                    "name": "circle",
+                    "start": 2937,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2937,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3102,
                 "start": 2937,
@@ -2735,11 +3337,18 @@ description: Result of parsing gridfinity-bins.kcl
                             "end": 3203,
                             "left": {
                               "argument": {
+                                "abs_path": false,
                                 "end": 3190,
-                                "name": "binLength",
+                                "name": {
+                                  "end": 3190,
+                                  "name": "binLength",
+                                  "start": 3181,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3181,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "end": 3190,
                               "operator": "-",
@@ -2763,11 +3372,18 @@ description: Result of parsing gridfinity-bins.kcl
                               },
                               "operator": "*",
                               "right": {
+                                "abs_path": false,
                                 "end": 3203,
-                                "name": "binTol",
+                                "name": {
+                                  "end": 3203,
+                                  "name": "binTol",
+                                  "start": 3197,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3197,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 3193,
                               "type": "BinaryExpression",
@@ -2798,11 +3414,18 @@ description: Result of parsing gridfinity-bins.kcl
                           "left": {
                             "end": 3242,
                             "left": {
+                              "abs_path": false,
                               "end": 3229,
-                              "name": "binLength",
+                              "name": {
+                                "end": 3229,
+                                "name": "binLength",
+                                "start": 3220,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3220,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
@@ -2820,11 +3443,18 @@ description: Result of parsing gridfinity-bins.kcl
                               },
                               "operator": "*",
                               "right": {
+                                "abs_path": false,
                                 "end": 3242,
-                                "name": "binTol",
+                                "name": {
+                                  "end": 3242,
+                                  "name": "binTol",
+                                  "start": 3236,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3236,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 3232,
                               "type": "BinaryExpression",
@@ -2896,10 +3526,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3125,
-                  "name": "patternCircular2d",
+                  "name": {
+                    "end": 3125,
+                    "name": "patternCircular2d",
+                    "start": 3108,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3108,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3317,
                 "start": 3108,
@@ -2919,11 +3556,18 @@ description: Result of parsing gridfinity-bins.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 3349,
-                        "name": "magDepth",
+                        "name": {
+                          "end": 3349,
+                          "name": "magDepth",
+                          "start": 3341,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3341,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 3349,
                       "operator": "-",
@@ -2934,10 +3578,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3330,
-                  "name": "extrude",
+                  "name": {
+                    "end": 3330,
+                    "name": "extrude",
+                    "start": 3323,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3323,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3350,
                 "start": 3323,
@@ -3049,11 +3700,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3501,
-                      "name": "countBinWidth",
+                      "name": {
+                        "end": 3501,
+                        "name": "countBinWidth",
+                        "start": 3488,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3488,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -3067,21 +3725,35 @@ description: Result of parsing gridfinity-bins.kcl
                     "arg": {
                       "end": 3543,
                       "left": {
+                        "abs_path": false,
                         "end": 3530,
-                        "name": "binLength",
+                        "name": {
+                          "end": 3530,
+                          "name": "binLength",
+                          "start": 3521,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3521,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "+",
                       "right": {
                         "end": 3543,
                         "left": {
+                          "abs_path": false,
                           "end": 3539,
-                          "name": "binTol",
+                          "name": {
+                            "end": 3539,
+                            "name": "binTol",
+                            "start": 3533,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3533,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -3106,21 +3778,35 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3422,
-                  "name": "patternLinear3d",
+                  "name": {
+                    "end": 3422,
+                    "name": "patternLinear3d",
+                    "start": 3407,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3407,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3550,
                 "start": 3407,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 3436,
-                  "name": "sides",
+                  "name": {
+                    "end": 3436,
+                    "name": "sides",
+                    "start": 3431,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3431,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -3184,11 +3870,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3637,
-                      "name": "countBinLength",
+                      "name": {
+                        "end": 3637,
+                        "name": "countBinLength",
+                        "start": 3623,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3623,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -3202,21 +3895,35 @@ description: Result of parsing gridfinity-bins.kcl
                     "arg": {
                       "end": 3679,
                       "left": {
+                        "abs_path": false,
                         "end": 3666,
-                        "name": "binLength",
+                        "name": {
+                          "end": 3666,
+                          "name": "binLength",
+                          "start": 3657,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3657,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "+",
                       "right": {
                         "end": 3679,
                         "left": {
+                          "abs_path": false,
                           "end": 3675,
-                          "name": "binTol",
+                          "name": {
+                            "end": 3675,
+                            "name": "binTol",
+                            "start": 3669,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3669,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -3241,10 +3948,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3571,
-                  "name": "patternLinear3d",
+                  "name": {
+                    "end": 3571,
+                    "name": "patternLinear3d",
+                    "start": 3556,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3556,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3686,
                 "start": 3556,
@@ -3356,11 +4070,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3862,
-                      "name": "countBinWidth",
+                      "name": {
+                        "end": 3862,
+                        "name": "countBinWidth",
+                        "start": 3849,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3849,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -3374,21 +4095,35 @@ description: Result of parsing gridfinity-bins.kcl
                     "arg": {
                       "end": 3904,
                       "left": {
+                        "abs_path": false,
                         "end": 3891,
-                        "name": "binLength",
+                        "name": {
+                          "end": 3891,
+                          "name": "binLength",
+                          "start": 3882,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3882,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "+",
                       "right": {
                         "end": 3904,
                         "left": {
+                          "abs_path": false,
                           "end": 3900,
-                          "name": "binTol",
+                          "name": {
+                            "end": 3900,
+                            "name": "binTol",
+                            "start": 3894,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3894,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -3413,21 +4148,35 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3781,
-                  "name": "patternLinear3d",
+                  "name": {
+                    "end": 3781,
+                    "name": "patternLinear3d",
+                    "start": 3766,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3766,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3911,
                 "start": 3766,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 3797,
-                  "name": "corners",
+                  "name": {
+                    "end": 3797,
+                    "name": "corners",
+                    "start": 3790,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3790,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -3491,11 +4240,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3998,
-                      "name": "countBinLength",
+                      "name": {
+                        "end": 3998,
+                        "name": "countBinLength",
+                        "start": 3984,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3984,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -3509,21 +4265,35 @@ description: Result of parsing gridfinity-bins.kcl
                     "arg": {
                       "end": 4040,
                       "left": {
+                        "abs_path": false,
                         "end": 4027,
-                        "name": "binLength",
+                        "name": {
+                          "end": 4027,
+                          "name": "binLength",
+                          "start": 4018,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4018,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "+",
                       "right": {
                         "end": 4040,
                         "left": {
+                          "abs_path": false,
                           "end": 4036,
-                          "name": "binTol",
+                          "name": {
+                            "end": 4036,
+                            "name": "binTol",
+                            "start": 4030,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4030,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -3548,10 +4318,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3932,
-                  "name": "patternLinear3d",
+                  "name": {
+                    "end": 3932,
+                    "name": "patternLinear3d",
+                    "start": 3917,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3917,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4047,
                 "start": 3917,
@@ -3663,11 +4440,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 4217,
-                      "name": "countBinWidth",
+                      "name": {
+                        "end": 4217,
+                        "name": "countBinWidth",
+                        "start": 4204,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 4204,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -3681,21 +4465,35 @@ description: Result of parsing gridfinity-bins.kcl
                     "arg": {
                       "end": 4259,
                       "left": {
+                        "abs_path": false,
                         "end": 4246,
-                        "name": "binLength",
+                        "name": {
+                          "end": 4246,
+                          "name": "binLength",
+                          "start": 4237,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4237,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "+",
                       "right": {
                         "end": 4259,
                         "left": {
+                          "abs_path": false,
                           "end": 4255,
-                          "name": "binTol",
+                          "name": {
+                            "end": 4255,
+                            "name": "binTol",
+                            "start": 4249,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4249,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -3720,21 +4518,35 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4130,
-                  "name": "patternLinear3d",
+                  "name": {
+                    "end": 4130,
+                    "name": "patternLinear3d",
+                    "start": 4115,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4115,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4266,
                 "start": 4115,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 4152,
-                  "name": "singleBinFill",
+                  "name": {
+                    "end": 4152,
+                    "name": "singleBinFill",
+                    "start": 4139,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4139,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -3798,11 +4610,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 4353,
-                      "name": "countBinLength",
+                      "name": {
+                        "end": 4353,
+                        "name": "countBinLength",
+                        "start": 4339,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 4339,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -3816,21 +4635,35 @@ description: Result of parsing gridfinity-bins.kcl
                     "arg": {
                       "end": 4395,
                       "left": {
+                        "abs_path": false,
                         "end": 4382,
-                        "name": "binLength",
+                        "name": {
+                          "end": 4382,
+                          "name": "binLength",
+                          "start": 4373,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4373,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "+",
                       "right": {
                         "end": 4395,
                         "left": {
+                          "abs_path": false,
                           "end": 4391,
-                          "name": "binTol",
+                          "name": {
+                            "end": 4391,
+                            "name": "binTol",
+                            "start": 4385,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4385,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -3855,10 +4688,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4287,
-                  "name": "patternLinear3d",
+                  "name": {
+                    "end": 4287,
+                    "name": "patternLinear3d",
+                    "start": 4272,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4272,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4402,
                 "start": 4272,
@@ -3922,19 +4762,33 @@ description: Result of parsing gridfinity-bins.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "end": 4489,
-                          "name": "height",
+                          "name": {
+                            "end": 4489,
+                            "name": "height",
+                            "start": 4483,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4483,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 4467,
-                      "name": "offsetPlane",
+                      "name": {
+                        "end": 4467,
+                        "name": "offsetPlane",
+                        "start": 4456,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 4456,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 4490,
                     "start": 4456,
@@ -3951,10 +4805,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4455,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 4455,
+                    "name": "startSketchOn",
+                    "start": 4442,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4442,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4491,
                 "start": 4442,
@@ -4001,10 +4862,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4511,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 4511,
+                    "name": "startProfileAt",
+                    "start": 4497,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4497,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4522,
                 "start": 4497,
@@ -4026,11 +4894,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "left": {
                         "end": 4566,
                         "left": {
+                          "abs_path": false,
                           "end": 4553,
-                          "name": "binLength",
+                          "name": {
+                            "end": 4553,
+                            "name": "binLength",
+                            "start": 4544,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4544,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "+",
                         "right": {
@@ -4048,11 +4923,18 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "abs_path": false,
                             "end": 4566,
-                            "name": "binTol",
+                            "name": {
+                              "end": 4566,
+                              "name": "binTol",
+                              "start": 4560,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4560,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 4556,
                           "type": "BinaryExpression",
@@ -4064,11 +4946,18 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "abs_path": false,
                         "end": 4583,
-                        "name": "countBinWidth",
+                        "name": {
+                          "end": 4583,
+                          "name": "countBinWidth",
+                          "start": 4570,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4570,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 4544,
                       "type": "BinaryExpression",
@@ -4093,10 +4982,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4533,
-                  "name": "xLine",
+                  "name": {
+                    "end": 4533,
+                    "name": "xLine",
+                    "start": 4528,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4528,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4600,
                 "start": 4528,
@@ -4119,11 +5015,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "left": {
                         "end": 4644,
                         "left": {
+                          "abs_path": false,
                           "end": 4631,
-                          "name": "binLength",
+                          "name": {
+                            "end": 4631,
+                            "name": "binLength",
+                            "start": 4622,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4622,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "+",
                         "right": {
@@ -4141,11 +5044,18 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "abs_path": false,
                             "end": 4644,
-                            "name": "binTol",
+                            "name": {
+                              "end": 4644,
+                              "name": "binTol",
+                              "start": 4638,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4638,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 4634,
                           "type": "BinaryExpression",
@@ -4157,11 +5067,18 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "abs_path": false,
                         "end": 4662,
-                        "name": "countBinLength",
+                        "name": {
+                          "end": 4662,
+                          "name": "countBinLength",
+                          "start": 4648,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4648,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 4622,
                       "type": "BinaryExpression",
@@ -4186,10 +5103,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4611,
-                  "name": "yLine",
+                  "name": {
+                    "end": 4611,
+                    "name": "yLine",
+                    "start": 4606,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4606,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4679,
                 "start": 4606,
@@ -4217,10 +5141,17 @@ description: Result of parsing gridfinity-bins.kcl
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 4718,
-                        "name": "profileStartX",
+                        "name": {
+                          "end": 4718,
+                          "name": "profileStartX",
+                          "start": 4705,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4705,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 4721,
                       "start": 4705,
@@ -4246,10 +5177,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4690,
-                  "name": "xLine",
+                  "name": {
+                    "end": 4690,
+                    "name": "xLine",
+                    "start": 4685,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4685,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4738,
                 "start": 4685,
@@ -4277,10 +5215,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4749,
-                  "name": "close",
+                  "name": {
+                    "end": 4749,
+                    "name": "close",
+                    "start": 4744,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4744,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4765,
                 "start": 4744,
@@ -4301,19 +5246,33 @@ description: Result of parsing gridfinity-bins.kcl
                     "arg": {
                       "end": 4814,
                       "left": {
+                        "abs_path": false,
                         "end": 4797,
-                        "name": "binHeight",
+                        "name": {
+                          "end": 4797,
+                          "name": "binHeight",
+                          "start": 4788,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4788,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
+                        "abs_path": false,
                         "end": 4814,
-                        "name": "countBinHeight",
+                        "name": {
+                          "end": 4814,
+                          "name": "countBinHeight",
+                          "start": 4800,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4800,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 4788,
                       "type": "BinaryExpression",
@@ -4322,10 +5281,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4778,
-                  "name": "extrude",
+                  "name": {
+                    "end": 4778,
+                    "name": "extrude",
+                    "start": 4771,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4771,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4815,
                 "start": 4771,
@@ -4344,11 +5310,18 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 4857,
-                      "name": "cornerRadius",
+                      "name": {
+                        "end": 4857,
+                        "name": "cornerRadius",
+                        "start": 4845,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 4845,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -4364,18 +5337,32 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 4911,
-                              "name": "line010",
+                              "name": {
+                                "end": 4911,
+                                "name": "line010",
+                                "start": 4904,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 4904,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4903,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 4903,
+                              "name": "getNextAdjacentEdge",
+                              "start": 4884,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4884,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4912,
                           "start": 4884,
@@ -4385,18 +5372,32 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 4954,
-                              "name": "line010",
+                              "name": {
+                                "end": 4954,
+                                "name": "line010",
+                                "start": 4947,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 4947,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4946,
-                            "name": "getPreviousAdjacentEdge",
+                            "name": {
+                              "end": 4946,
+                              "name": "getPreviousAdjacentEdge",
+                              "start": 4923,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4923,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4955,
                           "start": 4923,
@@ -4406,18 +5407,32 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 4993,
-                              "name": "line012",
+                              "name": {
+                                "end": 4993,
+                                "name": "line012",
+                                "start": 4986,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 4986,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4985,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 4985,
+                              "name": "getNextAdjacentEdge",
+                              "start": 4966,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4966,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4994,
                           "start": 4966,
@@ -4427,18 +5442,32 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 5036,
-                              "name": "line012",
+                              "name": {
+                                "end": 5036,
+                                "name": "line012",
+                                "start": 5029,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 5029,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 5028,
-                            "name": "getPreviousAdjacentEdge",
+                            "name": {
+                              "end": 5028,
+                              "name": "getPreviousAdjacentEdge",
+                              "start": 5005,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5005,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 5037,
                           "start": 5005,
@@ -4454,10 +5483,17 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4827,
-                  "name": "fillet",
+                  "name": {
+                    "end": 4827,
+                    "name": "fillet",
+                    "start": 4821,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4821,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5053,
                 "start": 4821,
@@ -4501,19 +5537,33 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 5100,
-                      "name": "binThk",
+                      "name": {
+                        "end": 5100,
+                        "name": "binThk",
+                        "start": 5094,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 5094,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5064,
-                  "name": "shell",
+                  "name": {
+                    "end": 5064,
+                    "name": "shell",
+                    "start": 5059,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5059,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5101,
                 "start": 5059,
@@ -4559,11 +5609,18 @@ description: Result of parsing gridfinity-bins.kcl
             "start": 316,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 338,
-              "name": "mm",
+              "name": {
+                "end": 338,
+                "name": "mm",
+                "start": 336,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 336,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

@@ -28,10 +28,17 @@ description: Result of parsing revolve_about_edge.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 25,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 25,
+                    "name": "startSketchOn",
+                    "start": 12,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 31,
                 "start": 12,
@@ -85,10 +92,17 @@ description: Result of parsing revolve_about_edge.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 51,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 51,
+                    "name": "startProfileAt",
+                    "start": 37,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 37,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 65,
                 "start": 37,
@@ -142,10 +156,17 @@ description: Result of parsing revolve_about_edge.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 76,
-                  "name": "yLine",
+                  "name": {
+                    "end": 76,
+                    "name": "yLine",
+                    "start": 71,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 71,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 119,
                 "start": 71,
@@ -191,10 +212,17 @@ description: Result of parsing revolve_about_edge.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 145,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 145,
+                    "name": "startSketchOn",
+                    "start": 132,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 132,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 151,
                 "start": 132,
@@ -271,10 +299,17 @@ description: Result of parsing revolve_about_edge.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 163,
-                  "name": "circle",
+                  "name": {
+                    "end": 163,
+                    "name": "circle",
+                    "start": 157,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 157,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 195,
                 "start": 157,
@@ -320,11 +355,18 @@ description: Result of parsing revolve_about_edge.kcl
                         "start": 237,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 264,
-                          "name": "rectangleSegmentB001",
+                          "name": {
+                            "end": 264,
+                            "name": "rectangleSegmentB001",
+                            "start": 244,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 244,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -340,10 +382,17 @@ description: Result of parsing revolve_about_edge.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 208,
-                  "name": "revolve",
+                  "name": {
+                    "end": 208,
+                    "name": "revolve",
+                    "start": 201,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 201,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 275,
                 "start": 201,

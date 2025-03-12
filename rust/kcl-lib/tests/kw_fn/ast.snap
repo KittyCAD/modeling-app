@@ -21,11 +21,18 @@ description: Result of parsing kw_fn.kcl
                   "argument": {
                     "end": 33,
                     "left": {
+                      "abs_path": false,
                       "end": 29,
-                      "name": "x",
+                      "name": {
+                        "end": 29,
+                        "name": "x",
+                        "start": 28,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 28,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
@@ -94,19 +101,33 @@ description: Result of parsing kw_fn.kcl
                   "argument": {
                     "end": 75,
                     "left": {
+                      "abs_path": false,
                       "end": 67,
-                      "name": "x",
+                      "name": {
+                        "end": 67,
+                        "name": "x",
+                        "start": 66,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 66,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "end": 75,
-                      "name": "delta",
+                      "name": {
+                        "end": 75,
+                        "name": "delta",
+                        "start": 70,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 70,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 66,
                     "type": "BinaryExpression",
@@ -180,10 +201,17 @@ description: Result of parsing kw_fn.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 94,
-              "name": "increment",
+              "name": {
+                "end": 94,
+                "name": "increment",
+                "start": 85,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 85,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 97,
             "start": 85,
@@ -232,10 +260,17 @@ description: Result of parsing kw_fn.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 109,
-              "name": "add",
+              "name": {
+                "end": 109,
+                "name": "add",
+                "start": 106,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 106,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 123,
             "start": 106,

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing import_cycle1.kcl
 ---
 {
@@ -50,10 +50,17 @@ description: Result of parsing import_cycle1.kcl
                     "left": {
                       "arguments": [],
                       "callee": {
+                        "abs_path": false,
                         "end": 101,
-                        "name": "two",
+                        "name": {
+                          "end": 101,
+                          "name": "two",
+                          "start": 98,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 98,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 103,
                       "start": 98,
@@ -124,11 +131,18 @@ description: Result of parsing import_cycle1.kcl
             "start": 10,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 32,
-              "name": "in",
+              "name": {
+                "end": 32,
+                "name": "in",
+                "start": 30,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 30,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

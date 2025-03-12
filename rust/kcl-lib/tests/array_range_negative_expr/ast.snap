@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing array_range_negative_expr.kcl
 ---
 {
@@ -51,10 +51,17 @@ description: Result of parsing array_range_negative_expr.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 9,
-                "name": "int",
+                "name": {
+                  "end": 9,
+                  "name": "int",
+                  "start": 6,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 6,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 13,
               "start": 6,
@@ -141,10 +148,17 @@ description: Result of parsing array_range_negative_expr.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 31,
-            "name": "assertEqual",
+            "name": {
+              "end": 31,
+              "name": "assertEqual",
+              "start": 20,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 20,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 72,
           "start": 20,

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -7,11 +7,18 @@ expression: actual
     {
       "end": 5,
       "expression": {
+        "abs_path": false,
         "end": 5,
-        "name": "truee",
+        "name": {
+          "end": 5,
+          "name": "truee",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "path": [],
         "start": 0,
-        "type": "Identifier",
-        "type": "Identifier"
+        "type": "Name",
+        "type": "Name"
       },
       "start": 0,
       "type": "ExpressionStatement",

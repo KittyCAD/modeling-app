@@ -28,10 +28,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 19,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 19,
+                    "name": "startSketchOn",
+                    "start": 6,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 25,
                 "start": 6,
@@ -78,10 +85,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 45,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 45,
+                    "name": "startProfileAt",
+                    "start": 31,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 31,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 56,
                 "start": 31,
@@ -138,10 +152,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 66,
-                  "name": "line",
+                  "name": {
+                    "end": 66,
+                    "name": "line",
+                    "start": 62,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 62,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 96,
                 "start": 62,
@@ -199,10 +220,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 122,
-                  "name": "line",
+                  "name": {
+                    "end": 122,
+                    "name": "line",
+                    "start": 118,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 118,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 151,
                 "start": 118,
@@ -260,10 +288,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 185,
-                  "name": "line",
+                  "name": {
+                    "end": 185,
+                    "name": "line",
+                    "start": 181,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 181,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 214,
                 "start": 181,
@@ -321,10 +356,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 250,
-                  "name": "line",
+                  "name": {
+                    "end": 250,
+                    "name": "line",
+                    "start": 246,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 246,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 280,
                 "start": 246,
@@ -382,10 +424,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 314,
-                  "name": "line",
+                  "name": {
+                    "end": 314,
+                    "name": "line",
+                    "start": 310,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 310,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 341,
                 "start": 310,
@@ -443,10 +492,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 377,
-                  "name": "line",
+                  "name": {
+                    "end": 377,
+                    "name": "line",
+                    "start": 373,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 373,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 403,
                 "start": 373,
@@ -504,10 +560,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 437,
-                  "name": "line",
+                  "name": {
+                    "end": 437,
+                    "name": "line",
+                    "start": 433,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 433,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 466,
                 "start": 433,
@@ -565,10 +628,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 502,
-                  "name": "line",
+                  "name": {
+                    "end": 502,
+                    "name": "line",
+                    "start": 498,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 498,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 531,
                 "start": 498,
@@ -626,10 +696,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 565,
-                  "name": "line",
+                  "name": {
+                    "end": 565,
+                    "name": "line",
+                    "start": 561,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 561,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 594,
                 "start": 561,
@@ -687,10 +764,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 630,
-                  "name": "line",
+                  "name": {
+                    "end": 630,
+                    "name": "line",
+                    "start": 626,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 626,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 659,
                 "start": 626,
@@ -748,10 +832,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 693,
-                  "name": "line",
+                  "name": {
+                    "end": 693,
+                    "name": "line",
+                    "start": 689,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 689,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 722,
                 "start": 689,
@@ -809,10 +900,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 758,
-                  "name": "line",
+                  "name": {
+                    "end": 758,
+                    "name": "line",
+                    "start": 754,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 754,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 786,
                 "start": 754,
@@ -870,10 +968,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 820,
-                  "name": "line",
+                  "name": {
+                    "end": 820,
+                    "name": "line",
+                    "start": 816,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 816,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 848,
                 "start": 816,
@@ -931,10 +1036,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 884,
-                  "name": "line",
+                  "name": {
+                    "end": 884,
+                    "name": "line",
+                    "start": 880,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 880,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 913,
                 "start": 880,
@@ -992,10 +1104,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 947,
-                  "name": "line",
+                  "name": {
+                    "end": 947,
+                    "name": "line",
+                    "start": 943,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 943,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 977,
                 "start": 943,
@@ -1053,10 +1172,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1013,
-                  "name": "line",
+                  "name": {
+                    "end": 1013,
+                    "name": "line",
+                    "start": 1009,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1009,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1042,
                 "start": 1009,
@@ -1114,10 +1240,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1076,
-                  "name": "line",
+                  "name": {
+                    "end": 1076,
+                    "name": "line",
+                    "start": 1072,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1072,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1105,
                 "start": 1072,
@@ -1175,10 +1308,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1141,
-                  "name": "line",
+                  "name": {
+                    "end": 1141,
+                    "name": "line",
+                    "start": 1137,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1137,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1171,
                 "start": 1137,
@@ -1236,10 +1376,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1206,
-                  "name": "line",
+                  "name": {
+                    "end": 1206,
+                    "name": "line",
+                    "start": 1202,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1202,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1236,
                 "start": 1202,
@@ -1297,10 +1444,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1272,
-                  "name": "line",
+                  "name": {
+                    "end": 1272,
+                    "name": "line",
+                    "start": 1268,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1268,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1302,
                 "start": 1268,
@@ -1358,10 +1512,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1337,
-                  "name": "line",
+                  "name": {
+                    "end": 1337,
+                    "name": "line",
+                    "start": 1333,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1333,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1367,
                 "start": 1333,
@@ -1419,10 +1580,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1403,
-                  "name": "line",
+                  "name": {
+                    "end": 1403,
+                    "name": "line",
+                    "start": 1399,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1399,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1433,
                 "start": 1399,
@@ -1480,10 +1648,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1467,
-                  "name": "line",
+                  "name": {
+                    "end": 1467,
+                    "name": "line",
+                    "start": 1463,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1463,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1494,
                 "start": 1463,
@@ -1541,10 +1716,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1530,
-                  "name": "line",
+                  "name": {
+                    "end": 1530,
+                    "name": "line",
+                    "start": 1526,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1526,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1558,
                 "start": 1526,
@@ -1602,10 +1784,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1593,
-                  "name": "line",
+                  "name": {
+                    "end": 1593,
+                    "name": "line",
+                    "start": 1589,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1589,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1624,
                 "start": 1589,
@@ -1663,10 +1852,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1660,
-                  "name": "line",
+                  "name": {
+                    "end": 1660,
+                    "name": "line",
+                    "start": 1656,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1656,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1690,
                 "start": 1656,
@@ -1724,10 +1920,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1725,
-                  "name": "line",
+                  "name": {
+                    "end": 1725,
+                    "name": "line",
+                    "start": 1721,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1721,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1755,
                 "start": 1721,
@@ -1785,10 +1988,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1791,
-                  "name": "line",
+                  "name": {
+                    "end": 1791,
+                    "name": "line",
+                    "start": 1787,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1787,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1822,
                 "start": 1787,
@@ -1846,10 +2056,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1857,
-                  "name": "line",
+                  "name": {
+                    "end": 1857,
+                    "name": "line",
+                    "start": 1853,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1853,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1888,
                 "start": 1853,
@@ -1907,10 +2124,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1924,
-                  "name": "line",
+                  "name": {
+                    "end": 1924,
+                    "name": "line",
+                    "start": 1920,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1920,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1955,
                 "start": 1920,
@@ -1968,10 +2192,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1990,
-                  "name": "line",
+                  "name": {
+                    "end": 1990,
+                    "name": "line",
+                    "start": 1986,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1986,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2020,
                 "start": 1986,
@@ -2029,10 +2260,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2056,
-                  "name": "line",
+                  "name": {
+                    "end": 2056,
+                    "name": "line",
+                    "start": 2052,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2052,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2086,
                 "start": 2052,
@@ -2090,10 +2328,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2121,
-                  "name": "line",
+                  "name": {
+                    "end": 2121,
+                    "name": "line",
+                    "start": 2117,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2117,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2152,
                 "start": 2117,
@@ -2151,10 +2396,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2188,
-                  "name": "line",
+                  "name": {
+                    "end": 2188,
+                    "name": "line",
+                    "start": 2184,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2184,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2219,
                 "start": 2184,
@@ -2212,10 +2464,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2253,
-                  "name": "line",
+                  "name": {
+                    "end": 2253,
+                    "name": "line",
+                    "start": 2249,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2249,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2283,
                 "start": 2249,
@@ -2273,10 +2532,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2319,
-                  "name": "line",
+                  "name": {
+                    "end": 2319,
+                    "name": "line",
+                    "start": 2315,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2315,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2349,
                 "start": 2315,
@@ -2334,10 +2600,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2383,
-                  "name": "line",
+                  "name": {
+                    "end": 2383,
+                    "name": "line",
+                    "start": 2379,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2379,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2412,
                 "start": 2379,
@@ -2395,10 +2668,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2448,
-                  "name": "line",
+                  "name": {
+                    "end": 2448,
+                    "name": "line",
+                    "start": 2444,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2444,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2477,
                 "start": 2444,
@@ -2456,10 +2736,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2512,
-                  "name": "line",
+                  "name": {
+                    "end": 2512,
+                    "name": "line",
+                    "start": 2508,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2508,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2542,
                 "start": 2508,
@@ -2517,10 +2804,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2578,
-                  "name": "line",
+                  "name": {
+                    "end": 2578,
+                    "name": "line",
+                    "start": 2574,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2574,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2608,
                 "start": 2574,
@@ -2578,10 +2872,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2643,
-                  "name": "line",
+                  "name": {
+                    "end": 2643,
+                    "name": "line",
+                    "start": 2639,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2639,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2672,
                 "start": 2639,
@@ -2639,10 +2940,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2708,
-                  "name": "line",
+                  "name": {
+                    "end": 2708,
+                    "name": "line",
+                    "start": 2704,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2704,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2737,
                 "start": 2704,
@@ -2700,10 +3008,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2772,
-                  "name": "line",
+                  "name": {
+                    "end": 2772,
+                    "name": "line",
+                    "start": 2768,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2768,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2802,
                 "start": 2768,
@@ -2761,10 +3076,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2838,
-                  "name": "line",
+                  "name": {
+                    "end": 2838,
+                    "name": "line",
+                    "start": 2834,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2834,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2868,
                 "start": 2834,
@@ -2822,10 +3144,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2903,
-                  "name": "line",
+                  "name": {
+                    "end": 2903,
+                    "name": "line",
+                    "start": 2899,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2899,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2937,
                 "start": 2899,
@@ -2883,10 +3212,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2963,
-                  "name": "line",
+                  "name": {
+                    "end": 2963,
+                    "name": "line",
+                    "start": 2959,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2959,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2997,
                 "start": 2959,
@@ -2944,10 +3280,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3032,
-                  "name": "line",
+                  "name": {
+                    "end": 3032,
+                    "name": "line",
+                    "start": 3028,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3028,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3062,
                 "start": 3028,
@@ -3005,10 +3348,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3098,
-                  "name": "line",
+                  "name": {
+                    "end": 3098,
+                    "name": "line",
+                    "start": 3094,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3094,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3127,
                 "start": 3094,
@@ -3066,10 +3416,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3162,
-                  "name": "line",
+                  "name": {
+                    "end": 3162,
+                    "name": "line",
+                    "start": 3158,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3158,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3192,
                 "start": 3158,
@@ -3127,10 +3484,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3228,
-                  "name": "line",
+                  "name": {
+                    "end": 3228,
+                    "name": "line",
+                    "start": 3224,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3224,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3259,
                 "start": 3224,
@@ -3188,10 +3552,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3294,
-                  "name": "line",
+                  "name": {
+                    "end": 3294,
+                    "name": "line",
+                    "start": 3290,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3290,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3325,
                 "start": 3290,
@@ -3249,10 +3620,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3361,
-                  "name": "line",
+                  "name": {
+                    "end": 3361,
+                    "name": "line",
+                    "start": 3357,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3357,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3392,
                 "start": 3357,
@@ -3310,10 +3688,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3444,
-                  "name": "line",
+                  "name": {
+                    "end": 3444,
+                    "name": "line",
+                    "start": 3440,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3440,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3474,
                 "start": 3440,
@@ -3371,10 +3756,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3500,
-                  "name": "line",
+                  "name": {
+                    "end": 3500,
+                    "name": "line",
+                    "start": 3496,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3496,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3530,
                 "start": 3496,
@@ -3432,10 +3824,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3565,
-                  "name": "line",
+                  "name": {
+                    "end": 3565,
+                    "name": "line",
+                    "start": 3561,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3561,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3596,
                 "start": 3561,
@@ -3493,10 +3892,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3632,
-                  "name": "line",
+                  "name": {
+                    "end": 3632,
+                    "name": "line",
+                    "start": 3628,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3628,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3663,
                 "start": 3628,
@@ -3554,10 +3960,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3698,
-                  "name": "line",
+                  "name": {
+                    "end": 3698,
+                    "name": "line",
+                    "start": 3694,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3694,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3728,
                 "start": 3694,
@@ -3615,10 +4028,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3754,
-                  "name": "line",
+                  "name": {
+                    "end": 3754,
+                    "name": "line",
+                    "start": 3750,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3750,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3784,
                 "start": 3750,
@@ -3676,10 +4096,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3819,
-                  "name": "line",
+                  "name": {
+                    "end": 3819,
+                    "name": "line",
+                    "start": 3815,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3815,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3849,
                 "start": 3815,
@@ -3737,10 +4164,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3885,
-                  "name": "line",
+                  "name": {
+                    "end": 3885,
+                    "name": "line",
+                    "start": 3881,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3881,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3915,
                 "start": 3881,
@@ -3798,10 +4232,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3950,
-                  "name": "line",
+                  "name": {
+                    "end": 3950,
+                    "name": "line",
+                    "start": 3946,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3946,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3980,
                 "start": 3946,
@@ -3859,10 +4300,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4006,
-                  "name": "line",
+                  "name": {
+                    "end": 4006,
+                    "name": "line",
+                    "start": 4002,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4002,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4036,
                 "start": 4002,
@@ -3920,10 +4368,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4071,
-                  "name": "line",
+                  "name": {
+                    "end": 4071,
+                    "name": "line",
+                    "start": 4067,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4067,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4101,
                 "start": 4067,
@@ -3981,10 +4436,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4137,
-                  "name": "line",
+                  "name": {
+                    "end": 4137,
+                    "name": "line",
+                    "start": 4133,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4133,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4167,
                 "start": 4133,
@@ -4042,10 +4504,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4202,
-                  "name": "line",
+                  "name": {
+                    "end": 4202,
+                    "name": "line",
+                    "start": 4198,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4198,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4233,
                 "start": 4198,
@@ -4103,10 +4572,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4259,
-                  "name": "line",
+                  "name": {
+                    "end": 4259,
+                    "name": "line",
+                    "start": 4255,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4255,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4290,
                 "start": 4255,
@@ -4164,10 +4640,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4325,
-                  "name": "line",
+                  "name": {
+                    "end": 4325,
+                    "name": "line",
+                    "start": 4321,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4321,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4369,
                 "start": 4321,
@@ -4225,10 +4708,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4405,
-                  "name": "line",
+                  "name": {
+                    "end": 4405,
+                    "name": "line",
+                    "start": 4401,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4401,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4449,
                 "start": 4401,
@@ -4286,10 +4776,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4484,
-                  "name": "line",
+                  "name": {
+                    "end": 4484,
+                    "name": "line",
+                    "start": 4480,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4480,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4514,
                 "start": 4480,
@@ -4347,10 +4844,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4540,
-                  "name": "line",
+                  "name": {
+                    "end": 4540,
+                    "name": "line",
+                    "start": 4536,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4536,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4570,
                 "start": 4536,
@@ -4408,10 +4912,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4605,
-                  "name": "line",
+                  "name": {
+                    "end": 4605,
+                    "name": "line",
+                    "start": 4601,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4601,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4636,
                 "start": 4601,
@@ -4469,10 +4980,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4672,
-                  "name": "line",
+                  "name": {
+                    "end": 4672,
+                    "name": "line",
+                    "start": 4668,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4668,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4703,
                 "start": 4668,
@@ -4530,10 +5048,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4738,
-                  "name": "line",
+                  "name": {
+                    "end": 4738,
+                    "name": "line",
+                    "start": 4734,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4734,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4769,
                 "start": 4734,
@@ -4591,10 +5116,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4795,
-                  "name": "line",
+                  "name": {
+                    "end": 4795,
+                    "name": "line",
+                    "start": 4791,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4791,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4826,
                 "start": 4791,
@@ -4652,10 +5184,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4861,
-                  "name": "line",
+                  "name": {
+                    "end": 4861,
+                    "name": "line",
+                    "start": 4857,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4857,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4892,
                 "start": 4857,
@@ -4713,10 +5252,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4928,
-                  "name": "line",
+                  "name": {
+                    "end": 4928,
+                    "name": "line",
+                    "start": 4924,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4924,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4959,
                 "start": 4924,
@@ -4774,10 +5320,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4994,
-                  "name": "line",
+                  "name": {
+                    "end": 4994,
+                    "name": "line",
+                    "start": 4990,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4990,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5025,
                 "start": 4990,
@@ -4835,10 +5388,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5051,
-                  "name": "line",
+                  "name": {
+                    "end": 5051,
+                    "name": "line",
+                    "start": 5047,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5047,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5082,
                 "start": 5047,
@@ -4896,10 +5456,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5117,
-                  "name": "line",
+                  "name": {
+                    "end": 5117,
+                    "name": "line",
+                    "start": 5113,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5113,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5148,
                 "start": 5113,
@@ -4957,10 +5524,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5184,
-                  "name": "line",
+                  "name": {
+                    "end": 5184,
+                    "name": "line",
+                    "start": 5180,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5180,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5215,
                 "start": 5180,
@@ -5018,10 +5592,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5250,
-                  "name": "line",
+                  "name": {
+                    "end": 5250,
+                    "name": "line",
+                    "start": 5246,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5246,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5280,
                 "start": 5246,
@@ -5079,10 +5660,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5306,
-                  "name": "line",
+                  "name": {
+                    "end": 5306,
+                    "name": "line",
+                    "start": 5302,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5302,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5336,
                 "start": 5302,
@@ -5140,10 +5728,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5370,
-                  "name": "line",
+                  "name": {
+                    "end": 5370,
+                    "name": "line",
+                    "start": 5366,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5366,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5400,
                 "start": 5366,
@@ -5201,10 +5796,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5436,
-                  "name": "line",
+                  "name": {
+                    "end": 5436,
+                    "name": "line",
+                    "start": 5432,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5432,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5465,
                 "start": 5432,
@@ -5262,10 +5864,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5499,
-                  "name": "line",
+                  "name": {
+                    "end": 5499,
+                    "name": "line",
+                    "start": 5495,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5495,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5527,
                 "start": 5495,
@@ -5323,10 +5932,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5563,
-                  "name": "line",
+                  "name": {
+                    "end": 5563,
+                    "name": "line",
+                    "start": 5559,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5559,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5592,
                 "start": 5559,
@@ -5384,10 +6000,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5626,
-                  "name": "line",
+                  "name": {
+                    "end": 5626,
+                    "name": "line",
+                    "start": 5622,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5622,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5655,
                 "start": 5622,
@@ -5445,10 +6068,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5691,
-                  "name": "line",
+                  "name": {
+                    "end": 5691,
+                    "name": "line",
+                    "start": 5687,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5687,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5720,
                 "start": 5687,
@@ -5506,10 +6136,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5754,
-                  "name": "line",
+                  "name": {
+                    "end": 5754,
+                    "name": "line",
+                    "start": 5750,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5750,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5783,
                 "start": 5750,
@@ -5567,10 +6204,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5819,
-                  "name": "line",
+                  "name": {
+                    "end": 5819,
+                    "name": "line",
+                    "start": 5815,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5815,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5848,
                 "start": 5815,
@@ -5628,10 +6272,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5882,
-                  "name": "line",
+                  "name": {
+                    "end": 5882,
+                    "name": "line",
+                    "start": 5878,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5878,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5915,
                 "start": 5878,
@@ -5689,10 +6340,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5951,
-                  "name": "line",
+                  "name": {
+                    "end": 5951,
+                    "name": "line",
+                    "start": 5947,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5947,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5983,
                 "start": 5947,
@@ -5750,10 +6408,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6017,
-                  "name": "line",
+                  "name": {
+                    "end": 6017,
+                    "name": "line",
+                    "start": 6013,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6013,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6046,
                 "start": 6013,
@@ -5811,10 +6476,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6082,
-                  "name": "line",
+                  "name": {
+                    "end": 6082,
+                    "name": "line",
+                    "start": 6078,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6078,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6112,
                 "start": 6078,
@@ -5872,10 +6544,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6146,
-                  "name": "line",
+                  "name": {
+                    "end": 6146,
+                    "name": "line",
+                    "start": 6142,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6142,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6176,
                 "start": 6142,
@@ -5933,10 +6612,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6212,
-                  "name": "line",
+                  "name": {
+                    "end": 6212,
+                    "name": "line",
+                    "start": 6208,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6208,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6242,
                 "start": 6208,
@@ -5994,10 +6680,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6276,
-                  "name": "line",
+                  "name": {
+                    "end": 6276,
+                    "name": "line",
+                    "start": 6272,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6272,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6306,
                 "start": 6272,
@@ -6055,10 +6748,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6332,
-                  "name": "line",
+                  "name": {
+                    "end": 6332,
+                    "name": "line",
+                    "start": 6328,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6328,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6365,
                 "start": 6328,
@@ -6116,10 +6816,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6401,
-                  "name": "line",
+                  "name": {
+                    "end": 6401,
+                    "name": "line",
+                    "start": 6397,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6397,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6435,
                 "start": 6397,
@@ -6177,10 +6884,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6469,
-                  "name": "line",
+                  "name": {
+                    "end": 6469,
+                    "name": "line",
+                    "start": 6465,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6465,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6500,
                 "start": 6465,
@@ -6238,10 +6952,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6536,
-                  "name": "line",
+                  "name": {
+                    "end": 6536,
+                    "name": "line",
+                    "start": 6532,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6532,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6566,
                 "start": 6532,
@@ -6299,10 +7020,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6592,
-                  "name": "line",
+                  "name": {
+                    "end": 6592,
+                    "name": "line",
+                    "start": 6588,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6588,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6624,
                 "start": 6588,
@@ -6360,10 +7088,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6658,
-                  "name": "line",
+                  "name": {
+                    "end": 6658,
+                    "name": "line",
+                    "start": 6654,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6654,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6691,
                 "start": 6654,
@@ -6421,10 +7156,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6727,
-                  "name": "line",
+                  "name": {
+                    "end": 6727,
+                    "name": "line",
+                    "start": 6723,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6723,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6758,
                 "start": 6723,
@@ -6482,10 +7224,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6792,
-                  "name": "line",
+                  "name": {
+                    "end": 6792,
+                    "name": "line",
+                    "start": 6788,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6788,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6823,
                 "start": 6788,
@@ -6543,10 +7292,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6859,
-                  "name": "line",
+                  "name": {
+                    "end": 6859,
+                    "name": "line",
+                    "start": 6855,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6855,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6889,
                 "start": 6855,
@@ -6604,10 +7360,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6924,
-                  "name": "line",
+                  "name": {
+                    "end": 6924,
+                    "name": "line",
+                    "start": 6920,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6920,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6954,
                 "start": 6920,
@@ -6665,10 +7428,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6990,
-                  "name": "line",
+                  "name": {
+                    "end": 6990,
+                    "name": "line",
+                    "start": 6986,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6986,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7021,
                 "start": 6986,
@@ -6726,10 +7496,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7056,
-                  "name": "line",
+                  "name": {
+                    "end": 7056,
+                    "name": "line",
+                    "start": 7052,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7052,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7086,
                 "start": 7052,
@@ -6787,10 +7564,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7122,
-                  "name": "line",
+                  "name": {
+                    "end": 7122,
+                    "name": "line",
+                    "start": 7118,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7118,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7151,
                 "start": 7118,
@@ -6848,10 +7632,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7185,
-                  "name": "line",
+                  "name": {
+                    "end": 7185,
+                    "name": "line",
+                    "start": 7181,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7181,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7214,
                 "start": 7181,
@@ -6909,10 +7700,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7250,
-                  "name": "line",
+                  "name": {
+                    "end": 7250,
+                    "name": "line",
+                    "start": 7246,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7246,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7293,
                 "start": 7246,
@@ -6970,10 +7768,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7328,
-                  "name": "line",
+                  "name": {
+                    "end": 7328,
+                    "name": "line",
+                    "start": 7324,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7324,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7359,
                 "start": 7324,
@@ -7031,10 +7836,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7385,
-                  "name": "line",
+                  "name": {
+                    "end": 7385,
+                    "name": "line",
+                    "start": 7381,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7381,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7416,
                 "start": 7381,
@@ -7092,10 +7904,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7451,
-                  "name": "line",
+                  "name": {
+                    "end": 7451,
+                    "name": "line",
+                    "start": 7447,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7447,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7482,
                 "start": 7447,
@@ -7153,10 +7972,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7518,
-                  "name": "line",
+                  "name": {
+                    "end": 7518,
+                    "name": "line",
+                    "start": 7514,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7514,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7549,
                 "start": 7514,
@@ -7214,10 +8040,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7584,
-                  "name": "line",
+                  "name": {
+                    "end": 7584,
+                    "name": "line",
+                    "start": 7580,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7580,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7615,
                 "start": 7580,
@@ -7275,10 +8108,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7651,
-                  "name": "line",
+                  "name": {
+                    "end": 7651,
+                    "name": "line",
+                    "start": 7647,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7647,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7681,
                 "start": 7647,
@@ -7336,10 +8176,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7707,
-                  "name": "line",
+                  "name": {
+                    "end": 7707,
+                    "name": "line",
+                    "start": 7703,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7703,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7738,
                 "start": 7703,
@@ -7397,10 +8244,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7774,
-                  "name": "line",
+                  "name": {
+                    "end": 7774,
+                    "name": "line",
+                    "start": 7770,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7770,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7805,
                 "start": 7770,
@@ -7458,10 +8312,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7840,
-                  "name": "line",
+                  "name": {
+                    "end": 7840,
+                    "name": "line",
+                    "start": 7836,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7836,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7871,
                 "start": 7836,
@@ -7519,10 +8380,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7912,
-                  "name": "line",
+                  "name": {
+                    "end": 7912,
+                    "name": "line",
+                    "start": 7908,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7908,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 7956,
                 "start": 7908,
@@ -7580,10 +8448,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 7991,
-                  "name": "line",
+                  "name": {
+                    "end": 7991,
+                    "name": "line",
+                    "start": 7987,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7987,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8035,
                 "start": 7987,
@@ -7641,10 +8516,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8071,
-                  "name": "line",
+                  "name": {
+                    "end": 8071,
+                    "name": "line",
+                    "start": 8067,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8067,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8102,
                 "start": 8067,
@@ -7702,10 +8584,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8137,
-                  "name": "line",
+                  "name": {
+                    "end": 8137,
+                    "name": "line",
+                    "start": 8133,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8133,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8168,
                 "start": 8133,
@@ -7763,10 +8652,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8204,
-                  "name": "line",
+                  "name": {
+                    "end": 8204,
+                    "name": "line",
+                    "start": 8200,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8200,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8248,
                 "start": 8200,
@@ -7824,10 +8720,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8283,
-                  "name": "line",
+                  "name": {
+                    "end": 8283,
+                    "name": "line",
+                    "start": 8279,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8279,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8327,
                 "start": 8279,
@@ -7885,10 +8788,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8363,
-                  "name": "line",
+                  "name": {
+                    "end": 8363,
+                    "name": "line",
+                    "start": 8359,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8359,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8393,
                 "start": 8359,
@@ -7946,10 +8856,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8427,
-                  "name": "line",
+                  "name": {
+                    "end": 8427,
+                    "name": "line",
+                    "start": 8423,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8423,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8456,
                 "start": 8423,
@@ -8007,10 +8924,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8492,
-                  "name": "line",
+                  "name": {
+                    "end": 8492,
+                    "name": "line",
+                    "start": 8488,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8488,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8522,
                 "start": 8488,
@@ -8068,10 +8992,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8556,
-                  "name": "line",
+                  "name": {
+                    "end": 8556,
+                    "name": "line",
+                    "start": 8552,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8552,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8586,
                 "start": 8552,
@@ -8129,10 +9060,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8622,
-                  "name": "line",
+                  "name": {
+                    "end": 8622,
+                    "name": "line",
+                    "start": 8618,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8618,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8665,
                 "start": 8618,
@@ -8190,10 +9128,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8700,
-                  "name": "line",
+                  "name": {
+                    "end": 8700,
+                    "name": "line",
+                    "start": 8696,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8696,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8743,
                 "start": 8696,
@@ -8251,10 +9196,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8779,
-                  "name": "line",
+                  "name": {
+                    "end": 8779,
+                    "name": "line",
+                    "start": 8775,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8775,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8809,
                 "start": 8775,
@@ -8312,10 +9264,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8844,
-                  "name": "line",
+                  "name": {
+                    "end": 8844,
+                    "name": "line",
+                    "start": 8840,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8840,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8875,
                 "start": 8840,
@@ -8373,10 +9332,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8911,
-                  "name": "line",
+                  "name": {
+                    "end": 8911,
+                    "name": "line",
+                    "start": 8907,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8907,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 8942,
                 "start": 8907,
@@ -8434,10 +9400,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 8976,
-                  "name": "line",
+                  "name": {
+                    "end": 8976,
+                    "name": "line",
+                    "start": 8972,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 8972,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9006,
                 "start": 8972,
@@ -8495,10 +9468,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9042,
-                  "name": "line",
+                  "name": {
+                    "end": 9042,
+                    "name": "line",
+                    "start": 9038,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9038,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9071,
                 "start": 9038,
@@ -8556,10 +9536,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9097,
-                  "name": "line",
+                  "name": {
+                    "end": 9097,
+                    "name": "line",
+                    "start": 9093,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9093,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9127,
                 "start": 9093,
@@ -8617,10 +9604,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9161,
-                  "name": "line",
+                  "name": {
+                    "end": 9161,
+                    "name": "line",
+                    "start": 9157,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9157,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9191,
                 "start": 9157,
@@ -8678,10 +9672,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9227,
-                  "name": "line",
+                  "name": {
+                    "end": 9227,
+                    "name": "line",
+                    "start": 9223,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9223,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9256,
                 "start": 9223,
@@ -8739,10 +9740,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9290,
-                  "name": "line",
+                  "name": {
+                    "end": 9290,
+                    "name": "line",
+                    "start": 9286,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9286,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9318,
                 "start": 9286,
@@ -8800,10 +9808,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9354,
-                  "name": "line",
+                  "name": {
+                    "end": 9354,
+                    "name": "line",
+                    "start": 9350,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9350,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9383,
                 "start": 9350,
@@ -8861,10 +9876,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9418,
-                  "name": "line",
+                  "name": {
+                    "end": 9418,
+                    "name": "line",
+                    "start": 9414,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9414,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9448,
                 "start": 9414,
@@ -8922,10 +9944,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9484,
-                  "name": "line",
+                  "name": {
+                    "end": 9484,
+                    "name": "line",
+                    "start": 9480,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9480,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9514,
                 "start": 9480,
@@ -8983,10 +10012,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9549,
-                  "name": "line",
+                  "name": {
+                    "end": 9549,
+                    "name": "line",
+                    "start": 9545,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9545,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9593,
                 "start": 9545,
@@ -9044,10 +10080,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9629,
-                  "name": "line",
+                  "name": {
+                    "end": 9629,
+                    "name": "line",
+                    "start": 9625,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9625,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9673,
                 "start": 9625,
@@ -9105,10 +10148,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9708,
-                  "name": "line",
+                  "name": {
+                    "end": 9708,
+                    "name": "line",
+                    "start": 9704,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9704,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9737,
                 "start": 9704,
@@ -9166,10 +10216,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9773,
-                  "name": "line",
+                  "name": {
+                    "end": 9773,
+                    "name": "line",
+                    "start": 9769,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9769,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9801,
                 "start": 9769,
@@ -9227,10 +10284,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9836,
-                  "name": "line",
+                  "name": {
+                    "end": 9836,
+                    "name": "line",
+                    "start": 9832,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9832,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9865,
                 "start": 9832,
@@ -9288,10 +10352,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9891,
-                  "name": "line",
+                  "name": {
+                    "end": 9891,
+                    "name": "line",
+                    "start": 9887,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9887,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9920,
                 "start": 9887,
@@ -9349,10 +10420,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 9954,
-                  "name": "line",
+                  "name": {
+                    "end": 9954,
+                    "name": "line",
+                    "start": 9950,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 9950,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 9982,
                 "start": 9950,
@@ -9410,10 +10488,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10018,
-                  "name": "line",
+                  "name": {
+                    "end": 10018,
+                    "name": "line",
+                    "start": 10014,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10014,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10046,
                 "start": 10014,
@@ -9471,10 +10556,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10080,
-                  "name": "line",
+                  "name": {
+                    "end": 10080,
+                    "name": "line",
+                    "start": 10076,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10076,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10109,
                 "start": 10076,
@@ -9532,10 +10624,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10145,
-                  "name": "line",
+                  "name": {
+                    "end": 10145,
+                    "name": "line",
+                    "start": 10141,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10141,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10174,
                 "start": 10141,
@@ -9593,10 +10692,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10208,
-                  "name": "line",
+                  "name": {
+                    "end": 10208,
+                    "name": "line",
+                    "start": 10204,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10204,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10237,
                 "start": 10204,
@@ -9654,10 +10760,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10273,
-                  "name": "line",
+                  "name": {
+                    "end": 10273,
+                    "name": "line",
+                    "start": 10269,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10269,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10308,
                 "start": 10269,
@@ -9715,10 +10828,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10342,
-                  "name": "line",
+                  "name": {
+                    "end": 10342,
+                    "name": "line",
+                    "start": 10338,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10338,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10377,
                 "start": 10338,
@@ -9776,10 +10896,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10413,
-                  "name": "line",
+                  "name": {
+                    "end": 10413,
+                    "name": "line",
+                    "start": 10409,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10409,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10442,
                 "start": 10409,
@@ -9837,10 +10964,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10476,
-                  "name": "line",
+                  "name": {
+                    "end": 10476,
+                    "name": "line",
+                    "start": 10472,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10472,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10505,
                 "start": 10472,
@@ -9898,10 +11032,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10541,
-                  "name": "line",
+                  "name": {
+                    "end": 10541,
+                    "name": "line",
+                    "start": 10537,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10537,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10570,
                 "start": 10537,
@@ -9959,10 +11100,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10604,
-                  "name": "line",
+                  "name": {
+                    "end": 10604,
+                    "name": "line",
+                    "start": 10600,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10600,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10632,
                 "start": 10600,
@@ -10020,10 +11168,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10668,
-                  "name": "line",
+                  "name": {
+                    "end": 10668,
+                    "name": "line",
+                    "start": 10664,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10664,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10696,
                 "start": 10664,
@@ -10081,10 +11236,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10731,
-                  "name": "line",
+                  "name": {
+                    "end": 10731,
+                    "name": "line",
+                    "start": 10727,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10727,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10760,
                 "start": 10727,
@@ -10142,10 +11304,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10796,
-                  "name": "line",
+                  "name": {
+                    "end": 10796,
+                    "name": "line",
+                    "start": 10792,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10792,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10825,
                 "start": 10792,
@@ -10203,10 +11372,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10860,
-                  "name": "line",
+                  "name": {
+                    "end": 10860,
+                    "name": "line",
+                    "start": 10856,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10856,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10890,
                 "start": 10856,
@@ -10264,10 +11440,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10916,
-                  "name": "line",
+                  "name": {
+                    "end": 10916,
+                    "name": "line",
+                    "start": 10912,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10912,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 10946,
                 "start": 10912,
@@ -10325,10 +11508,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 10980,
-                  "name": "line",
+                  "name": {
+                    "end": 10980,
+                    "name": "line",
+                    "start": 10976,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10976,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11010,
                 "start": 10976,
@@ -10386,10 +11576,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11046,
-                  "name": "line",
+                  "name": {
+                    "end": 11046,
+                    "name": "line",
+                    "start": 11042,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11042,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11076,
                 "start": 11042,
@@ -10447,10 +11644,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11110,
-                  "name": "line",
+                  "name": {
+                    "end": 11110,
+                    "name": "line",
+                    "start": 11106,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11106,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11139,
                 "start": 11106,
@@ -10508,10 +11712,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11175,
-                  "name": "line",
+                  "name": {
+                    "end": 11175,
+                    "name": "line",
+                    "start": 11171,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11171,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11204,
                 "start": 11171,
@@ -10569,10 +11780,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11238,
-                  "name": "line",
+                  "name": {
+                    "end": 11238,
+                    "name": "line",
+                    "start": 11234,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11234,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11268,
                 "start": 11234,
@@ -10630,10 +11848,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11304,
-                  "name": "line",
+                  "name": {
+                    "end": 11304,
+                    "name": "line",
+                    "start": 11300,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11300,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11334,
                 "start": 11300,
@@ -10691,10 +11916,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11368,
-                  "name": "line",
+                  "name": {
+                    "end": 11368,
+                    "name": "line",
+                    "start": 11364,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11364,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11398,
                 "start": 11364,
@@ -10752,10 +11984,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11434,
-                  "name": "line",
+                  "name": {
+                    "end": 11434,
+                    "name": "line",
+                    "start": 11430,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11430,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11470,
                 "start": 11430,
@@ -10813,10 +12052,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11504,
-                  "name": "line",
+                  "name": {
+                    "end": 11504,
+                    "name": "line",
+                    "start": 11500,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11500,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11540,
                 "start": 11500,
@@ -10874,10 +12120,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11576,
-                  "name": "line",
+                  "name": {
+                    "end": 11576,
+                    "name": "line",
+                    "start": 11572,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11572,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11606,
                 "start": 11572,
@@ -10935,10 +12188,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11640,
-                  "name": "line",
+                  "name": {
+                    "end": 11640,
+                    "name": "line",
+                    "start": 11636,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11636,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11683,
                 "start": 11636,
@@ -10996,10 +12256,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11719,
-                  "name": "line",
+                  "name": {
+                    "end": 11719,
+                    "name": "line",
+                    "start": 11715,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11715,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11762,
                 "start": 11715,
@@ -11057,10 +12324,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11797,
-                  "name": "line",
+                  "name": {
+                    "end": 11797,
+                    "name": "line",
+                    "start": 11793,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11793,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11826,
                 "start": 11793,
@@ -11118,10 +12392,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11862,
-                  "name": "line",
+                  "name": {
+                    "end": 11862,
+                    "name": "line",
+                    "start": 11858,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11858,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11891,
                 "start": 11858,
@@ -11179,10 +12460,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11926,
-                  "name": "line",
+                  "name": {
+                    "end": 11926,
+                    "name": "line",
+                    "start": 11922,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11922,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 11956,
                 "start": 11922,
@@ -11240,10 +12528,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 11982,
-                  "name": "line",
+                  "name": {
+                    "end": 11982,
+                    "name": "line",
+                    "start": 11978,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 11978,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12009,
                 "start": 11978,
@@ -11301,10 +12596,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12043,
-                  "name": "line",
+                  "name": {
+                    "end": 12043,
+                    "name": "line",
+                    "start": 12039,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12039,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12083,
                 "start": 12039,
@@ -11362,10 +12664,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12119,
-                  "name": "line",
+                  "name": {
+                    "end": 12119,
+                    "name": "line",
+                    "start": 12115,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12115,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12162,
                 "start": 12115,
@@ -11423,10 +12732,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12197,
-                  "name": "line",
+                  "name": {
+                    "end": 12197,
+                    "name": "line",
+                    "start": 12193,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12193,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12226,
                 "start": 12193,
@@ -11484,10 +12800,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12262,
-                  "name": "line",
+                  "name": {
+                    "end": 12262,
+                    "name": "line",
+                    "start": 12258,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12258,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12291,
                 "start": 12258,
@@ -11545,10 +12868,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12326,
-                  "name": "line",
+                  "name": {
+                    "end": 12326,
+                    "name": "line",
+                    "start": 12322,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12322,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12356,
                 "start": 12322,
@@ -11606,10 +12936,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12392,
-                  "name": "line",
+                  "name": {
+                    "end": 12392,
+                    "name": "line",
+                    "start": 12388,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12388,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12422,
                 "start": 12388,
@@ -11667,10 +13004,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12456,
-                  "name": "line",
+                  "name": {
+                    "end": 12456,
+                    "name": "line",
+                    "start": 12452,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12452,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12485,
                 "start": 12452,
@@ -11728,10 +13072,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12521,
-                  "name": "line",
+                  "name": {
+                    "end": 12521,
+                    "name": "line",
+                    "start": 12517,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12517,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12550,
                 "start": 12517,
@@ -11789,10 +13140,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12584,
-                  "name": "line",
+                  "name": {
+                    "end": 12584,
+                    "name": "line",
+                    "start": 12580,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12580,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12614,
                 "start": 12580,
@@ -11850,10 +13208,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12650,
-                  "name": "line",
+                  "name": {
+                    "end": 12650,
+                    "name": "line",
+                    "start": 12646,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12646,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12680,
                 "start": 12646,
@@ -11911,10 +13276,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12714,
-                  "name": "line",
+                  "name": {
+                    "end": 12714,
+                    "name": "line",
+                    "start": 12710,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12710,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12744,
                 "start": 12710,
@@ -11972,10 +13344,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12780,
-                  "name": "line",
+                  "name": {
+                    "end": 12780,
+                    "name": "line",
+                    "start": 12776,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12776,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12816,
                 "start": 12776,
@@ -12033,10 +13412,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12850,
-                  "name": "line",
+                  "name": {
+                    "end": 12850,
+                    "name": "line",
+                    "start": 12846,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12846,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12886,
                 "start": 12846,
@@ -12094,10 +13480,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12922,
-                  "name": "line",
+                  "name": {
+                    "end": 12922,
+                    "name": "line",
+                    "start": 12918,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12918,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 12952,
                 "start": 12918,
@@ -12155,10 +13548,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 12986,
-                  "name": "line",
+                  "name": {
+                    "end": 12986,
+                    "name": "line",
+                    "start": 12982,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12982,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13016,
                 "start": 12982,
@@ -12216,10 +13616,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13052,
-                  "name": "line",
+                  "name": {
+                    "end": 13052,
+                    "name": "line",
+                    "start": 13048,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13048,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13082,
                 "start": 13048,
@@ -12277,10 +13684,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13116,
-                  "name": "line",
+                  "name": {
+                    "end": 13116,
+                    "name": "line",
+                    "start": 13112,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13112,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13145,
                 "start": 13112,
@@ -12338,10 +13752,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13181,
-                  "name": "line",
+                  "name": {
+                    "end": 13181,
+                    "name": "line",
+                    "start": 13177,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13177,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13210,
                 "start": 13177,
@@ -12399,10 +13820,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13244,
-                  "name": "line",
+                  "name": {
+                    "end": 13244,
+                    "name": "line",
+                    "start": 13240,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13240,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13274,
                 "start": 13240,
@@ -12460,10 +13888,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13310,
-                  "name": "line",
+                  "name": {
+                    "end": 13310,
+                    "name": "line",
+                    "start": 13306,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13306,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13340,
                 "start": 13306,
@@ -12521,10 +13956,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13374,
-                  "name": "line",
+                  "name": {
+                    "end": 13374,
+                    "name": "line",
+                    "start": 13370,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13370,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13403,
                 "start": 13370,
@@ -12582,10 +14024,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13439,
-                  "name": "line",
+                  "name": {
+                    "end": 13439,
+                    "name": "line",
+                    "start": 13435,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13435,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13468,
                 "start": 13435,
@@ -12643,10 +14092,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13502,
-                  "name": "line",
+                  "name": {
+                    "end": 13502,
+                    "name": "line",
+                    "start": 13498,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13498,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13531,
                 "start": 13498,
@@ -12704,10 +14160,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13557,
-                  "name": "line",
+                  "name": {
+                    "end": 13557,
+                    "name": "line",
+                    "start": 13553,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13553,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13583,
                 "start": 13553,
@@ -12765,10 +14228,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13617,
-                  "name": "line",
+                  "name": {
+                    "end": 13617,
+                    "name": "line",
+                    "start": 13613,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13613,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13643,
                 "start": 13613,
@@ -12826,10 +14296,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13679,
-                  "name": "line",
+                  "name": {
+                    "end": 13679,
+                    "name": "line",
+                    "start": 13675,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13675,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13708,
                 "start": 13675,
@@ -12887,10 +14364,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13742,
-                  "name": "line",
+                  "name": {
+                    "end": 13742,
+                    "name": "line",
+                    "start": 13738,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13738,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13770,
                 "start": 13738,
@@ -12948,10 +14432,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13806,
-                  "name": "line",
+                  "name": {
+                    "end": 13806,
+                    "name": "line",
+                    "start": 13802,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13802,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13834,
                 "start": 13802,
@@ -13009,10 +14500,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13868,
-                  "name": "line",
+                  "name": {
+                    "end": 13868,
+                    "name": "line",
+                    "start": 13864,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13864,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13897,
                 "start": 13864,
@@ -13070,10 +14568,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13933,
-                  "name": "line",
+                  "name": {
+                    "end": 13933,
+                    "name": "line",
+                    "start": 13929,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13929,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 13962,
                 "start": 13929,
@@ -13131,10 +14636,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 13996,
-                  "name": "line",
+                  "name": {
+                    "end": 13996,
+                    "name": "line",
+                    "start": 13992,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 13992,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14024,
                 "start": 13992,
@@ -13192,10 +14704,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14060,
-                  "name": "line",
+                  "name": {
+                    "end": 14060,
+                    "name": "line",
+                    "start": 14056,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14056,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14088,
                 "start": 14056,
@@ -13253,10 +14772,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14122,
-                  "name": "line",
+                  "name": {
+                    "end": 14122,
+                    "name": "line",
+                    "start": 14118,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14118,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14151,
                 "start": 14118,
@@ -13314,10 +14840,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14187,
-                  "name": "line",
+                  "name": {
+                    "end": 14187,
+                    "name": "line",
+                    "start": 14183,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14183,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14216,
                 "start": 14183,
@@ -13375,10 +14908,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14250,
-                  "name": "line",
+                  "name": {
+                    "end": 14250,
+                    "name": "line",
+                    "start": 14246,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14246,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14279,
                 "start": 14246,
@@ -13436,10 +14976,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14315,
-                  "name": "line",
+                  "name": {
+                    "end": 14315,
+                    "name": "line",
+                    "start": 14311,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14311,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14350,
                 "start": 14311,
@@ -13497,10 +15044,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14384,
-                  "name": "line",
+                  "name": {
+                    "end": 14384,
+                    "name": "line",
+                    "start": 14380,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14380,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14419,
                 "start": 14380,
@@ -13558,10 +15112,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14455,
-                  "name": "line",
+                  "name": {
+                    "end": 14455,
+                    "name": "line",
+                    "start": 14451,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14451,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14484,
                 "start": 14451,
@@ -13619,10 +15180,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14518,
-                  "name": "line",
+                  "name": {
+                    "end": 14518,
+                    "name": "line",
+                    "start": 14514,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14514,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14547,
                 "start": 14514,
@@ -13680,10 +15248,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14583,
-                  "name": "line",
+                  "name": {
+                    "end": 14583,
+                    "name": "line",
+                    "start": 14579,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14579,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14612,
                 "start": 14579,
@@ -13741,10 +15316,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14646,
-                  "name": "line",
+                  "name": {
+                    "end": 14646,
+                    "name": "line",
+                    "start": 14642,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14642,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14674,
                 "start": 14642,
@@ -13802,10 +15384,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14710,
-                  "name": "line",
+                  "name": {
+                    "end": 14710,
+                    "name": "line",
+                    "start": 14706,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14706,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14738,
                 "start": 14706,
@@ -13863,10 +15452,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14772,
-                  "name": "line",
+                  "name": {
+                    "end": 14772,
+                    "name": "line",
+                    "start": 14768,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14768,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14801,
                 "start": 14768,
@@ -13924,10 +15520,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14837,
-                  "name": "line",
+                  "name": {
+                    "end": 14837,
+                    "name": "line",
+                    "start": 14833,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14833,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14866,
                 "start": 14833,
@@ -13985,10 +15588,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14900,
-                  "name": "line",
+                  "name": {
+                    "end": 14900,
+                    "name": "line",
+                    "start": 14896,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14896,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14928,
                 "start": 14896,
@@ -14046,10 +15656,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 14964,
-                  "name": "line",
+                  "name": {
+                    "end": 14964,
+                    "name": "line",
+                    "start": 14960,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 14960,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 14992,
                 "start": 14960,
@@ -14107,10 +15724,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15026,
-                  "name": "line",
+                  "name": {
+                    "end": 15026,
+                    "name": "line",
+                    "start": 15022,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15022,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15056,
                 "start": 15022,
@@ -14168,10 +15792,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15082,
-                  "name": "line",
+                  "name": {
+                    "end": 15082,
+                    "name": "line",
+                    "start": 15078,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15078,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15112,
                 "start": 15078,
@@ -14229,10 +15860,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15146,
-                  "name": "line",
+                  "name": {
+                    "end": 15146,
+                    "name": "line",
+                    "start": 15142,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15142,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15176,
                 "start": 15142,
@@ -14290,10 +15928,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15212,
-                  "name": "line",
+                  "name": {
+                    "end": 15212,
+                    "name": "line",
+                    "start": 15208,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15208,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15241,
                 "start": 15208,
@@ -14351,10 +15996,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15275,
-                  "name": "line",
+                  "name": {
+                    "end": 15275,
+                    "name": "line",
+                    "start": 15271,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15271,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15304,
                 "start": 15271,
@@ -14412,10 +16064,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15340,
-                  "name": "line",
+                  "name": {
+                    "end": 15340,
+                    "name": "line",
+                    "start": 15336,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15336,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15370,
                 "start": 15336,
@@ -14473,10 +16132,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15405,
-                  "name": "line",
+                  "name": {
+                    "end": 15405,
+                    "name": "line",
+                    "start": 15401,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15401,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15448,
                 "start": 15401,
@@ -14534,10 +16200,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15484,
-                  "name": "line",
+                  "name": {
+                    "end": 15484,
+                    "name": "line",
+                    "start": 15480,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15480,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15527,
                 "start": 15480,
@@ -14595,10 +16268,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15562,
-                  "name": "line",
+                  "name": {
+                    "end": 15562,
+                    "name": "line",
+                    "start": 15558,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15558,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15591,
                 "start": 15558,
@@ -14656,10 +16336,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15617,
-                  "name": "line",
+                  "name": {
+                    "end": 15617,
+                    "name": "line",
+                    "start": 15613,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15613,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15645,
                 "start": 15613,
@@ -14717,10 +16404,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15679,
-                  "name": "line",
+                  "name": {
+                    "end": 15679,
+                    "name": "line",
+                    "start": 15675,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15675,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15707,
                 "start": 15675,
@@ -14778,10 +16472,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15743,
-                  "name": "line",
+                  "name": {
+                    "end": 15743,
+                    "name": "line",
+                    "start": 15739,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15739,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15772,
                 "start": 15739,
@@ -14839,10 +16540,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15806,
-                  "name": "line",
+                  "name": {
+                    "end": 15806,
+                    "name": "line",
+                    "start": 15802,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15802,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15835,
                 "start": 15802,
@@ -14900,10 +16608,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15871,
-                  "name": "line",
+                  "name": {
+                    "end": 15871,
+                    "name": "line",
+                    "start": 15867,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15867,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15900,
                 "start": 15867,
@@ -14961,10 +16676,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15934,
-                  "name": "line",
+                  "name": {
+                    "end": 15934,
+                    "name": "line",
+                    "start": 15930,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15930,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 15963,
                 "start": 15930,
@@ -15022,10 +16744,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 15999,
-                  "name": "line",
+                  "name": {
+                    "end": 15999,
+                    "name": "line",
+                    "start": 15995,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 15995,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16028,
                 "start": 15995,
@@ -15083,10 +16812,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16062,
-                  "name": "line",
+                  "name": {
+                    "end": 16062,
+                    "name": "line",
+                    "start": 16058,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16058,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16092,
                 "start": 16058,
@@ -15144,10 +16880,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16118,
-                  "name": "line",
+                  "name": {
+                    "end": 16118,
+                    "name": "line",
+                    "start": 16114,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16114,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16148,
                 "start": 16114,
@@ -15205,10 +16948,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16182,
-                  "name": "line",
+                  "name": {
+                    "end": 16182,
+                    "name": "line",
+                    "start": 16178,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16178,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16211,
                 "start": 16178,
@@ -15266,10 +17016,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16247,
-                  "name": "line",
+                  "name": {
+                    "end": 16247,
+                    "name": "line",
+                    "start": 16243,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16243,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16275,
                 "start": 16243,
@@ -15327,10 +17084,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16309,
-                  "name": "line",
+                  "name": {
+                    "end": 16309,
+                    "name": "line",
+                    "start": 16305,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16305,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16338,
                 "start": 16305,
@@ -15388,10 +17152,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16374,
-                  "name": "line",
+                  "name": {
+                    "end": 16374,
+                    "name": "line",
+                    "start": 16370,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16370,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16404,
                 "start": 16370,
@@ -15449,10 +17220,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16439,
-                  "name": "line",
+                  "name": {
+                    "end": 16439,
+                    "name": "line",
+                    "start": 16435,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16435,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16469,
                 "start": 16435,
@@ -15510,10 +17288,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16505,
-                  "name": "line",
+                  "name": {
+                    "end": 16505,
+                    "name": "line",
+                    "start": 16501,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16501,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16535,
                 "start": 16501,
@@ -15571,10 +17356,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16570,
-                  "name": "line",
+                  "name": {
+                    "end": 16570,
+                    "name": "line",
+                    "start": 16566,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16566,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16599,
                 "start": 16566,
@@ -15632,10 +17424,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16625,
-                  "name": "line",
+                  "name": {
+                    "end": 16625,
+                    "name": "line",
+                    "start": 16621,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16621,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16654,
                 "start": 16621,
@@ -15693,10 +17492,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16688,
-                  "name": "line",
+                  "name": {
+                    "end": 16688,
+                    "name": "line",
+                    "start": 16684,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16684,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16717,
                 "start": 16684,
@@ -15754,10 +17560,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16753,
-                  "name": "line",
+                  "name": {
+                    "end": 16753,
+                    "name": "line",
+                    "start": 16749,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16749,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16782,
                 "start": 16749,
@@ -15815,10 +17628,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16816,
-                  "name": "line",
+                  "name": {
+                    "end": 16816,
+                    "name": "line",
+                    "start": 16812,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16812,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16845,
                 "start": 16812,
@@ -15876,10 +17696,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16881,
-                  "name": "line",
+                  "name": {
+                    "end": 16881,
+                    "name": "line",
+                    "start": 16877,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16877,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16909,
                 "start": 16877,
@@ -15937,10 +17764,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 16943,
-                  "name": "line",
+                  "name": {
+                    "end": 16943,
+                    "name": "line",
+                    "start": 16939,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16939,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 16970,
                 "start": 16939,
@@ -15998,10 +17832,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17006,
-                  "name": "line",
+                  "name": {
+                    "end": 17006,
+                    "name": "line",
+                    "start": 17002,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17002,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17034,
                 "start": 17002,
@@ -16059,10 +17900,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17069,
-                  "name": "line",
+                  "name": {
+                    "end": 17069,
+                    "name": "line",
+                    "start": 17065,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17065,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17096,
                 "start": 17065,
@@ -16120,10 +17968,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17122,
-                  "name": "line",
+                  "name": {
+                    "end": 17122,
+                    "name": "line",
+                    "start": 17118,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17118,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17150,
                 "start": 17118,
@@ -16181,10 +18036,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17186,
-                  "name": "line",
+                  "name": {
+                    "end": 17186,
+                    "name": "line",
+                    "start": 17182,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17182,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17215,
                 "start": 17182,
@@ -16242,10 +18104,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17250,
-                  "name": "line",
+                  "name": {
+                    "end": 17250,
+                    "name": "line",
+                    "start": 17246,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17246,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17280,
                 "start": 17246,
@@ -16303,10 +18172,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17316,
-                  "name": "line",
+                  "name": {
+                    "end": 17316,
+                    "name": "line",
+                    "start": 17312,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17312,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17346,
                 "start": 17312,
@@ -16364,10 +18240,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17380,
-                  "name": "line",
+                  "name": {
+                    "end": 17380,
+                    "name": "line",
+                    "start": 17376,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17376,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17409,
                 "start": 17376,
@@ -16425,10 +18308,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17445,
-                  "name": "line",
+                  "name": {
+                    "end": 17445,
+                    "name": "line",
+                    "start": 17441,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17441,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17474,
                 "start": 17441,
@@ -16486,10 +18376,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17508,
-                  "name": "line",
+                  "name": {
+                    "end": 17508,
+                    "name": "line",
+                    "start": 17504,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17504,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17536,
                 "start": 17504,
@@ -16547,10 +18444,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17572,
-                  "name": "line",
+                  "name": {
+                    "end": 17572,
+                    "name": "line",
+                    "start": 17568,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17568,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17601,
                 "start": 17568,
@@ -16608,10 +18512,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17627,
-                  "name": "line",
+                  "name": {
+                    "end": 17627,
+                    "name": "line",
+                    "start": 17623,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17623,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17655,
                 "start": 17623,
@@ -16669,10 +18580,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17691,
-                  "name": "line",
+                  "name": {
+                    "end": 17691,
+                    "name": "line",
+                    "start": 17687,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17687,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17720,
                 "start": 17687,
@@ -16730,10 +18648,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17754,
-                  "name": "line",
+                  "name": {
+                    "end": 17754,
+                    "name": "line",
+                    "start": 17750,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17750,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17784,
                 "start": 17750,
@@ -16791,10 +18716,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17820,
-                  "name": "line",
+                  "name": {
+                    "end": 17820,
+                    "name": "line",
+                    "start": 17816,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17816,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17850,
                 "start": 17816,
@@ -16852,10 +18784,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17884,
-                  "name": "line",
+                  "name": {
+                    "end": 17884,
+                    "name": "line",
+                    "start": 17880,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17880,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17914,
                 "start": 17880,
@@ -16913,10 +18852,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 17950,
-                  "name": "line",
+                  "name": {
+                    "end": 17950,
+                    "name": "line",
+                    "start": 17946,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 17946,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 17980,
                 "start": 17946,
@@ -16974,10 +18920,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 18014,
-                  "name": "line",
+                  "name": {
+                    "end": 18014,
+                    "name": "line",
+                    "start": 18010,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 18010,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 18044,
                 "start": 18010,
@@ -17035,10 +18988,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 18080,
-                  "name": "line",
+                  "name": {
+                    "end": 18080,
+                    "name": "line",
+                    "start": 18076,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 18076,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 18111,
                 "start": 18076,
@@ -17096,10 +19056,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 18137,
-                  "name": "line",
+                  "name": {
+                    "end": 18137,
+                    "name": "line",
+                    "start": 18133,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 18133,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 18168,
                 "start": 18133,
@@ -17157,10 +19124,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 18204,
-                  "name": "line",
+                  "name": {
+                    "end": 18204,
+                    "name": "line",
+                    "start": 18200,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 18200,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 18235,
                 "start": 18200,
@@ -17218,10 +19192,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 18270,
-                  "name": "line",
+                  "name": {
+                    "end": 18270,
+                    "name": "line",
+                    "start": 18266,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 18266,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 18301,
                 "start": 18266,
@@ -17239,10 +19220,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 18338,
-                  "name": "close",
+                  "name": {
+                    "end": 18338,
+                    "name": "close",
+                    "start": 18333,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 18333,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 18341,
                 "start": 18333,
@@ -17273,10 +19261,17 @@ description: Result of parsing kittycad_svg.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 18354,
-                  "name": "extrude",
+                  "name": {
+                    "end": 18354,
+                    "name": "extrude",
+                    "start": 18347,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 18347,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 18366,
                 "start": 18347,

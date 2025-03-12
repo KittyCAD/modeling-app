@@ -24,30 +24,51 @@ expression: actual
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
                 "end": 18,
-                "name": "z",
+                "name": {
+                  "end": 18,
+                  "name": "z",
+                  "start": 17,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 17,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 9,
-            "name": "foo",
+            "name": {
+              "end": 9,
+              "name": "foo",
+              "start": 6,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 6,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 19,
           "start": 6,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
+            "abs_path": false,
             "end": 11,
-            "name": "x",
+            "name": {
+              "end": 11,
+              "name": "x",
+              "start": 10,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 10,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           }
         },
         "start": 0,

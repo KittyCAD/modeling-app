@@ -24,11 +24,18 @@ expression: actual
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
                 "end": 29,
-                "name": "x",
+                "name": {
+                  "end": 29,
+                  "name": "x",
+                  "start": 28,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 28,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             },
             {
@@ -40,19 +47,33 @@ expression: actual
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
                 "end": 76,
-                "name": "x",
+                "name": {
+                  "end": 76,
+                  "name": "x",
+                  "start": 75,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 75,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 7,
-            "name": "f",
+            "name": {
+              "end": 7,
+              "name": "f",
+              "start": 6,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 6,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 90,
           "nonCodeMeta": {

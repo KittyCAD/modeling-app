@@ -270,7 +270,7 @@ impl Expr {
             }
             Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, ctxt),
             Expr::CallExpressionKw(call_exp) => call_exp.recast(options, indentation_level, ctxt),
-            Expr::Identifier(ident) => ident.name.to_string(),
+            Expr::Name(name) => name.to_string(),
             Expr::TagDeclarator(tag) => tag.recast(),
             Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
@@ -299,7 +299,7 @@ impl BinaryPart {
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         match &self {
             BinaryPart::Literal(literal) => literal.recast(),
-            BinaryPart::Identifier(identifier) => identifier.name.to_string(),
+            BinaryPart::Name(name) => name.to_string(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(options),
             BinaryPart::CallExpression(call_expression) => {
                 call_expression.recast(options, indentation_level, ExprContext::Other)
@@ -323,7 +323,7 @@ impl CallExpression {
             } else {
                 options.get_indentation(indentation_level)
             },
-            self.callee.name,
+            self.callee,
             self.arguments
                 .iter()
                 .map(|arg| arg.recast(options, indentation_level, ctxt))
@@ -353,7 +353,7 @@ impl CallExpressionKw {
         } else {
             options.get_indentation(indentation_level)
         };
-        let name = &self.callee.name;
+        let name = &self.callee;
         let arg_list = self.recast_args(options, indentation_level, ctxt);
         let args = arg_list.clone().join(", ");
         let has_lots_of_args = arg_list.len() >= 4;
@@ -542,7 +542,7 @@ impl ArrayExpression {
 fn expr_is_trivial(expr: &Expr) -> bool {
     matches!(
         expr,
-        Expr::Literal(_) | Expr::Identifier(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_)
+        Expr::Literal(_) | Expr::Name(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_)
     )
 }
 
@@ -692,7 +692,7 @@ impl UnaryExpression {
     fn recast(&self, options: &FormatOptions) -> String {
         match self.argument {
             BinaryPart::Literal(_)
-            | BinaryPart::Identifier(_)
+            | BinaryPart::Name(_)
             | BinaryPart::MemberExpression(_)
             | BinaryPart::IfExpression(_)
             | BinaryPart::CallExpressionKw(_)

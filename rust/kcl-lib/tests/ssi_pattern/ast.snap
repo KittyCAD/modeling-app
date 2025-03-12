@@ -28,10 +28,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 25,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 25,
+                    "name": "startSketchOn",
+                    "start": 12,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 31,
                 "start": 12,
@@ -92,10 +99,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 51,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 51,
+                    "name": "startProfileAt",
+                    "start": 37,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 37,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 71,
                 "start": 37,
@@ -126,10 +140,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 82,
-                  "name": "yLine",
+                  "name": {
+                    "end": 82,
+                    "name": "yLine",
+                    "start": 77,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 77,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 97,
                 "start": 77,
@@ -187,10 +208,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 107,
-                  "name": "line",
+                  "name": {
+                    "end": 107,
+                    "name": "line",
+                    "start": 103,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 103,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 128,
                 "start": 103,
@@ -238,10 +266,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 149,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 149,
+                    "name": "tangentialArcTo",
+                    "start": 134,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 134,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 167,
                 "start": 134,
@@ -279,10 +314,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 178,
-                  "name": "yLine",
+                  "name": {
+                    "end": 178,
+                    "name": "yLine",
+                    "start": 173,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 173,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 195,
                 "start": 173,
@@ -312,10 +354,17 @@ description: Result of parsing ssi_pattern.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 234,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 234,
+                              "name": "profileStartX",
+                              "start": 221,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 221,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 237,
                           "start": 221,
@@ -332,10 +381,17 @@ description: Result of parsing ssi_pattern.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 252,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 252,
+                              "name": "profileStartY",
+                              "start": 239,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 239,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 255,
                           "start": 239,
@@ -367,10 +423,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 205,
-                  "name": "line",
+                  "name": {
+                    "end": 205,
+                    "name": "line",
+                    "start": 201,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 201,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 271,
                 "start": 201,
@@ -381,10 +444,17 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 282,
-                  "name": "close",
+                  "name": {
+                    "end": 282,
+                    "name": "close",
+                    "start": 277,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 277,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 284,
                 "start": 277,
@@ -439,21 +509,35 @@ description: Result of parsing ssi_pattern.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 306,
-              "name": "extrude",
+              "name": {
+                "end": 306,
+                "name": "extrude",
+                "start": 299,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 299,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 330,
             "start": 299,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 316,
-              "name": "sketch001",
+              "name": {
+                "end": 316,
+                "name": "sketch001",
+                "start": 307,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 307,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 286,
@@ -479,25 +563,46 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 368,
-                    "name": "extrude001",
+                    "name": {
+                      "end": 368,
+                      "name": "extrude001",
+                      "start": 358,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 358,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "end": 375,
-                    "name": "seg01",
+                    "name": {
+                      "end": 375,
+                      "name": "seg01",
+                      "start": 370,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 370,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 357,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 357,
+                    "name": "startSketchOn",
+                    "start": 344,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 344,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 376,
                 "start": 344,
@@ -574,10 +679,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 388,
-                  "name": "circle",
+                  "name": {
+                    "end": 388,
+                    "name": "circle",
+                    "start": 382,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 382,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 426,
                 "start": 382,
@@ -668,10 +780,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 447,
-                  "name": "patternLinear2d",
+                  "name": {
+                    "end": 447,
+                    "name": "patternLinear2d",
+                    "start": 432,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 432,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 491,
                 "start": 432,
@@ -769,10 +888,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 565,
-                  "name": "patternLinear2d",
+                  "name": {
+                    "end": 565,
+                    "name": "patternLinear2d",
+                    "start": 550,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 550,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 610,
                 "start": 550,
@@ -811,10 +937,17 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 623,
-                  "name": "extrude",
+                  "name": {
+                    "end": 623,
+                    "name": "extrude",
+                    "start": 616,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 616,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 637,
                 "start": 616,

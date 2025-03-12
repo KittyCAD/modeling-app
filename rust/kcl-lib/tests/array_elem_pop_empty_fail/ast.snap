@@ -42,18 +42,32 @@ description: Result of parsing array_elem_pop_empty_fail.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 23,
-                "name": "arr",
+                "name": {
+                  "end": 23,
+                  "name": "arr",
+                  "start": 20,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 20,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 19,
-              "name": "pop",
+              "name": {
+                "end": 19,
+                "name": "pop",
+                "start": 16,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 16,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 24,
             "start": 16,

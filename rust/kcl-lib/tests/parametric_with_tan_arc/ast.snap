@@ -170,19 +170,33 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "left": {
                       "end": 138,
                       "left": {
+                        "abs_path": false,
                         "end": 134,
-                        "name": "distance",
+                        "name": {
+                          "end": 134,
+                          "name": "distance",
+                          "start": 126,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 126,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
+                        "abs_path": false,
                         "end": 138,
-                        "name": "p",
+                        "name": {
+                          "end": 138,
+                          "name": "p",
+                          "start": 137,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 137,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 126,
                       "type": "BinaryExpression",
@@ -190,11 +204,18 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     },
                     "operator": "*",
                     "right": {
+                      "abs_path": false,
                       "end": 144,
-                      "name": "FOS",
+                      "name": {
+                        "end": 144,
+                        "name": "FOS",
+                        "start": 141,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 141,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 126,
                     "type": "BinaryExpression",
@@ -220,19 +241,33 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 "right": {
                   "end": 170,
                   "left": {
+                    "abs_path": false,
                     "end": 162,
-                    "name": "sigmaAllow",
+                    "name": {
+                      "end": 162,
+                      "name": "sigmaAllow",
+                      "start": 152,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 152,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "*",
                   "right": {
+                    "abs_path": false,
                     "end": 170,
-                    "name": "width",
+                    "name": {
+                      "end": 170,
+                      "name": "width",
+                      "start": 165,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 165,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 152,
                   "type": "BinaryExpression",
@@ -244,10 +279,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 125,
-              "name": "sqrt",
+              "name": {
+                "end": 125,
+                "name": "sqrt",
+                "start": 121,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 121,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 172,
             "start": 121,
@@ -275,11 +317,18 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "init": {
             "end": 196,
             "left": {
+              "abs_path": false,
               "end": 192,
-              "name": "thickness",
+              "name": {
+                "end": 192,
+                "name": "thickness",
+                "start": 183,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 183,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "*",
             "right": {
@@ -378,18 +427,32 @@ description: Result of parsing parametric_with_tan_arc.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 255,
-                    "name": "XY",
+                    "name": {
+                      "end": 255,
+                      "name": "XY",
+                      "start": 253,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 253,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 252,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 252,
+                    "name": "startSketchOn",
+                    "start": 239,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 239,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 256,
                 "start": 239,
@@ -436,10 +499,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 276,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 276,
+                    "name": "startProfileAt",
+                    "start": 262,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 262,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 287,
                 "start": 262,
@@ -470,11 +540,18 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 318,
-                          "name": "wallMountL",
+                          "name": {
+                            "end": 318,
+                            "name": "wallMountL",
+                            "start": 308,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 308,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 319,
@@ -485,10 +562,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 297,
-                  "name": "line",
+                  "name": {
+                    "end": 297,
+                    "name": "line",
+                    "start": 293,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 293,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 320,
                 "start": 293,
@@ -512,11 +596,18 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "start": 342,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 358,
-                          "name": "filletR",
+                          "name": {
+                            "end": 358,
+                            "name": "filletR",
+                            "start": 351,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 351,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       },
                       {
@@ -554,10 +645,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 339,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 339,
+                    "name": "tangentialArc",
+                    "start": 326,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 326,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 377,
                 "start": 326,
@@ -578,11 +676,18 @@ description: Result of parsing parametric_with_tan_arc.kcl
                       "elements": [
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 407,
-                            "name": "shelfMountL",
+                            "name": {
+                              "end": 407,
+                              "name": "shelfMountL",
+                              "start": 396,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 396,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 407,
                           "operator": "-",
@@ -610,10 +715,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 387,
-                  "name": "line",
+                  "name": {
+                    "end": 387,
+                    "name": "line",
+                    "start": 383,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 383,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 412,
                 "start": 383,
@@ -646,11 +758,18 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 443,
-                            "name": "thickness",
+                            "name": {
+                              "end": 443,
+                              "name": "thickness",
+                              "start": 434,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 434,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 443,
                           "operator": "-",
@@ -667,10 +786,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 422,
-                  "name": "line",
+                  "name": {
+                    "end": 422,
+                    "name": "line",
+                    "start": 418,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 418,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 445,
                 "start": 418,
@@ -691,11 +817,18 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 474,
-                          "name": "shelfMountL",
+                          "name": {
+                            "end": 474,
+                            "name": "shelfMountL",
+                            "start": 463,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 463,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 477,
@@ -717,10 +850,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 455,
-                  "name": "line",
+                  "name": {
+                    "end": 455,
+                    "name": "line",
+                    "start": 451,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 451,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 479,
                 "start": 451,
@@ -746,19 +886,33 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "value": {
                           "end": 536,
                           "left": {
+                            "abs_path": false,
                             "end": 524,
-                            "name": "filletR",
+                            "name": {
+                              "end": 524,
+                              "name": "filletR",
+                              "start": 517,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 517,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 536,
-                            "name": "thickness",
+                            "name": {
+                              "end": 536,
+                              "name": "thickness",
+                              "start": 527,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 527,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 517,
                           "type": "BinaryExpression",
@@ -807,10 +961,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 498,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 498,
+                    "name": "tangentialArc",
+                    "start": 485,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 485,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 568,
                 "start": 485,
@@ -842,11 +1003,18 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 600,
-                            "name": "wallMountL",
+                            "name": {
+                              "end": 600,
+                              "name": "wallMountL",
+                              "start": 590,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 590,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 600,
                           "operator": "-",
@@ -863,10 +1031,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 578,
-                  "name": "line",
+                  "name": {
+                    "end": 578,
+                    "name": "line",
+                    "start": 574,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 574,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 602,
                 "start": 574,
@@ -884,10 +1059,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 613,
-                  "name": "close",
+                  "name": {
+                    "end": 613,
+                    "name": "close",
+                    "start": 608,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 608,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 616,
                 "start": 608,
@@ -905,19 +1087,33 @@ description: Result of parsing parametric_with_tan_arc.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 644,
-                      "name": "width",
+                      "name": {
+                        "end": 644,
+                        "name": "width",
+                        "start": 639,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 639,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 629,
-                  "name": "extrude",
+                  "name": {
+                    "end": 629,
+                    "name": "extrude",
+                    "start": 622,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 622,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 645,
                 "start": 622,

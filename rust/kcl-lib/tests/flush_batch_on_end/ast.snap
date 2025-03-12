@@ -167,10 +167,17 @@ description: Result of parsing flush_batch_on_end.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 212,
-              "name": "startSketchOn",
+              "name": {
+                "end": 212,
+                "name": "startSketchOn",
+                "start": 199,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 199,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 218,
             "start": 199,
@@ -247,11 +254,18 @@ description: Result of parsing flush_batch_on_end.kcl
                 "arg": {
                   "end": 354,
                   "left": {
+                    "abs_path": false,
                     "end": 350,
-                    "name": "outerDiameter",
+                    "name": {
+                      "end": 350,
+                      "name": "outerDiameter",
+                      "start": 337,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 337,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -288,21 +302,35 @@ description: Result of parsing flush_batch_on_end.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 288,
-              "name": "circle",
+              "name": {
+                "end": 288,
+                "name": "circle",
+                "start": 282,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 282,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 374,
             "start": 282,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 301,
-              "name": "sketch000",
+              "name": {
+                "end": 301,
+                "name": "sketch000",
+                "start": 292,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 292,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 267,
@@ -375,11 +403,18 @@ description: Result of parsing flush_batch_on_end.kcl
                 "arg": {
                   "end": 509,
                   "left": {
+                    "abs_path": false,
                     "end": 505,
-                    "name": "innerDiameter",
+                    "name": {
+                      "end": 505,
+                      "name": "innerDiameter",
+                      "start": 492,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 492,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -416,21 +451,35 @@ description: Result of parsing flush_batch_on_end.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 443,
-              "name": "circle",
+              "name": {
+                "end": 443,
+                "name": "circle",
+                "start": 437,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 437,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 529,
             "start": 437,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 456,
-              "name": "sketch000",
+              "name": {
+                "end": 456,
+                "name": "sketch000",
+                "start": 447,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 447,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 422,
@@ -454,20 +503,34 @@ description: Result of parsing flush_batch_on_end.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "end": 613,
-                "name": "outerProfile",
+                "name": {
+                  "end": 613,
+                  "name": "outerProfile",
+                  "start": 601,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 601,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 636,
-                    "name": "innerProfile",
+                    "name": {
+                      "end": 636,
+                      "name": "innerProfile",
+                      "start": 624,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 624,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 639,
@@ -477,10 +540,17 @@ description: Result of parsing flush_batch_on_end.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 623,
-                  "name": "hole",
+                  "name": {
+                    "end": 623,
+                    "name": "hole",
+                    "start": 619,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 619,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 640,
                 "start": 619,
@@ -539,30 +609,51 @@ description: Result of parsing flush_batch_on_end.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "end": 732,
-                  "name": "length",
+                  "name": {
+                    "end": 732,
+                    "name": "length",
+                    "start": 726,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 726,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 703,
-              "name": "extrude",
+              "name": {
+                "end": 703,
+                "name": "extrude",
+                "start": 696,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 696,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 733,
             "start": 696,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 715,
-              "name": "pipeProfile",
+              "name": {
+                "end": 715,
+                "name": "pipeProfile",
+                "start": 704,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 704,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 689,
@@ -597,11 +688,18 @@ description: Result of parsing flush_batch_on_end.kcl
             "start": 10,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 32,
-              "name": "in",
+              "name": {
+                "end": 32,
+                "name": "in",
+                "start": 30,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 30,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

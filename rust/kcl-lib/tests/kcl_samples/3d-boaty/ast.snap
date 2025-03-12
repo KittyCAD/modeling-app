@@ -210,10 +210,17 @@ description: Result of parsing 3d-boaty.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 807,
-            "name": "divider",
+            "name": {
+              "end": 807,
+              "name": "divider",
+              "start": 800,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 800,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 813,
           "start": 800,
@@ -241,11 +248,18 @@ description: Result of parsing 3d-boaty.kcl
                   "arg": {
                     "end": 865,
                     "left": {
+                      "abs_path": false,
                       "end": 861,
-                      "name": "benchLength",
+                      "name": {
+                        "end": 861,
+                        "name": "benchLength",
+                        "start": 850,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 850,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "/",
                     "right": {
@@ -266,10 +280,17 @@ description: Result of parsing 3d-boaty.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 833,
-                "name": "offsetPlane",
+                "name": {
+                  "end": 833,
+                  "name": "offsetPlane",
+                  "start": 822,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 822,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 866,
               "start": 822,
@@ -286,10 +307,17 @@ description: Result of parsing 3d-boaty.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 821,
-            "name": "divider",
+            "name": {
+              "end": 821,
+              "name": "divider",
+              "start": 814,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 814,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 867,
           "start": 814,
@@ -317,11 +345,18 @@ description: Result of parsing 3d-boaty.kcl
                   "arg": {
                     "end": 918,
                     "left": {
+                      "abs_path": false,
                       "end": 914,
-                      "name": "benchLength",
+                      "name": {
+                        "end": 914,
+                        "name": "benchLength",
+                        "start": 903,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 903,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "/",
                     "right": {
@@ -342,10 +377,17 @@ description: Result of parsing 3d-boaty.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 887,
-                "name": "offsetPlane",
+                "name": {
+                  "end": 887,
+                  "name": "offsetPlane",
+                  "start": 876,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 876,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 919,
               "start": 876,
@@ -362,10 +404,17 @@ description: Result of parsing 3d-boaty.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 875,
-            "name": "divider",
+            "name": {
+              "end": 875,
+              "name": "divider",
+              "start": 868,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 868,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 920,
           "start": 868,
@@ -394,11 +443,18 @@ description: Result of parsing 3d-boaty.kcl
                     "end": 1021,
                     "left": {
                       "argument": {
+                        "abs_path": false,
                         "end": 1017,
-                        "name": "benchLength",
+                        "name": {
+                          "end": 1017,
+                          "name": "benchLength",
+                          "start": 1006,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1006,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 1017,
                       "operator": "-",
@@ -425,10 +481,17 @@ description: Result of parsing 3d-boaty.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 989,
-                "name": "offsetPlane",
+                "name": {
+                  "end": 989,
+                  "name": "offsetPlane",
+                  "start": 978,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 978,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 1022,
               "start": 978,
@@ -444,18 +507,32 @@ description: Result of parsing 3d-boaty.kcl
               }
             },
             {
+              "abs_path": false,
               "end": 1035,
-              "name": "benchLength",
+              "name": {
+                "end": 1035,
+                "name": "benchLength",
+                "start": 1024,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1024,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 977,
-            "name": "connector",
+            "name": {
+              "end": 977,
+              "name": "connector",
+              "start": 968,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 968,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1036,
           "start": 968,
@@ -486,11 +563,18 @@ description: Result of parsing 3d-boaty.kcl
                       "end": 1116,
                       "left": {
                         "argument": {
+                          "abs_path": false,
                           "end": 1112,
-                          "name": "benchLength",
+                          "name": {
+                            "end": 1112,
+                            "name": "benchLength",
+                            "start": 1101,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1101,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1112,
                         "operator": "-",
@@ -518,11 +602,18 @@ description: Result of parsing 3d-boaty.kcl
                     "right": {
                       "end": 1139,
                       "left": {
+                        "abs_path": false,
                         "end": 1135,
-                        "name": "dividerThickness",
+                        "name": {
+                          "end": 1135,
+                          "name": "dividerThickness",
+                          "start": 1119,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1119,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -547,10 +638,17 @@ description: Result of parsing 3d-boaty.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 1084,
-                "name": "offsetPlane",
+                "name": {
+                  "end": 1084,
+                  "name": "offsetPlane",
+                  "start": 1073,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1073,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 1140,
               "start": 1073,
@@ -568,19 +666,33 @@ description: Result of parsing 3d-boaty.kcl
             {
               "end": 1172,
               "left": {
+                "abs_path": false,
                 "end": 1153,
-                "name": "benchLength",
+                "name": {
+                  "end": 1153,
+                  "name": "benchLength",
+                  "start": 1142,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1142,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "+",
               "right": {
+                "abs_path": false,
                 "end": 1172,
-                "name": "dividerThickness",
+                "name": {
+                  "end": 1172,
+                  "name": "dividerThickness",
+                  "start": 1156,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1156,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 1142,
               "type": "BinaryExpression",
@@ -588,10 +700,17 @@ description: Result of parsing 3d-boaty.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1072,
-            "name": "seatSlats",
+            "name": {
+              "end": 1072,
+              "name": "seatSlats",
+              "start": 1063,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1063,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1173,
           "start": 1063,
@@ -622,11 +741,18 @@ description: Result of parsing 3d-boaty.kcl
                       "end": 1253,
                       "left": {
                         "argument": {
+                          "abs_path": false,
                           "end": 1249,
-                          "name": "benchLength",
+                          "name": {
+                            "end": 1249,
+                            "name": "benchLength",
+                            "start": 1238,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1238,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1249,
                         "operator": "-",
@@ -654,11 +780,18 @@ description: Result of parsing 3d-boaty.kcl
                     "right": {
                       "end": 1276,
                       "left": {
+                        "abs_path": false,
                         "end": 1272,
-                        "name": "dividerThickness",
+                        "name": {
+                          "end": 1272,
+                          "name": "dividerThickness",
+                          "start": 1256,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1256,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -683,10 +816,17 @@ description: Result of parsing 3d-boaty.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 1221,
-                "name": "offsetPlane",
+                "name": {
+                  "end": 1221,
+                  "name": "offsetPlane",
+                  "start": 1210,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1210,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 1277,
               "start": 1210,
@@ -704,19 +844,33 @@ description: Result of parsing 3d-boaty.kcl
             {
               "end": 1309,
               "left": {
+                "abs_path": false,
                 "end": 1290,
-                "name": "benchLength",
+                "name": {
+                  "end": 1290,
+                  "name": "benchLength",
+                  "start": 1279,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1279,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "+",
               "right": {
+                "abs_path": false,
                 "end": 1309,
-                "name": "dividerThickness",
+                "name": {
+                  "end": 1309,
+                  "name": "dividerThickness",
+                  "start": 1293,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1293,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 1279,
               "type": "BinaryExpression",
@@ -724,10 +878,17 @@ description: Result of parsing 3d-boaty.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1209,
-            "name": "backSlats",
+            "name": {
+              "end": 1209,
+              "name": "backSlats",
+              "start": 1200,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1200,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1310,
           "start": 1200,
@@ -753,11 +914,18 @@ description: Result of parsing 3d-boaty.kcl
             {
               "end": 1366,
               "left": {
+                "abs_path": false,
                 "end": 1362,
-                "name": "benchLength",
+                "name": {
+                  "end": 1362,
+                  "name": "benchLength",
+                  "start": 1351,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1351,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "/",
               "right": {
@@ -777,10 +945,17 @@ description: Result of parsing 3d-boaty.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1343,
-            "name": "armRest",
+            "name": {
+              "end": 1343,
+              "name": "armRest",
+              "start": 1336,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1336,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1367,
           "start": 1336,
@@ -807,11 +982,18 @@ description: Result of parsing 3d-boaty.kcl
               "end": 1399,
               "left": {
                 "argument": {
+                  "abs_path": false,
                   "end": 1395,
-                  "name": "benchLength",
+                  "name": {
+                    "end": 1395,
+                    "name": "benchLength",
+                    "start": 1384,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1384,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "end": 1395,
                 "operator": "-",
@@ -837,10 +1019,17 @@ description: Result of parsing 3d-boaty.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1375,
-            "name": "armRest",
+            "name": {
+              "end": 1375,
+              "name": "armRest",
+              "start": 1368,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1368,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1400,
           "start": 1368,
@@ -874,11 +1063,18 @@ description: Result of parsing 3d-boaty.kcl
             "start": 374,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 396,
-              "name": "mm",
+              "name": {
+                "end": 396,
+                "name": "mm",
+                "start": 394,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 394,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

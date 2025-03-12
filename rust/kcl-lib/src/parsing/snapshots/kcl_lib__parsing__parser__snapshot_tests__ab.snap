@@ -56,10 +56,17 @@ expression: actual
           }
         ],
         "callee": {
+          "abs_path": false,
           "end": 4,
-          "name": "line",
+          "name": {
+            "end": 4,
+            "name": "line",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier"
+          "type": "Name"
         },
         "end": 27,
         "start": 0,

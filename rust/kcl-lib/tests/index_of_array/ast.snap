@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing index_of_array.kcl
 ---
 {
@@ -112,11 +112,18 @@ description: Result of parsing index_of_array.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 125,
-              "name": "result0",
+              "name": {
+                "end": 125,
+                "name": "result0",
+                "start": 118,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 118,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 129,
@@ -139,10 +146,17 @@ description: Result of parsing index_of_array.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 117,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "end": 117,
+              "name": "assertLessThanOrEq",
+              "start": 99,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 99,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 157,
           "start": 99,
@@ -158,11 +172,18 @@ description: Result of parsing index_of_array.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 187,
-              "name": "result0",
+              "name": {
+                "end": 187,
+                "name": "result0",
+                "start": 180,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 180,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 191,
@@ -185,10 +206,17 @@ description: Result of parsing index_of_array.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 179,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "end": 179,
+              "name": "assertGreaterThanOrEq",
+              "start": 158,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 158,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 219,
           "start": 158,
@@ -241,10 +269,17 @@ description: Result of parsing index_of_array.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 255,
-              "name": "int",
+              "name": {
+                "end": 255,
+                "name": "int",
+                "start": 252,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 252,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 262,
             "start": 252,
@@ -304,11 +339,18 @@ description: Result of parsing index_of_array.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 307,
-              "name": "result1",
+              "name": {
+                "end": 307,
+                "name": "result1",
+                "start": 300,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 300,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 311,
@@ -331,10 +373,17 @@ description: Result of parsing index_of_array.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 299,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "end": 299,
+              "name": "assertLessThanOrEq",
+              "start": 281,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 281,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 340,
           "start": 281,
@@ -350,11 +399,18 @@ description: Result of parsing index_of_array.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 370,
-              "name": "result1",
+              "name": {
+                "end": 370,
+                "name": "result1",
+                "start": 363,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 363,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 374,
@@ -377,10 +433,17 @@ description: Result of parsing index_of_array.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 362,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "end": 362,
+              "name": "assertGreaterThanOrEq",
+              "start": 341,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 341,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 403,
           "start": 341,

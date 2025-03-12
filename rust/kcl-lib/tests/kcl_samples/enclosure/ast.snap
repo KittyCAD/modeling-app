@@ -173,10 +173,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 256,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 256,
+                    "name": "startSketchOn",
+                    "start": 243,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 243,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 262,
                 "start": 243,
@@ -223,10 +230,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 282,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 282,
+                    "name": "startProfileAt",
+                    "start": 268,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 268,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 293,
                 "start": 268,
@@ -249,11 +263,18 @@ description: Result of parsing enclosure.kcl
                         }
                       },
                       {
+                        "abs_path": false,
                         "end": 319,
-                        "name": "width",
+                        "name": {
+                          "end": 319,
+                          "name": "width",
+                          "start": 314,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 314,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 320,
@@ -276,10 +297,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 309,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 309,
+                    "name": "angledLine",
+                    "start": 299,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 299,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 347,
                 "start": 299,
@@ -295,18 +323,32 @@ description: Result of parsing enclosure.kcl
                         "left": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 400,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 400,
+                                "name": "rectangleSegmentA001",
+                                "start": 380,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 380,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 379,
-                            "name": "segAng",
+                            "name": {
+                              "end": 379,
+                              "name": "segAng",
+                              "start": 373,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 373,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 401,
                           "start": 373,
@@ -330,11 +372,18 @@ description: Result of parsing enclosure.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "abs_path": false,
                         "end": 421,
-                        "name": "length",
+                        "name": {
+                          "end": 421,
+                          "name": "length",
+                          "start": 415,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 415,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 428,
@@ -357,10 +406,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 363,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 363,
+                    "name": "angledLine",
+                    "start": 353,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 353,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 455,
                 "start": 353,
@@ -374,18 +430,32 @@ description: Result of parsing enclosure.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 508,
-                            "name": "rectangleSegmentA001",
+                            "name": {
+                              "end": 508,
+                              "name": "rectangleSegmentA001",
+                              "start": 488,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 488,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 487,
-                          "name": "segAng",
+                          "name": {
+                            "end": 487,
+                            "name": "segAng",
+                            "start": 481,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 481,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 509,
                         "start": 481,
@@ -396,18 +466,32 @@ description: Result of parsing enclosure.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 546,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 546,
+                                "name": "rectangleSegmentA001",
+                                "start": 526,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 526,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 525,
-                            "name": "segLen",
+                            "name": {
+                              "end": 525,
+                              "name": "segLen",
+                              "start": 519,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 519,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 547,
                           "start": 519,
@@ -441,10 +525,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 471,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 471,
+                    "name": "angledLine",
+                    "start": 461,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 461,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 581,
                 "start": 461,
@@ -473,10 +564,17 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 620,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 620,
+                              "name": "profileStartX",
+                              "start": 607,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 607,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 623,
                           "start": 607,
@@ -493,10 +591,17 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 638,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 638,
+                              "name": "profileStartY",
+                              "start": 625,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 625,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 641,
                           "start": 625,
@@ -528,10 +633,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 591,
-                  "name": "line",
+                  "name": {
+                    "end": 591,
+                    "name": "line",
+                    "start": 587,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 587,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 672,
                 "start": 587,
@@ -542,10 +654,17 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 683,
-                  "name": "close",
+                  "name": {
+                    "end": 683,
+                    "name": "close",
+                    "start": 678,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 678,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 685,
                 "start": 678,
@@ -589,30 +708,51 @@ description: Result of parsing enclosure.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 733,
-                      "name": "height",
+                      "name": {
+                        "end": 733,
+                        "name": "height",
+                        "start": 727,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 727,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 706,
-                  "name": "extrude",
+                  "name": {
+                    "end": 706,
+                    "name": "extrude",
+                    "start": 699,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 699,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 734,
                 "start": 699,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 716,
-                  "name": "sketch001",
+                  "name": {
+                    "end": 716,
+                    "name": "sketch001",
+                    "start": 707,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 707,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -628,11 +768,18 @@ description: Result of parsing enclosure.kcl
                     "arg": {
                       "end": 781,
                       "left": {
+                        "abs_path": false,
                         "end": 777,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 777,
+                          "name": "wallThickness",
+                          "start": 764,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 764,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
@@ -664,18 +811,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 848,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 848,
+                                "name": "rectangleSegmentA001",
+                                "start": 828,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 828,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 827,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 827,
+                              "name": "getNextAdjacentEdge",
+                              "start": 808,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 808,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 849,
                           "start": 808,
@@ -685,18 +846,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 900,
-                              "name": "rectangleSegmentB001",
+                              "name": {
+                                "end": 900,
+                                "name": "rectangleSegmentB001",
+                                "start": 880,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 880,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 879,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 879,
+                              "name": "getNextAdjacentEdge",
+                              "start": 860,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 860,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 901,
                           "start": 860,
@@ -706,18 +881,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 952,
-                              "name": "rectangleSegmentC001",
+                              "name": {
+                                "end": 952,
+                                "name": "rectangleSegmentC001",
+                                "start": 932,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 932,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 931,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 931,
+                              "name": "getNextAdjacentEdge",
+                              "start": 912,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 912,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 953,
                           "start": 912,
@@ -727,18 +916,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1004,
-                              "name": "rectangleSegmentD001",
+                              "name": {
+                                "end": 1004,
+                                "name": "rectangleSegmentD001",
+                                "start": 984,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 984,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 983,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 983,
+                              "name": "getNextAdjacentEdge",
+                              "start": 964,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 964,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1005,
                           "start": 964,
@@ -754,10 +957,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 746,
-                  "name": "fillet",
+                  "name": {
+                    "end": 746,
+                    "name": "fillet",
+                    "start": 740,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 740,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1021,
                 "start": 740,
@@ -801,19 +1011,33 @@ description: Result of parsing enclosure.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1163,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 1163,
+                        "name": "wallThickness",
+                        "start": 1150,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1150,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1105,
-                  "name": "shell",
+                  "name": {
+                    "end": 1105,
+                    "name": "shell",
+                    "start": 1100,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1100,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1170,
                 "start": 1100,
@@ -937,11 +1161,18 @@ description: Result of parsing enclosure.kcl
                                       }
                                     },
                                     {
+                                      "abs_path": false,
                                       "end": 1408,
-                                      "name": "wallThickness",
+                                      "name": {
+                                        "end": 1408,
+                                        "name": "wallThickness",
+                                        "start": 1395,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1395,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     }
                                   ],
                                   "end": 1409,
@@ -1140,18 +1371,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1607,
-                              "name": "plane001",
+                              "name": {
+                                "end": 1607,
+                                "name": "plane001",
+                                "start": 1599,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1599,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1598,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 1598,
+                              "name": "startSketchOn",
+                              "start": 1585,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1585,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1608,
                           "start": 1585,
@@ -1238,19 +1483,33 @@ description: Result of parsing enclosure.kcl
                               "arg": {
                                 "end": 1717,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 1701,
-                                  "name": "holeDia",
+                                  "name": {
+                                    "end": 1701,
+                                    "name": "holeDia",
+                                    "start": 1694,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1694,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 1717,
-                                  "name": "wallThickness",
+                                  "name": {
+                                    "end": 1717,
+                                    "name": "wallThickness",
+                                    "start": 1704,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1704,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 1694,
                                 "type": "BinaryExpression",
@@ -1259,10 +1518,17 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1622,
-                            "name": "circle",
+                            "name": {
+                              "end": 1622,
+                              "name": "circle",
+                              "start": 1616,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1616,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1726,
                           "start": 1616,
@@ -1350,19 +1616,33 @@ description: Result of parsing enclosure.kcl
                                     "type": "Identifier"
                                   },
                                   "arg": {
+                                    "abs_path": false,
                                     "end": 1824,
-                                    "name": "holeDia",
+                                    "name": {
+                                      "end": 1824,
+                                      "name": "holeDia",
+                                      "start": 1817,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1817,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 1745,
-                                "name": "circle",
+                                "name": {
+                                  "end": 1745,
+                                  "name": "circle",
+                                  "start": 1739,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1739,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1833,
                               "start": 1739,
@@ -1378,10 +1658,17 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1738,
-                            "name": "hole",
+                            "name": {
+                              "end": 1738,
+                              "name": "hole",
+                              "start": 1734,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1734,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1837,
                           "start": 1734,
@@ -1425,19 +1712,33 @@ description: Result of parsing enclosure.kcl
                           "arg": {
                             "end": 1903,
                             "left": {
+                              "abs_path": false,
                               "end": 1887,
-                              "name": "height",
+                              "name": {
+                                "end": 1887,
+                                "name": "height",
+                                "start": 1881,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1881,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "-",
                             "right": {
+                              "abs_path": false,
                               "end": 1903,
-                              "name": "wallThickness",
+                              "name": {
+                                "end": 1903,
+                                "name": "wallThickness",
+                                "start": 1890,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1890,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 1881,
                             "type": "BinaryExpression",
@@ -1446,21 +1747,35 @@ description: Result of parsing enclosure.kcl
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 1860,
-                        "name": "extrude",
+                        "name": {
+                          "end": 1860,
+                          "name": "extrude",
+                          "start": 1853,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1853,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 1904,
                       "start": 1853,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
+                        "abs_path": false,
                         "end": 1870,
-                        "name": "sketch002",
+                        "name": {
+                          "end": 1870,
+                          "name": "sketch002",
+                          "start": 1861,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1861,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     },
                     "start": 1840,
@@ -1474,11 +1789,18 @@ description: Result of parsing enclosure.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 1925,
-                    "name": "extrude002",
+                    "name": {
+                      "end": 1925,
+                      "name": "extrude002",
+                      "start": 1915,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1915,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 1925,
                   "start": 1908,
@@ -1563,11 +1885,18 @@ description: Result of parsing enclosure.kcl
                   "left": {
                     "end": 2006,
                     "left": {
+                      "abs_path": false,
                       "end": 2002,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 2002,
+                        "name": "wallThickness",
+                        "start": 1989,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1989,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "*",
                     "right": {
@@ -1587,11 +1916,18 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 2016,
-                    "name": "holeDia",
+                    "name": {
+                      "end": 2016,
+                      "name": "holeDia",
+                      "start": 2009,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2009,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 1989,
                   "type": "BinaryExpression",
@@ -1602,11 +1938,18 @@ description: Result of parsing enclosure.kcl
                   "left": {
                     "end": 2037,
                     "left": {
+                      "abs_path": false,
                       "end": 2033,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 2033,
+                        "name": "wallThickness",
+                        "start": 2020,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2020,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "*",
                     "right": {
@@ -1626,11 +1969,18 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 2047,
-                    "name": "holeDia",
+                    "name": {
+                      "end": 2047,
+                      "name": "holeDia",
+                      "start": 2040,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2040,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 2020,
                   "type": "BinaryExpression",
@@ -1644,10 +1994,17 @@ description: Result of parsing enclosure.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1984,
-            "name": "function001",
+            "name": {
+              "end": 1984,
+              "name": "function001",
+              "start": 1973,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1973,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 2050,
           "start": 1973,
@@ -1669,11 +2026,18 @@ description: Result of parsing enclosure.kcl
                   "left": {
                     "end": 2084,
                     "left": {
+                      "abs_path": false,
                       "end": 2080,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 2080,
+                        "name": "wallThickness",
+                        "start": 2067,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2067,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "*",
                     "right": {
@@ -1693,11 +2057,18 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 2094,
-                    "name": "holeDia",
+                    "name": {
+                      "end": 2094,
+                      "name": "holeDia",
+                      "start": 2087,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2087,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 2067,
                   "type": "BinaryExpression",
@@ -1706,11 +2077,18 @@ description: Result of parsing enclosure.kcl
                 {
                   "end": 2135,
                   "left": {
+                    "abs_path": false,
                     "end": 2104,
-                    "name": "length",
+                    "name": {
+                      "end": 2104,
+                      "name": "length",
+                      "start": 2098,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2098,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "-",
                   "right": {
@@ -1718,11 +2096,18 @@ description: Result of parsing enclosure.kcl
                     "left": {
                       "end": 2125,
                       "left": {
+                        "abs_path": false,
                         "end": 2121,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 2121,
+                          "name": "wallThickness",
+                          "start": 2108,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2108,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
@@ -1742,11 +2127,18 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "end": 2135,
-                      "name": "holeDia",
+                      "name": {
+                        "end": 2135,
+                        "name": "holeDia",
+                        "start": 2128,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2128,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 2108,
                     "type": "BinaryExpression",
@@ -1764,10 +2156,17 @@ description: Result of parsing enclosure.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 2062,
-            "name": "function001",
+            "name": {
+              "end": 2062,
+              "name": "function001",
+              "start": 2051,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 2051,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 2139,
           "start": 2051,
@@ -1787,11 +2186,18 @@ description: Result of parsing enclosure.kcl
                 {
                   "end": 2192,
                   "left": {
+                    "abs_path": false,
                     "end": 2161,
-                    "name": "width",
+                    "name": {
+                      "end": 2161,
+                      "name": "width",
+                      "start": 2156,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2156,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "-",
                   "right": {
@@ -1799,11 +2205,18 @@ description: Result of parsing enclosure.kcl
                     "left": {
                       "end": 2182,
                       "left": {
+                        "abs_path": false,
                         "end": 2178,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 2178,
+                          "name": "wallThickness",
+                          "start": 2165,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2165,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
@@ -1823,11 +2236,18 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "end": 2192,
-                      "name": "holeDia",
+                      "name": {
+                        "end": 2192,
+                        "name": "holeDia",
+                        "start": 2185,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2185,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 2165,
                     "type": "BinaryExpression",
@@ -1842,11 +2262,18 @@ description: Result of parsing enclosure.kcl
                   "left": {
                     "end": 2214,
                     "left": {
+                      "abs_path": false,
                       "end": 2210,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 2210,
+                        "name": "wallThickness",
+                        "start": 2197,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2197,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "*",
                     "right": {
@@ -1866,11 +2293,18 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 2224,
-                    "name": "holeDia",
+                    "name": {
+                      "end": 2224,
+                      "name": "holeDia",
+                      "start": 2217,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2217,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 2197,
                   "type": "BinaryExpression",
@@ -1884,10 +2318,17 @@ description: Result of parsing enclosure.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 2151,
-            "name": "function001",
+            "name": {
+              "end": 2151,
+              "name": "function001",
+              "start": 2140,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 2140,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 2227,
           "start": 2140,
@@ -1907,11 +2348,18 @@ description: Result of parsing enclosure.kcl
                 {
                   "end": 2280,
                   "left": {
+                    "abs_path": false,
                     "end": 2249,
-                    "name": "width",
+                    "name": {
+                      "end": 2249,
+                      "name": "width",
+                      "start": 2244,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2244,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "-",
                   "right": {
@@ -1919,11 +2367,18 @@ description: Result of parsing enclosure.kcl
                     "left": {
                       "end": 2270,
                       "left": {
+                        "abs_path": false,
                         "end": 2266,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 2266,
+                          "name": "wallThickness",
+                          "start": 2253,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2253,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
@@ -1943,11 +2398,18 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "end": 2280,
-                      "name": "holeDia",
+                      "name": {
+                        "end": 2280,
+                        "name": "holeDia",
+                        "start": 2273,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2273,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 2253,
                     "type": "BinaryExpression",
@@ -1960,11 +2422,18 @@ description: Result of parsing enclosure.kcl
                 {
                   "end": 2322,
                   "left": {
+                    "abs_path": false,
                     "end": 2291,
-                    "name": "length",
+                    "name": {
+                      "end": 2291,
+                      "name": "length",
+                      "start": 2285,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2285,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "-",
                   "right": {
@@ -1972,11 +2441,18 @@ description: Result of parsing enclosure.kcl
                     "left": {
                       "end": 2312,
                       "left": {
+                        "abs_path": false,
                         "end": 2308,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 2308,
+                          "name": "wallThickness",
+                          "start": 2295,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2295,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
@@ -1996,11 +2472,18 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "end": 2322,
-                      "name": "holeDia",
+                      "name": {
+                        "end": 2322,
+                        "name": "holeDia",
+                        "start": 2315,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2315,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 2295,
                     "type": "BinaryExpression",
@@ -2018,10 +2501,17 @@ description: Result of parsing enclosure.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 2239,
-            "name": "function001",
+            "name": {
+              "end": 2239,
+              "name": "function001",
+              "start": 2228,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 2228,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 2326,
           "start": 2228,
@@ -2055,10 +2545,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2394,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2394,
+                    "name": "startSketchOn",
+                    "start": 2381,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2381,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2400,
                 "start": 2381,
@@ -2072,11 +2569,18 @@ description: Result of parsing enclosure.kcl
                       {
                         "end": 2433,
                         "left": {
+                          "abs_path": false,
                           "end": 2427,
-                          "name": "width",
+                          "name": {
+                            "end": 2427,
+                            "name": "width",
+                            "start": 2422,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2422,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "*",
                         "right": {
@@ -2119,10 +2623,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2420,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2420,
+                    "name": "startProfileAt",
+                    "start": 2406,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2406,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2441,
                 "start": 2406,
@@ -2145,11 +2656,18 @@ description: Result of parsing enclosure.kcl
                         }
                       },
                       {
+                        "abs_path": false,
                         "end": 2467,
-                        "name": "width",
+                        "name": {
+                          "end": 2467,
+                          "name": "width",
+                          "start": 2462,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2462,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 2468,
@@ -2172,10 +2690,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2457,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 2457,
+                    "name": "angledLine",
+                    "start": 2447,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2447,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2495,
                 "start": 2447,
@@ -2191,18 +2716,32 @@ description: Result of parsing enclosure.kcl
                         "left": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2548,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 2548,
+                                "name": "rectangleSegmentA001",
+                                "start": 2528,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2528,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2527,
-                            "name": "segAng",
+                            "name": {
+                              "end": 2527,
+                              "name": "segAng",
+                              "start": 2521,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2521,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2549,
                           "start": 2521,
@@ -2226,11 +2765,18 @@ description: Result of parsing enclosure.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "abs_path": false,
                         "end": 2569,
-                        "name": "length",
+                        "name": {
+                          "end": 2569,
+                          "name": "length",
+                          "start": 2563,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2563,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 2576,
@@ -2253,10 +2799,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2511,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 2511,
+                    "name": "angledLine",
+                    "start": 2501,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2501,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2603,
                 "start": 2501,
@@ -2270,18 +2823,32 @@ description: Result of parsing enclosure.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 2656,
-                            "name": "rectangleSegmentA001",
+                            "name": {
+                              "end": 2656,
+                              "name": "rectangleSegmentA001",
+                              "start": 2636,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2636,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 2635,
-                          "name": "segAng",
+                          "name": {
+                            "end": 2635,
+                            "name": "segAng",
+                            "start": 2629,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2629,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 2657,
                         "start": 2629,
@@ -2292,18 +2859,32 @@ description: Result of parsing enclosure.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2694,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 2694,
+                                "name": "rectangleSegmentA001",
+                                "start": 2674,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2674,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2673,
-                            "name": "segLen",
+                            "name": {
+                              "end": 2673,
+                              "name": "segLen",
+                              "start": 2667,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2667,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2695,
                           "start": 2667,
@@ -2337,10 +2918,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2619,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 2619,
+                    "name": "angledLine",
+                    "start": 2609,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2609,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2729,
                 "start": 2609,
@@ -2369,10 +2957,17 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2768,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 2768,
+                              "name": "profileStartX",
+                              "start": 2755,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2755,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2771,
                           "start": 2755,
@@ -2389,10 +2984,17 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2786,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 2786,
+                              "name": "profileStartY",
+                              "start": 2773,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2773,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2789,
                           "start": 2773,
@@ -2424,10 +3026,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2739,
-                  "name": "line",
+                  "name": {
+                    "end": 2739,
+                    "name": "line",
+                    "start": 2735,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2735,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2820,
                 "start": 2735,
@@ -2438,10 +3047,17 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2831,
-                  "name": "close",
+                  "name": {
+                    "end": 2831,
+                    "name": "close",
+                    "start": 2826,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2826,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2833,
                 "start": 2826,
@@ -2469,11 +3085,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 2890,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 2884,
-                                    "name": "width",
+                                    "name": {
+                                      "end": 2884,
+                                      "name": "width",
+                                      "start": 2879,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 2879,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -2495,11 +3118,18 @@ description: Result of parsing enclosure.kcl
                                 "right": {
                                   "end": 2910,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 2906,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 2906,
+                                      "name": "wallThickness",
+                                      "start": 2893,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 2893,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -2523,11 +3153,18 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "end": 2920,
-                                "name": "holeDia",
+                                "name": {
+                                  "end": 2920,
+                                  "name": "holeDia",
+                                  "start": 2913,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2913,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 2879,
                               "type": "BinaryExpression",
@@ -2538,11 +3175,18 @@ description: Result of parsing enclosure.kcl
                               "left": {
                                 "end": 2948,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 2944,
-                                  "name": "wallThickness",
+                                  "name": {
+                                    "end": 2944,
+                                    "name": "wallThickness",
+                                    "start": 2931,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 2931,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
@@ -2562,11 +3206,18 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "end": 2958,
-                                "name": "holeDia",
+                                "name": {
+                                  "end": 2958,
+                                  "name": "holeDia",
+                                  "start": 2951,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2951,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 2931,
                               "type": "BinaryExpression",
@@ -2588,19 +3239,33 @@ description: Result of parsing enclosure.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "end": 2992,
-                          "name": "holeDia",
+                          "name": {
+                            "end": 2992,
+                            "name": "holeDia",
+                            "start": 2985,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2985,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2850,
-                      "name": "circle",
+                      "name": {
+                        "end": 2850,
+                        "name": "circle",
+                        "start": 2844,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2844,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2999,
                     "start": 2844,
@@ -2616,10 +3281,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2843,
-                  "name": "hole",
+                  "name": {
+                    "end": 2843,
+                    "name": "hole",
+                    "start": 2839,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2839,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3003,
                 "start": 2839,
@@ -2647,11 +3319,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 3060,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 3054,
-                                    "name": "width",
+                                    "name": {
+                                      "end": 3054,
+                                      "name": "width",
+                                      "start": 3049,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 3049,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -2673,11 +3352,18 @@ description: Result of parsing enclosure.kcl
                                 "right": {
                                   "end": 3080,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 3076,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 3076,
+                                      "name": "wallThickness",
+                                      "start": 3063,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 3063,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -2701,11 +3387,18 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "end": 3090,
-                                "name": "holeDia",
+                                "name": {
+                                  "end": 3090,
+                                  "name": "holeDia",
+                                  "start": 3083,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3083,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 3049,
                               "type": "BinaryExpression",
@@ -2714,11 +3407,18 @@ description: Result of parsing enclosure.kcl
                             {
                               "end": 3138,
                               "left": {
+                                "abs_path": false,
                                 "end": 3107,
-                                "name": "length",
+                                "name": {
+                                  "end": 3107,
+                                  "name": "length",
+                                  "start": 3101,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3101,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "-",
                               "right": {
@@ -2726,11 +3426,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 3128,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 3124,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 3124,
+                                      "name": "wallThickness",
+                                      "start": 3111,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 3111,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -2750,11 +3457,18 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 3138,
-                                  "name": "holeDia",
+                                  "name": {
+                                    "end": 3138,
+                                    "name": "holeDia",
+                                    "start": 3131,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3131,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 3111,
                                 "type": "BinaryExpression",
@@ -2780,19 +3494,33 @@ description: Result of parsing enclosure.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "end": 3173,
-                          "name": "holeDia",
+                          "name": {
+                            "end": 3173,
+                            "name": "holeDia",
+                            "start": 3166,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3166,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3020,
-                      "name": "circle",
+                      "name": {
+                        "end": 3020,
+                        "name": "circle",
+                        "start": 3014,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3014,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3180,
                     "start": 3014,
@@ -2808,10 +3536,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3013,
-                  "name": "hole",
+                  "name": {
+                    "end": 3013,
+                    "name": "hole",
+                    "start": 3009,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3009,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3184,
                 "start": 3009,
@@ -2837,11 +3572,18 @@ description: Result of parsing enclosure.kcl
                               "left": {
                                 "end": 3241,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 3235,
-                                  "name": "width",
+                                  "name": {
+                                    "end": 3235,
+                                    "name": "width",
+                                    "start": 3230,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3230,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
@@ -2865,11 +3607,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 3262,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 3258,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 3258,
+                                      "name": "wallThickness",
+                                      "start": 3245,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 3245,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -2889,11 +3638,18 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 3272,
-                                  "name": "holeDia",
+                                  "name": {
+                                    "end": 3272,
+                                    "name": "holeDia",
+                                    "start": 3265,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3265,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 3245,
                                 "type": "BinaryExpression",
@@ -2908,11 +3664,18 @@ description: Result of parsing enclosure.kcl
                               "left": {
                                 "end": 3301,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 3297,
-                                  "name": "wallThickness",
+                                  "name": {
+                                    "end": 3297,
+                                    "name": "wallThickness",
+                                    "start": 3284,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3284,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
@@ -2932,11 +3695,18 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "end": 3311,
-                                "name": "holeDia",
+                                "name": {
+                                  "end": 3311,
+                                  "name": "holeDia",
+                                  "start": 3304,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3304,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 3284,
                               "type": "BinaryExpression",
@@ -2958,19 +3728,33 @@ description: Result of parsing enclosure.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "end": 3345,
-                          "name": "holeDia",
+                          "name": {
+                            "end": 3345,
+                            "name": "holeDia",
+                            "start": 3338,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3338,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3201,
-                      "name": "circle",
+                      "name": {
+                        "end": 3201,
+                        "name": "circle",
+                        "start": 3195,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3195,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3352,
                     "start": 3195,
@@ -2986,10 +3770,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3194,
-                  "name": "hole",
+                  "name": {
+                    "end": 3194,
+                    "name": "hole",
+                    "start": 3190,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3190,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3356,
                 "start": 3190,
@@ -3015,11 +3806,18 @@ description: Result of parsing enclosure.kcl
                               "left": {
                                 "end": 3413,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 3407,
-                                  "name": "width",
+                                  "name": {
+                                    "end": 3407,
+                                    "name": "width",
+                                    "start": 3402,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3402,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
@@ -3043,11 +3841,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 3434,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 3430,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 3430,
+                                      "name": "wallThickness",
+                                      "start": 3417,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 3417,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -3067,11 +3872,18 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 3444,
-                                  "name": "holeDia",
+                                  "name": {
+                                    "end": 3444,
+                                    "name": "holeDia",
+                                    "start": 3437,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3437,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 3417,
                                 "type": "BinaryExpression",
@@ -3084,11 +3896,18 @@ description: Result of parsing enclosure.kcl
                             {
                               "end": 3493,
                               "left": {
+                                "abs_path": false,
                                 "end": 3462,
-                                "name": "length",
+                                "name": {
+                                  "end": 3462,
+                                  "name": "length",
+                                  "start": 3456,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3456,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "-",
                               "right": {
@@ -3096,11 +3915,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 3483,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 3479,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 3479,
+                                      "name": "wallThickness",
+                                      "start": 3466,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 3466,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -3120,11 +3946,18 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 3493,
-                                  "name": "holeDia",
+                                  "name": {
+                                    "end": 3493,
+                                    "name": "holeDia",
+                                    "start": 3486,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3486,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 3466,
                                 "type": "BinaryExpression",
@@ -3150,19 +3983,33 @@ description: Result of parsing enclosure.kcl
                           "type": "Identifier"
                         },
                         "arg": {
+                          "abs_path": false,
                           "end": 3528,
-                          "name": "holeDia",
+                          "name": {
+                            "end": 3528,
+                            "name": "holeDia",
+                            "start": 3521,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3521,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3373,
-                      "name": "circle",
+                      "name": {
+                        "end": 3373,
+                        "name": "circle",
+                        "start": 3367,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3367,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3535,
                     "start": 3367,
@@ -3178,10 +4025,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3366,
-                  "name": "hole",
+                  "name": {
+                    "end": 3366,
+                    "name": "hole",
+                    "start": 3362,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3362,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3539,
                 "start": 3362,
@@ -3225,30 +4079,51 @@ description: Result of parsing enclosure.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3594,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 3594,
+                        "name": "wallThickness",
+                        "start": 3581,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3581,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3560,
-                  "name": "extrude",
+                  "name": {
+                    "end": 3560,
+                    "name": "extrude",
+                    "start": 3553,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3553,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3595,
                 "start": 3553,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 3570,
-                  "name": "sketch003",
+                  "name": {
+                    "end": 3570,
+                    "name": "sketch003",
+                    "start": 3561,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3561,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -3264,11 +4139,18 @@ description: Result of parsing enclosure.kcl
                     "arg": {
                       "end": 3642,
                       "left": {
+                        "abs_path": false,
                         "end": 3638,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 3638,
+                          "name": "wallThickness",
+                          "start": 3625,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3625,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
@@ -3300,18 +4182,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 3709,
-                              "name": "rectangleSegmentA002",
+                              "name": {
+                                "end": 3709,
+                                "name": "rectangleSegmentA002",
+                                "start": 3689,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3689,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3688,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 3688,
+                              "name": "getNextAdjacentEdge",
+                              "start": 3669,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3669,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3710,
                           "start": 3669,
@@ -3321,18 +4217,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 3761,
-                              "name": "rectangleSegmentB002",
+                              "name": {
+                                "end": 3761,
+                                "name": "rectangleSegmentB002",
+                                "start": 3741,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3741,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3740,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 3740,
+                              "name": "getNextAdjacentEdge",
+                              "start": 3721,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3721,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3762,
                           "start": 3721,
@@ -3342,18 +4252,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 3813,
-                              "name": "rectangleSegmentC002",
+                              "name": {
+                                "end": 3813,
+                                "name": "rectangleSegmentC002",
+                                "start": 3793,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3793,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3792,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 3792,
+                              "name": "getNextAdjacentEdge",
+                              "start": 3773,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3773,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3814,
                           "start": 3773,
@@ -3363,18 +4287,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 3865,
-                              "name": "rectangleSegmentD002",
+                              "name": {
+                                "end": 3865,
+                                "name": "rectangleSegmentD002",
+                                "start": 3845,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3845,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3844,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 3844,
+                              "name": "getNextAdjacentEdge",
+                              "start": 3825,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3825,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3866,
                           "start": 3825,
@@ -3390,10 +4328,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3607,
-                  "name": "fillet",
+                  "name": {
+                    "end": 3607,
+                    "name": "fillet",
+                    "start": 3601,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3601,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3882,
                 "start": 3601,
@@ -3447,11 +4392,18 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 3961,
-                    "name": "extrude003",
+                    "name": {
+                      "end": 3961,
+                      "name": "extrude003",
+                      "start": 3951,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 3951,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 3968,
@@ -3463,10 +4415,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3950,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 3950,
+                    "name": "startSketchOn",
+                    "start": 3937,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3937,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3969,
                 "start": 3937,
@@ -3482,11 +4441,18 @@ description: Result of parsing enclosure.kcl
                         "left": {
                           "end": 4010,
                           "left": {
+                            "abs_path": false,
                             "end": 4004,
-                            "name": "width",
+                            "name": {
+                              "end": 4004,
+                              "name": "width",
+                              "start": 3999,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3999,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "*",
                           "right": {
@@ -3506,22 +4472,36 @@ description: Result of parsing enclosure.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "abs_path": false,
                           "end": 4026,
-                          "name": "wallThickness",
+                          "name": {
+                            "end": 4026,
+                            "name": "wallThickness",
+                            "start": 4013,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4013,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 3999,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
+                        "abs_path": false,
                         "end": 4048,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 4048,
+                          "name": "wallThickness",
+                          "start": 4035,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4035,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 4055,
@@ -3537,10 +4517,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3989,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 3989,
+                    "name": "startProfileAt",
+                    "start": 3975,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3975,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4059,
                 "start": 3975,
@@ -3565,11 +4552,18 @@ description: Result of parsing enclosure.kcl
                       {
                         "end": 4106,
                         "left": {
+                          "abs_path": false,
                           "end": 4085,
-                          "name": "width",
+                          "name": {
+                            "end": 4085,
+                            "name": "width",
+                            "start": 4080,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4080,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
@@ -3587,11 +4581,18 @@ description: Result of parsing enclosure.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "abs_path": false,
                             "end": 4106,
-                            "name": "wallThickness",
+                            "name": {
+                              "end": 4106,
+                              "name": "wallThickness",
+                              "start": 4093,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4093,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 4089,
                           "type": "BinaryExpression",
@@ -3622,10 +4623,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4075,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 4075,
+                    "name": "angledLine",
+                    "start": 4065,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4065,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4135,
                 "start": 4065,
@@ -3641,18 +4649,32 @@ description: Result of parsing enclosure.kcl
                         "left": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 4188,
-                              "name": "rectangleSegmentA003",
+                              "name": {
+                                "end": 4188,
+                                "name": "rectangleSegmentA003",
+                                "start": 4168,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 4168,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4167,
-                            "name": "segAng",
+                            "name": {
+                              "end": 4167,
+                              "name": "segAng",
+                              "start": 4161,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4161,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4189,
                           "start": 4161,
@@ -3678,11 +4700,18 @@ description: Result of parsing enclosure.kcl
                       {
                         "end": 4230,
                         "left": {
+                          "abs_path": false,
                           "end": 4209,
-                          "name": "length",
+                          "name": {
+                            "end": 4209,
+                            "name": "length",
+                            "start": 4203,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4203,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
@@ -3700,11 +4729,18 @@ description: Result of parsing enclosure.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "abs_path": false,
                             "end": 4230,
-                            "name": "wallThickness",
+                            "name": {
+                              "end": 4230,
+                              "name": "wallThickness",
+                              "start": 4217,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4217,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 4213,
                           "type": "BinaryExpression",
@@ -3735,10 +4771,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4151,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 4151,
+                    "name": "angledLine",
+                    "start": 4141,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4141,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4265,
                 "start": 4141,
@@ -3752,18 +4795,32 @@ description: Result of parsing enclosure.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 4318,
-                            "name": "rectangleSegmentA003",
+                            "name": {
+                              "end": 4318,
+                              "name": "rectangleSegmentA003",
+                              "start": 4298,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4298,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 4297,
-                          "name": "segAng",
+                          "name": {
+                            "end": 4297,
+                            "name": "segAng",
+                            "start": 4291,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4291,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 4319,
                         "start": 4291,
@@ -3774,18 +4831,32 @@ description: Result of parsing enclosure.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 4356,
-                              "name": "rectangleSegmentA003",
+                              "name": {
+                                "end": 4356,
+                                "name": "rectangleSegmentA003",
+                                "start": 4336,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 4336,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4335,
-                            "name": "segLen",
+                            "name": {
+                              "end": 4335,
+                              "name": "segLen",
+                              "start": 4329,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4329,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4357,
                           "start": 4329,
@@ -3819,10 +4890,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4281,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 4281,
+                    "name": "angledLine",
+                    "start": 4271,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4271,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4391,
                 "start": 4271,
@@ -3851,10 +4929,17 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4430,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 4430,
+                              "name": "profileStartX",
+                              "start": 4417,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4417,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4433,
                           "start": 4417,
@@ -3871,10 +4956,17 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4448,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 4448,
+                              "name": "profileStartY",
+                              "start": 4435,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4435,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4451,
                           "start": 4435,
@@ -3906,10 +4998,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4401,
-                  "name": "line",
+                  "name": {
+                    "end": 4401,
+                    "name": "line",
+                    "start": 4397,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4397,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4482,
                 "start": 4397,
@@ -3920,10 +5019,17 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 4493,
-                  "name": "close",
+                  "name": {
+                    "end": 4493,
+                    "name": "close",
+                    "start": 4488,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4488,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4495,
                 "start": 4488,
@@ -3951,11 +5057,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 4552,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 4546,
-                                    "name": "width",
+                                    "name": {
+                                      "end": 4546,
+                                      "name": "width",
+                                      "start": 4541,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 4541,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -3977,11 +5090,18 @@ description: Result of parsing enclosure.kcl
                                 "right": {
                                   "end": 4572,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 4568,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 4568,
+                                      "name": "wallThickness",
+                                      "start": 4555,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 4555,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -4005,11 +5125,18 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "end": 4582,
-                                "name": "holeDia",
+                                "name": {
+                                  "end": 4582,
+                                  "name": "holeDia",
+                                  "start": 4575,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 4575,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 4541,
                               "type": "BinaryExpression",
@@ -4020,11 +5147,18 @@ description: Result of parsing enclosure.kcl
                               "left": {
                                 "end": 4610,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 4606,
-                                  "name": "wallThickness",
+                                  "name": {
+                                    "end": 4606,
+                                    "name": "wallThickness",
+                                    "start": 4593,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 4593,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
@@ -4044,11 +5178,18 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "end": 4620,
-                                "name": "holeDia",
+                                "name": {
+                                  "end": 4620,
+                                  "name": "holeDia",
+                                  "start": 4613,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 4613,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 4593,
                               "type": "BinaryExpression",
@@ -4072,19 +5213,33 @@ description: Result of parsing enclosure.kcl
                         "arg": {
                           "end": 4670,
                           "left": {
+                            "abs_path": false,
                             "end": 4654,
-                            "name": "holeDia",
+                            "name": {
+                              "end": 4654,
+                              "name": "holeDia",
+                              "start": 4647,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4647,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 4670,
-                            "name": "wallThickness",
+                            "name": {
+                              "end": 4670,
+                              "name": "wallThickness",
+                              "start": 4657,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4657,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 4647,
                           "type": "BinaryExpression",
@@ -4093,10 +5248,17 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 4512,
-                      "name": "circle",
+                      "name": {
+                        "end": 4512,
+                        "name": "circle",
+                        "start": 4506,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 4506,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 4677,
                     "start": 4506,
@@ -4112,10 +5274,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4505,
-                  "name": "hole",
+                  "name": {
+                    "end": 4505,
+                    "name": "hole",
+                    "start": 4501,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4501,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4681,
                 "start": 4501,
@@ -4143,11 +5312,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 4738,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 4732,
-                                    "name": "width",
+                                    "name": {
+                                      "end": 4732,
+                                      "name": "width",
+                                      "start": 4727,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 4727,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -4169,11 +5345,18 @@ description: Result of parsing enclosure.kcl
                                 "right": {
                                   "end": 4758,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 4754,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 4754,
+                                      "name": "wallThickness",
+                                      "start": 4741,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 4741,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -4197,11 +5380,18 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "end": 4768,
-                                "name": "holeDia",
+                                "name": {
+                                  "end": 4768,
+                                  "name": "holeDia",
+                                  "start": 4761,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 4761,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 4727,
                               "type": "BinaryExpression",
@@ -4210,11 +5400,18 @@ description: Result of parsing enclosure.kcl
                             {
                               "end": 4816,
                               "left": {
+                                "abs_path": false,
                                 "end": 4785,
-                                "name": "length",
+                                "name": {
+                                  "end": 4785,
+                                  "name": "length",
+                                  "start": 4779,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 4779,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "-",
                               "right": {
@@ -4222,11 +5419,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 4806,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 4802,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 4802,
+                                      "name": "wallThickness",
+                                      "start": 4789,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 4789,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -4246,11 +5450,18 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 4816,
-                                  "name": "holeDia",
+                                  "name": {
+                                    "end": 4816,
+                                    "name": "holeDia",
+                                    "start": 4809,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 4809,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 4789,
                                 "type": "BinaryExpression",
@@ -4278,19 +5489,33 @@ description: Result of parsing enclosure.kcl
                         "arg": {
                           "end": 4867,
                           "left": {
+                            "abs_path": false,
                             "end": 4851,
-                            "name": "holeDia",
+                            "name": {
+                              "end": 4851,
+                              "name": "holeDia",
+                              "start": 4844,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4844,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 4867,
-                            "name": "wallThickness",
+                            "name": {
+                              "end": 4867,
+                              "name": "wallThickness",
+                              "start": 4854,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4854,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 4844,
                           "type": "BinaryExpression",
@@ -4299,10 +5524,17 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 4698,
-                      "name": "circle",
+                      "name": {
+                        "end": 4698,
+                        "name": "circle",
+                        "start": 4692,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 4692,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 4874,
                     "start": 4692,
@@ -4318,10 +5550,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4691,
-                  "name": "hole",
+                  "name": {
+                    "end": 4691,
+                    "name": "hole",
+                    "start": 4687,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4687,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4878,
                 "start": 4687,
@@ -4347,11 +5586,18 @@ description: Result of parsing enclosure.kcl
                               "left": {
                                 "end": 4935,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 4929,
-                                  "name": "width",
+                                  "name": {
+                                    "end": 4929,
+                                    "name": "width",
+                                    "start": 4924,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 4924,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
@@ -4375,11 +5621,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 4956,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 4952,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 4952,
+                                      "name": "wallThickness",
+                                      "start": 4939,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 4939,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -4399,11 +5652,18 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 4966,
-                                  "name": "holeDia",
+                                  "name": {
+                                    "end": 4966,
+                                    "name": "holeDia",
+                                    "start": 4959,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 4959,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 4939,
                                 "type": "BinaryExpression",
@@ -4418,11 +5678,18 @@ description: Result of parsing enclosure.kcl
                               "left": {
                                 "end": 4995,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 4991,
-                                  "name": "wallThickness",
+                                  "name": {
+                                    "end": 4991,
+                                    "name": "wallThickness",
+                                    "start": 4978,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 4978,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
@@ -4442,11 +5709,18 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "abs_path": false,
                                 "end": 5005,
-                                "name": "holeDia",
+                                "name": {
+                                  "end": 5005,
+                                  "name": "holeDia",
+                                  "start": 4998,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 4998,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 4978,
                               "type": "BinaryExpression",
@@ -4470,19 +5744,33 @@ description: Result of parsing enclosure.kcl
                         "arg": {
                           "end": 5055,
                           "left": {
+                            "abs_path": false,
                             "end": 5039,
-                            "name": "holeDia",
+                            "name": {
+                              "end": 5039,
+                              "name": "holeDia",
+                              "start": 5032,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5032,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 5055,
-                            "name": "wallThickness",
+                            "name": {
+                              "end": 5055,
+                              "name": "wallThickness",
+                              "start": 5042,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5042,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 5032,
                           "type": "BinaryExpression",
@@ -4491,10 +5779,17 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 4895,
-                      "name": "circle",
+                      "name": {
+                        "end": 4895,
+                        "name": "circle",
+                        "start": 4889,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 4889,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 5062,
                     "start": 4889,
@@ -4510,10 +5805,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4888,
-                  "name": "hole",
+                  "name": {
+                    "end": 4888,
+                    "name": "hole",
+                    "start": 4884,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4884,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5066,
                 "start": 4884,
@@ -4539,11 +5841,18 @@ description: Result of parsing enclosure.kcl
                               "left": {
                                 "end": 5123,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 5117,
-                                  "name": "width",
+                                  "name": {
+                                    "end": 5117,
+                                    "name": "width",
+                                    "start": 5112,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 5112,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
@@ -4567,11 +5876,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 5144,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 5140,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 5140,
+                                      "name": "wallThickness",
+                                      "start": 5127,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 5127,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -4591,11 +5907,18 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 5154,
-                                  "name": "holeDia",
+                                  "name": {
+                                    "end": 5154,
+                                    "name": "holeDia",
+                                    "start": 5147,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 5147,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 5127,
                                 "type": "BinaryExpression",
@@ -4608,11 +5931,18 @@ description: Result of parsing enclosure.kcl
                             {
                               "end": 5203,
                               "left": {
+                                "abs_path": false,
                                 "end": 5172,
-                                "name": "length",
+                                "name": {
+                                  "end": 5172,
+                                  "name": "length",
+                                  "start": 5166,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 5166,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "-",
                               "right": {
@@ -4620,11 +5950,18 @@ description: Result of parsing enclosure.kcl
                                 "left": {
                                   "end": 5193,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 5189,
-                                    "name": "wallThickness",
+                                    "name": {
+                                      "end": 5189,
+                                      "name": "wallThickness",
+                                      "start": 5176,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 5176,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
@@ -4644,11 +5981,18 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 5203,
-                                  "name": "holeDia",
+                                  "name": {
+                                    "end": 5203,
+                                    "name": "holeDia",
+                                    "start": 5196,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 5196,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 5176,
                                 "type": "BinaryExpression",
@@ -4676,19 +6020,33 @@ description: Result of parsing enclosure.kcl
                         "arg": {
                           "end": 5254,
                           "left": {
+                            "abs_path": false,
                             "end": 5238,
-                            "name": "holeDia",
+                            "name": {
+                              "end": 5238,
+                              "name": "holeDia",
+                              "start": 5231,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5231,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 5254,
-                            "name": "wallThickness",
+                            "name": {
+                              "end": 5254,
+                              "name": "wallThickness",
+                              "start": 5241,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5241,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 5231,
                           "type": "BinaryExpression",
@@ -4697,10 +6055,17 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 5083,
-                      "name": "circle",
+                      "name": {
+                        "end": 5083,
+                        "name": "circle",
+                        "start": 5077,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 5077,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 5261,
                     "start": 5077,
@@ -4716,10 +6081,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5076,
-                  "name": "hole",
+                  "name": {
+                    "end": 5076,
+                    "name": "hole",
+                    "start": 5072,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5072,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5265,
                 "start": 5072,
@@ -4763,30 +6135,51 @@ description: Result of parsing enclosure.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 5320,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 5320,
+                        "name": "wallThickness",
+                        "start": 5307,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 5307,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5286,
-                  "name": "extrude",
+                  "name": {
+                    "end": 5286,
+                    "name": "extrude",
+                    "start": 5279,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5279,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5321,
                 "start": 5279,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 5296,
-                  "name": "sketch004",
+                  "name": {
+                    "end": 5296,
+                    "name": "sketch004",
+                    "start": 5287,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5287,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -4802,11 +6195,18 @@ description: Result of parsing enclosure.kcl
                     "arg": {
                       "end": 5368,
                       "left": {
+                        "abs_path": false,
                         "end": 5364,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 5364,
+                          "name": "wallThickness",
+                          "start": 5351,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 5351,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
@@ -4838,18 +6238,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 5435,
-                              "name": "rectangleSegmentA003",
+                              "name": {
+                                "end": 5435,
+                                "name": "rectangleSegmentA003",
+                                "start": 5415,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 5415,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 5414,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 5414,
+                              "name": "getNextAdjacentEdge",
+                              "start": 5395,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5395,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 5436,
                           "start": 5395,
@@ -4859,18 +6273,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 5487,
-                              "name": "rectangleSegmentB003",
+                              "name": {
+                                "end": 5487,
+                                "name": "rectangleSegmentB003",
+                                "start": 5467,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 5467,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 5466,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 5466,
+                              "name": "getNextAdjacentEdge",
+                              "start": 5447,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5447,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 5488,
                           "start": 5447,
@@ -4880,18 +6308,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 5539,
-                              "name": "rectangleSegmentC003",
+                              "name": {
+                                "end": 5539,
+                                "name": "rectangleSegmentC003",
+                                "start": 5519,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 5519,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 5518,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 5518,
+                              "name": "getNextAdjacentEdge",
+                              "start": 5499,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5499,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 5540,
                           "start": 5499,
@@ -4901,18 +6343,32 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 5591,
-                              "name": "rectangleSegmentD003",
+                              "name": {
+                                "end": 5591,
+                                "name": "rectangleSegmentD003",
+                                "start": 5571,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 5571,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 5570,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 5570,
+                              "name": "getNextAdjacentEdge",
+                              "start": 5551,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5551,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 5592,
                           "start": 5551,
@@ -4928,10 +6384,17 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5333,
-                  "name": "fillet",
+                  "name": {
+                    "end": 5333,
+                    "name": "fillet",
+                    "start": 5327,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5327,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5608,
                 "start": 5327,
@@ -4977,11 +6440,18 @@ description: Result of parsing enclosure.kcl
             "start": 92,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 114,
-              "name": "mm",
+              "name": {
+                "end": 114,
+                "name": "mm",
+                "start": 112,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 112,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

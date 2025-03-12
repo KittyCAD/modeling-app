@@ -18,18 +18,32 @@ expression: actual
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "end": 28,
-                  "name": "XY",
+                  "name": {
+                    "end": 28,
+                    "name": "XY",
+                    "start": 26,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 26,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 25,
-                "name": "startSketchOn",
+                "name": {
+                  "end": 25,
+                  "name": "startSketchOn",
+                  "start": 12,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 12,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 29,
               "start": 12,
@@ -76,10 +90,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 51,
-                "name": "startProfileAt",
+                "name": {
+                  "end": 51,
+                  "name": "startProfileAt",
+                  "start": 37,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 37,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 62,
               "start": 37,
@@ -126,10 +147,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 74,
-                "name": "line",
+                "name": {
+                  "end": 74,
+                  "name": "line",
+                  "start": 70,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 70,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 86,
               "start": 70,
@@ -183,10 +211,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 107,
-                "name": "tangentialArc",
+                "name": {
+                  "end": 107,
+                  "name": "tangentialArc",
+                  "start": 94,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 94,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 119,
               "start": 94,
@@ -240,10 +275,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 131,
-                "name": "line",
+                "name": {
+                  "end": 131,
+                  "name": "line",
+                  "start": 127,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 127,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 144,
               "start": 127,
@@ -274,10 +316,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 159,
-                "name": "extrude",
+                "name": {
+                  "end": 159,
+                  "name": "extrude",
+                  "start": 152,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 152,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 170,
               "start": 152,

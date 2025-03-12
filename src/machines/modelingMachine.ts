@@ -3528,25 +3528,26 @@ export function isEditingExistingSketch({
   if (
     (maybePipeExpression.type === 'CallExpression' ||
       maybePipeExpression.type === 'CallExpressionKw') &&
-    (maybePipeExpression.callee.name === 'startProfileAt' ||
-      maybePipeExpression.callee.name === 'circle' ||
-      maybePipeExpression.callee.name === 'circleThreePoint')
+    (maybePipeExpression.callee.name.name === 'startProfileAt' ||
+      maybePipeExpression.callee.name.name === 'circle' ||
+      maybePipeExpression.callee.name.name === 'circleThreePoint')
   )
     return true
   if (maybePipeExpression.type !== 'PipeExpression') return false
   const hasStartProfileAt = maybePipeExpression.body.some(
     (item) =>
-      item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
+      item.type === 'CallExpression' &&
+      item.callee.name.name === 'startProfileAt'
   )
   const hasCircle =
     maybePipeExpression.body.some(
       (item) =>
-        item.type === 'CallExpressionKw' && item.callee.name === 'circle'
+        item.type === 'CallExpressionKw' && item.callee.name.name === 'circle'
     ) ||
     maybePipeExpression.body.some(
       (item) =>
         item.type === 'CallExpressionKw' &&
-        item.callee.name === 'circleThreePoint'
+        item.callee.name.name === 'circleThreePoint'
     )
   return (hasStartProfileAt && maybePipeExpression.body.length > 1) || hasCircle
 }
@@ -3566,7 +3567,8 @@ export function pipeHasCircle({
   const pipeExpression = variableDeclaration.node.init
   if (pipeExpression.type !== 'PipeExpression') return false
   const hasCircle = pipeExpression.body.some(
-    (item) => item.type === 'CallExpressionKw' && item.callee.name === 'circle'
+    (item) =>
+      item.type === 'CallExpressionKw' && item.callee.name.name === 'circle'
   )
   return hasCircle
 }
@@ -3605,6 +3607,6 @@ export function isClosedSketch({
   return node.node.declaration.init.body.some(
     (node) =>
       (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
-      (node.callee.name === 'close' || node.callee.name === 'circle')
+      (node.callee.name.name === 'close' || node.callee.name.name === 'circle')
   )
 }

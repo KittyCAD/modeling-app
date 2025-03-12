@@ -37,19 +37,33 @@ expression: actual
                     "type": "Identifier"
                   },
                   "arg": {
+                    "abs_path": false,
                     "end": 20,
-                    "name": "x",
+                    "name": {
+                      "end": 20,
+                      "name": "x",
+                      "start": 19,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 19,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 12,
-                "name": "f",
+                "name": {
+                  "end": 12,
+                  "name": "f",
+                  "start": 11,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 11,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 21,
               "start": 11,

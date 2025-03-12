@@ -102,11 +102,18 @@ description: Result of parsing socket-head-cap-screw.kcl
             "type": "Identifier"
           },
           "init": {
+            "abs_path": false,
             "end": 511,
-            "name": "screwDiameter",
+            "name": {
+              "end": 511,
+              "name": "screwDiameter",
+              "start": 498,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 498,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           },
           "start": 485,
           "type": "VariableDeclarator"
@@ -176,19 +183,33 @@ description: Result of parsing socket-head-cap-screw.kcl
           "init": {
             "end": 574,
             "left": {
+              "abs_path": false,
               "end": 559,
-              "name": "screwDiameter",
+              "name": {
+                "end": 559,
+                "name": "screwDiameter",
+                "start": 546,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 546,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
+              "abs_path": false,
               "end": 574,
-              "name": "headDiameter",
+              "name": {
+                "end": 574,
+                "name": "headDiameter",
+                "start": 562,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 562,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 546,
             "type": "BinaryExpression",
@@ -215,19 +236,33 @@ description: Result of parsing socket-head-cap-screw.kcl
           "init": {
             "end": 614,
             "left": {
+              "abs_path": false,
               "end": 599,
-              "name": "hexWallToWall",
+              "name": {
+                "end": 599,
+                "name": "hexWallToWall",
+                "start": 586,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 586,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
+              "abs_path": false,
               "end": 614,
-              "name": "headDiameter",
+              "name": {
+                "end": 614,
+                "name": "headDiameter",
+                "start": 602,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 602,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 586,
             "type": "BinaryExpression",
@@ -258,11 +293,18 @@ description: Result of parsing socket-head-cap-screw.kcl
               "left": {
                 "end": 648,
                 "left": {
+                  "abs_path": false,
                   "end": 644,
-                  "name": "hexWallToWall",
+                  "name": {
+                    "end": 644,
+                    "name": "hexWallToWall",
+                    "start": 631,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 631,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
@@ -314,10 +356,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                     }
                   ],
                   "callee": {
+                    "abs_path": false,
                     "end": 668,
-                    "name": "toRadians",
+                    "name": {
+                      "end": 668,
+                      "name": "toRadians",
+                      "start": 659,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 659,
-                    "type": "Identifier"
+                    "type": "Name"
                   },
                   "end": 672,
                   "start": 659,
@@ -326,10 +375,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 658,
-                "name": "cos",
+                "name": {
+                  "end": 658,
+                  "name": "cos",
+                  "start": 655,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 655,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 673,
               "start": 655,
@@ -431,11 +487,18 @@ description: Result of parsing socket-head-cap-screw.kcl
             },
             "operator": "-",
             "right": {
+              "abs_path": false,
               "end": 789,
-              "name": "hexInteriorAngle",
+              "name": {
+                "end": 789,
+                "name": "hexInteriorAngle",
+                "start": 773,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 773,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 767,
             "type": "BinaryExpression",
@@ -485,10 +548,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 970,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 970,
+                              "name": "startSketchOn",
+                              "start": 957,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 957,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 976,
                           "start": 957,
@@ -577,19 +647,33 @@ description: Result of parsing socket-head-cap-screw.kcl
                                 "left": {
                                   "end": 1064,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 1053,
-                                    "name": "dia",
+                                    "name": {
+                                      "end": 1053,
+                                      "name": "dia",
+                                      "start": 1050,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1050,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "/",
                                   "right": {
+                                    "abs_path": false,
                                     "end": 1064,
-                                    "name": "capRatio",
+                                    "name": {
+                                      "end": 1064,
+                                      "name": "capRatio",
+                                      "start": 1056,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1056,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 1050,
                                   "type": "BinaryExpression",
@@ -614,10 +698,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 990,
-                            "name": "circle",
+                            "name": {
+                              "end": 990,
+                              "name": "circle",
+                              "start": 984,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 984,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1077,
                           "start": 984,
@@ -677,30 +768,51 @@ description: Result of parsing socket-head-cap-screw.kcl
                             "type": "Identifier"
                           },
                           "arg": {
+                            "abs_path": false,
                             "end": 1175,
-                            "name": "capHeadLength",
+                            "name": {
+                              "end": 1175,
+                              "name": "capHeadLength",
+                              "start": 1162,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1162,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 1135,
-                        "name": "extrude",
+                        "name": {
+                          "end": 1135,
+                          "name": "extrude",
+                          "start": 1128,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1128,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 1176,
                       "start": 1128,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
+                        "abs_path": false,
                         "end": 1151,
-                        "name": "screwHeadSketch",
+                        "name": {
+                          "end": 1151,
+                          "name": "screwHeadSketch",
+                          "start": 1136,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1136,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     },
                     "start": 1116,
@@ -726,11 +838,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1282,
-                              "name": "screwHead",
+                              "name": {
+                                "end": 1282,
+                                "name": "screwHead",
+                                "start": 1273,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1273,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             {
                               "end": 1289,
@@ -742,10 +861,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1272,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 1272,
+                              "name": "startSketchOn",
+                              "start": 1259,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1259,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1290,
                           "start": 1259,
@@ -759,11 +885,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                 {
                                   "end": 1331,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 1327,
-                                    "name": "hexWallToWall",
+                                    "name": {
+                                      "end": 1327,
+                                      "name": "hexWallToWall",
+                                      "start": 1314,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1314,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "/",
                                   "right": {
@@ -806,10 +939,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1312,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 1312,
+                              "name": "startProfileAt",
+                              "start": 1298,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1298,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1339,
                           "start": 1298,
@@ -830,11 +970,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                 "end": 1380,
                                 "left": {
                                   "argument": {
+                                    "abs_path": false,
                                     "end": 1376,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 1376,
+                                      "name": "hexWallLength",
+                                      "start": 1363,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1363,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "end": 1376,
                                   "operator": "-",
@@ -861,10 +1008,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1352,
-                            "name": "yLine",
+                            "name": {
+                              "end": 1352,
+                              "name": "yLine",
+                              "start": 1347,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1347,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1381,
                           "start": 1347,
@@ -888,11 +1042,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "start": 1411,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1435,
-                                    "name": "hexStartingAngle",
+                                    "name": {
+                                      "end": 1435,
+                                      "name": "hexStartingAngle",
+                                      "start": 1419,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1419,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 },
                                 {
@@ -906,11 +1067,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "start": 1446,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1468,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 1468,
+                                      "name": "hexWallLength",
+                                      "start": 1455,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1455,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -926,10 +1094,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1399,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 1399,
+                              "name": "angledLine",
+                              "start": 1389,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1389,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1481,
                           "start": 1389,
@@ -954,19 +1129,33 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "value": {
                                     "end": 1552,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 1535,
-                                      "name": "hexStartingAngle",
+                                      "name": {
+                                        "end": 1535,
+                                        "name": "hexStartingAngle",
+                                        "start": 1519,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1519,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "-",
                                     "right": {
+                                      "abs_path": false,
                                       "end": 1552,
-                                      "name": "hexChangeAngle",
+                                      "name": {
+                                        "end": 1552,
+                                        "name": "hexChangeAngle",
+                                        "start": 1538,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1538,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "start": 1519,
                                     "type": "BinaryExpression",
@@ -984,11 +1173,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "start": 1563,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1585,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 1585,
+                                      "name": "hexWallLength",
+                                      "start": 1572,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1572,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1004,10 +1200,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1499,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 1499,
+                              "name": "angledLine",
+                              "start": 1489,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1489,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1598,
                           "start": 1489,
@@ -1032,11 +1235,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "value": {
                                     "end": 1674,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 1652,
-                                      "name": "hexStartingAngle",
+                                      "name": {
+                                        "end": 1652,
+                                        "name": "hexStartingAngle",
+                                        "start": 1636,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1636,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "-",
                                     "right": {
@@ -1054,11 +1264,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       },
                                       "operator": "*",
                                       "right": {
+                                        "abs_path": false,
                                         "end": 1674,
-                                        "name": "hexChangeAngle",
+                                        "name": {
+                                          "end": 1674,
+                                          "name": "hexChangeAngle",
+                                          "start": 1660,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 1660,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "start": 1656,
                                       "type": "BinaryExpression",
@@ -1080,11 +1297,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "start": 1686,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1708,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 1708,
+                                      "name": "hexWallLength",
+                                      "start": 1695,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1695,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1100,10 +1324,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1616,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 1616,
+                              "name": "angledLine",
+                              "start": 1606,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1606,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1721,
                           "start": 1606,
@@ -1128,11 +1359,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "value": {
                                     "end": 1797,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 1775,
-                                      "name": "hexStartingAngle",
+                                      "name": {
+                                        "end": 1775,
+                                        "name": "hexStartingAngle",
+                                        "start": 1759,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1759,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "-",
                                     "right": {
@@ -1150,11 +1388,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       },
                                       "operator": "*",
                                       "right": {
+                                        "abs_path": false,
                                         "end": 1797,
-                                        "name": "hexChangeAngle",
+                                        "name": {
+                                          "end": 1797,
+                                          "name": "hexChangeAngle",
+                                          "start": 1783,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 1783,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "start": 1779,
                                       "type": "BinaryExpression",
@@ -1176,11 +1421,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "start": 1809,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1831,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 1831,
+                                      "name": "hexWallLength",
+                                      "start": 1818,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1818,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1196,10 +1448,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1739,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 1739,
+                              "name": "angledLine",
+                              "start": 1729,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1729,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1844,
                           "start": 1729,
@@ -1224,11 +1483,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "value": {
                                     "end": 1920,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 1898,
-                                      "name": "hexStartingAngle",
+                                      "name": {
+                                        "end": 1898,
+                                        "name": "hexStartingAngle",
+                                        "start": 1882,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1882,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "-",
                                     "right": {
@@ -1246,11 +1512,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                       },
                                       "operator": "*",
                                       "right": {
+                                        "abs_path": false,
                                         "end": 1920,
-                                        "name": "hexChangeAngle",
+                                        "name": {
+                                          "end": 1920,
+                                          "name": "hexChangeAngle",
+                                          "start": 1906,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 1906,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "start": 1902,
                                       "type": "BinaryExpression",
@@ -1272,11 +1545,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                                   "start": 1932,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1954,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 1954,
+                                      "name": "hexWallLength",
+                                      "start": 1941,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1941,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1292,10 +1572,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1862,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 1862,
+                              "name": "angledLine",
+                              "start": 1852,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1852,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1967,
                           "start": 1852,
@@ -1305,10 +1592,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "abs_path": false,
                             "end": 1980,
-                            "name": "close",
+                            "name": {
+                              "end": 1980,
+                              "name": "close",
+                              "start": 1975,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1975,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1982,
                           "start": 1975,
@@ -1353,11 +1647,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                             "end": 2051,
                             "left": {
                               "argument": {
+                                "abs_path": false,
                                 "end": 2044,
-                                "name": "headLength",
+                                "name": {
+                                  "end": 2044,
+                                  "name": "headLength",
+                                  "start": 2034,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2034,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "end": 2044,
                               "operator": "-",
@@ -1384,21 +1685,35 @@ description: Result of parsing socket-head-cap-screw.kcl
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 2005,
-                        "name": "extrude",
+                        "name": {
+                          "end": 2005,
+                          "name": "extrude",
+                          "start": 1998,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1998,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 2052,
                       "start": 1998,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
+                        "abs_path": false,
                         "end": 2022,
-                        "name": "hexPatternSketch",
+                        "name": {
+                          "end": 2022,
+                          "name": "hexPatternSketch",
+                          "start": 2006,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2006,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     },
                     "start": 1985,
@@ -1424,11 +1739,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2097,
-                              "name": "screwHead",
+                              "name": {
+                                "end": 2097,
+                                "name": "screwHead",
+                                "start": 2088,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2088,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             {
                               "end": 2106,
@@ -1440,10 +1762,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2087,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 2087,
+                              "name": "startSketchOn",
+                              "start": 2074,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2074,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2107,
                           "start": 2074,
@@ -1530,11 +1859,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                               "arg": {
                                 "end": 2188,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 2184,
-                                  "name": "dia",
+                                  "name": {
+                                    "end": 2184,
+                                    "name": "dia",
+                                    "start": 2181,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 2181,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -1555,10 +1891,17 @@ description: Result of parsing socket-head-cap-screw.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2121,
-                            "name": "circle",
+                            "name": {
+                              "end": 2121,
+                              "name": "circle",
+                              "start": 2115,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2115,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2197,
                           "start": 2115,
@@ -1601,30 +1944,51 @@ description: Result of parsing socket-head-cap-screw.kcl
                             "type": "Identifier"
                           },
                           "arg": {
+                            "abs_path": false,
                             "end": 2252,
-                            "name": "length",
+                            "name": {
+                              "end": 2252,
+                              "name": "length",
+                              "start": 2246,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2246,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 2219,
-                        "name": "extrude",
+                        "name": {
+                          "end": 2219,
+                          "name": "extrude",
+                          "start": 2212,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2212,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 2253,
                       "start": 2212,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
+                        "abs_path": false,
                         "end": 2235,
-                        "name": "screwBodySketch",
+                        "name": {
+                          "end": 2235,
+                          "name": "screwBodySketch",
+                          "start": 2220,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2220,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     },
                     "start": 2200,
@@ -1638,11 +2002,18 @@ description: Result of parsing socket-head-cap-screw.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 2272,
-                    "name": "screwBody",
+                    "name": {
+                      "end": 2272,
+                      "name": "screwBody",
+                      "start": 2263,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2263,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 2272,
                   "start": 2256,
@@ -1778,32 +2149,60 @@ description: Result of parsing socket-head-cap-screw.kcl
               "type": "ArrayExpression"
             },
             {
+              "abs_path": false,
               "end": 2304,
-              "name": "screwLength",
+              "name": {
+                "end": 2304,
+                "name": "screwLength",
+                "start": 2293,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2293,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
+              "abs_path": false,
               "end": 2319,
-              "name": "screwDiameter",
+              "name": {
+                "end": 2319,
+                "name": "screwDiameter",
+                "start": 2306,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2306,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
+              "abs_path": false,
               "end": 2334,
-              "name": "screwDiameter",
+              "name": {
+                "end": 2334,
+                "name": "screwDiameter",
+                "start": 2321,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2321,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 2284,
-            "name": "capScrew",
+            "name": {
+              "end": 2284,
+              "name": "capScrew",
+              "start": 2276,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 2276,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 2335,
           "start": 2276,
@@ -1837,11 +2236,18 @@ description: Result of parsing socket-head-cap-screw.kcl
             "start": 381,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 403,
-              "name": "in",
+              "name": {
+                "end": 403,
+                "name": "in",
+                "start": 401,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 401,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

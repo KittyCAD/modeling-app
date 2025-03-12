@@ -43,19 +43,33 @@ description: Result of parsing cycloidal-gear.kcl
                                 "left": {
                                   "end": 498,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 488,
-                                    "name": "helixAngle",
+                                    "name": {
+                                      "end": 488,
+                                      "name": "helixAngle",
+                                      "start": 478,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 478,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "abs_path": false,
                                     "end": 498,
-                                    "name": "gHeight",
+                                    "name": {
+                                      "end": 498,
+                                      "name": "gHeight",
+                                      "start": 491,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 491,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 478,
                                   "type": "BinaryExpression",
@@ -63,11 +77,18 @@ description: Result of parsing cycloidal-gear.kcl
                                 },
                                 "operator": "/",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 511,
-                                  "name": "gearHeight",
+                                  "name": {
+                                    "end": 511,
+                                    "name": "gearHeight",
+                                    "start": 501,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 501,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 478,
                                 "type": "BinaryExpression",
@@ -106,19 +127,33 @@ description: Result of parsing cycloidal-gear.kcl
                                               "type": "Identifier"
                                             },
                                             "arg": {
+                                              "abs_path": false,
                                               "end": 578,
-                                              "name": "gHeight",
+                                              "name": {
+                                                "end": 578,
+                                                "name": "gHeight",
+                                                "start": 571,
+                                                "type": "Identifier"
+                                              },
+                                              "path": [],
                                               "start": 571,
-                                              "type": "Identifier",
-                                              "type": "Identifier"
+                                              "type": "Name",
+                                              "type": "Name"
                                             }
                                           }
                                         ],
                                         "callee": {
+                                          "abs_path": false,
                                           "end": 555,
-                                          "name": "offsetPlane",
+                                          "name": {
+                                            "end": 555,
+                                            "name": "offsetPlane",
+                                            "start": 544,
+                                            "type": "Identifier"
+                                          },
+                                          "path": [],
                                           "start": 544,
-                                          "type": "Identifier"
+                                          "type": "Name"
                                         },
                                         "end": 579,
                                         "start": 544,
@@ -135,10 +170,17 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 543,
-                                      "name": "startSketchOn",
+                                      "name": {
+                                        "end": 543,
+                                        "name": "startSketchOn",
+                                        "start": 530,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 530,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 580,
                                     "start": 530,
@@ -156,11 +198,18 @@ description: Result of parsing cycloidal-gear.kcl
                                               "left": {
                                                 "end": 634,
                                                 "left": {
+                                                  "abs_path": false,
                                                   "end": 627,
-                                                  "name": "gearPitch",
+                                                  "name": {
+                                                    "end": 627,
+                                                    "name": "gearPitch",
+                                                    "start": 618,
+                                                    "type": "Identifier"
+                                                  },
+                                                  "path": [],
                                                   "start": 618,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
+                                                  "type": "Name",
+                                                  "type": "Name"
                                                 },
                                                 "operator": "*",
                                                 "right": {
@@ -184,18 +233,32 @@ description: Result of parsing cycloidal-gear.kcl
                                                   {
                                                     "arguments": [
                                                       {
+                                                        "abs_path": false,
                                                         "end": 662,
-                                                        "name": "helixAngleP",
+                                                        "name": {
+                                                          "end": 662,
+                                                          "name": "helixAngleP",
+                                                          "start": 651,
+                                                          "type": "Identifier"
+                                                        },
+                                                        "path": [],
                                                         "start": 651,
-                                                        "type": "Identifier",
-                                                        "type": "Identifier"
+                                                        "type": "Name",
+                                                        "type": "Name"
                                                       }
                                                     ],
                                                     "callee": {
+                                                      "abs_path": false,
                                                       "end": 650,
-                                                      "name": "toRadians",
+                                                      "name": {
+                                                        "end": 650,
+                                                        "name": "toRadians",
+                                                        "start": 641,
+                                                        "type": "Identifier"
+                                                      },
+                                                      "path": [],
                                                       "start": 641,
-                                                      "type": "Identifier"
+                                                      "type": "Name"
                                                     },
                                                     "end": 663,
                                                     "start": 641,
@@ -204,10 +267,17 @@ description: Result of parsing cycloidal-gear.kcl
                                                   }
                                                 ],
                                                 "callee": {
+                                                  "abs_path": false,
                                                   "end": 640,
-                                                  "name": "cos",
+                                                  "name": {
+                                                    "end": 640,
+                                                    "name": "cos",
+                                                    "start": 637,
+                                                    "type": "Identifier"
+                                                  },
+                                                  "path": [],
                                                   "start": 637,
-                                                  "type": "Identifier"
+                                                  "type": "Name"
                                                 },
                                                 "end": 664,
                                                 "start": 637,
@@ -222,11 +292,18 @@ description: Result of parsing cycloidal-gear.kcl
                                             "right": {
                                               "end": 707,
                                               "left": {
+                                                "abs_path": false,
                                                 "end": 676,
-                                                "name": "gearPitch",
+                                                "name": {
+                                                  "end": 676,
+                                                  "name": "gearPitch",
+                                                  "start": 667,
+                                                  "type": "Identifier"
+                                                },
+                                                "path": [],
                                                 "start": 667,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
+                                                "type": "Name",
+                                                "type": "Name"
                                               },
                                               "operator": "*",
                                               "right": {
@@ -235,11 +312,18 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "arguments": [
                                                       {
                                                         "argument": {
+                                                          "abs_path": false,
                                                           "end": 705,
-                                                          "name": "helixAngleP",
+                                                          "name": {
+                                                            "end": 705,
+                                                            "name": "helixAngleP",
+                                                            "start": 694,
+                                                            "type": "Identifier"
+                                                          },
+                                                          "path": [],
                                                           "start": 694,
-                                                          "type": "Identifier",
-                                                          "type": "Identifier"
+                                                          "type": "Name",
+                                                          "type": "Name"
                                                         },
                                                         "end": 705,
                                                         "operator": "-",
@@ -249,10 +333,17 @@ description: Result of parsing cycloidal-gear.kcl
                                                       }
                                                     ],
                                                     "callee": {
+                                                      "abs_path": false,
                                                       "end": 692,
-                                                      "name": "toRadians",
+                                                      "name": {
+                                                        "end": 692,
+                                                        "name": "toRadians",
+                                                        "start": 683,
+                                                        "type": "Identifier"
+                                                      },
+                                                      "path": [],
                                                       "start": 683,
-                                                      "type": "Identifier"
+                                                      "type": "Name"
                                                     },
                                                     "end": 706,
                                                     "start": 683,
@@ -261,10 +352,17 @@ description: Result of parsing cycloidal-gear.kcl
                                                   }
                                                 ],
                                                 "callee": {
+                                                  "abs_path": false,
                                                   "end": 682,
-                                                  "name": "sin",
+                                                  "name": {
+                                                    "end": 682,
+                                                    "name": "sin",
+                                                    "start": 679,
+                                                    "type": "Identifier"
+                                                  },
+                                                  "path": [],
                                                   "start": 679,
-                                                  "type": "Identifier"
+                                                  "type": "Name"
                                                 },
                                                 "end": 707,
                                                 "start": 679,
@@ -286,11 +384,18 @@ description: Result of parsing cycloidal-gear.kcl
                                               "left": {
                                                 "end": 736,
                                                 "left": {
+                                                  "abs_path": false,
                                                   "end": 729,
-                                                  "name": "gearPitch",
+                                                  "name": {
+                                                    "end": 729,
+                                                    "name": "gearPitch",
+                                                    "start": 720,
+                                                    "type": "Identifier"
+                                                  },
+                                                  "path": [],
                                                   "start": 720,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
+                                                  "type": "Name",
+                                                  "type": "Name"
                                                 },
                                                 "operator": "*",
                                                 "right": {
@@ -314,18 +419,32 @@ description: Result of parsing cycloidal-gear.kcl
                                                   {
                                                     "arguments": [
                                                       {
+                                                        "abs_path": false,
                                                         "end": 764,
-                                                        "name": "helixAngleP",
+                                                        "name": {
+                                                          "end": 764,
+                                                          "name": "helixAngleP",
+                                                          "start": 753,
+                                                          "type": "Identifier"
+                                                        },
+                                                        "path": [],
                                                         "start": 753,
-                                                        "type": "Identifier",
-                                                        "type": "Identifier"
+                                                        "type": "Name",
+                                                        "type": "Name"
                                                       }
                                                     ],
                                                     "callee": {
+                                                      "abs_path": false,
                                                       "end": 752,
-                                                      "name": "toRadians",
+                                                      "name": {
+                                                        "end": 752,
+                                                        "name": "toRadians",
+                                                        "start": 743,
+                                                        "type": "Identifier"
+                                                      },
+                                                      "path": [],
                                                       "start": 743,
-                                                      "type": "Identifier"
+                                                      "type": "Name"
                                                     },
                                                     "end": 765,
                                                     "start": 743,
@@ -334,10 +453,17 @@ description: Result of parsing cycloidal-gear.kcl
                                                   }
                                                 ],
                                                 "callee": {
+                                                  "abs_path": false,
                                                   "end": 742,
-                                                  "name": "sin",
+                                                  "name": {
+                                                    "end": 742,
+                                                    "name": "sin",
+                                                    "start": 739,
+                                                    "type": "Identifier"
+                                                  },
+                                                  "path": [],
                                                   "start": 739,
-                                                  "type": "Identifier"
+                                                  "type": "Name"
                                                 },
                                                 "end": 766,
                                                 "start": 739,
@@ -352,11 +478,18 @@ description: Result of parsing cycloidal-gear.kcl
                                             "right": {
                                               "end": 809,
                                               "left": {
+                                                "abs_path": false,
                                                 "end": 778,
-                                                "name": "gearPitch",
+                                                "name": {
+                                                  "end": 778,
+                                                  "name": "gearPitch",
+                                                  "start": 769,
+                                                  "type": "Identifier"
+                                                },
+                                                "path": [],
                                                 "start": 769,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
+                                                "type": "Name",
+                                                "type": "Name"
                                               },
                                               "operator": "*",
                                               "right": {
@@ -365,11 +498,18 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "arguments": [
                                                       {
                                                         "argument": {
+                                                          "abs_path": false,
                                                           "end": 807,
-                                                          "name": "helixAngleP",
+                                                          "name": {
+                                                            "end": 807,
+                                                            "name": "helixAngleP",
+                                                            "start": 796,
+                                                            "type": "Identifier"
+                                                          },
+                                                          "path": [],
                                                           "start": 796,
-                                                          "type": "Identifier",
-                                                          "type": "Identifier"
+                                                          "type": "Name",
+                                                          "type": "Name"
                                                         },
                                                         "end": 807,
                                                         "operator": "-",
@@ -379,10 +519,17 @@ description: Result of parsing cycloidal-gear.kcl
                                                       }
                                                     ],
                                                     "callee": {
+                                                      "abs_path": false,
                                                       "end": 794,
-                                                      "name": "toRadians",
+                                                      "name": {
+                                                        "end": 794,
+                                                        "name": "toRadians",
+                                                        "start": 785,
+                                                        "type": "Identifier"
+                                                      },
+                                                      "path": [],
                                                       "start": 785,
-                                                      "type": "Identifier"
+                                                      "type": "Name"
                                                     },
                                                     "end": 808,
                                                     "start": 785,
@@ -391,10 +538,17 @@ description: Result of parsing cycloidal-gear.kcl
                                                   }
                                                 ],
                                                 "callee": {
+                                                  "abs_path": false,
                                                   "end": 784,
-                                                  "name": "cos",
+                                                  "name": {
+                                                    "end": 784,
+                                                    "name": "cos",
+                                                    "start": 781,
+                                                    "type": "Identifier"
+                                                  },
+                                                  "path": [],
                                                   "start": 781,
-                                                  "type": "Identifier"
+                                                  "type": "Name"
                                                 },
                                                 "end": 809,
                                                 "start": 781,
@@ -423,10 +577,17 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 604,
-                                      "name": "startProfileAt",
+                                      "name": {
+                                        "end": 604,
+                                        "name": "startProfileAt",
+                                        "start": 590,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 590,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 824,
                                     "start": 590,
@@ -463,11 +624,18 @@ description: Result of parsing cycloidal-gear.kcl
                                               },
                                               "operator": "+",
                                               "right": {
+                                                "abs_path": false,
                                                 "end": 880,
-                                                "name": "helixAngleP",
+                                                "name": {
+                                                  "end": 880,
+                                                  "name": "helixAngleP",
+                                                  "start": 869,
+                                                  "type": "Identifier"
+                                                },
+                                                "path": [],
                                                 "start": 869,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
+                                                "type": "Name",
+                                                "type": "Name"
                                               },
                                               "start": 864,
                                               "type": "BinaryExpression",
@@ -506,11 +674,18 @@ description: Result of parsing cycloidal-gear.kcl
                                               },
                                               "operator": "+",
                                               "right": {
+                                                "abs_path": false,
                                                 "end": 921,
-                                                "name": "helixAngleP",
+                                                "name": {
+                                                  "end": 921,
+                                                  "name": "helixAngleP",
+                                                  "start": 910,
+                                                  "type": "Identifier"
+                                                },
+                                                "path": [],
                                                 "start": 910,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
+                                                "type": "Name",
+                                                "type": "Name"
                                               },
                                               "start": 904,
                                               "type": "BinaryExpression",
@@ -528,11 +703,18 @@ description: Result of parsing cycloidal-gear.kcl
                                             "start": 934,
                                             "type": "ObjectProperty",
                                             "value": {
+                                              "abs_path": false,
                                               "end": 952,
-                                              "name": "gearPitch",
+                                              "name": {
+                                                "end": 952,
+                                                "name": "gearPitch",
+                                                "start": 943,
+                                                "type": "Identifier"
+                                              },
+                                              "path": [],
                                               "start": 943,
-                                              "type": "Identifier",
-                                              "type": "Identifier"
+                                              "type": "Name",
+                                              "type": "Name"
                                             }
                                           }
                                         ],
@@ -548,10 +730,17 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 837,
-                                      "name": "arc",
+                                      "name": {
+                                        "end": 837,
+                                        "name": "arc",
+                                        "start": 834,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 834,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 967,
                                     "start": 834,
@@ -576,11 +765,18 @@ description: Result of parsing cycloidal-gear.kcl
                                             "value": {
                                               "end": 1029,
                                               "left": {
+                                                "abs_path": false,
                                                 "end": 1022,
-                                                "name": "gearPitch",
+                                                "name": {
+                                                  "end": 1022,
+                                                  "name": "gearPitch",
+                                                  "start": 1013,
+                                                  "type": "Identifier"
+                                                },
+                                                "path": [],
                                                 "start": 1013,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
+                                                "type": "Name",
+                                                "type": "Name"
                                               },
                                               "operator": "*",
                                               "right": {
@@ -634,10 +830,17 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 990,
-                                      "name": "tangentialArc",
+                                      "name": {
+                                        "end": 990,
+                                        "name": "tangentialArc",
+                                        "start": 977,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 977,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 1068,
                                     "start": 977,
@@ -660,11 +863,18 @@ description: Result of parsing cycloidal-gear.kcl
                                             "start": 1094,
                                             "type": "ObjectProperty",
                                             "value": {
+                                              "abs_path": false,
                                               "end": 1112,
-                                              "name": "gearPitch",
+                                              "name": {
+                                                "end": 1112,
+                                                "name": "gearPitch",
+                                                "start": 1103,
+                                                "type": "Identifier"
+                                              },
+                                              "path": [],
                                               "start": 1103,
-                                              "type": "Identifier",
-                                              "type": "Identifier"
+                                              "type": "Name",
+                                              "type": "Name"
                                             }
                                           },
                                           {
@@ -709,10 +919,17 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 1091,
-                                      "name": "tangentialArc",
+                                      "name": {
+                                        "end": 1091,
+                                        "name": "tangentialArc",
+                                        "start": 1078,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1078,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 1133,
                                     "start": 1078,
@@ -737,11 +954,18 @@ description: Result of parsing cycloidal-gear.kcl
                                             "value": {
                                               "end": 1195,
                                               "left": {
+                                                "abs_path": false,
                                                 "end": 1188,
-                                                "name": "gearPitch",
+                                                "name": {
+                                                  "end": 1188,
+                                                  "name": "gearPitch",
+                                                  "start": 1179,
+                                                  "type": "Identifier"
+                                                },
+                                                "path": [],
                                                 "start": 1179,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
+                                                "type": "Name",
+                                                "type": "Name"
                                               },
                                               "operator": "*",
                                               "right": {
@@ -795,10 +1019,17 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 1156,
-                                      "name": "tangentialArc",
+                                      "name": {
+                                        "end": 1156,
+                                        "name": "tangentialArc",
+                                        "start": 1143,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1143,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 1234,
                                     "start": 1143,
@@ -821,11 +1052,18 @@ description: Result of parsing cycloidal-gear.kcl
                                             "start": 1260,
                                             "type": "ObjectProperty",
                                             "value": {
+                                              "abs_path": false,
                                               "end": 1278,
-                                              "name": "gearPitch",
+                                              "name": {
+                                                "end": 1278,
+                                                "name": "gearPitch",
+                                                "start": 1269,
+                                                "type": "Identifier"
+                                              },
+                                              "path": [],
                                               "start": 1269,
-                                              "type": "Identifier",
-                                              "type": "Identifier"
+                                              "type": "Name",
+                                              "type": "Name"
                                             }
                                           },
                                           {
@@ -870,10 +1108,17 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 1257,
-                                      "name": "tangentialArc",
+                                      "name": {
+                                        "end": 1257,
+                                        "name": "tangentialArc",
+                                        "start": 1244,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1244,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 1299,
                                     "start": 1244,
@@ -894,10 +1139,17 @@ description: Result of parsing cycloidal-gear.kcl
                                               }
                                             ],
                                             "callee": {
+                                              "abs_path": false,
                                               "end": 1339,
-                                              "name": "profileStartX",
+                                              "name": {
+                                                "end": 1339,
+                                                "name": "profileStartX",
+                                                "start": 1326,
+                                                "type": "Identifier"
+                                              },
+                                              "path": [],
                                               "start": 1326,
-                                              "type": "Identifier"
+                                              "type": "Name"
                                             },
                                             "end": 1342,
                                             "start": 1326,
@@ -914,10 +1166,17 @@ description: Result of parsing cycloidal-gear.kcl
                                               }
                                             ],
                                             "callee": {
+                                              "abs_path": false,
                                               "end": 1357,
-                                              "name": "profileStartY",
+                                              "name": {
+                                                "end": 1357,
+                                                "name": "profileStartY",
+                                                "start": 1344,
+                                                "type": "Identifier"
+                                              },
+                                              "path": [],
                                               "start": 1344,
-                                              "type": "Identifier"
+                                              "type": "Name"
                                             },
                                             "end": 1360,
                                             "start": 1344,
@@ -938,10 +1197,17 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 1324,
-                                      "name": "tangentialArcTo",
+                                      "name": {
+                                        "end": 1324,
+                                        "name": "tangentialArcTo",
+                                        "start": 1309,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1309,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 1365,
                                     "start": 1309,
@@ -958,10 +1224,17 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 1380,
-                                      "name": "close",
+                                      "name": {
+                                        "end": 1380,
+                                        "name": "close",
+                                        "start": 1375,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1375,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 1383,
                                     "start": 1375,
@@ -1022,11 +1295,18 @@ description: Result of parsing cycloidal-gear.kcl
                                             "arg": {
                                               "end": 1470,
                                               "left": {
+                                                "abs_path": false,
                                                 "end": 1466,
-                                                "name": "holeDiameter",
+                                                "name": {
+                                                  "end": 1466,
+                                                  "name": "holeDiameter",
+                                                  "start": 1454,
+                                                  "type": "Identifier"
+                                                },
+                                                "path": [],
                                                 "start": 1454,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
+                                                "type": "Name",
+                                                "type": "Name"
                                               },
                                               "operator": "/",
                                               "right": {
@@ -1047,10 +1327,17 @@ description: Result of parsing cycloidal-gear.kcl
                                           }
                                         ],
                                         "callee": {
+                                          "abs_path": false,
                                           "end": 1404,
-                                          "name": "circle",
+                                          "name": {
+                                            "end": 1404,
+                                            "name": "circle",
+                                            "start": 1398,
+                                            "type": "Identifier"
+                                          },
+                                          "path": [],
                                           "start": 1398,
-                                          "type": "Identifier"
+                                          "type": "Name"
                                         },
                                         "end": 1481,
                                         "start": 1398,
@@ -1066,10 +1353,17 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 1397,
-                                      "name": "hole",
+                                      "name": {
+                                        "end": 1397,
+                                        "name": "hole",
+                                        "start": 1393,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1393,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 1485,
                                     "start": 1393,
@@ -1093,11 +1387,18 @@ description: Result of parsing cycloidal-gear.kcl
                           },
                           {
                             "argument": {
+                              "abs_path": false,
                               "end": 1508,
-                              "name": "gearProfile",
+                              "name": {
+                                "end": 1508,
+                                "name": "gearProfile",
+                                "start": 1497,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1497,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 1508,
                             "start": 1490,
@@ -1161,10 +1462,17 @@ description: Result of parsing cycloidal-gear.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 1632,
-                                "name": "gearSketch",
+                                "name": {
+                                  "end": 1632,
+                                  "name": "gearSketch",
+                                  "start": 1622,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1622,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1635,
                               "start": 1622,
@@ -1176,11 +1484,18 @@ description: Result of parsing cycloidal-gear.kcl
                                 {
                                   "end": 1666,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 1662,
-                                    "name": "gearHeight",
+                                    "name": {
+                                      "end": 1662,
+                                      "name": "gearHeight",
+                                      "start": 1652,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1652,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "/",
                                   "right": {
@@ -1200,10 +1515,17 @@ description: Result of parsing cycloidal-gear.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 1651,
-                                "name": "gearSketch",
+                                "name": {
+                                  "end": 1651,
+                                  "name": "gearSketch",
+                                  "start": 1641,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1641,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1667,
                               "start": 1641,
@@ -1213,18 +1535,32 @@ description: Result of parsing cycloidal-gear.kcl
                             {
                               "arguments": [
                                 {
+                                  "abs_path": false,
                                   "end": 1694,
-                                  "name": "gearHeight",
+                                  "name": {
+                                    "end": 1694,
+                                    "name": "gearHeight",
+                                    "start": 1684,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1684,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 1683,
-                                "name": "gearSketch",
+                                "name": {
+                                  "end": 1683,
+                                  "name": "gearSketch",
+                                  "start": 1673,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1673,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1695,
                               "start": 1673,
@@ -1239,10 +1575,17 @@ description: Result of parsing cycloidal-gear.kcl
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 1615,
-                        "name": "loft",
+                        "name": {
+                          "end": 1615,
+                          "name": "loft",
+                          "start": 1611,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1611,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 1700,
                       "start": 1611,
@@ -1260,11 +1603,18 @@ description: Result of parsing cycloidal-gear.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 1719,
-                    "name": "gearLoft",
+                    "name": {
+                      "end": 1719,
+                      "name": "gearLoft",
+                      "start": 1711,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1711,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 1719,
                   "start": 1704,
@@ -1422,10 +1772,17 @@ description: Result of parsing cycloidal-gear.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1736,
-            "name": "cycloidalGear",
+            "name": {
+              "end": 1736,
+              "name": "cycloidalGear",
+              "start": 1723,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1723,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1757,
           "start": 1723,
@@ -1459,11 +1816,18 @@ description: Result of parsing cycloidal-gear.kcl
             "start": 180,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 202,
-              "name": "in",
+              "name": {
+                "end": 202,
+                "name": "in",
+                "start": 200,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 200,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

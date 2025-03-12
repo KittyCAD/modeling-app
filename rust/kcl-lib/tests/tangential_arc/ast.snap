@@ -19,18 +19,32 @@ description: Result of parsing tangential_arc.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 28,
-                    "name": "XY",
+                    "name": {
+                      "end": 28,
+                      "name": "XY",
+                      "start": 26,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 26,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 25,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 25,
+                    "name": "startSketchOn",
+                    "start": 12,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 29,
                 "start": 12,
@@ -77,10 +91,17 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 49,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 49,
+                    "name": "startProfileAt",
+                    "start": 35,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 35,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 60,
                 "start": 35,
@@ -130,10 +151,17 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 70,
-                  "name": "line",
+                  "name": {
+                    "end": 70,
+                    "name": "line",
+                    "start": 66,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 66,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 85,
                 "start": 66,
@@ -203,10 +231,17 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 104,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 104,
+                    "name": "tangentialArc",
+                    "start": 91,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 91,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 136,
                 "start": 91,
@@ -263,10 +298,17 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 146,
-                  "name": "line",
+                  "name": {
+                    "end": 146,
+                    "name": "line",
+                    "start": 142,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 142,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 162,
                 "start": 142,
@@ -298,10 +340,17 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 175,
-                  "name": "extrude",
+                  "name": {
+                    "end": 175,
+                    "name": "extrude",
+                    "start": 168,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 168,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 188,
                 "start": 168,

@@ -115,10 +115,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 254,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 254,
+                    "name": "startSketchOn",
+                    "start": 241,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 241,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 260,
                 "start": 241,
@@ -132,11 +139,18 @@ description: Result of parsing french-press.kcl
                       {
                         "end": 300,
                         "left": {
+                          "abs_path": false,
                           "end": 296,
-                          "name": "carafeDiameter",
+                          "name": {
+                            "end": 296,
+                            "name": "carafeDiameter",
+                            "start": 282,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 282,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -179,10 +193,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 280,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 280,
+                    "name": "startProfileAt",
+                    "start": 266,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 266,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 310,
                 "start": 266,
@@ -236,10 +257,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 326,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 326,
+                    "name": "angledLine",
+                    "start": 316,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 316,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 362,
                 "start": 316,
@@ -255,18 +283,32 @@ description: Result of parsing french-press.kcl
                         "left": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 415,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 415,
+                                "name": "rectangleSegmentA001",
+                                "start": 395,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 395,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 394,
-                            "name": "segAng",
+                            "name": {
+                              "end": 394,
+                              "name": "segAng",
+                              "start": 388,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 388,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 416,
                           "start": 388,
@@ -328,10 +370,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 378,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 378,
+                    "name": "angledLine",
+                    "start": 368,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 368,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 469,
                 "start": 368,
@@ -345,18 +394,32 @@ description: Result of parsing french-press.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 522,
-                            "name": "rectangleSegmentA001",
+                            "name": {
+                              "end": 522,
+                              "name": "rectangleSegmentA001",
+                              "start": 502,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 502,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 501,
-                          "name": "segAng",
+                          "name": {
+                            "end": 501,
+                            "name": "segAng",
+                            "start": 495,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 495,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 523,
                         "start": 495,
@@ -367,18 +430,32 @@ description: Result of parsing french-press.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 560,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 560,
+                                "name": "rectangleSegmentA001",
+                                "start": 540,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 540,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 539,
-                            "name": "segLen",
+                            "name": {
+                              "end": 539,
+                              "name": "segLen",
+                              "start": 533,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 533,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 561,
                           "start": 533,
@@ -412,10 +489,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 485,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 485,
+                    "name": "angledLine",
+                    "start": 475,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 475,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 595,
                 "start": 475,
@@ -444,10 +528,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 634,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 634,
+                              "name": "profileStartX",
+                              "start": 621,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 621,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 637,
                           "start": 621,
@@ -464,10 +555,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 652,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 652,
+                              "name": "profileStartY",
+                              "start": 639,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 639,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 655,
                           "start": 639,
@@ -483,10 +581,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 605,
-                  "name": "line",
+                  "name": {
+                    "end": 605,
+                    "name": "line",
+                    "start": 601,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 601,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 657,
                 "start": 601,
@@ -497,10 +602,17 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 668,
-                  "name": "close",
+                  "name": {
+                    "end": 668,
+                    "name": "close",
+                    "start": 663,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 663,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 670,
                 "start": 663,
@@ -566,10 +678,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 683,
-                  "name": "revolve",
+                  "name": {
+                    "end": 683,
+                    "name": "revolve",
+                    "start": 676,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 676,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 715,
                 "start": 676,
@@ -882,18 +1001,32 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 986,
-                    "name": "plane001",
+                    "name": {
+                      "end": 986,
+                      "name": "plane001",
+                      "start": 978,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 978,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 977,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 977,
+                    "name": "startSketchOn",
+                    "start": 964,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 964,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 987,
                 "start": 964,
@@ -907,11 +1040,18 @@ description: Result of parsing french-press.kcl
                       {
                         "end": 1027,
                         "left": {
+                          "abs_path": false,
                           "end": 1023,
-                          "name": "carafeDiameter",
+                          "name": {
+                            "end": 1023,
+                            "name": "carafeDiameter",
+                            "start": 1009,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1009,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -954,10 +1094,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1007,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1007,
+                    "name": "startProfileAt",
+                    "start": 993,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 993,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1037,
                 "start": 993,
@@ -988,10 +1135,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1048,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1048,
+                    "name": "xLine",
+                    "start": 1043,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1043,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1062,
                 "start": 1043,
@@ -1046,10 +1200,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1073,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1073,
+                    "name": "yLine",
+                    "start": 1068,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1068,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1102,
                 "start": 1068,
@@ -1141,10 +1302,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1111,
-                  "name": "arc",
+                  "name": {
+                    "end": 1111,
+                    "name": "arc",
+                    "start": 1108,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1108,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1192,
                 "start": 1108,
@@ -1227,10 +1395,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1208,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 1208,
+                    "name": "angledLine",
+                    "start": 1198,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1198,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1250,
                 "start": 1198,
@@ -1328,10 +1503,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1259,
-                  "name": "arc",
+                  "name": {
+                    "end": 1259,
+                    "name": "arc",
+                    "start": 1256,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1256,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1340,
                 "start": 1256,
@@ -1414,10 +1596,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1359,
-                  "name": "angledLineToY",
+                  "name": {
+                    "end": 1359,
+                    "name": "angledLineToY",
+                    "start": 1346,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1346,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1398,
                 "start": 1346,
@@ -1508,10 +1697,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1407,
-                  "name": "arc",
+                  "name": {
+                    "end": 1407,
+                    "name": "arc",
+                    "start": 1404,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1404,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1486,
                 "start": 1404,
@@ -1558,10 +1754,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1497,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1497,
+                    "name": "xLine",
+                    "start": 1492,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1492,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1532,
                 "start": 1492,
@@ -1593,10 +1796,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1543,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1543,
+                    "name": "yLine",
+                    "start": 1538,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1538,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1557,
                 "start": 1538,
@@ -1619,18 +1829,32 @@ description: Result of parsing french-press.kcl
                       "left": {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 1592,
-                            "name": "edgeLen",
+                            "name": {
+                              "end": 1592,
+                              "name": "edgeLen",
+                              "start": 1585,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1585,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 1584,
-                          "name": "segLen",
+                          "name": {
+                            "end": 1584,
+                            "name": "segLen",
+                            "start": 1578,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1578,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 1593,
                         "start": 1578,
@@ -1672,10 +1896,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1568,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1568,
+                    "name": "xLine",
+                    "start": 1563,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1563,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1616,
                 "start": 1563,
@@ -1767,10 +1998,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1625,
-                  "name": "arc",
+                  "name": {
+                    "end": 1625,
+                    "name": "arc",
+                    "start": 1622,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1622,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1704,
                 "start": 1622,
@@ -1820,18 +2058,32 @@ description: Result of parsing french-press.kcl
                             "argument": {
                               "arguments": [
                                 {
+                                  "abs_path": false,
                                   "end": 1772,
-                                  "name": "edge3",
+                                  "name": {
+                                    "end": 1772,
+                                    "name": "edge3",
+                                    "start": 1767,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1767,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 1766,
-                                "name": "segLen",
+                                "name": {
+                                  "end": 1766,
+                                  "name": "segLen",
+                                  "start": 1760,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1760,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1773,
                               "start": 1760,
@@ -1881,10 +2133,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1720,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 1720,
+                    "name": "angledLine",
+                    "start": 1710,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1710,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1800,
                 "start": 1710,
@@ -1982,10 +2241,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1809,
-                  "name": "arc",
+                  "name": {
+                    "end": 1809,
+                    "name": "arc",
+                    "start": 1806,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1806,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1890,
                 "start": 1806,
@@ -2042,18 +2308,32 @@ description: Result of parsing french-press.kcl
                             "argument": {
                               "arguments": [
                                 {
+                                  "abs_path": false,
                                   "end": 1958,
-                                  "name": "edge2",
+                                  "name": {
+                                    "end": 1958,
+                                    "name": "edge2",
+                                    "start": 1953,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1953,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 1952,
-                                "name": "segLen",
+                                "name": {
+                                  "end": 1952,
+                                  "name": "segLen",
+                                  "start": 1946,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1946,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1959,
                               "start": 1946,
@@ -2103,10 +2383,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1906,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 1906,
+                    "name": "angledLine",
+                    "start": 1896,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1896,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1986,
                 "start": 1896,
@@ -2197,10 +2484,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1995,
-                  "name": "arc",
+                  "name": {
+                    "end": 1995,
+                    "name": "arc",
+                    "start": 1992,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1992,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2076,
                 "start": 1992,
@@ -2229,10 +2523,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2115,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 2115,
+                              "name": "profileStartX",
+                              "start": 2102,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2102,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2118,
                           "start": 2102,
@@ -2249,10 +2550,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2133,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 2133,
+                              "name": "profileStartY",
+                              "start": 2120,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2120,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2136,
                           "start": 2120,
@@ -2268,10 +2576,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2086,
-                  "name": "line",
+                  "name": {
+                    "end": 2086,
+                    "name": "line",
+                    "start": 2082,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2082,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2138,
                 "start": 2082,
@@ -2282,10 +2597,17 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2149,
-                  "name": "close",
+                  "name": {
+                    "end": 2149,
+                    "name": "close",
+                    "start": 2144,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2144,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2151,
                 "start": 2144,
@@ -2316,10 +2638,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2164,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2164,
+                    "name": "extrude",
+                    "start": 2157,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2157,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2179,
                 "start": 2157,
@@ -2488,10 +2817,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2202,
-                  "name": "patternCircular3d",
+                  "name": {
+                    "end": 2202,
+                    "name": "patternCircular3d",
+                    "start": 2185,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2185,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2340,
                 "start": 2185,
@@ -2568,10 +2904,17 @@ description: Result of parsing french-press.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2394,
-                      "name": "offsetPlane",
+                      "name": {
+                        "end": 2394,
+                        "name": "offsetPlane",
+                        "start": 2383,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2383,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2412,
                     "start": 2383,
@@ -2588,10 +2931,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2382,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2382,
+                    "name": "startSketchOn",
+                    "start": 2369,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2369,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2413,
                 "start": 2369,
@@ -2652,11 +3002,18 @@ description: Result of parsing french-press.kcl
                       "left": {
                         "end": 2485,
                         "left": {
+                          "abs_path": false,
                           "end": 2481,
-                          "name": "carafeDiameter",
+                          "name": {
+                            "end": 2481,
+                            "name": "carafeDiameter",
+                            "start": 2467,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2467,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -2693,10 +3050,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2425,
-                  "name": "circle",
+                  "name": {
+                    "end": 2425,
+                    "name": "circle",
+                    "start": 2419,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2419,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2499,
                 "start": 2419,
@@ -2752,21 +3116,35 @@ description: Result of parsing french-press.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 2521,
-              "name": "extrude",
+              "name": {
+                "end": 2521,
+                "name": "extrude",
+                "start": 2514,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2514,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 2548,
             "start": 2514,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 2531,
-              "name": "sketch003",
+              "name": {
+                "end": 2531,
+                "name": "sketch003",
+                "start": 2522,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2522,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 2501,
@@ -2792,11 +3170,18 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2586,
-                    "name": "extrude001",
+                    "name": {
+                      "end": 2586,
+                      "name": "extrude001",
+                      "start": 2576,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2576,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 2593,
@@ -2808,10 +3193,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2575,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2575,
+                    "name": "startSketchOn",
+                    "start": 2562,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2562,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2594,
                 "start": 2562,
@@ -2858,10 +3250,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2614,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2614,
+                    "name": "startProfileAt",
+                    "start": 2600,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2600,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2630,
                 "start": 2600,
@@ -2892,10 +3291,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2641,
-                  "name": "yLine",
+                  "name": {
+                    "end": 2641,
+                    "name": "yLine",
+                    "start": 2636,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2636,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2655,
                 "start": 2636,
@@ -2994,10 +3400,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2664,
-                  "name": "arc",
+                  "name": {
+                    "end": 2664,
+                    "name": "arc",
+                    "start": 2661,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2661,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2744,
                 "start": 2661,
@@ -3026,10 +3439,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2783,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 2783,
+                              "name": "profileStartX",
+                              "start": 2770,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2770,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2786,
                           "start": 2770,
@@ -3046,10 +3466,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2801,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 2801,
+                              "name": "profileStartY",
+                              "start": 2788,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2788,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2804,
                           "start": 2788,
@@ -3065,10 +3492,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2754,
-                  "name": "line",
+                  "name": {
+                    "end": 2754,
+                    "name": "line",
+                    "start": 2750,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2750,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2806,
                 "start": 2750,
@@ -3079,10 +3513,17 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2817,
-                  "name": "close",
+                  "name": {
+                    "end": 2817,
+                    "name": "close",
+                    "start": 2812,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2812,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2819,
                 "start": 2812,
@@ -3189,10 +3630,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2842,
-                  "name": "patternCircular2d",
+                  "name": {
+                    "end": 2842,
+                    "name": "patternCircular2d",
+                    "start": 2825,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2825,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2952,
                 "start": 2825,
@@ -3255,21 +3703,35 @@ description: Result of parsing french-press.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 2974,
-              "name": "extrude",
+              "name": {
+                "end": 2974,
+                "name": "extrude",
+                "start": 2967,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2967,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 3002,
             "start": 2967,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 2984,
-              "name": "sketch004",
+              "name": {
+                "end": 2984,
+                "name": "sketch004",
+                "start": 2975,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2975,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 2954,
@@ -3304,10 +3766,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3046,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 3046,
+                    "name": "startSketchOn",
+                    "start": 3033,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3033,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3052,
                 "start": 3033,
@@ -3354,10 +3823,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3072,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 3072,
+                    "name": "startProfileAt",
+                    "start": 3058,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3058,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3089,
                 "start": 3058,
@@ -3379,11 +3855,18 @@ description: Result of parsing french-press.kcl
                       "left": {
                         "end": 3133,
                         "left": {
+                          "abs_path": false,
                           "end": 3129,
-                          "name": "carafeDiameter",
+                          "name": {
+                            "end": 3129,
+                            "name": "carafeDiameter",
+                            "start": 3115,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3115,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -3420,10 +3903,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3100,
-                  "name": "xLine",
+                  "name": {
+                    "end": 3100,
+                    "name": "xLine",
+                    "start": 3095,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3095,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3140,
                 "start": 3095,
@@ -3473,11 +3963,18 @@ description: Result of parsing french-press.kcl
                           "left": {
                             "end": 3211,
                             "left": {
+                              "abs_path": false,
                               "end": 3207,
-                              "name": "carafeDiameter",
+                              "name": {
+                                "end": 3207,
+                                "name": "carafeDiameter",
+                                "start": 3193,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3193,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -3532,10 +4029,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3159,
-                  "name": "angledLineToX",
+                  "name": {
+                    "end": 3159,
+                    "name": "angledLineToX",
+                    "start": 3146,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3146,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3236,
                 "start": 3146,
@@ -3611,10 +4115,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3252,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 3252,
+                    "name": "angledLine",
+                    "start": 3242,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3242,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3288,
                 "start": 3242,
@@ -3662,18 +4173,32 @@ description: Result of parsing french-press.kcl
                           "argument": {
                             "arguments": [
                               {
+                                "abs_path": false,
                                 "end": 3340,
-                                "name": "seg1",
+                                "name": {
+                                  "end": 3340,
+                                  "name": "seg1",
+                                  "start": 3336,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3336,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             ],
                             "callee": {
+                              "abs_path": false,
                               "end": 3335,
-                              "name": "segLen",
+                              "name": {
+                                "end": 3335,
+                                "name": "segLen",
+                                "start": 3329,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3329,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
                             "end": 3341,
                             "start": 3329,
@@ -3700,10 +4225,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3304,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 3304,
+                    "name": "angledLine",
+                    "start": 3294,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3294,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3347,
                 "start": 3294,
@@ -3734,10 +4266,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3358,
-                  "name": "xLine",
+                  "name": {
+                    "end": 3358,
+                    "name": "xLine",
+                    "start": 3353,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3353,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3378,
                 "start": 3353,
@@ -3767,10 +4306,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3417,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 3417,
+                              "name": "profileStartX",
+                              "start": 3404,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3404,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3420,
                           "start": 3404,
@@ -3787,10 +4333,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3435,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 3435,
+                              "name": "profileStartY",
+                              "start": 3422,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3422,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3438,
                           "start": 3422,
@@ -3806,10 +4359,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3388,
-                  "name": "line",
+                  "name": {
+                    "end": 3388,
+                    "name": "line",
+                    "start": 3384,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3384,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3440,
                 "start": 3384,
@@ -3820,10 +4380,17 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 3451,
-                  "name": "close",
+                  "name": {
+                    "end": 3451,
+                    "name": "close",
+                    "start": 3446,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3446,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3453,
                 "start": 3446,
@@ -3867,10 +4434,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3466,
-                  "name": "revolve",
+                  "name": {
+                    "end": 3466,
+                    "name": "revolve",
+                    "start": 3459,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3459,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3485,
                 "start": 3459,
@@ -3932,10 +4506,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3532,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 3532,
+                    "name": "startSketchOn",
+                    "start": 3519,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3519,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3538,
                 "start": 3519,
@@ -3982,10 +4563,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3558,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 3558,
+                    "name": "startProfileAt",
+                    "start": 3544,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3544,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3571,
                 "start": 3544,
@@ -4035,10 +4623,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3581,
-                  "name": "line",
+                  "name": {
+                    "end": 3581,
+                    "name": "line",
+                    "start": 3577,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3577,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3597,
                 "start": 3577,
@@ -4108,10 +4703,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3616,
-                  "name": "angledLineToX",
+                  "name": {
+                    "end": 3616,
+                    "name": "angledLineToX",
+                    "start": 3603,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3603,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3646,
                 "start": 3603,
@@ -4142,10 +4744,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3657,
-                  "name": "yLine",
+                  "name": {
+                    "end": 3657,
+                    "name": "yLine",
+                    "start": 3652,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3652,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3670,
                 "start": 3652,
@@ -4196,10 +4805,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3680,
-                  "name": "line",
+                  "name": {
+                    "end": 3680,
+                    "name": "line",
+                    "start": 3676,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3676,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3696,
                 "start": 3676,
@@ -4238,10 +4854,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3707,
-                  "name": "yLine",
+                  "name": {
+                    "end": 3707,
+                    "name": "yLine",
+                    "start": 3702,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3702,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3722,
                 "start": 3702,
@@ -4318,10 +4941,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3741,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 3741,
+                    "name": "tangentialArc",
+                    "start": 3728,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3728,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3776,
                 "start": 3728,
@@ -4350,10 +4980,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3815,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 3815,
+                              "name": "profileStartX",
+                              "start": 3802,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3802,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3818,
                           "start": 3802,
@@ -4370,10 +5007,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3833,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 3833,
+                              "name": "profileStartY",
+                              "start": 3820,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3820,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3836,
                           "start": 3820,
@@ -4389,10 +5033,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3786,
-                  "name": "line",
+                  "name": {
+                    "end": 3786,
+                    "name": "line",
+                    "start": 3782,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3782,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3838,
                 "start": 3782,
@@ -4403,10 +5054,17 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 3849,
-                  "name": "close",
+                  "name": {
+                    "end": 3849,
+                    "name": "close",
+                    "start": 3844,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3844,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3851,
                 "start": 3844,
@@ -4450,10 +5108,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3864,
-                  "name": "revolve",
+                  "name": {
+                    "end": 3864,
+                    "name": "revolve",
+                    "start": 3857,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3857,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3883,
                 "start": 3857,
@@ -4529,10 +5194,17 @@ description: Result of parsing french-press.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3938,
-                      "name": "offsetPlane",
+                      "name": {
+                        "end": 3938,
+                        "name": "offsetPlane",
+                        "start": 3927,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3927,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3959,
                     "start": 3927,
@@ -4549,10 +5221,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3926,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 3926,
+                    "name": "startSketchOn",
+                    "start": 3913,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3913,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3960,
                 "start": 3913,
@@ -4613,11 +5292,18 @@ description: Result of parsing french-press.kcl
                       "left": {
                         "end": 4032,
                         "left": {
+                          "abs_path": false,
                           "end": 4028,
-                          "name": "carafeDiameter",
+                          "name": {
+                            "end": 4028,
+                            "name": "carafeDiameter",
+                            "start": 4014,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4014,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -4654,10 +5340,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3972,
-                  "name": "circle",
+                  "name": {
+                    "end": 3972,
+                    "name": "circle",
+                    "start": 3966,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3966,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4046,
                 "start": 3966,
@@ -4730,10 +5423,17 @@ description: Result of parsing french-press.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 4063,
-                      "name": "circle",
+                      "name": {
+                        "end": 4063,
+                        "name": "circle",
+                        "start": 4057,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 4057,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 4094,
                     "start": 4057,
@@ -4749,10 +5449,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4056,
-                  "name": "hole",
+                  "name": {
+                    "end": 4056,
+                    "name": "hole",
+                    "start": 4052,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4052,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4098,
                 "start": 4052,
@@ -4807,21 +5514,35 @@ description: Result of parsing french-press.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 4120,
-              "name": "extrude",
+              "name": {
+                "end": 4120,
+                "name": "extrude",
+                "start": 4113,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 4113,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 4147,
             "start": 4113,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 4130,
-              "name": "sketch007",
+              "name": {
+                "end": 4130,
+                "name": "sketch007",
+                "start": 4121,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 4121,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 4100,
@@ -4847,11 +5568,18 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 4222,
-                    "name": "extrude003",
+                    "name": {
+                      "end": 4222,
+                      "name": "extrude003",
+                      "start": 4212,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 4212,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 4229,
@@ -4863,10 +5591,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4211,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 4211,
+                    "name": "startSketchOn",
+                    "start": 4198,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4198,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4230,
                 "start": 4198,
@@ -4936,10 +5671,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4242,
-                  "name": "circle",
+                  "name": {
+                    "end": 4242,
+                    "name": "circle",
+                    "start": 4236,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4236,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4274,
                 "start": 4236,
@@ -5047,10 +5789,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4297,
-                  "name": "patternCircular2d",
+                  "name": {
+                    "end": 4297,
+                    "name": "patternCircular2d",
+                    "start": 4280,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4280,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4407,
                 "start": 4280,
@@ -5113,21 +5862,35 @@ description: Result of parsing french-press.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 4429,
-              "name": "extrude",
+              "name": {
+                "end": 4429,
+                "name": "extrude",
+                "start": 4422,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 4422,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 4457,
             "start": 4422,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 4439,
-              "name": "sketch008",
+              "name": {
+                "end": 4439,
+                "name": "sketch008",
+                "start": 4430,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 4430,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 4409,
@@ -5153,11 +5916,18 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 4532,
-                    "name": "extrude003",
+                    "name": {
+                      "end": 4532,
+                      "name": "extrude003",
+                      "start": 4522,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 4522,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 4539,
@@ -5169,10 +5939,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4521,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 4521,
+                    "name": "startSketchOn",
+                    "start": 4508,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4508,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4540,
                 "start": 4508,
@@ -5242,10 +6019,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4552,
-                  "name": "circle",
+                  "name": {
+                    "end": 4552,
+                    "name": "circle",
+                    "start": 4546,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4546,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4584,
                 "start": 4546,
@@ -5353,10 +6137,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4607,
-                  "name": "patternCircular2d",
+                  "name": {
+                    "end": 4607,
+                    "name": "patternCircular2d",
+                    "start": 4590,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4590,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4717,
                 "start": 4590,
@@ -5419,21 +6210,35 @@ description: Result of parsing french-press.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 4739,
-              "name": "extrude",
+              "name": {
+                "end": 4739,
+                "name": "extrude",
+                "start": 4732,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 4732,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 4767,
             "start": 4732,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 4749,
-              "name": "sketch009",
+              "name": {
+                "end": 4749,
+                "name": "sketch009",
+                "start": 4740,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 4740,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 4719,
@@ -5468,10 +6273,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4825,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 4825,
+                    "name": "startSketchOn",
+                    "start": 4812,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4812,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4831,
                 "start": 4812,
@@ -5530,11 +6342,18 @@ description: Result of parsing french-press.kcl
                     "arg": {
                       "end": 4903,
                       "left": {
+                        "abs_path": false,
                         "end": 4899,
-                        "name": "carafeDiameter",
+                        "name": {
+                          "end": 4899,
+                          "name": "carafeDiameter",
+                          "start": 4885,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4885,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -5555,10 +6374,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4843,
-                  "name": "circle",
+                  "name": {
+                    "end": 4843,
+                    "name": "circle",
+                    "start": 4837,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4837,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4910,
                 "start": 4837,
@@ -5620,30 +6446,51 @@ description: Result of parsing french-press.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 5046,
-                      "name": "carafeHeight",
+                      "name": {
+                        "end": 5046,
+                        "name": "carafeHeight",
+                        "start": 5034,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 5034,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5013,
-                  "name": "extrude",
+                  "name": {
+                    "end": 5013,
+                    "name": "extrude",
+                    "start": 5006,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5006,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5047,
                 "start": 5006,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 5023,
-                  "name": "sketch010",
+                  "name": {
+                    "end": 5023,
+                    "name": "sketch010",
+                    "start": 5014,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5014,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -5695,10 +6542,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5058,
-                  "name": "shell",
+                  "name": {
+                    "end": 5058,
+                    "name": "shell",
+                    "start": 5053,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5053,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5092,
                 "start": 5053,
@@ -5761,10 +6615,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5147,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 5147,
+                    "name": "startSketchOn",
+                    "start": 5134,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5134,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5153,
                 "start": 5134,
@@ -5789,11 +6650,18 @@ description: Result of parsing french-press.kcl
                       {
                         "end": 5198,
                         "left": {
+                          "abs_path": false,
                           "end": 5192,
-                          "name": "carafeHeight",
+                          "name": {
+                            "end": 5192,
+                            "name": "carafeHeight",
+                            "start": 5180,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 5180,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
@@ -5825,10 +6693,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5173,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 5173,
+                    "name": "startProfileAt",
+                    "start": 5159,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5159,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5203,
                 "start": 5159,
@@ -5850,11 +6725,18 @@ description: Result of parsing french-press.kcl
                       "left": {
                         "end": 5242,
                         "left": {
+                          "abs_path": false,
                           "end": 5238,
-                          "name": "carafeDiameter",
+                          "name": {
+                            "end": 5238,
+                            "name": "carafeDiameter",
+                            "start": 5224,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 5224,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -5891,10 +6773,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5214,
-                  "name": "xLine",
+                  "name": {
+                    "end": 5214,
+                    "name": "xLine",
+                    "start": 5209,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5209,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5249,
                 "start": 5209,
@@ -5926,10 +6815,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5260,
-                  "name": "yLine",
+                  "name": {
+                    "end": 5260,
+                    "name": "yLine",
+                    "start": 5255,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5255,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5274,
                 "start": 5255,
@@ -5961,10 +6857,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5285,
-                  "name": "xLine",
+                  "name": {
+                    "end": 5285,
+                    "name": "xLine",
+                    "start": 5280,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5280,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5299,
                 "start": 5280,
@@ -5996,10 +6899,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5310,
-                  "name": "yLine",
+                  "name": {
+                    "end": 5310,
+                    "name": "yLine",
+                    "start": 5305,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5305,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5324,
                 "start": 5305,
@@ -6057,10 +6967,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5334,
-                  "name": "line",
+                  "name": {
+                    "end": 5334,
+                    "name": "line",
+                    "start": 5330,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5330,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5355,
                 "start": 5330,
@@ -6091,11 +7008,18 @@ description: Result of parsing french-press.kcl
                                 "end": 5407,
                                 "left": {
                                   "argument": {
+                                    "abs_path": false,
                                     "end": 5403,
-                                    "name": "carafeDiameter",
+                                    "name": {
+                                      "end": 5403,
+                                      "name": "carafeDiameter",
+                                      "start": 5389,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 5389,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "end": 5403,
                                   "operator": "-",
@@ -6216,11 +7140,18 @@ description: Result of parsing french-press.kcl
                             {
                               "end": 5486,
                               "left": {
+                                "abs_path": false,
                                 "end": 5481,
-                                "name": "carafeDiameter",
+                                "name": {
+                                  "end": 5481,
+                                  "name": "carafeDiameter",
+                                  "start": 5467,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 5467,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -6269,10 +7200,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5372,
-                  "name": "bezierCurve",
+                  "name": {
+                    "end": 5372,
+                    "name": "bezierCurve",
+                    "start": 5361,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5361,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5501,
                 "start": 5361,
@@ -6301,10 +7239,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 5540,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 5540,
+                              "name": "profileStartX",
+                              "start": 5527,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5527,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 5543,
                           "start": 5527,
@@ -6321,10 +7266,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 5558,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 5558,
+                              "name": "profileStartY",
+                              "start": 5545,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5545,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 5561,
                           "start": 5545,
@@ -6340,10 +7292,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5511,
-                  "name": "line",
+                  "name": {
+                    "end": 5511,
+                    "name": "line",
+                    "start": 5507,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5507,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5563,
                 "start": 5507,
@@ -6354,10 +7313,17 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 5574,
-                  "name": "close",
+                  "name": {
+                    "end": 5574,
+                    "name": "close",
+                    "start": 5569,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5569,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5576,
                 "start": 5569,
@@ -6401,10 +7367,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5589,
-                  "name": "revolve",
+                  "name": {
+                    "end": 5589,
+                    "name": "revolve",
+                    "start": 5582,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5582,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5608,
                 "start": 5582,
@@ -6469,11 +7442,18 @@ description: Result of parsing french-press.kcl
                         "arg": {
                           "end": 5709,
                           "left": {
+                            "abs_path": false,
                             "end": 5705,
-                            "name": "handleThickness",
+                            "name": {
+                              "end": 5705,
+                              "name": "handleThickness",
+                              "start": 5690,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5690,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -6494,10 +7474,17 @@ description: Result of parsing french-press.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 5674,
-                      "name": "offsetPlane",
+                      "name": {
+                        "end": 5674,
+                        "name": "offsetPlane",
+                        "start": 5663,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 5663,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 5710,
                     "start": 5663,
@@ -6514,10 +7501,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5662,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 5662,
+                    "name": "startSketchOn",
+                    "start": 5649,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5649,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5711,
                 "start": 5649,
@@ -6564,10 +7558,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5731,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 5731,
+                    "name": "startProfileAt",
+                    "start": 5717,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5717,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5746,
                 "start": 5717,
@@ -6617,10 +7618,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5756,
-                  "name": "line",
+                  "name": {
+                    "end": 5756,
+                    "name": "line",
+                    "start": 5752,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5752,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5773,
                 "start": 5752,
@@ -6668,10 +7676,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5794,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 5794,
+                    "name": "tangentialArcTo",
+                    "start": 5779,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5779,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5810,
                 "start": 5779,
@@ -6718,10 +7733,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5831,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 5831,
+                    "name": "tangentialArcTo",
+                    "start": 5816,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5816,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5847,
                 "start": 5816,
@@ -6768,10 +7790,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5868,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 5868,
+                    "name": "tangentialArcTo",
+                    "start": 5853,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5853,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5885,
                 "start": 5853,
@@ -6828,10 +7857,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5895,
-                  "name": "line",
+                  "name": {
+                    "end": 5895,
+                    "name": "line",
+                    "start": 5891,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5891,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5913,
                 "start": 5891,
@@ -6882,10 +7918,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5923,
-                  "name": "line",
+                  "name": {
+                    "end": 5923,
+                    "name": "line",
+                    "start": 5919,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5919,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5940,
                 "start": 5919,
@@ -6943,10 +7986,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5950,
-                  "name": "line",
+                  "name": {
+                    "end": 5950,
+                    "name": "line",
+                    "start": 5946,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5946,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5971,
                 "start": 5946,
@@ -6994,10 +8044,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5992,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 5992,
+                    "name": "tangentialArcTo",
+                    "start": 5977,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5977,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6008,
                 "start": 5977,
@@ -7044,10 +8101,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6029,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 6029,
+                    "name": "tangentialArcTo",
+                    "start": 6014,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6014,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6046,
                 "start": 6014,
@@ -7094,10 +8158,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6067,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 6067,
+                    "name": "tangentialArcTo",
+                    "start": 6052,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6052,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6084,
                 "start": 6052,
@@ -7154,10 +8225,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6094,
-                  "name": "line",
+                  "name": {
+                    "end": 6094,
+                    "name": "line",
+                    "start": 6090,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6090,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6111,
                 "start": 6090,
@@ -7187,10 +8265,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 6150,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 6150,
+                              "name": "profileStartX",
+                              "start": 6137,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 6137,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 6153,
                           "start": 6137,
@@ -7207,10 +8292,17 @@ description: Result of parsing french-press.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 6168,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 6168,
+                              "name": "profileStartY",
+                              "start": 6155,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 6155,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 6171,
                           "start": 6155,
@@ -7226,10 +8318,17 @@ description: Result of parsing french-press.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6121,
-                  "name": "line",
+                  "name": {
+                    "end": 6121,
+                    "name": "line",
+                    "start": 6117,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6117,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6173,
                 "start": 6117,
@@ -7240,10 +8339,17 @@ description: Result of parsing french-press.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 6184,
-                  "name": "close",
+                  "name": {
+                    "end": 6184,
+                    "name": "close",
+                    "start": 6179,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6179,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6186,
                 "start": 6179,
@@ -7286,11 +8392,18 @@ description: Result of parsing french-press.kcl
                 },
                 "arg": {
                   "argument": {
+                    "abs_path": false,
                     "end": 6244,
-                    "name": "handleThickness",
+                    "name": {
+                      "end": 6244,
+                      "name": "handleThickness",
+                      "start": 6229,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 6229,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 6244,
                   "operator": "-",
@@ -7301,21 +8414,35 @@ description: Result of parsing french-press.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 6207,
-              "name": "extrude",
+              "name": {
+                "end": 6207,
+                "name": "extrude",
+                "start": 6200,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 6200,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 6245,
             "start": 6200,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 6217,
-              "name": "sketch012",
+              "name": {
+                "end": 6217,
+                "name": "sketch012",
+                "start": 6208,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 6208,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 6187,
@@ -7350,11 +8477,18 @@ description: Result of parsing french-press.kcl
             "start": 81,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 103,
-              "name": "in",
+              "name": {
+                "end": 103,
+                "name": "in",
+                "start": 101,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 101,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

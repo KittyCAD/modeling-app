@@ -159,11 +159,18 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 "start": 97,
                 "type": "ObjectProperty",
                 "value": {
+                  "abs_path": false,
                   "end": 112,
-                  "name": "radius",
+                  "name": {
+                    "end": 112,
+                    "name": "radius",
+                    "start": 106,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 106,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
@@ -232,10 +239,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 151,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 151,
+                    "name": "startSketchOn",
+                    "start": 138,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 138,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 157,
                 "start": 138,
@@ -282,10 +296,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 177,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 177,
+                    "name": "startProfileAt",
+                    "start": 163,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 163,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 188,
                 "start": 163,
@@ -330,11 +351,18 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         "start": 219,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 239,
-                          "name": "triangleLen",
+                          "name": {
+                            "end": 239,
+                            "name": "triangleLen",
+                            "start": 228,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 228,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -357,10 +385,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 204,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 204,
+                    "name": "angledLine",
+                    "start": 194,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 194,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 249,
                 "start": 194,
@@ -405,11 +440,18 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         "start": 281,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 301,
-                          "name": "triangleLen",
+                          "name": {
+                            "end": 301,
+                            "name": "triangleLen",
+                            "start": 290,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 290,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -432,10 +474,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 265,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 265,
+                    "name": "angledLine",
+                    "start": 255,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 255,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 311,
                 "start": 255,
@@ -480,11 +529,18 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         "start": 343,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 363,
-                          "name": "triangleLen",
+                          "name": {
+                            "end": 363,
+                            "name": "triangleLen",
+                            "start": 352,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 352,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -507,10 +563,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 327,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 327,
+                    "name": "angledLine",
+                    "start": 317,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 317,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 373,
                 "start": 317,
@@ -528,19 +591,33 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 410,
-                      "name": "triangleHeight",
+                      "name": {
+                        "end": 410,
+                        "name": "triangleHeight",
+                        "start": 396,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 396,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 386,
-                  "name": "extrude",
+                  "name": {
+                    "end": 386,
+                    "name": "extrude",
+                    "start": 379,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 379,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 411,
                 "start": 379,
@@ -581,25 +658,46 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 457,
-                            "name": "p",
+                            "name": {
+                              "end": 457,
+                              "name": "p",
+                              "start": 456,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 456,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           {
+                            "abs_path": false,
                             "end": 463,
-                            "name": "face",
+                            "name": {
+                              "end": 463,
+                              "name": "face",
+                              "start": 459,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 459,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 455,
-                          "name": "startSketchOn",
+                          "name": {
+                            "end": 455,
+                            "name": "startSketchOn",
+                            "start": 442,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 442,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 464,
                         "start": 442,
@@ -613,19 +711,33 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                               {
                                 "end": 498,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 489,
-                                  "name": "x",
+                                  "name": {
+                                    "end": 489,
+                                    "name": "x",
+                                    "start": 488,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 488,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "abs_path": false,
                                   "end": 498,
-                                  "name": "radius",
+                                  "name": {
+                                    "end": 498,
+                                    "name": "radius",
+                                    "start": 492,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 492,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 488,
                                 "type": "BinaryExpression",
@@ -634,11 +746,18 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                               {
                                 "end": 518,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 514,
-                                  "name": "triangleHeight",
+                                  "name": {
+                                    "end": 514,
+                                    "name": "triangleHeight",
+                                    "start": 500,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 500,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -670,10 +789,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 486,
-                          "name": "startProfileAt",
+                          "name": {
+                            "end": 486,
+                            "name": "startProfileAt",
+                            "start": 472,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 472,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 523,
                         "start": 472,
@@ -683,11 +809,18 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 539,
-                            "name": "circ",
+                            "name": {
+                              "end": 539,
+                              "name": "circ",
+                              "start": 535,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 535,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           {
                             "end": 542,
@@ -704,10 +837,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 534,
-                          "name": "arc",
+                          "name": {
+                            "end": 534,
+                            "name": "arc",
+                            "start": 531,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 531,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 553,
                         "start": 531,
@@ -724,10 +864,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 566,
-                          "name": "close",
+                          "name": {
+                            "end": 566,
+                            "name": "close",
+                            "start": 561,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 561,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 569,
                         "start": 561,
@@ -813,18 +960,32 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 "type": "UnaryExpression"
               },
               {
+                "abs_path": false,
                 "end": 591,
-                "name": "c",
+                "name": {
+                  "end": 591,
+                  "name": "c",
+                  "start": 590,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 590,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 583,
-              "name": "circl",
+              "name": {
+                "end": 583,
+                "name": "circl",
+                "start": 578,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 578,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 592,
             "start": 578,
@@ -852,11 +1013,18 @@ description: Result of parsing pentagon_fillet_sugar.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "end": 606,
-                "name": "c1",
+                "name": {
+                  "end": 606,
+                  "name": "c1",
+                  "start": 604,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 604,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
@@ -869,19 +1037,33 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 639,
-                      "name": "plumbusLen",
+                      "name": {
+                        "end": 639,
+                        "name": "plumbusLen",
+                        "start": 629,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 629,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 619,
-                  "name": "extrude",
+                  "name": {
+                    "end": 619,
+                    "name": "extrude",
+                    "start": 612,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 612,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 640,
                 "start": 612,
@@ -995,10 +1177,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 739,
-                            "name": "getOppositeEdge",
+                            "name": {
+                              "end": 739,
+                              "name": "getOppositeEdge",
+                              "start": 724,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 724,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 756,
                           "start": 724,
@@ -1014,10 +1203,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 652,
-                  "name": "fillet",
+                  "name": {
+                    "end": 652,
+                    "name": "fillet",
+                    "start": 646,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 646,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 773,
                 "start": 646,
@@ -1063,18 +1259,32 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 }
               },
               {
+                "abs_path": false,
                 "end": 791,
-                "name": "a",
+                "name": {
+                  "end": 791,
+                  "name": "a",
+                  "start": 790,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 790,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 784,
-              "name": "circl",
+              "name": {
+                "end": 784,
+                "name": "circl",
+                "start": 779,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 779,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 792,
             "start": 779,
@@ -1102,11 +1312,18 @@ description: Result of parsing pentagon_fillet_sugar.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "end": 806,
-                "name": "c2",
+                "name": {
+                  "end": 806,
+                  "name": "c2",
+                  "start": 804,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 804,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
@@ -1119,19 +1336,33 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 839,
-                      "name": "plumbusLen",
+                      "name": {
+                        "end": 839,
+                        "name": "plumbusLen",
+                        "start": 829,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 829,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 819,
-                  "name": "extrude",
+                  "name": {
+                    "end": 819,
+                    "name": "extrude",
+                    "start": 812,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 812,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 840,
                 "start": 812,
@@ -1245,10 +1476,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 939,
-                            "name": "getOppositeEdge",
+                            "name": {
+                              "end": 939,
+                              "name": "getOppositeEdge",
+                              "start": 924,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 924,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 956,
                           "start": 924,
@@ -1264,10 +1502,17 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 852,
-                  "name": "fillet",
+                  "name": {
+                    "end": 852,
+                    "name": "fillet",
+                    "start": 846,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 846,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 973,
                 "start": 846,

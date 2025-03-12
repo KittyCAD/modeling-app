@@ -15,7 +15,7 @@ import {
   createLiteral,
   createCallExpressionStdLib,
   createObjectExpression,
-  createIdentifier,
+  createLocalName,
   findUniqueName,
   createVariableDeclaration,
 } from 'lang/modifyAst'
@@ -107,7 +107,7 @@ export function revolveSketch(
       angle: angle,
       axis: generatedAxis,
     }),
-    createIdentifier(sketchVariableDeclarator.id.name),
+    createLocalName(sketchVariableDeclarator.id.name),
   ])
 
   // We're not creating a pipe expression,

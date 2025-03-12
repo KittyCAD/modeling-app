@@ -24,11 +24,18 @@ expression: actual
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
                 "end": 29,
-                "name": "x",
+                "name": {
+                  "end": 29,
+                  "name": "x",
+                  "start": 28,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 28,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             },
             {
@@ -40,11 +47,18 @@ expression: actual
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
                 "end": 51,
-                "name": "x",
+                "name": {
+                  "end": 51,
+                  "name": "x",
+                  "start": 50,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 50,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             },
             {
@@ -56,19 +70,33 @@ expression: actual
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
                 "end": 73,
-                "name": "x",
+                "name": {
+                  "end": 73,
+                  "name": "x",
+                  "start": 72,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 72,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 7,
-            "name": "f",
+            "name": {
+              "end": 7,
+              "name": "f",
+              "start": 6,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 6,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 87,
           "start": 6,

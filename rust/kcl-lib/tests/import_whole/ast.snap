@@ -26,7 +26,7 @@ description: Result of parsing import_whole.kcl
       },
       {
         "declaration": {
-          "end": 123,
+          "end": 133,
           "id": {
             "end": 71,
             "name": "bar",
@@ -36,11 +36,18 @@ description: Result of parsing import_whole.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "end": 77,
-                "name": "foo",
+                "name": {
+                  "end": 77,
+                  "name": "foo",
+                  "start": 74,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 74,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
@@ -78,32 +85,49 @@ description: Result of parsing import_whole.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 122,
-                      "raw": "0.25",
+                      "abs_path": false,
+                      "end": 132,
+                      "name": {
+                        "end": 132,
+                        "name": "thickness",
+                        "start": 123,
+                        "type": "Identifier"
+                      },
+                      "path": [
+                        {
+                          "end": 121,
+                          "name": "foo",
+                          "start": 118,
+                          "type": "Identifier"
+                        }
+                      ],
                       "start": 118,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.25,
-                        "suffix": "None"
-                      }
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 88,
-                  "name": "shell",
+                  "name": {
+                    "end": 88,
+                    "name": "shell",
+                    "start": 83,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 83,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
-                "end": 123,
+                "end": 133,
                 "start": 83,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 123,
+            "end": 133,
             "start": 74,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -111,14 +135,14 @@ description: Result of parsing import_whole.kcl
           "start": 68,
           "type": "VariableDeclarator"
         },
-        "end": 123,
+        "end": 133,
         "kind": "const",
         "start": 68,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 124,
+    "end": 134,
     "innerAttrs": [
       {
         "end": 33,
@@ -140,11 +164,18 @@ description: Result of parsing import_whole.kcl
             "start": 10,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 32,
-              "name": "mm",
+              "name": {
+                "end": 32,
+                "name": "mm",
+                "start": 30,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 30,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

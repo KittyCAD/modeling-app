@@ -28,10 +28,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 25,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 25,
+                    "name": "startSketchOn",
+                    "start": 12,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 31,
                 "start": 12,
@@ -92,10 +99,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 51,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 51,
+                    "name": "startProfileAt",
+                    "start": 37,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 37,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 64,
                 "start": 37,
@@ -145,10 +159,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 74,
-                  "name": "line",
+                  "name": {
+                    "end": 74,
+                    "name": "line",
+                    "start": 70,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 70,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 89,
                 "start": 70,
@@ -215,10 +236,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 99,
-                  "name": "line",
+                  "name": {
+                    "end": 99,
+                    "name": "line",
+                    "start": 95,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 95,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 131,
                 "start": 95,
@@ -292,10 +320,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 141,
-                  "name": "line",
+                  "name": {
+                    "end": 141,
+                    "name": "line",
+                    "start": 137,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 137,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 171,
                 "start": 137,
@@ -325,10 +360,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 210,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 210,
+                              "name": "profileStartX",
+                              "start": 197,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 197,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 213,
                           "start": 197,
@@ -345,10 +387,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 228,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 228,
+                              "name": "profileStartY",
+                              "start": 215,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 215,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 231,
                           "start": 215,
@@ -364,10 +413,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 181,
-                  "name": "line",
+                  "name": {
+                    "end": 181,
+                    "name": "line",
+                    "start": 177,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 177,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 233,
                 "start": 177,
@@ -378,10 +434,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 244,
-                  "name": "close",
+                  "name": {
+                    "end": 244,
+                    "name": "close",
+                    "start": 239,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 239,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 246,
                 "start": 239,
@@ -445,21 +508,35 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 267,
-                  "name": "extrude",
+                  "name": {
+                    "end": 267,
+                    "name": "extrude",
+                    "start": 260,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 260,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 292,
                 "start": 260,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 277,
-                  "name": "sketch001",
+                  "name": {
+                    "end": 277,
+                    "name": "sketch001",
+                    "start": 268,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 268,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -495,11 +572,18 @@ description: Result of parsing artifact_graph_example_code1.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 330,
-                          "name": "seg01",
+                          "name": {
+                            "end": 330,
+                            "name": "seg01",
+                            "start": 325,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 325,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 331,
@@ -510,10 +594,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 304,
-                  "name": "fillet",
+                  "name": {
+                    "end": 304,
+                    "name": "fillet",
+                    "start": 298,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 298,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 332,
                 "start": 298,
@@ -550,25 +641,46 @@ description: Result of parsing artifact_graph_example_code1.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 369,
-                    "name": "extrude001",
+                    "name": {
+                      "end": 369,
+                      "name": "extrude001",
+                      "start": 359,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 359,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "end": 376,
-                    "name": "seg02",
+                    "name": {
+                      "end": 376,
+                      "name": "seg02",
+                      "start": 371,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 371,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 358,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 358,
+                    "name": "startSketchOn",
+                    "start": 345,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 345,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 377,
                 "start": 345,
@@ -629,10 +741,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 397,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 397,
+                    "name": "startProfileAt",
+                    "start": 383,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 383,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 410,
                 "start": 383,
@@ -682,10 +801,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 420,
-                  "name": "line",
+                  "name": {
+                    "end": 420,
+                    "name": "line",
+                    "start": 416,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 416,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 434,
                 "start": 416,
@@ -743,10 +869,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 444,
-                  "name": "line",
+                  "name": {
+                    "end": 444,
+                    "name": "line",
+                    "start": 440,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 440,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 459,
                 "start": 440,
@@ -776,10 +909,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 498,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 498,
+                              "name": "profileStartX",
+                              "start": 485,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 485,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 501,
                           "start": 485,
@@ -796,10 +936,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 516,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 516,
+                              "name": "profileStartY",
+                              "start": 503,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 503,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 519,
                           "start": 503,
@@ -815,10 +962,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 469,
-                  "name": "line",
+                  "name": {
+                    "end": 469,
+                    "name": "line",
+                    "start": 465,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 465,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 521,
                 "start": 465,
@@ -829,10 +983,17 @@ description: Result of parsing artifact_graph_example_code1.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 532,
-                  "name": "close",
+                  "name": {
+                    "end": 532,
+                    "name": "close",
+                    "start": 527,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 527,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 534,
                 "start": 527,
@@ -887,21 +1048,35 @@ description: Result of parsing artifact_graph_example_code1.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 555,
-              "name": "extrude",
+              "name": {
+                "end": 555,
+                "name": "extrude",
+                "start": 548,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 548,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 578,
             "start": 548,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 565,
-              "name": "sketch002",
+              "name": {
+                "end": 565,
+                "name": "sketch002",
+                "start": 556,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 556,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 535,
