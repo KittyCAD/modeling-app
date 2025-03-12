@@ -12,10 +12,10 @@ If you want to apply the transform in global space, set `global` to `true`. The 
 
 ```js
 scale(
-  solid: Solid,
+  solid: SolidOrImportedGeometry,
   scale: [number],
   global?: bool,
-): Solid
+): SolidOrImportedGeometry
 ```
 
 
@@ -23,13 +23,13 @@ scale(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid` | [`Solid`](/docs/kcl/types/Solid) | The solid to scale. | Yes |
+| `solid` | [`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) | The solid to scale. | Yes |
 | `scale` | [`[number]`](/docs/kcl/types/number) | The scale factor for the x, y, and z axes. | Yes |
 | `global` | [`bool`](/docs/kcl/types/bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid)
+[`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) - Data for a solid or an imported geometry.
 
 
 ### Examples

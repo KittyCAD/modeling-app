@@ -24,14 +24,14 @@ When rotating a part around an axis, you specify the axis of rotation and the an
 
 ```js
 rotate(
-  solid: Solid,
+  solid: SolidOrImportedGeometry,
   roll?: number,
   pitch?: number,
   yaw?: number,
   axis?: [number],
   angle?: number,
   global?: bool,
-): Solid
+): SolidOrImportedGeometry
 ```
 
 
@@ -39,7 +39,7 @@ rotate(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid` | [`Solid`](/docs/kcl/types/Solid) | The solid to rotate. | Yes |
+| `solid` | [`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) | The solid to rotate. | Yes |
 | `roll` | [`number`](/docs/kcl/types/number) | The roll angle in degrees. Must be used with `pitch` and `yaw`. Must be between -360 and 360. | No |
 | `pitch` | [`number`](/docs/kcl/types/number) | The pitch angle in degrees. Must be used with `roll` and `yaw`. Must be between -360 and 360. | No |
 | `yaw` | [`number`](/docs/kcl/types/number) | The yaw angle in degrees. Must be used with `roll` and `pitch`. Must be between -360 and 360. | No |
@@ -49,7 +49,7 @@ rotate(
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid)
+[`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) - Data for a solid or an imported geometry.
 
 
 ### Examples

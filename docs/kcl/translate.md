@@ -10,10 +10,10 @@ Move a solid.
 
 ```js
 translate(
-  solid: Solid,
+  solid: SolidOrImportedGeometry,
   translate: [number],
   global?: bool,
-): Solid
+): SolidOrImportedGeometry
 ```
 
 
@@ -21,13 +21,13 @@ translate(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid` | [`Solid`](/docs/kcl/types/Solid) | The solid to move. | Yes |
+| `solid` | [`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) | The solid to move. | Yes |
 | `translate` | [`[number]`](/docs/kcl/types/number) | The amount to move the solid in all three axes. | Yes |
 | `global` | [`bool`](/docs/kcl/types/bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid)
+[`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) - Data for a solid or an imported geometry.
 
 
 ### Examples
