@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed sketch_in_object.kcl
 ---
 [
@@ -83,8 +83,8 @@ description: Operations executed sketch_in_object.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        425,
+        446,
         0
       ]
     }
@@ -169,8 +169,8 @@ description: Operations executed sketch_in_object.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        483,
+        503,
         0
       ]
     }

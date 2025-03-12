@@ -80,8 +80,8 @@ description: Operations executed cube_with_error.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        366,
+        390,
         0
       ]
     }

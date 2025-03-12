@@ -64,8 +64,8 @@ description: Operations executed tangential_arc.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        168,
+        188,
         0
       ]
     }
