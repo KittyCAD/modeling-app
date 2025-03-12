@@ -1872,8 +1872,8 @@ example = extrude(exampleSketch, length = 10)
 async fn kcl_test_angled_line_of_x_length_90() {
     let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
-  |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
+  |> angledLine(angle = 90, lengthX = 90, tag = $edge1 )
+  |> angledLine(angle = -15, lengthX = -15, tag = $edge2 )
   |> line(end = [0, -5])
   |> close(tag = $edge3)
 
@@ -1892,8 +1892,8 @@ extrusion = extrude(sketch001, length = 10)
 async fn kcl_test_angled_line_of_x_length_270() {
     let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
-  |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
+  |> angledLine(angle = 90, lengthX = 90, tag = $edge1)
+  |> angledLine(angle = -15, lengthX = -15, tag = $edge2)
   |> line(end = [0, -5])
   |> close(tag = $edge3)
 
