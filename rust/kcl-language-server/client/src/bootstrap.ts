@@ -97,7 +97,7 @@ async function getServer(
       'You need to manually clone the kcl-lsp repository and ' +
       'run `cargo install` to build the language server from sources. ' +
       'If you feel that your platform should be supported, please create an issue ' +
-      'about that [here](https://github.com/kittycad/kcl-lsp/issues) and we ' +
+      'about that [here](https://github.com/kittycad/modeling-app/issues) and we ' +
       'will consider it.'
   )
   return undefined
