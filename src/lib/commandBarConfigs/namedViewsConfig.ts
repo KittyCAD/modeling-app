@@ -30,7 +30,6 @@ export function createNamedViewsCommand() {
           await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
-            // @ts-ignore TODO: Not in production yet.
             cmd: { type: 'default_camera_get_view' },
           })
 
@@ -39,7 +38,6 @@ export function createNamedViewsCommand() {
         }
 
         if ('modeling_response' in cameraGetViewResponse.resp.data) {
-          // @ts-ignore TODO: Not in production yet.
           const view = cameraGetViewResponse.resp.data.modeling_response.data
           // Create a new named view
           const requestedView: NamedView = {
@@ -171,7 +169,6 @@ export function createNamedViewsCommand() {
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
-              // @ts-ignore TODO: Not in production yet.
               type: 'default_camera_set_view',
               view: {
                 ...engineViewData,
