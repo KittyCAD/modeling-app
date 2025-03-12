@@ -1199,23 +1199,25 @@ async fn kcl_test_plumbus_fillets() {
 fn pentagon = (len) => {
   sg = startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %, $a)
-  |> angledLine({
-       angle: segAng(a) + 180 - 108,
-       length: len
-     }, %, $b)
-  |> angledLine({
-       angle: segAng(b) + 180 - 108,
-       length: len
-     }, %, $c)
-  |> angledLine({
-       angle: segAng(c) + 180 - 108,
-       length: len
-     }, %, $d)
-  |> angledLine({
-       angle: segAng(d) + 180 - 108,
-       length: len
-     }, %)
+  |> angledLine(angle = 0, length = len , tag = $a)
+  |> angledLine(
+       angle = segAng(a) + 180 - 108,
+       length = len,
+       tag = $b,
+     )
+  |> angledLine(
+       angle = segAng(b) + 180 - 108,
+       length = len,
+       tag = $c,
+     )
+  |> angledLine(
+       angle = segAng(c) + 180 - 108,
+       length = len
+     , %, $d)
+  |> angledLine(
+       angle = segAng(d) + 180 - 108,
+       length = len
+     , %)
 
   return sg
 }
@@ -1687,15 +1689,17 @@ async fn kcl_test_duplicate_tags_should_error() {
     let code = r#"fn triangle = (len) => {
   return startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %, $a)
-  |> angledLine({
-       angle: segAng(a) + 120,
-       length: len
-     }, %, $b)
-  |> angledLine({
-       angle: segAng(b) + 120,
-       length: len
-     }, %, $a)
+  |> angledLine(angle = 0, length = len , tag = $a)
+  |> angledLine(
+       angle = segAng(a) + 120,
+       length = len,
+       tag = $b,
+     )
+  |> angledLine(
+       angle = segAng(b) + 120,
+       length = len,
+       tag = $a,
+     )
 }
 
 let p = triangle(200)
