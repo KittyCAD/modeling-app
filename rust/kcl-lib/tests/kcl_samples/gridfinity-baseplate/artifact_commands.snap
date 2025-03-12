@@ -5,7 +5,11 @@ description: Artifact commands gridfinity-baseplate.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,25 +17,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -39,7 +29,49 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      311,
+      344,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1093,
+      1133,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -64,7 +96,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1093,
+      1133,
+      0
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -78,7 +114,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      798,
+      823,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -94,14 +134,22 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      798,
+      823,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      798,
+      823,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -114,14 +162,22 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      798,
+      823,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      831,
+      853,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -138,7 +194,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      861,
+      905,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -155,7 +215,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      913,
+      940,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -172,7 +236,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      948,
+      992,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -189,7 +257,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1000,
+      1007,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -197,7 +269,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -213,7 +289,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -223,14 +303,22 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -238,7 +326,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -247,7 +339,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -257,7 +353,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -267,7 +367,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -277,7 +381,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -287,7 +395,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -297,7 +409,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -307,7 +423,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -317,7 +437,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -327,7 +451,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -337,7 +465,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1080,
+      1176,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -347,7 +479,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1251,
+      1414,
+      0
+    ],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -368,7 +504,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1637,
+      1677,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -393,7 +533,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1637,
+      1677,
+      0
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -407,7 +551,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      798,
+      823,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -423,14 +571,22 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      798,
+      823,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      798,
+      823,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -443,14 +599,22 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      798,
+      823,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      831,
+      853,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -467,7 +631,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      861,
+      905,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -484,7 +652,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      913,
+      940,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -501,7 +673,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      948,
+      992,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -518,7 +694,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1000,
+      1007,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -526,7 +706,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -550,7 +734,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -558,7 +746,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -567,7 +759,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -577,7 +773,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -587,7 +787,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -597,7 +801,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -607,7 +815,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -617,7 +829,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -627,7 +843,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -637,7 +857,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -647,7 +871,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -657,7 +885,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1679,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -667,7 +899,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1889,
+      0
+    ],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -688,7 +924,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1952,
+      2082,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -728,7 +968,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1952,
+      2082,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -768,7 +1012,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1952,
+      2082,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -808,7 +1056,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1952,
+      2082,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -848,7 +1100,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2088,
+      2205,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -917,7 +1173,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2088,
+      2205,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -986,7 +1246,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2088,
+      2205,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1055,7 +1319,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2088,
+      2205,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1124,7 +1392,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2088,
+      2205,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1193,7 +1465,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2088,
+      2205,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1262,7 +1538,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2088,
+      2205,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1331,7 +1611,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2088,
+      2205,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1400,7 +1684,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2291,
+      2423,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1440,7 +1728,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2291,
+      2423,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1480,7 +1772,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2291,
+      2423,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1520,7 +1816,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2291,
+      2423,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1560,7 +1860,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2429,
+      2546,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1629,7 +1933,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2429,
+      2546,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1698,7 +2006,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2429,
+      2546,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1767,7 +2079,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2429,
+      2546,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1836,7 +2152,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2429,
+      2546,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1905,7 +2225,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2429,
+      2546,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -1974,7 +2298,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2429,
+      2546,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2043,7 +2371,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2429,
+      2546,
+      0
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2112,7 +2444,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      798,
+      823,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2121,7 +2457,11 @@ description: Artifact commands gridfinity-baseplate.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      798,
+      823,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

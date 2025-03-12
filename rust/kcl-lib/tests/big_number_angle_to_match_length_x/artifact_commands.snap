@@ -5,7 +5,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,7 +17,23 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -22,7 +42,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -31,7 +55,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      10,
+      29,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -56,7 +84,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      35,
+      60,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -72,14 +104,22 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      35,
+      60,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      35,
+      60,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -92,14 +132,22 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      35,
+      60,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      66,
+      101,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -116,7 +164,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      107,
+      178,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -133,7 +185,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      184,
+      192,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -141,7 +197,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -157,7 +217,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -167,14 +231,22 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -182,7 +254,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -191,7 +267,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -201,7 +281,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -211,7 +295,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -221,7 +309,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -231,7 +323,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -241,7 +337,11 @@ description: Artifact commands big_number_angle_to_match_length_x.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      198,
+      218,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

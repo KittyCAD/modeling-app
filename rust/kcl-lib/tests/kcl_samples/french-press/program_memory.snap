@@ -74,7 +74,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            2512,
+            2592,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -86,7 +90,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2512,
+                2592,
+                0
+              ]
             },
             "ccw": true,
             "center": [
@@ -153,7 +161,11 @@ description: Variables in memory after executing french-press.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2512,
+              2592,
+              0
+            ]
           }
         },
         "artifactId": "[uuid]",
@@ -183,21 +195,33 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2729,
+                2748,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2754,
+                2837,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2843,
+                2899,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -209,7 +233,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2729,
+                    2748,
+                    0
+                  ]
                 },
                 "from": [
                   0.3,
@@ -228,7 +256,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2754,
+                    2837,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -253,7 +285,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2843,
+                    2899,
+                    0
+                  ]
                 },
                 "from": [
                   1.3392,
@@ -272,7 +308,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2905,
+                    2912,
+                    0
+                  ]
                 },
                 "from": [
                   0.3,
@@ -317,7 +357,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      2512,
+                      2592,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -329,7 +373,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          2512,
+                          2592,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -396,7 +444,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        2512,
+                        2592,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -431,7 +483,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2693,
+                  2723,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -458,21 +514,33 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2729,
+                2748,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2754,
+                2837,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2843,
+                2899,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -484,7 +552,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2729,
+                    2748,
+                    0
+                  ]
                 },
                 "from": [
                   0.3,
@@ -503,7 +575,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2754,
+                    2837,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -528,7 +604,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2843,
+                    2899,
+                    0
+                  ]
                 },
                 "from": [
                   1.3392,
@@ -547,7 +627,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2905,
+                    2912,
+                    0
+                  ]
                 },
                 "from": [
                   0.3,
@@ -592,7 +676,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      2512,
+                      2592,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -604,7 +692,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          2512,
+                          2592,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -671,7 +763,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        2512,
+                        2592,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -706,7 +802,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2693,
+                  2723,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -733,21 +833,33 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2729,
+                2748,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2754,
+                2837,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2843,
+                2899,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -759,7 +871,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2729,
+                    2748,
+                    0
+                  ]
                 },
                 "from": [
                   0.3,
@@ -778,7 +894,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2754,
+                    2837,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -803,7 +923,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2843,
+                    2899,
+                    0
+                  ]
                 },
                 "from": [
                   1.3392,
@@ -822,7 +946,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2905,
+                    2912,
+                    0
+                  ]
                 },
                 "from": [
                   0.3,
@@ -867,7 +995,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      2512,
+                      2592,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -879,7 +1011,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          2512,
+                          2592,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -946,7 +1082,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        2512,
+                        2592,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -981,7 +1121,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2693,
+                  2723,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -1010,7 +1154,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            4061,
+            4141,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -1022,7 +1170,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4061,
+                4141,
+                0
+              ]
             },
             "ccw": true,
             "center": [
@@ -1089,7 +1241,11 @@ description: Variables in memory after executing french-press.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              4061,
+              4141,
+              0
+            ]
           }
         },
         "artifactId": "[uuid]",
@@ -1119,7 +1275,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1131,7 +1291,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4331,
+                    4369,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -1182,7 +1346,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -1194,7 +1362,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -1261,7 +1433,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -1296,7 +1472,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -1323,7 +1503,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1335,7 +1519,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4331,
+                    4369,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -1386,7 +1574,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -1398,7 +1590,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -1465,7 +1661,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -1500,7 +1700,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -1527,7 +1731,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1539,7 +1747,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4331,
+                    4369,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -1590,7 +1802,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -1602,7 +1818,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -1669,7 +1889,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -1704,7 +1928,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -1731,7 +1959,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1743,7 +1975,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4331,
+                    4369,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -1794,7 +2030,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -1806,7 +2046,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -1873,7 +2117,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -1908,7 +2156,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -1935,7 +2187,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1947,7 +2203,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4331,
+                    4369,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -1998,7 +2258,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -2010,7 +2274,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -2077,7 +2345,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -2112,7 +2384,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -2139,7 +2415,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2151,7 +2431,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4331,
+                    4369,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -2202,7 +2486,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -2214,7 +2502,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -2281,7 +2573,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -2316,7 +2612,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -2343,7 +2643,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2355,7 +2659,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4331,
+                    4369,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -2406,7 +2714,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -2418,7 +2730,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -2485,7 +2801,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -2520,7 +2840,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -2547,7 +2871,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2559,7 +2887,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4331,
+                    4369,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -2610,7 +2942,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -2622,7 +2958,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -2689,7 +3029,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -2724,7 +3068,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -2756,7 +3104,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4641,
+                4679,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2768,7 +3120,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4641,
+                    4679,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -2819,7 +3175,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -2831,7 +3191,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -2898,7 +3262,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -2933,7 +3301,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4641,
+                  4679,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -2960,7 +3332,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4641,
+                4679,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2972,7 +3348,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4641,
+                    4679,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -3023,7 +3403,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -3035,7 +3419,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -3102,7 +3490,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -3137,7 +3529,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4641,
+                  4679,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -3164,7 +3560,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4641,
+                4679,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -3176,7 +3576,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4641,
+                    4679,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -3227,7 +3631,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -3239,7 +3647,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -3306,7 +3718,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -3341,7 +3757,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4641,
+                  4679,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -3368,7 +3788,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                4641,
+                4679,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -3380,7 +3804,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    4641,
+                    4679,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -3431,7 +3859,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [],
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ],
                     "tag": null,
                     "type": "extrudeArc"
                   }
@@ -3443,7 +3875,11 @@ description: Variables in memory after executing french-press.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": []
+                        "sourceRange": [
+                          4061,
+                          4141,
+                          0
+                        ]
                       },
                       "ccw": true,
                       "center": [
@@ -3510,7 +3946,11 @@ description: Variables in memory after executing french-press.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     }
                   },
                   "artifactId": "[uuid]",
@@ -3545,7 +3985,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4641,
+                  4679,
+                  0
+                ]
               }
             },
             "artifactId": "[uuid]",
@@ -3574,7 +4018,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            4932,
+            5005,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -3586,7 +4034,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4932,
+                5005,
+                0
+              ]
             },
             "ccw": true,
             "center": [
@@ -3653,7 +4105,11 @@ description: Variables in memory after executing french-press.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              4932,
+              5005,
+              0
+            ]
           }
         },
         "artifactId": "[uuid]",
@@ -3680,84 +4136,132 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5847,
+            5868,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5874,
+            5905,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5911,
+            5942,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5948,
+            5980,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5986,
+            6008,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            6014,
+            6035,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            6041,
+            6066,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            6072,
+            6103,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            6109,
+            6141,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            6147,
+            6179,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            6185,
+            6206,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            6212,
+            6268,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -3769,7 +4273,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5847,
+                5868,
+                0
+              ]
             },
             "from": [
               2.3,
@@ -3788,7 +4296,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5874,
+                5905,
+                0
+              ]
             },
             "ccw": false,
             "center": [
@@ -3812,7 +4324,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5911,
+                5942,
+                0
+              ]
             },
             "ccw": false,
             "center": [
@@ -3836,7 +4352,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5948,
+                5980,
+                0
+              ]
             },
             "ccw": false,
             "center": [
@@ -3860,7 +4380,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5986,
+                6008,
+                0
+              ]
             },
             "from": [
               3.13,
@@ -3879,7 +4403,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                6014,
+                6035,
+                0
+              ]
             },
             "from": [
               2.04,
@@ -3898,7 +4426,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                6041,
+                6066,
+                0
+              ]
             },
             "from": [
               2.04,
@@ -3917,7 +4449,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                6072,
+                6103,
+                0
+              ]
             },
             "ccw": true,
             "center": [
@@ -3941,7 +4477,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                6109,
+                6141,
+                0
+              ]
             },
             "ccw": true,
             "center": [
@@ -3965,7 +4505,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                6147,
+                6179,
+                0
+              ]
             },
             "ccw": true,
             "center": [
@@ -3989,7 +4533,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                6185,
+                6206,
+                0
+              ]
             },
             "from": [
               2.72,
@@ -4008,7 +4556,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                6212,
+                6268,
+                0
+              ]
             },
             "from": [
               2.32,
@@ -4027,7 +4579,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                6274,
+                6281,
+                0
+              ]
             },
             "from": [
               2.3,
@@ -4088,7 +4644,11 @@ description: Variables in memory after executing french-press.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              5812,
+              5841,
+              0
+            ]
           }
         },
         "artifactId": "[uuid]",
@@ -4334,11 +4894,14 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            316,
+            380,
+            0
+          ],
           "tag": {
-            "commentStart": 338,
-            "end": 359,
-            "start": 338,
+            "end": 379,
+            "start": 358,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -4347,11 +4910,14 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            386,
+            513,
+            0
+          ],
           "tag": {
-            "commentStart": 445,
-            "end": 466,
-            "start": 445,
+            "end": 505,
+            "start": 484,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -4360,11 +4926,14 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            519,
+            665,
+            0
+          ],
           "tag": {
-            "commentStart": 571,
-            "end": 592,
-            "start": 571,
+            "end": 657,
+            "start": 636,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -4373,7 +4942,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            671,
+            727,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -4385,16 +4958,19 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                316,
+                380,
+                0
+              ]
             },
             "from": [
               2.205,
               5.7
             ],
             "tag": {
-              "commentStart": 338,
-              "end": 359,
-              "start": 338,
+              "end": 379,
+              "start": 358,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -4410,16 +4986,19 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                386,
+                513,
+                0
+              ]
             },
             "from": [
               2.305,
               5.7
             ],
             "tag": {
-              "commentStart": 445,
-              "end": 466,
-              "start": 445,
+              "end": 505,
+              "start": 484,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -4435,16 +5014,19 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                519,
+                665,
+                0
+              ]
             },
             "from": [
               2.305,
               6.45
             ],
             "tag": {
-              "commentStart": 571,
-              "end": 592,
-              "start": 571,
+              "end": 657,
+              "start": 636,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -4460,7 +5042,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                671,
+                727,
+                0
+              ]
             },
             "from": [
               2.205,
@@ -4479,7 +5065,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                733,
+                740,
+                0
+              ]
             },
             "from": [
               2.205,
@@ -4540,7 +5130,11 @@ description: Variables in memory after executing french-press.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              266,
+              310,
+              0
+            ]
           }
         },
         "tags": {
@@ -4584,18 +5178,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1113,
+                1132,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1138,
+                1172,
+                0
+              ],
               "tag": {
-                "commentStart": 1086,
-                "end": 1092,
-                "start": 1086,
+                "end": 1171,
+                "start": 1165,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -4604,18 +5205,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1178,
+                1262,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1268,
+                1319,
+                0
+              ],
               "tag": {
-                "commentStart": 1234,
-                "end": 1240,
-                "start": 1234,
+                "end": 1318,
+                "start": 1312,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -4624,18 +5232,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1325,
+                1409,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1415,
+                1473,
+                0
+              ],
               "tag": {
-                "commentStart": 1382,
-                "end": 1388,
-                "start": 1382,
+                "end": 1472,
+                "start": 1466,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -4644,18 +5259,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1479,
+                1561,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1567,
+                1607,
+                0
+              ],
               "tag": {
-                "commentStart": 1514,
-                "end": 1522,
-                "start": 1514,
+                "end": 1606,
+                "start": 1598,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -4664,18 +5286,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1613,
+                1632,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1638,
+                1691,
+                0
+              ],
               "tag": {
-                "commentStart": 1600,
-                "end": 1606,
-                "start": 1600,
+                "end": 1690,
+                "start": 1684,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -4684,18 +5313,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1697,
+                1779,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1785,
+                1884,
+                0
+              ],
               "tag": {
-                "commentStart": 1784,
-                "end": 1790,
-                "start": 1784,
+                "end": 1876,
+                "start": 1870,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -4704,18 +5340,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1890,
+                1974,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1980,
+                2079,
+                0
+              ],
               "tag": {
-                "commentStart": 1970,
-                "end": 1976,
-                "start": 1970,
+                "end": 2071,
+                "start": 2065,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -4724,14 +5367,22 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2085,
+                2169,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2175,
+                2231,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -4743,7 +5394,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1113,
+                    1132,
+                    0
+                  ]
                 },
                 "from": [
                   2.205,
@@ -4762,16 +5417,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1138,
+                    1172,
+                    0
+                  ]
                 },
                 "from": [
                   2.305,
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1086,
-                  "end": 1092,
-                  "start": 1086,
+                  "end": 1171,
+                  "start": 1165,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -4787,7 +5445,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1178,
+                    1262,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -4812,16 +5474,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1268,
+                    1319,
+                    0
+                  ]
                 },
                 "from": [
                   2.3331,
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1234,
-                  "end": 1240,
-                  "start": 1234,
+                  "end": 1318,
+                  "start": 1312,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -4837,7 +5502,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1325,
+                    1409,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -4862,16 +5531,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1415,
+                    1473,
+                    0
+                  ]
                 },
                 "from": [
                   1.8135,
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1382,
-                  "end": 1388,
-                  "start": 1382,
+                  "end": 1472,
+                  "start": 1466,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -4887,7 +5559,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1479,
+                    1561,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -4912,16 +5588,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1567,
+                    1607,
+                    0
+                  ]
                 },
                 "from": [
                   0.2367,
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1514,
-                  "end": 1522,
-                  "start": 1514,
+                  "end": 1606,
+                  "start": 1598,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -4937,7 +5616,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1613,
+                    1632,
+                    0
+                  ]
                 },
                 "from": [
                   0.1,
@@ -4956,16 +5639,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1638,
+                    1691,
+                    0
+                  ]
                 },
                 "from": [
                   0.1,
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1600,
-                  "end": 1606,
-                  "start": 1600,
+                  "end": 1690,
+                  "start": 1684,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -4981,7 +5667,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1697,
+                    1779,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -5006,16 +5696,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1785,
+                    1884,
+                    0
+                  ]
                 },
                 "from": [
                   0.5717,
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1784,
-                  "end": 1790,
-                  "start": 1784,
+                  "end": 1876,
+                  "start": 1870,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -5031,7 +5724,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1890,
+                    1974,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -5056,16 +5753,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1980,
+                    2079,
+                    0
+                  ]
                 },
                 "from": [
                   2.5512,
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1970,
-                  "end": 1976,
-                  "start": 1970,
+                  "end": 2071,
+                  "start": 2065,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -5081,7 +5781,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2085,
+                    2169,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -5106,7 +5810,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2175,
+                    2231,
+                    0
+                  ]
                 },
                 "from": [
                   2.2125,
@@ -5125,7 +5833,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2237,
+                    2244,
+                    0
+                  ]
                 },
                 "from": [
                   2.205,
@@ -5186,7 +5898,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  1063,
+                  1107,
+                  0
+                ]
               }
             },
             "tags": {
@@ -5243,18 +5959,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1113,
+                1132,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1138,
+                1172,
+                0
+              ],
               "tag": {
-                "commentStart": 1086,
-                "end": 1092,
-                "start": 1086,
+                "end": 1171,
+                "start": 1165,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -5263,18 +5986,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1178,
+                1262,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1268,
+                1319,
+                0
+              ],
               "tag": {
-                "commentStart": 1234,
-                "end": 1240,
-                "start": 1234,
+                "end": 1318,
+                "start": 1312,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5283,18 +6013,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1325,
+                1409,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1415,
+                1473,
+                0
+              ],
               "tag": {
-                "commentStart": 1382,
-                "end": 1388,
-                "start": 1382,
+                "end": 1472,
+                "start": 1466,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5303,18 +6040,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1479,
+                1561,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1567,
+                1607,
+                0
+              ],
               "tag": {
-                "commentStart": 1514,
-                "end": 1522,
-                "start": 1514,
+                "end": 1606,
+                "start": 1598,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -5323,18 +6067,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1613,
+                1632,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1638,
+                1691,
+                0
+              ],
               "tag": {
-                "commentStart": 1600,
-                "end": 1606,
-                "start": 1600,
+                "end": 1690,
+                "start": 1684,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5343,18 +6094,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1697,
+                1779,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1785,
+                1884,
+                0
+              ],
               "tag": {
-                "commentStart": 1784,
-                "end": 1790,
-                "start": 1784,
+                "end": 1876,
+                "start": 1870,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -5363,18 +6121,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1890,
+                1974,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1980,
+                2079,
+                0
+              ],
               "tag": {
-                "commentStart": 1970,
-                "end": 1976,
-                "start": 1970,
+                "end": 2071,
+                "start": 2065,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -5383,14 +6148,22 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2085,
+                2169,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2175,
+                2231,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -5402,7 +6175,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1113,
+                    1132,
+                    0
+                  ]
                 },
                 "from": [
                   2.205,
@@ -5421,16 +6198,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1138,
+                    1172,
+                    0
+                  ]
                 },
                 "from": [
                   2.305,
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1086,
-                  "end": 1092,
-                  "start": 1086,
+                  "end": 1171,
+                  "start": 1165,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -5446,7 +6226,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1178,
+                    1262,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -5471,16 +6255,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1268,
+                    1319,
+                    0
+                  ]
                 },
                 "from": [
                   2.3331,
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1234,
-                  "end": 1240,
-                  "start": 1234,
+                  "end": 1318,
+                  "start": 1312,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5496,7 +6283,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1325,
+                    1409,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -5521,16 +6312,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1415,
+                    1473,
+                    0
+                  ]
                 },
                 "from": [
                   1.8135,
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1382,
-                  "end": 1388,
-                  "start": 1382,
+                  "end": 1472,
+                  "start": 1466,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -5546,7 +6340,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1479,
+                    1561,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -5571,16 +6369,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1567,
+                    1607,
+                    0
+                  ]
                 },
                 "from": [
                   0.2367,
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1514,
-                  "end": 1522,
-                  "start": 1514,
+                  "end": 1606,
+                  "start": 1598,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -5596,7 +6397,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1613,
+                    1632,
+                    0
+                  ]
                 },
                 "from": [
                   0.1,
@@ -5615,16 +6420,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1638,
+                    1691,
+                    0
+                  ]
                 },
                 "from": [
                   0.1,
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1600,
-                  "end": 1606,
-                  "start": 1600,
+                  "end": 1690,
+                  "start": 1684,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -5640,7 +6448,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1697,
+                    1779,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -5665,16 +6477,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1785,
+                    1884,
+                    0
+                  ]
                 },
                 "from": [
                   0.5717,
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1784,
-                  "end": 1790,
-                  "start": 1784,
+                  "end": 1876,
+                  "start": 1870,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -5690,7 +6505,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1890,
+                    1974,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -5715,16 +6534,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1980,
+                    2079,
+                    0
+                  ]
                 },
                 "from": [
                   2.5512,
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1970,
-                  "end": 1976,
-                  "start": 1970,
+                  "end": 2071,
+                  "start": 2065,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -5740,7 +6562,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2085,
+                    2169,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -5765,7 +6591,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2175,
+                    2231,
+                    0
+                  ]
                 },
                 "from": [
                   2.2125,
@@ -5784,7 +6614,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2237,
+                    2244,
+                    0
+                  ]
                 },
                 "from": [
                   2.205,
@@ -5845,7 +6679,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  1063,
+                  1107,
+                  0
+                ]
               }
             },
             "tags": {
@@ -5902,18 +6740,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1113,
+                1132,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1138,
+                1172,
+                0
+              ],
               "tag": {
-                "commentStart": 1086,
-                "end": 1092,
-                "start": 1086,
+                "end": 1171,
+                "start": 1165,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -5922,18 +6767,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1178,
+                1262,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1268,
+                1319,
+                0
+              ],
               "tag": {
-                "commentStart": 1234,
-                "end": 1240,
-                "start": 1234,
+                "end": 1318,
+                "start": 1312,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5942,18 +6794,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1325,
+                1409,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1415,
+                1473,
+                0
+              ],
               "tag": {
-                "commentStart": 1382,
-                "end": 1388,
-                "start": 1382,
+                "end": 1472,
+                "start": 1466,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5962,18 +6821,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1479,
+                1561,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1567,
+                1607,
+                0
+              ],
               "tag": {
-                "commentStart": 1514,
-                "end": 1522,
-                "start": 1514,
+                "end": 1606,
+                "start": 1598,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -5982,18 +6848,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1613,
+                1632,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1638,
+                1691,
+                0
+              ],
               "tag": {
-                "commentStart": 1600,
-                "end": 1606,
-                "start": 1600,
+                "end": 1690,
+                "start": 1684,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -6002,18 +6875,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1697,
+                1779,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1785,
+                1884,
+                0
+              ],
               "tag": {
-                "commentStart": 1784,
-                "end": 1790,
-                "start": 1784,
+                "end": 1876,
+                "start": 1870,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -6022,18 +6902,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1890,
+                1974,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1980,
+                2079,
+                0
+              ],
               "tag": {
-                "commentStart": 1970,
-                "end": 1976,
-                "start": 1970,
+                "end": 2071,
+                "start": 2065,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -6042,14 +6929,22 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2085,
+                2169,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2175,
+                2231,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -6061,7 +6956,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1113,
+                    1132,
+                    0
+                  ]
                 },
                 "from": [
                   2.205,
@@ -6080,16 +6979,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1138,
+                    1172,
+                    0
+                  ]
                 },
                 "from": [
                   2.305,
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1086,
-                  "end": 1092,
-                  "start": 1086,
+                  "end": 1171,
+                  "start": 1165,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -6105,7 +7007,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1178,
+                    1262,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -6130,16 +7036,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1268,
+                    1319,
+                    0
+                  ]
                 },
                 "from": [
                   2.3331,
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1234,
-                  "end": 1240,
-                  "start": 1234,
+                  "end": 1318,
+                  "start": 1312,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -6155,7 +7064,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1325,
+                    1409,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -6180,16 +7093,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1415,
+                    1473,
+                    0
+                  ]
                 },
                 "from": [
                   1.8135,
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1382,
-                  "end": 1388,
-                  "start": 1382,
+                  "end": 1472,
+                  "start": 1466,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -6205,7 +7121,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1479,
+                    1561,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -6230,16 +7150,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1567,
+                    1607,
+                    0
+                  ]
                 },
                 "from": [
                   0.2367,
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1514,
-                  "end": 1522,
-                  "start": 1514,
+                  "end": 1606,
+                  "start": 1598,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -6255,7 +7178,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1613,
+                    1632,
+                    0
+                  ]
                 },
                 "from": [
                   0.1,
@@ -6274,16 +7201,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1638,
+                    1691,
+                    0
+                  ]
                 },
                 "from": [
                   0.1,
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1600,
-                  "end": 1606,
-                  "start": 1600,
+                  "end": 1690,
+                  "start": 1684,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6299,7 +7229,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1697,
+                    1779,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -6324,16 +7258,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1785,
+                    1884,
+                    0
+                  ]
                 },
                 "from": [
                   0.5717,
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1784,
-                  "end": 1790,
-                  "start": 1784,
+                  "end": 1876,
+                  "start": 1870,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -6349,7 +7286,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1890,
+                    1974,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -6374,16 +7315,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1980,
+                    2079,
+                    0
+                  ]
                 },
                 "from": [
                   2.5512,
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1970,
-                  "end": 1976,
-                  "start": 1970,
+                  "end": 2071,
+                  "start": 2065,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -6399,7 +7343,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2085,
+                    2169,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -6424,7 +7372,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2175,
+                    2231,
+                    0
+                  ]
                 },
                 "from": [
                   2.2125,
@@ -6443,7 +7395,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2237,
+                    2244,
+                    0
+                  ]
                 },
                 "from": [
                   2.205,
@@ -6504,7 +7460,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  1063,
+                  1107,
+                  0
+                ]
               }
             },
             "tags": {
@@ -6561,18 +7521,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1113,
+                1132,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1138,
+                1172,
+                0
+              ],
               "tag": {
-                "commentStart": 1086,
-                "end": 1092,
-                "start": 1086,
+                "end": 1171,
+                "start": 1165,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -6581,18 +7548,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1178,
+                1262,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1268,
+                1319,
+                0
+              ],
               "tag": {
-                "commentStart": 1234,
-                "end": 1240,
-                "start": 1234,
+                "end": 1318,
+                "start": 1312,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -6601,18 +7575,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1325,
+                1409,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1415,
+                1473,
+                0
+              ],
               "tag": {
-                "commentStart": 1382,
-                "end": 1388,
-                "start": 1382,
+                "end": 1472,
+                "start": 1466,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -6621,18 +7602,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1479,
+                1561,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1567,
+                1607,
+                0
+              ],
               "tag": {
-                "commentStart": 1514,
-                "end": 1522,
-                "start": 1514,
+                "end": 1606,
+                "start": 1598,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -6641,18 +7629,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1613,
+                1632,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1638,
+                1691,
+                0
+              ],
               "tag": {
-                "commentStart": 1600,
-                "end": 1606,
-                "start": 1600,
+                "end": 1690,
+                "start": 1684,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -6661,18 +7656,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1697,
+                1779,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1785,
+                1884,
+                0
+              ],
               "tag": {
-                "commentStart": 1784,
-                "end": 1790,
-                "start": 1784,
+                "end": 1876,
+                "start": 1870,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -6681,18 +7683,25 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1890,
+                1974,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1980,
+                2079,
+                0
+              ],
               "tag": {
-                "commentStart": 1970,
-                "end": 1976,
-                "start": 1970,
+                "end": 2071,
+                "start": 2065,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -6701,14 +7710,22 @@ description: Variables in memory after executing french-press.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2085,
+                2169,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2175,
+                2231,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -6720,7 +7737,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1113,
+                    1132,
+                    0
+                  ]
                 },
                 "from": [
                   2.205,
@@ -6739,16 +7760,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1138,
+                    1172,
+                    0
+                  ]
                 },
                 "from": [
                   2.305,
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1086,
-                  "end": 1092,
-                  "start": 1086,
+                  "end": 1171,
+                  "start": 1165,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -6764,7 +7788,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1178,
+                    1262,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -6789,16 +7817,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1268,
+                    1319,
+                    0
+                  ]
                 },
                 "from": [
                   2.3331,
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1234,
-                  "end": 1240,
-                  "start": 1234,
+                  "end": 1318,
+                  "start": 1312,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -6814,7 +7845,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1325,
+                    1409,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -6839,16 +7874,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1415,
+                    1473,
+                    0
+                  ]
                 },
                 "from": [
                   1.8135,
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1382,
-                  "end": 1388,
-                  "start": 1382,
+                  "end": 1472,
+                  "start": 1466,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -6864,7 +7902,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1479,
+                    1561,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -6889,16 +7931,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1567,
+                    1607,
+                    0
+                  ]
                 },
                 "from": [
                   0.2367,
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1514,
-                  "end": 1522,
-                  "start": 1514,
+                  "end": 1606,
+                  "start": 1598,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -6914,7 +7959,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1613,
+                    1632,
+                    0
+                  ]
                 },
                 "from": [
                   0.1,
@@ -6933,16 +7982,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1638,
+                    1691,
+                    0
+                  ]
                 },
                 "from": [
                   0.1,
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1600,
-                  "end": 1606,
-                  "start": 1600,
+                  "end": 1690,
+                  "start": 1684,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6958,7 +8010,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1697,
+                    1779,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -6983,16 +8039,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1785,
+                    1884,
+                    0
+                  ]
                 },
                 "from": [
                   0.5717,
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1784,
-                  "end": 1790,
-                  "start": 1784,
+                  "end": 1876,
+                  "start": 1870,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -7008,7 +8067,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1890,
+                    1974,
+                    0
+                  ]
                 },
                 "ccw": true,
                 "center": [
@@ -7033,16 +8096,19 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1980,
+                    2079,
+                    0
+                  ]
                 },
                 "from": [
                   2.5512,
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1970,
-                  "end": 1976,
-                  "start": 1970,
+                  "end": 2071,
+                  "start": 2065,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -7058,7 +8124,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2085,
+                    2169,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -7083,7 +8153,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2175,
+                    2231,
+                    0
+                  ]
                 },
                 "from": [
                   2.2125,
@@ -7102,7 +8176,11 @@ description: Variables in memory after executing french-press.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2237,
+                    2244,
+                    0
+                  ]
                 },
                 "from": [
                   2.205,
@@ -7163,7 +8241,11 @@ description: Variables in memory after executing french-press.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  1063,
+                  1107,
+                  0
+                ]
               }
             },
             "tags": {
@@ -7221,7 +8303,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2512,
+              2592,
+              0
+            ]
           },
           "ccw": true,
           "center": [
@@ -7288,7 +8374,11 @@ description: Variables in memory after executing french-press.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            2512,
+            2592,
+            0
+          ]
         }
       },
       "artifactId": "[uuid]",
@@ -7310,7 +8400,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2729,
+                  2748,
+                  0
+                ]
               },
               "from": [
                 0.3,
@@ -7329,7 +8423,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2754,
+                  2837,
+                  0
+                ]
               },
               "ccw": false,
               "center": [
@@ -7354,7 +8452,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2843,
+                  2899,
+                  0
+                ]
               },
               "from": [
                 1.3392,
@@ -7373,7 +8475,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2905,
+                  2912,
+                  0
+                ]
               },
               "from": [
                 0.3,
@@ -7418,7 +8524,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    2512,
+                    2592,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -7430,7 +8540,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        2512,
+                        2592,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -7497,7 +8611,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      2512,
+                      2592,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -7532,7 +8650,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2693,
+                2723,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -7551,7 +8673,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2729,
+                  2748,
+                  0
+                ]
               },
               "from": [
                 0.3,
@@ -7570,7 +8696,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2754,
+                  2837,
+                  0
+                ]
               },
               "ccw": false,
               "center": [
@@ -7595,7 +8725,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2843,
+                  2899,
+                  0
+                ]
               },
               "from": [
                 1.3392,
@@ -7614,7 +8748,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2905,
+                  2912,
+                  0
+                ]
               },
               "from": [
                 0.3,
@@ -7659,7 +8797,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    2512,
+                    2592,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -7671,7 +8813,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        2512,
+                        2592,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -7738,7 +8884,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      2512,
+                      2592,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -7773,7 +8923,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2693,
+                2723,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -7792,7 +8946,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2729,
+                  2748,
+                  0
+                ]
               },
               "from": [
                 0.3,
@@ -7811,7 +8969,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2754,
+                  2837,
+                  0
+                ]
               },
               "ccw": false,
               "center": [
@@ -7836,7 +8998,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2843,
+                  2899,
+                  0
+                ]
               },
               "from": [
                 1.3392,
@@ -7855,7 +9021,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2905,
+                  2912,
+                  0
+                ]
               },
               "from": [
                 0.3,
@@ -7900,7 +9070,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    2512,
+                    2592,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -7912,7 +9086,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        2512,
+                        2592,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -7979,7 +9157,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      2512,
+                      2592,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -8014,7 +9196,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2693,
+                2723,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -8036,18 +9222,25 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3188,
+            3233,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3239,
+            3345,
+            0
+          ],
           "tag": {
-            "commentStart": 3198,
-            "end": 3203,
-            "start": 3198,
+            "end": 3337,
+            "start": 3332,
             "type": "TagDeclarator",
             "value": "seg1"
           },
@@ -8056,28 +9249,44 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3351,
+            3390,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3396,
+            3442,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3448,
+            3473,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3479,
+            3535,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -8089,7 +9298,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3188,
+                3233,
+                0
+              ]
             },
             "from": [
               0.15,
@@ -8108,16 +9321,19 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3239,
+                3345,
+                0
+              ]
             },
             "from": [
               2.005,
               1.11
             ],
             "tag": {
-              "commentStart": 3198,
-              "end": 3203,
-              "start": 3198,
+              "end": 3337,
+              "start": 3332,
               "type": "TagDeclarator",
               "value": "seg1"
             },
@@ -8133,7 +9349,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3351,
+                3390,
+                0
+              ]
             },
             "from": [
               2.135,
@@ -8152,7 +9372,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3396,
+                3442,
+                0
+              ]
             },
             "from": [
               2.16,
@@ -8171,7 +9395,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3448,
+                3473,
+                0
+              ]
             },
             "from": [
               2.03,
@@ -8190,7 +9418,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3479,
+                3535,
+                0
+              ]
             },
             "from": [
               0.15,
@@ -8209,7 +9441,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3541,
+                3548,
+                0
+              ]
             },
             "from": [
               0.15,
@@ -8270,7 +9506,11 @@ description: Variables in memory after executing french-press.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              3151,
+              3182,
+              0
+            ]
           }
         },
         "tags": {
@@ -8303,49 +9543,77 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3672,
+            3692,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3698,
+            3741,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3747,
+            3765,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3771,
+            3791,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3797,
+            3817,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3823,
+            3871,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            3877,
+            3933,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -8357,7 +9625,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3672,
+                3692,
+                0
+              ]
             },
             "from": [
               0.1,
@@ -8376,7 +9648,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3698,
+                3741,
+                0
+              ]
             },
             "from": [
               0.2,
@@ -8395,7 +9671,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3747,
+                3765,
+                0
+              ]
             },
             "from": [
               0.05,
@@ -8414,7 +9694,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3771,
+                3791,
+                0
+              ]
             },
             "from": [
               0.05,
@@ -8433,7 +9717,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3797,
+                3817,
+                0
+              ]
             },
             "from": [
               0.65,
@@ -8452,7 +9740,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3823,
+                3871,
+                0
+              ]
             },
             "ccw": false,
             "center": [
@@ -8476,7 +9768,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3877,
+                3933,
+                0
+              ]
             },
             "from": [
               0.05,
@@ -8495,7 +9791,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                3939,
+                3946,
+                0
+              ]
             },
             "from": [
               0.1,
@@ -8556,7 +9856,11 @@ description: Variables in memory after executing french-press.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              3639,
+              3666,
+              0
+            ]
           }
         },
         "artifactId": "[uuid]",
@@ -8582,7 +9886,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              4061,
+              4141,
+              0
+            ]
           },
           "ccw": true,
           "center": [
@@ -8649,7 +9957,11 @@ description: Variables in memory after executing french-press.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            4061,
+            4141,
+            0
+          ]
         }
       },
       "artifactId": "[uuid]",
@@ -8671,7 +9983,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -8722,7 +10038,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -8734,7 +10054,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -8801,7 +10125,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -8836,7 +10164,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -8855,7 +10187,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -8906,7 +10242,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -8918,7 +10258,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -8985,7 +10329,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -9020,7 +10368,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -9039,7 +10391,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -9090,7 +10446,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -9102,7 +10462,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -9169,7 +10533,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -9204,7 +10572,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -9223,7 +10595,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -9274,7 +10650,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -9286,7 +10666,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -9353,7 +10737,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -9388,7 +10776,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -9407,7 +10799,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -9458,7 +10854,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -9470,7 +10870,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -9537,7 +10941,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -9572,7 +10980,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -9591,7 +11003,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -9642,7 +11058,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -9654,7 +11074,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -9721,7 +11145,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -9756,7 +11184,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -9775,7 +11207,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -9826,7 +11262,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -9838,7 +11278,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -9905,7 +11349,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -9940,7 +11388,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -9959,7 +11411,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4331,
+                  4369,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -10010,7 +11466,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -10022,7 +11482,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -10089,7 +11553,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -10124,7 +11592,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4331,
+                4369,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -10148,7 +11620,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4641,
+                  4679,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -10199,7 +11675,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -10211,7 +11691,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -10278,7 +11762,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -10313,7 +11801,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4641,
+                4679,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -10332,7 +11824,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4641,
+                  4679,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -10383,7 +11879,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -10395,7 +11895,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -10462,7 +11966,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -10497,7 +12005,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4641,
+                4679,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -10516,7 +12028,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4641,
+                  4679,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -10567,7 +12083,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -10579,7 +12099,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -10646,7 +12170,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -10681,7 +12209,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4641,
+                4679,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -10700,7 +12232,11 @@ description: Variables in memory after executing french-press.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  4641,
+                  4679,
+                  0
+                ]
               },
               "ccw": true,
               "center": [
@@ -10751,7 +12287,11 @@ description: Variables in memory after executing french-press.kcl
                 {
                   "faceId": "[uuid]",
                   "id": "[uuid]",
-                  "sourceRange": [],
+                  "sourceRange": [
+                    4061,
+                    4141,
+                    0
+                  ],
                   "tag": null,
                   "type": "extrudeArc"
                 }
@@ -10763,7 +12303,11 @@ description: Variables in memory after executing french-press.kcl
                   {
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": []
+                      "sourceRange": [
+                        4061,
+                        4141,
+                        0
+                      ]
                     },
                     "ccw": true,
                     "center": [
@@ -10830,7 +12374,11 @@ description: Variables in memory after executing french-press.kcl
                   "tag": null,
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      4061,
+                      4141,
+                      0
+                    ]
                   }
                 },
                 "artifactId": "[uuid]",
@@ -10865,7 +12413,11 @@ description: Variables in memory after executing french-press.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4641,
+                4679,
+                0
+              ]
             }
           },
           "artifactId": "[uuid]",
@@ -10886,7 +12438,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              4932,
+              5005,
+              0
+            ]
           },
           "ccw": true,
           "center": [
@@ -10953,7 +12509,11 @@ description: Variables in memory after executing french-press.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            4932,
+            5005,
+            0
+          ]
         }
       },
       "artifactId": "[uuid]",
@@ -10973,49 +12533,77 @@ description: Variables in memory after executing french-press.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5304,
+            5344,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5350,
+            5369,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5375,
+            5394,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5400,
+            5419,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5425,
+            5450,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5456,
+            5596,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            5602,
+            5658,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -11027,7 +12615,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5304,
+                5344,
+                0
+              ]
             },
             "from": [
               0.2,
@@ -11046,7 +12638,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5350,
+                5369,
+                0
+              ]
             },
             "from": [
               2.105,
@@ -11065,7 +12661,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5375,
+                5394,
+                0
+              ]
             },
             "from": [
               2.105,
@@ -11084,7 +12684,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5400,
+                5419,
+                0
+              ]
             },
             "from": [
               2.405,
@@ -11103,7 +12707,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5425,
+                5450,
+                0
+              ]
             },
             "from": [
               2.405,
@@ -11122,7 +12730,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5456,
+                5596,
+                0
+              ]
             },
             "from": [
               2.385,
@@ -11141,7 +12753,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5602,
+                5658,
+                0
+              ]
             },
             "from": [
               0.08,
@@ -11160,7 +12776,11 @@ description: Variables in memory after executing french-press.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                5664,
+                5671,
+                0
+              ]
             },
             "from": [
               0.2,
@@ -11221,7 +12841,11 @@ description: Variables in memory after executing french-press.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              5254,
+              5298,
+              0
+            ]
           }
         },
         "artifactId": "[uuid]",
@@ -11247,7 +12871,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              5847,
+              5868,
+              0
+            ]
           },
           "from": [
             2.3,
@@ -11266,7 +12894,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              5874,
+              5905,
+              0
+            ]
           },
           "ccw": false,
           "center": [
@@ -11290,7 +12922,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              5911,
+              5942,
+              0
+            ]
           },
           "ccw": false,
           "center": [
@@ -11314,7 +12950,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              5948,
+              5980,
+              0
+            ]
           },
           "ccw": false,
           "center": [
@@ -11338,7 +12978,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              5986,
+              6008,
+              0
+            ]
           },
           "from": [
             3.13,
@@ -11357,7 +13001,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              6014,
+              6035,
+              0
+            ]
           },
           "from": [
             2.04,
@@ -11376,7 +13024,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              6041,
+              6066,
+              0
+            ]
           },
           "from": [
             2.04,
@@ -11395,7 +13047,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              6072,
+              6103,
+              0
+            ]
           },
           "ccw": true,
           "center": [
@@ -11419,7 +13075,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              6109,
+              6141,
+              0
+            ]
           },
           "ccw": true,
           "center": [
@@ -11443,7 +13103,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              6147,
+              6179,
+              0
+            ]
           },
           "ccw": true,
           "center": [
@@ -11467,7 +13131,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              6185,
+              6206,
+              0
+            ]
           },
           "from": [
             2.72,
@@ -11486,7 +13154,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              6212,
+              6268,
+              0
+            ]
           },
           "from": [
             2.32,
@@ -11505,7 +13177,11 @@ description: Variables in memory after executing french-press.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              6274,
+              6281,
+              0
+            ]
           },
           "from": [
             2.3,
@@ -11566,7 +13242,11 @@ description: Variables in memory after executing french-press.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            5812,
+            5841,
+            0
+          ]
         }
       },
       "artifactId": "[uuid]",

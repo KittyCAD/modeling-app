@@ -5,7 +5,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,7 +17,23 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -22,7 +42,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -31,7 +55,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      138,
+      157,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -56,7 +84,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      163,
+      188,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -72,14 +104,22 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      163,
+      188,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      163,
+      188,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -92,14 +132,22 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      163,
+      188,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      194,
+      248,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -116,7 +164,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      254,
+      309,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -133,7 +185,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      315,
+      370,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -150,7 +206,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -166,7 +226,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -176,14 +240,22 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -191,7 +263,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -200,7 +276,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -210,7 +290,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -220,7 +304,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -230,7 +318,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -240,7 +332,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -250,7 +346,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      376,
+      408,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -260,7 +360,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      469,
+      520,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -272,14 +376,22 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      469,
+      520,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      469,
+      520,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -292,14 +404,22 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      469,
+      520,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      528,
+      550,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -324,7 +444,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      558,
+      566,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -332,7 +456,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      609,
+      637,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -344,7 +472,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      609,
+      637,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -354,14 +486,22 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      609,
+      637,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      609,
+      637,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -369,7 +509,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      609,
+      637,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -378,7 +522,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      609,
+      637,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -388,7 +536,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      609,
+      637,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -398,7 +550,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      721,
+      753,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -408,7 +564,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      643,
+      770,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -420,7 +580,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      643,
+      770,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -432,7 +596,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      469,
+      520,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -444,14 +612,22 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      469,
+      520,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      469,
+      520,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -464,14 +640,22 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      469,
+      520,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      528,
+      550,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -496,7 +680,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      558,
+      566,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -504,7 +692,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      809,
+      837,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -516,7 +708,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      809,
+      837,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -526,14 +722,22 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      809,
+      837,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      809,
+      837,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -541,7 +745,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      809,
+      837,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -550,7 +758,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      809,
+      837,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -560,7 +772,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      809,
+      837,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -570,7 +786,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      921,
+      953,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -580,7 +800,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      843,
+      970,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -592,7 +816,11 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      843,
+      970,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",

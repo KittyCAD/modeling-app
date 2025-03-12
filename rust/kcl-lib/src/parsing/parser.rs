@@ -4468,10 +4468,10 @@ e
 /// ```
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 30,
-///     length = 3 / cos(toRadians(30)),
-///   }, %)
+///   |> angledLine(
+///        angle = 30,
+///        length = 3 / cos(toRadians(30)),
+///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
 ///  

@@ -5,7 +5,11 @@ description: Artifact commands pipe.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,7 +17,23 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -22,7 +42,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -31,7 +55,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      166,
+      199,
+      0
+    ],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -39,7 +67,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      605,
+      624,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -64,7 +96,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      630,
+      685,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -80,14 +116,22 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      630,
+      685,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      630,
+      685,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -100,14 +144,22 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      630,
+      685,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      691,
+      717,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -124,7 +176,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      723,
+      759,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -141,7 +197,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      765,
+      841,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -158,7 +218,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      847,
+      883,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -175,7 +239,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      889,
+      915,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -192,7 +260,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      921,
+      956,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -209,7 +281,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      962,
+      1076,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -226,7 +302,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1082,
+      1089,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -234,7 +314,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -258,7 +342,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -266,7 +354,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -275,7 +367,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -285,7 +381,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -295,7 +395,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -305,7 +409,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -315,7 +423,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -325,7 +437,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -335,7 +451,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -345,7 +465,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -355,7 +479,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -365,7 +493,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -375,7 +507,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -385,7 +521,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -395,7 +535,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -405,7 +549,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -415,7 +563,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -425,7 +577,11 @@ description: Artifact commands pipe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1139,
+      1174,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

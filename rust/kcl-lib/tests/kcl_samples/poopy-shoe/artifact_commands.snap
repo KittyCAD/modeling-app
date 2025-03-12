@@ -5,7 +5,11 @@ description: Artifact commands poopy-shoe.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,7 +17,23 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -22,7 +42,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -31,7 +55,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      91,
+      124,
+      0
+    ],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -39,7 +67,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      258,
+      278,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -64,7 +96,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      284,
+      322,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -80,14 +116,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      284,
+      322,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      284,
+      322,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -100,14 +144,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      284,
+      322,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      328,
+      361,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -124,7 +176,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      367,
+      430,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -141,7 +197,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      436,
+      463,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -158,7 +218,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      469,
+      499,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -175,7 +239,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      505,
+      540,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -192,7 +260,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      546,
+      641,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -209,7 +281,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      647,
+      677,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -226,7 +302,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      683,
+      741,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -243,7 +323,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      747,
+      774,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -260,7 +344,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      780,
+      802,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -277,7 +365,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      808,
+      843,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -294,7 +386,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      849,
+      895,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -311,7 +407,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      901,
+      908,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -319,7 +419,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -343,7 +447,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -351,7 +459,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -360,7 +472,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -370,7 +486,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -380,7 +500,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -390,7 +514,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -400,7 +528,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -410,7 +542,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -420,7 +556,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -430,7 +570,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -440,7 +584,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -450,7 +598,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -460,7 +612,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -470,7 +626,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -480,7 +640,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -490,7 +654,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -500,7 +668,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -510,7 +682,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -520,7 +696,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -530,7 +710,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -540,7 +724,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -550,7 +738,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -560,7 +752,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -570,7 +766,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -580,7 +780,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -590,7 +794,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -600,7 +808,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -610,7 +822,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      919,
+      1054,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -620,7 +836,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1068,
+      1088,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -645,7 +865,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1094,
+      1132,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -661,14 +885,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1094,
+      1132,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1094,
+      1132,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -681,14 +913,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1094,
+      1132,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1138,
+      1171,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -705,7 +945,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1177,
+      1240,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -722,7 +966,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1246,
+      1273,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -739,7 +987,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1279,
+      1309,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -756,7 +1008,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1315,
+      1350,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -773,7 +1029,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1356,
+      1451,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -790,7 +1050,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1457,
+      1487,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -807,7 +1071,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1493,
+      1551,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -824,7 +1092,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1557,
+      1584,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -841,7 +1113,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1590,
+      1612,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -858,7 +1134,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1618,
+      1653,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -875,7 +1155,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1659,
+      1705,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -892,7 +1176,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1711,
+      1718,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -900,7 +1188,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -916,7 +1208,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -926,14 +1222,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -941,7 +1245,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -950,7 +1258,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -960,7 +1272,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -970,7 +1286,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -980,7 +1300,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -990,7 +1314,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1000,7 +1328,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1010,7 +1342,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1020,7 +1356,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1030,7 +1370,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1040,7 +1384,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1050,7 +1398,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1060,7 +1412,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1070,7 +1426,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1080,7 +1440,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1090,7 +1454,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1100,7 +1468,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1110,7 +1482,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1120,7 +1496,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1130,7 +1510,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1140,7 +1524,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1150,7 +1538,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1160,7 +1552,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1170,7 +1566,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1180,7 +1580,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1190,7 +1594,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1200,7 +1608,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1724,
+      1761,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1210,7 +1622,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2018,
+      2044,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1235,7 +1651,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2050,
+      2075,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1251,14 +1671,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2050,
+      2075,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2050,
+      2075,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1271,14 +1699,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2050,
+      2075,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2081,
+      2131,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1294,7 +1730,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2137,
+      2177,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1311,7 +1751,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2183,
+      2190,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1319,7 +1763,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1335,7 +1783,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1345,14 +1797,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1360,7 +1820,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1369,7 +1833,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1379,7 +1847,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1389,7 +1861,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1399,7 +1875,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1409,7 +1889,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1419,7 +1903,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2196,
+      2227,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1429,7 +1917,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2278,
+      2303,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1441,14 +1933,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2278,
+      2303,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2278,
+      2303,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1461,14 +1961,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2278,
+      2303,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2309,
+      2336,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1485,7 +1993,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2342,
+      2376,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1502,7 +2014,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2382,
+      2417,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1519,7 +2035,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2423,
+      2526,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1536,7 +2056,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2532,
+      2561,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1553,7 +2077,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2567,
+      2620,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1570,7 +2098,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2626,
+      2653,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1587,7 +2119,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2659,
+      2688,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1604,7 +2140,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2694,
+      2818,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1621,7 +2161,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2824,
+      2869,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1638,7 +2182,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2875,
+      2897,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1655,7 +2203,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2903,
+      2922,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1663,7 +2215,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1675,7 +2231,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1685,14 +2245,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1700,7 +2268,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1709,7 +2281,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1719,7 +2295,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1729,7 +2309,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1739,7 +2323,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1749,7 +2337,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1759,7 +2351,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1769,7 +2365,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1779,7 +2379,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1789,7 +2393,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1799,7 +2407,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1809,7 +2421,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1819,7 +2435,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1829,7 +2449,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1839,7 +2463,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1849,7 +2477,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1859,7 +2491,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1869,7 +2505,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1879,7 +2519,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1889,7 +2533,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1899,7 +2547,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1909,7 +2561,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1919,7 +2575,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1929,7 +2589,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1939,7 +2603,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2928,
+      2959,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1949,7 +2617,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3217,
+      3244,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1974,7 +2646,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3250,
+      3275,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1990,14 +2666,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3250,
+      3275,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3250,
+      3275,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2010,14 +2694,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3250,
+      3275,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3281,
+      3308,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2034,7 +2726,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3314,
+      3345,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2051,7 +2747,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3351,
+      3475,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2068,7 +2768,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3481,
+      3526,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2085,7 +2789,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3532,
+      3568,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2102,7 +2810,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3574,
+      3581,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2110,7 +2822,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2126,7 +2842,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2136,14 +2856,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2151,7 +2879,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2160,7 +2892,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2170,7 +2906,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2180,7 +2920,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2190,7 +2934,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2200,7 +2948,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2210,7 +2962,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2220,7 +2976,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2230,7 +2990,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2240,7 +3004,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2250,7 +3018,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2260,7 +3032,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2270,7 +3046,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3587,
+      3618,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2280,7 +3060,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3669,
+      3719,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2292,14 +3076,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3669,
+      3719,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3669,
+      3719,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2312,14 +3104,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3669,
+      3719,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3725,
+      3757,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2336,7 +3136,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3763,
+      3790,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2353,7 +3157,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3796,
+      3818,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2370,7 +3178,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3824,
+      3831,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2378,7 +3190,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2390,7 +3206,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2400,14 +3220,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2415,7 +3243,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2424,7 +3256,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2434,7 +3270,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2444,7 +3284,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2454,7 +3298,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2464,7 +3312,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2474,7 +3326,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2484,7 +3340,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2494,7 +3354,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3837,
+      3868,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2504,7 +3368,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3919,
+      3944,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2516,14 +3384,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3919,
+      3944,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3919,
+      3944,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2536,14 +3412,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3919,
+      3944,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3950,
+      3984,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2560,7 +3444,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3990,
+      4017,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2577,7 +3465,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4023,
+      4045,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2594,7 +3486,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4051,
+      4058,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2602,7 +3498,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2614,7 +3514,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2624,14 +3528,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2639,7 +3551,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2648,7 +3564,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2658,7 +3578,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2668,7 +3592,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2678,7 +3606,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2688,7 +3620,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2698,7 +3634,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2708,7 +3648,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2718,7 +3662,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4064,
+      4114,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2728,7 +3676,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4385,
+      4412,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -2753,7 +3705,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4418,
+      4467,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2769,14 +3725,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4418,
+      4467,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4418,
+      4467,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2789,14 +3753,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4418,
+      4467,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4473,
+      4505,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2813,7 +3785,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4511,
+      4559,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2830,7 +3806,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4565,
+      4599,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2847,7 +3827,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4605,
+      4612,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2855,7 +3839,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2871,7 +3859,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2881,14 +3873,22 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2896,7 +3896,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2905,7 +3909,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2915,7 +3923,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2925,7 +3937,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2935,7 +3951,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2945,7 +3965,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2955,7 +3979,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2965,7 +3993,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2975,7 +4007,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4618,
+      4650,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2985,7 +4021,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2050,
+      2075,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2994,7 +4034,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3250,
+      3275,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3003,7 +4047,11 @@ description: Artifact commands poopy-shoe.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4418,
+      4467,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

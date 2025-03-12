@@ -13,16 +13,23 @@ description: Variables in memory after executing angled_line.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            73,
+            97,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            103,
+            142,
+            0
+          ],
           "tag": {
-            "commentStart": 135,
             "end": 141,
             "start": 135,
             "type": "TagDeclarator",
@@ -33,28 +40,44 @@ description: Variables in memory after executing angled_line.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            148,
+            174,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            180,
+            229,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            235,
+            262,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            268,
+            275,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -66,7 +89,11 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                73,
+                97,
+                0
+              ]
             },
             "from": [
               4.83,
@@ -85,14 +112,17 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                103,
+                142,
+                0
+              ]
             },
             "from": [
               19.93,
               15.04
             ],
             "tag": {
-              "commentStart": 135,
               "end": 141,
               "start": 135,
               "type": "TagDeclarator",
@@ -110,7 +140,11 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                148,
+                174,
+                0
+              ]
             },
             "from": [
               23.08,
@@ -129,7 +163,11 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                180,
+                229,
+                0
+              ]
             },
             "from": [
               7.91,
@@ -148,7 +186,11 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                235,
+                262,
+                0
+              ]
             },
             "from": [
               11.6718,
@@ -167,7 +209,11 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                268,
+                275,
+                0
+              ]
             },
             "from": [
               -1.3482,
@@ -228,7 +274,11 @@ description: Variables in memory after executing angled_line.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              35,
+              67,
+              0
+            ]
           }
         },
         "tags": {

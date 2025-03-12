@@ -13,11 +13,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            299,
+            365,
+            0
+          ],
           "tag": {
-            "commentStart": 323,
-            "end": 344,
-            "start": 323,
+            "end": 364,
+            "start": 343,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -26,11 +29,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            371,
+            499,
+            0
+          ],
           "tag": {
-            "commentStart": 431,
-            "end": 452,
-            "start": 431,
+            "end": 491,
+            "start": 470,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -39,11 +45,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            505,
+            651,
+            0
+          ],
           "tag": {
-            "commentStart": 557,
-            "end": 578,
-            "start": 557,
+            "end": 643,
+            "start": 622,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -52,11 +61,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            657,
+            742,
+            0
+          ],
           "tag": {
-            "commentStart": 648,
-            "end": 669,
-            "start": 648,
+            "end": 741,
+            "start": 720,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -70,16 +82,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                299,
+                365,
+                0
+              ]
             },
             "from": [
               0.0,
               0.0
             ],
             "tag": {
-              "commentStart": 323,
-              "end": 344,
-              "start": 323,
+              "end": 364,
+              "start": 343,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -95,16 +110,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                371,
+                499,
+                0
+              ]
             },
             "from": [
               125.0,
               0.0
             ],
             "tag": {
-              "commentStart": 431,
-              "end": 452,
-              "start": 431,
+              "end": 491,
+              "start": 470,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -120,16 +138,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                505,
+                651,
+                0
+              ]
             },
             "from": [
               125.0,
               175.0
             ],
             "tag": {
-              "commentStart": 557,
-              "end": 578,
-              "start": 557,
+              "end": 643,
+              "start": 622,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -145,16 +166,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                657,
+                742,
+                0
+              ]
             },
             "from": [
               0.0,
               175.0
             ],
             "tag": {
-              "commentStart": 648,
-              "end": 669,
-              "start": 648,
+              "end": 741,
+              "start": 720,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD001"
             },
@@ -170,7 +194,11 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                748,
+                755,
+                0
+              ]
             },
             "from": [
               0.0,
@@ -231,7 +259,11 @@ description: Variables in memory after executing enclosure.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              268,
+              293,
+              0
+            ]
           }
         },
         "tags": {
@@ -306,11 +338,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            2517,
+            2583,
+            0
+          ],
           "tag": {
-            "commentStart": 2395,
-            "end": 2416,
-            "start": 2395,
+            "end": 2582,
+            "start": 2561,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -319,11 +354,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            2589,
+            2717,
+            0
+          ],
           "tag": {
-            "commentStart": 2503,
-            "end": 2524,
-            "start": 2503,
+            "end": 2709,
+            "start": 2688,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -332,11 +370,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            2723,
+            2869,
+            0
+          ],
           "tag": {
-            "commentStart": 2629,
-            "end": 2650,
-            "start": 2629,
+            "end": 2861,
+            "start": 2840,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -345,11 +386,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            2875,
+            2960,
+            0
+          ],
           "tag": {
-            "commentStart": 2720,
-            "end": 2741,
-            "start": 2720,
+            "end": 2959,
+            "start": 2938,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD002"
           },
@@ -363,16 +407,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2517,
+                2583,
+                0
+              ]
             },
             "from": [
               150.0,
               0.0
             ],
             "tag": {
-              "commentStart": 2395,
-              "end": 2416,
-              "start": 2395,
+              "end": 2582,
+              "start": 2561,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -388,16 +435,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2589,
+                2717,
+                0
+              ]
             },
             "from": [
               275.0,
               0.0
             ],
             "tag": {
-              "commentStart": 2503,
-              "end": 2524,
-              "start": 2503,
+              "end": 2709,
+              "start": 2688,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB002"
             },
@@ -413,16 +463,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2723,
+                2869,
+                0
+              ]
             },
             "from": [
               275.0,
               175.0
             ],
             "tag": {
-              "commentStart": 2629,
-              "end": 2650,
-              "start": 2629,
+              "end": 2861,
+              "start": 2840,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC002"
             },
@@ -438,16 +491,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2875,
+                2960,
+                0
+              ]
             },
             "from": [
               150.0,
               175.0
             ],
             "tag": {
-              "commentStart": 2720,
-              "end": 2741,
-              "start": 2720,
+              "end": 2959,
+              "start": 2938,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD002"
             },
@@ -463,7 +519,11 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2966,
+                2973,
+                0
+              ]
             },
             "from": [
               150.0,
@@ -524,7 +584,11 @@ description: Variables in memory after executing enclosure.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2476,
+              2511,
+              0
+            ]
           }
         },
         "tags": {
@@ -599,11 +663,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            4205,
+            4293,
+            0
+          ],
           "tag": {
-            "commentStart": 4040,
-            "end": 4061,
-            "start": 4040,
+            "end": 4292,
+            "start": 4271,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -612,11 +679,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            4299,
+            4449,
+            0
+          ],
           "tag": {
-            "commentStart": 4170,
-            "end": 4191,
-            "start": 4170,
+            "end": 4441,
+            "start": 4420,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -625,11 +695,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            4455,
+            4601,
+            0
+          ],
           "tag": {
-            "commentStart": 4296,
-            "end": 4317,
-            "start": 4296,
+            "end": 4593,
+            "start": 4572,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -638,11 +711,14 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            4607,
+            4692,
+            0
+          ],
           "tag": {
-            "commentStart": 4387,
-            "end": 4408,
-            "start": 4387,
+            "end": 4691,
+            "start": 4670,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD003"
           },
@@ -656,16 +732,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4205,
+                4293,
+                0
+              ]
             },
             "from": [
               153.0,
               3.0
             ],
             "tag": {
-              "commentStart": 4040,
-              "end": 4061,
-              "start": 4040,
+              "end": 4292,
+              "start": 4271,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA003"
             },
@@ -681,16 +760,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4299,
+                4449,
+                0
+              ]
             },
             "from": [
               272.0,
               3.0
             ],
             "tag": {
-              "commentStart": 4170,
-              "end": 4191,
-              "start": 4170,
+              "end": 4441,
+              "start": 4420,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB003"
             },
@@ -706,16 +788,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4455,
+                4601,
+                0
+              ]
             },
             "from": [
               272.0,
               172.0
             ],
             "tag": {
-              "commentStart": 4296,
-              "end": 4317,
-              "start": 4296,
+              "end": 4593,
+              "start": 4572,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC003"
             },
@@ -731,16 +816,19 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4607,
+                4692,
+                0
+              ]
             },
             "from": [
               153.0,
               172.0
             ],
             "tag": {
-              "commentStart": 4387,
-              "end": 4408,
-              "start": 4387,
+              "end": 4691,
+              "start": 4670,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD003"
             },
@@ -756,7 +844,11 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                4698,
+                4705,
+                0
+              ]
             },
             "from": [
               153.0,
@@ -801,11 +893,14 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  2517,
+                  2583,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 2395,
-                  "end": 2416,
-                  "start": 2395,
+                  "end": 2582,
+                  "start": 2561,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -814,11 +909,14 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  2589,
+                  2717,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 2503,
-                  "end": 2524,
-                  "start": 2503,
+                  "end": 2709,
+                  "start": 2688,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -827,11 +925,14 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  2723,
+                  2869,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 2629,
-                  "end": 2650,
-                  "start": 2629,
+                  "end": 2861,
+                  "start": 2840,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -840,11 +941,14 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  2875,
+                  2960,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 2720,
-                  "end": 2741,
-                  "start": 2720,
+                  "end": 2959,
+                  "start": 2938,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD002"
                 },
@@ -858,16 +962,19 @@ description: Variables in memory after executing enclosure.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      2517,
+                      2583,
+                      0
+                    ]
                   },
                   "from": [
                     150.0,
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2395,
-                    "end": 2416,
-                    "start": 2395,
+                    "end": 2582,
+                    "start": 2561,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA002"
                   },
@@ -883,16 +990,19 @@ description: Variables in memory after executing enclosure.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      2589,
+                      2717,
+                      0
+                    ]
                   },
                   "from": [
                     275.0,
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2503,
-                    "end": 2524,
-                    "start": 2503,
+                    "end": 2709,
+                    "start": 2688,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB002"
                   },
@@ -908,16 +1018,19 @@ description: Variables in memory after executing enclosure.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      2723,
+                      2869,
+                      0
+                    ]
                   },
                   "from": [
                     275.0,
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 2629,
-                    "end": 2650,
-                    "start": 2629,
+                    "end": 2861,
+                    "start": 2840,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC002"
                   },
@@ -933,16 +1046,19 @@ description: Variables in memory after executing enclosure.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      2875,
+                      2960,
+                      0
+                    ]
                   },
                   "from": [
                     150.0,
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 2720,
-                    "end": 2741,
-                    "start": 2720,
+                    "end": 2959,
+                    "start": 2938,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentD002"
                   },
@@ -958,7 +1074,11 @@ description: Variables in memory after executing enclosure.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      2966,
+                      2973,
+                      0
+                    ]
                   },
                   "from": [
                     150.0,
@@ -1019,7 +1139,11 @@ description: Variables in memory after executing enclosure.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2476,
+                    2511,
+                    0
+                  ]
                 }
               },
               "tags": {
@@ -1102,7 +1226,11 @@ description: Variables in memory after executing enclosure.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              4115,
+              4199,
+              0
+            ]
           }
         },
         "tags": {
@@ -1278,16 +1406,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              299,
+              365,
+              0
+            ]
           },
           "from": [
             0.0,
             0.0
           ],
           "tag": {
-            "commentStart": 323,
-            "end": 344,
-            "start": 323,
+            "end": 364,
+            "start": 343,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -1303,16 +1434,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              371,
+              499,
+              0
+            ]
           },
           "from": [
             125.0,
             0.0
           ],
           "tag": {
-            "commentStart": 431,
-            "end": 452,
-            "start": 431,
+            "end": 491,
+            "start": 470,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -1328,16 +1462,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              505,
+              651,
+              0
+            ]
           },
           "from": [
             125.0,
             175.0
           ],
           "tag": {
-            "commentStart": 557,
-            "end": 578,
-            "start": 557,
+            "end": 643,
+            "start": 622,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -1353,16 +1490,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              657,
+              742,
+              0
+            ]
           },
           "from": [
             0.0,
             175.0
           ],
           "tag": {
-            "commentStart": 648,
-            "end": 669,
-            "start": 648,
+            "end": 741,
+            "start": 720,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -1378,7 +1518,11 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              748,
+              755,
+              0
+            ]
           },
           "from": [
             0.0,
@@ -1439,7 +1583,11 @@ description: Variables in memory after executing enclosure.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            268,
+            293,
+            0
+          ]
         }
       },
       "tags": {
@@ -1476,16 +1624,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2517,
+              2583,
+              0
+            ]
           },
           "from": [
             150.0,
             0.0
           ],
           "tag": {
-            "commentStart": 2395,
-            "end": 2416,
-            "start": 2395,
+            "end": 2582,
+            "start": 2561,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -1501,16 +1652,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2589,
+              2717,
+              0
+            ]
           },
           "from": [
             275.0,
             0.0
           ],
           "tag": {
-            "commentStart": 2503,
-            "end": 2524,
-            "start": 2503,
+            "end": 2709,
+            "start": 2688,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -1526,16 +1680,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2723,
+              2869,
+              0
+            ]
           },
           "from": [
             275.0,
             175.0
           ],
           "tag": {
-            "commentStart": 2629,
-            "end": 2650,
-            "start": 2629,
+            "end": 2861,
+            "start": 2840,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -1551,16 +1708,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2875,
+              2960,
+              0
+            ]
           },
           "from": [
             150.0,
             175.0
           ],
           "tag": {
-            "commentStart": 2720,
-            "end": 2741,
-            "start": 2720,
+            "end": 2959,
+            "start": 2938,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD002"
           },
@@ -1576,7 +1736,11 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2966,
+              2973,
+              0
+            ]
           },
           "from": [
             150.0,
@@ -1637,7 +1801,11 @@ description: Variables in memory after executing enclosure.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            2476,
+            2511,
+            0
+          ]
         }
       },
       "tags": {
@@ -1674,16 +1842,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              4205,
+              4293,
+              0
+            ]
           },
           "from": [
             153.0,
             3.0
           ],
           "tag": {
-            "commentStart": 4040,
-            "end": 4061,
-            "start": 4040,
+            "end": 4292,
+            "start": 4271,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -1699,16 +1870,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              4299,
+              4449,
+              0
+            ]
           },
           "from": [
             272.0,
             3.0
           ],
           "tag": {
-            "commentStart": 4170,
-            "end": 4191,
-            "start": 4170,
+            "end": 4441,
+            "start": 4420,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -1724,16 +1898,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              4455,
+              4601,
+              0
+            ]
           },
           "from": [
             272.0,
             172.0
           ],
           "tag": {
-            "commentStart": 4296,
-            "end": 4317,
-            "start": 4296,
+            "end": 4593,
+            "start": 4572,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -1749,16 +1926,19 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              4607,
+              4692,
+              0
+            ]
           },
           "from": [
             153.0,
             172.0
           ],
           "tag": {
-            "commentStart": 4387,
-            "end": 4408,
-            "start": 4387,
+            "end": 4691,
+            "start": 4670,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD003"
           },
@@ -1774,7 +1954,11 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              4698,
+              4705,
+              0
+            ]
           },
           "from": [
             153.0,
@@ -1819,11 +2003,14 @@ description: Variables in memory after executing enclosure.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2517,
+                2583,
+                0
+              ],
               "tag": {
-                "commentStart": 2395,
-                "end": 2416,
-                "start": 2395,
+                "end": 2582,
+                "start": 2561,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -1832,11 +2019,14 @@ description: Variables in memory after executing enclosure.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2589,
+                2717,
+                0
+              ],
               "tag": {
-                "commentStart": 2503,
-                "end": 2524,
-                "start": 2503,
+                "end": 2709,
+                "start": 2688,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB002"
               },
@@ -1845,11 +2035,14 @@ description: Variables in memory after executing enclosure.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2723,
+                2869,
+                0
+              ],
               "tag": {
-                "commentStart": 2629,
-                "end": 2650,
-                "start": 2629,
+                "end": 2861,
+                "start": 2840,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC002"
               },
@@ -1858,11 +2051,14 @@ description: Variables in memory after executing enclosure.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                2875,
+                2960,
+                0
+              ],
               "tag": {
-                "commentStart": 2720,
-                "end": 2741,
-                "start": 2720,
+                "end": 2959,
+                "start": 2938,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentD002"
               },
@@ -1876,16 +2072,19 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2517,
+                    2583,
+                    0
+                  ]
                 },
                 "from": [
                   150.0,
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2395,
-                  "end": 2416,
-                  "start": 2395,
+                  "end": 2582,
+                  "start": 2561,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -1901,16 +2100,19 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2589,
+                    2717,
+                    0
+                  ]
                 },
                 "from": [
                   275.0,
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2503,
-                  "end": 2524,
-                  "start": 2503,
+                  "end": 2709,
+                  "start": 2688,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -1926,16 +2128,19 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2723,
+                    2869,
+                    0
+                  ]
                 },
                 "from": [
                   275.0,
                   175.0
                 ],
                 "tag": {
-                  "commentStart": 2629,
-                  "end": 2650,
-                  "start": 2629,
+                  "end": 2861,
+                  "start": 2840,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -1951,16 +2156,19 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2875,
+                    2960,
+                    0
+                  ]
                 },
                 "from": [
                   150.0,
                   175.0
                 ],
                 "tag": {
-                  "commentStart": 2720,
-                  "end": 2741,
-                  "start": 2720,
+                  "end": 2959,
+                  "start": 2938,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD002"
                 },
@@ -1976,7 +2184,11 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    2966,
+                    2973,
+                    0
+                  ]
                 },
                 "from": [
                   150.0,
@@ -2037,7 +2249,11 @@ description: Variables in memory after executing enclosure.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  2476,
+                  2511,
+                  0
+                ]
               }
             },
             "tags": {
@@ -2120,7 +2336,11 @@ description: Variables in memory after executing enclosure.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            4115,
+            4199,
+            0
+          ]
         }
       },
       "tags": {

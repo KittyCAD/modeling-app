@@ -7,14 +7,22 @@ description: Operations executed router-template-slate.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "type": "String",
+          "value": "XZ"
         },
-        "sourceRange": []
+        "sourceRange": [
+          498,
+          502,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      484,
+      503,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -34,11 +42,19 @@ description: Operations executed router-template-slate.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1376,
+          1377,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1348,
+      1378,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -47,7 +63,11 @@ description: Operations executed router-template-slate.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1356,
+        1365,
+        0
+      ]
     }
   },
   {
@@ -59,18 +79,30 @@ description: Operations executed router-template-slate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1434,
+          1444,
+          0
+        ]
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": []
+        "sourceRange": [
+          1446,
+          1453,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      1420,
+      1454,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -90,11 +122,19 @@ description: Operations executed router-template-slate.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2059,
+          2062,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      2031,
+      2063,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -103,7 +143,11 @@ description: Operations executed router-template-slate.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        2039,
+        2048,
+        0
+      ]
     }
   },
   {
@@ -115,18 +159,30 @@ description: Operations executed router-template-slate.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2118,
+          2128,
+          0
+        ]
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": []
+        "sourceRange": [
+          2130,
+          2137,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      2104,
+      2138,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -146,11 +202,19 @@ description: Operations executed router-template-slate.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2668,
+          2671,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      2640,
+      2672,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -159,7 +223,11 @@ description: Operations executed router-template-slate.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        2648,
+        2657,
+        0
+      ]
     }
   }
 ]

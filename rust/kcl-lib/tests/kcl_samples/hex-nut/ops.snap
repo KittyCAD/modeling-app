@@ -8,87 +8,39 @@ description: Operations executed hex-nut.kcl
     "name": "hexNut",
     "functionSourceRange": [
       503,
-      1054,
+      1048,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      1070,
+      1105,
+      0
+    ]
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "type": "String",
+          "value": "-XZ"
         },
-        "sourceRange": []
+        "sourceRange": [
+          559,
+          564,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      545,
+      565,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 0.15625,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -99,7 +51,11 @@ description: Operations executed hex-nut.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          904,
+          991,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -108,11 +64,19 @@ description: Operations executed hex-nut.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          993,
+          994,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
+    "sourceRange": [
+      899,
+      995,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -132,11 +96,19 @@ description: Operations executed hex-nut.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1020,
+          1023,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1003,
+      1024,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -145,7 +117,11 @@ description: Operations executed hex-nut.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1003,
+        1024,
+        0
+      ]
     }
   },
   {

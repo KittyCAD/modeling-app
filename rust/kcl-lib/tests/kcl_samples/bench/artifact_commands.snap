@@ -5,7 +5,11 @@ description: Artifact commands bench.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,25 +17,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -39,7 +29,49 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      361,
+      394,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      333,
+      353,
+      3
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -64,7 +96,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -80,14 +116,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -100,14 +144,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      402,
+      428,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -124,7 +176,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      436,
+      489,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -141,7 +197,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      497,
+      550,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -158,7 +218,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      558,
+      612,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -175,7 +239,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      620,
+      645,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -192,7 +260,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      653,
+      673,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -209,7 +281,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      681,
+      705,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -226,7 +302,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      713,
+      766,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -243,7 +323,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      774,
+      799,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -260,7 +344,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      807,
+      827,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -277,7 +365,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      835,
+      859,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -294,7 +386,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      867,
+      919,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -311,7 +407,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      927,
+      979,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -328,7 +428,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      987,
+      1012,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -345,7 +449,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1020,
+      1044,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -362,7 +470,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1052,
+      1105,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -379,7 +491,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1113,
+      1138,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -396,7 +512,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1146,
+      1173,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -413,7 +533,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1181,
+      1233,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -430,7 +554,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1241,
+      1276,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -447,7 +575,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1284,
+      1291,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -455,7 +587,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -471,7 +607,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -481,14 +621,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -496,7 +644,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -505,7 +657,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -515,7 +671,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -525,7 +685,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -535,7 +699,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -545,7 +713,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -555,7 +727,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -565,7 +741,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -575,7 +755,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -585,7 +769,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -595,7 +783,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -605,7 +797,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -615,7 +811,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -625,7 +825,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -635,7 +839,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -645,7 +853,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -655,7 +867,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -665,7 +881,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -675,7 +895,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -685,7 +909,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -695,7 +923,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -705,7 +937,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -715,7 +951,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -725,7 +965,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -735,7 +979,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -745,7 +993,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -755,7 +1007,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -765,7 +1021,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -775,7 +1035,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -785,7 +1049,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -795,7 +1063,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -805,7 +1077,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -815,7 +1091,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -825,7 +1105,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -835,7 +1119,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -845,7 +1133,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -855,7 +1147,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -865,7 +1161,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -875,7 +1175,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -885,7 +1189,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -895,7 +1203,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -905,7 +1217,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      333,
+      353,
+      3
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -930,7 +1246,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -946,14 +1266,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -966,14 +1294,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      402,
+      428,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -990,7 +1326,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      436,
+      489,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1007,7 +1347,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      497,
+      550,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1024,7 +1368,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      558,
+      612,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1041,7 +1389,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      620,
+      645,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1058,7 +1410,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      653,
+      673,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1075,7 +1431,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      681,
+      705,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1092,7 +1452,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      713,
+      766,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1109,7 +1473,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      774,
+      799,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1126,7 +1494,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      807,
+      827,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1143,7 +1515,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      835,
+      859,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1160,7 +1536,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      867,
+      919,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1177,7 +1557,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      927,
+      979,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1194,7 +1578,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      987,
+      1012,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1211,7 +1599,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1020,
+      1044,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1228,7 +1620,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1052,
+      1105,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1245,7 +1641,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1113,
+      1138,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1262,7 +1662,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1146,
+      1173,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1279,7 +1683,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1181,
+      1233,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1296,7 +1704,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1241,
+      1276,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1313,7 +1725,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1284,
+      1291,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1321,7 +1737,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1337,7 +1757,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1347,14 +1771,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1362,7 +1794,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1371,7 +1807,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1381,7 +1821,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1391,7 +1835,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1401,7 +1849,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1411,7 +1863,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1421,7 +1877,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1431,7 +1891,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1441,7 +1905,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1451,7 +1919,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1461,7 +1933,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1471,7 +1947,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1481,7 +1961,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1491,7 +1975,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1501,7 +1989,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1511,7 +2003,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1521,7 +2017,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1531,7 +2031,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1541,7 +2045,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1551,7 +2059,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1561,7 +2073,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1571,7 +2087,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1581,7 +2101,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1591,7 +2115,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1601,7 +2129,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1611,7 +2143,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1621,7 +2157,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1631,7 +2171,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1641,7 +2185,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1651,7 +2199,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1661,7 +2213,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1671,7 +2227,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1681,7 +2241,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1691,7 +2255,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1701,7 +2269,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1711,7 +2283,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1721,7 +2297,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1731,7 +2311,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1741,7 +2325,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1751,7 +2339,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1761,7 +2353,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1771,7 +2367,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1497,
+      1543,
+      3
+    ],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",
@@ -1784,7 +2384,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1546,
+      1593,
+      3
+    ],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",
@@ -1797,7 +2401,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      825,
+      869,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1822,7 +2430,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      825,
+      869,
+      0
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -1836,7 +2448,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1845,21 +2461,29 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1872,14 +2496,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      402,
+      428,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1896,7 +2528,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      436,
+      489,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1913,7 +2549,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      497,
+      550,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1930,7 +2570,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      558,
+      612,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1947,7 +2591,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      620,
+      645,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1964,7 +2612,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      653,
+      673,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1981,7 +2633,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      681,
+      705,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1998,7 +2654,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      713,
+      766,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2015,7 +2675,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      774,
+      799,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2032,7 +2696,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      807,
+      827,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2049,7 +2717,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      835,
+      859,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2066,7 +2738,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      867,
+      919,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2083,7 +2759,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      927,
+      979,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2100,7 +2780,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      987,
+      1012,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2117,7 +2801,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1020,
+      1044,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2134,7 +2822,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1052,
+      1105,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2151,7 +2843,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1113,
+      1138,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2168,7 +2864,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1146,
+      1173,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2185,7 +2885,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1181,
+      1233,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2202,7 +2906,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1241,
+      1276,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2219,7 +2927,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1284,
+      1291,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2227,7 +2939,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2236,14 +2952,18 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2253,14 +2973,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2268,7 +2996,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2277,7 +3009,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2287,7 +3023,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2297,7 +3037,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2307,7 +3051,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2317,7 +3065,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2327,7 +3079,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2337,7 +3093,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2347,7 +3107,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2357,7 +3121,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2367,7 +3135,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2377,7 +3149,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2387,7 +3163,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2397,7 +3177,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2407,7 +3191,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2417,7 +3205,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2427,7 +3219,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2437,7 +3233,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2447,7 +3247,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2457,7 +3261,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2467,7 +3275,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2477,7 +3289,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2487,7 +3303,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2497,7 +3317,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2507,7 +3331,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2517,7 +3345,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2527,7 +3359,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2537,7 +3373,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2547,7 +3387,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2557,7 +3401,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2567,7 +3415,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2577,7 +3429,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2587,7 +3443,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2597,7 +3457,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2607,7 +3471,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2617,7 +3485,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2627,7 +3499,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2637,7 +3513,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2647,7 +3527,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2657,7 +3541,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2667,7 +3555,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2677,7 +3569,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2686,21 +3582,29 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2713,14 +3617,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      402,
+      428,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2737,7 +3649,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      436,
+      489,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2754,7 +3670,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      497,
+      550,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2771,7 +3691,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      558,
+      612,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2788,7 +3712,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      620,
+      645,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2805,7 +3733,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      653,
+      673,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2822,7 +3754,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      681,
+      705,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2839,7 +3775,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      713,
+      766,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2856,7 +3796,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      774,
+      799,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2873,7 +3817,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      807,
+      827,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2890,7 +3838,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      835,
+      859,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2907,7 +3859,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      867,
+      919,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2924,7 +3880,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      927,
+      979,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2941,7 +3901,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      987,
+      1012,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2958,7 +3922,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1020,
+      1044,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2975,7 +3943,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1052,
+      1105,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2992,7 +3964,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1113,
+      1138,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3009,7 +3985,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1146,
+      1173,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3026,7 +4006,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1181,
+      1233,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3043,7 +4027,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1241,
+      1276,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3060,7 +4048,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1284,
+      1291,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3068,7 +4060,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3077,14 +4073,18 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3094,14 +4094,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3109,7 +4117,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3118,7 +4130,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3128,7 +4144,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3138,7 +4158,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3148,7 +4172,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3158,7 +4186,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3168,7 +4200,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3178,7 +4214,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3188,7 +4228,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3198,7 +4242,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3208,7 +4256,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3218,7 +4270,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3228,7 +4284,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3238,7 +4298,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3248,7 +4312,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3258,7 +4326,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3268,7 +4340,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3278,7 +4354,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3288,7 +4368,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3298,7 +4382,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3308,7 +4396,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3318,7 +4410,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3328,7 +4424,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3338,7 +4438,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3348,7 +4452,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3358,7 +4466,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3368,7 +4480,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3378,7 +4494,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3388,7 +4508,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3398,7 +4522,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3408,7 +4536,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3418,7 +4550,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3428,7 +4564,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3438,7 +4578,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3448,7 +4592,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3458,7 +4606,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3468,7 +4620,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3478,7 +4634,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3488,7 +4648,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3498,7 +4662,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3508,7 +4676,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3518,7 +4690,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1497,
+      1543,
+      3
+    ],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",
@@ -3531,7 +4707,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1546,
+      1593,
+      3
+    ],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",
@@ -3544,7 +4724,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      879,
+      922,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -3569,7 +4753,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      879,
+      922,
+      0
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -3583,7 +4771,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3599,14 +4791,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3619,14 +4819,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      402,
+      428,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3643,7 +4851,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      436,
+      489,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3660,7 +4872,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      497,
+      550,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3677,7 +4893,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      558,
+      612,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3694,7 +4914,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      620,
+      645,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3711,7 +4935,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      653,
+      673,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3728,7 +4956,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      681,
+      705,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3745,7 +4977,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      713,
+      766,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3762,7 +4998,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      774,
+      799,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3779,7 +5019,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      807,
+      827,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3796,7 +5040,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      835,
+      859,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3813,7 +5061,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      867,
+      919,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3830,7 +5082,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      927,
+      979,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3847,7 +5103,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      987,
+      1012,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3864,7 +5124,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1020,
+      1044,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3881,7 +5145,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1052,
+      1105,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3898,7 +5166,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1113,
+      1138,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3915,7 +5187,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1146,
+      1173,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3932,7 +5208,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1181,
+      1233,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3949,7 +5229,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1241,
+      1276,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3966,7 +5250,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1284,
+      1291,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3974,7 +5262,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3990,7 +5282,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -4000,14 +5296,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4015,7 +5319,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4024,7 +5332,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4034,7 +5346,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4044,7 +5360,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4054,7 +5374,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4064,7 +5388,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4074,7 +5402,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4084,7 +5416,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4094,7 +5430,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4104,7 +5444,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4114,7 +5458,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4124,7 +5472,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4134,7 +5486,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4144,7 +5500,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4154,7 +5514,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4164,7 +5528,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4174,7 +5542,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4184,7 +5556,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4194,7 +5570,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4204,7 +5584,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4214,7 +5598,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4224,7 +5612,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4234,7 +5626,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4244,7 +5640,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4254,7 +5654,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4264,7 +5668,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4274,7 +5682,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4284,7 +5696,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4294,7 +5710,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4304,7 +5724,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4314,7 +5738,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4324,7 +5752,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4334,7 +5766,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4344,7 +5780,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4354,7 +5794,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4364,7 +5808,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4374,7 +5822,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4384,7 +5836,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4394,7 +5850,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4404,7 +5864,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4414,7 +5878,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1379,
+      1417,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4424,7 +5892,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4440,14 +5912,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -4460,14 +5940,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      402,
+      428,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4484,7 +5972,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      436,
+      489,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4501,7 +5993,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      497,
+      550,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4518,7 +6014,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      558,
+      612,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4535,7 +6035,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      620,
+      645,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4552,7 +6056,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      653,
+      673,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4569,7 +6077,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      681,
+      705,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4586,7 +6098,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      713,
+      766,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4603,7 +6119,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      774,
+      799,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4620,7 +6140,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      807,
+      827,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4637,7 +6161,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      835,
+      859,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4654,7 +6182,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      867,
+      919,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4671,7 +6203,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      927,
+      979,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4688,7 +6224,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      987,
+      1012,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4705,7 +6245,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1020,
+      1044,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4722,7 +6266,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1052,
+      1105,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4739,7 +6287,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1113,
+      1138,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4756,7 +6308,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1146,
+      1173,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4773,7 +6329,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1181,
+      1233,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4790,7 +6350,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1241,
+      1276,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4807,7 +6371,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1284,
+      1291,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4815,7 +6383,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4831,7 +6403,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -4841,14 +6417,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4856,7 +6440,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4865,7 +6453,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4875,7 +6467,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4885,7 +6481,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4895,7 +6495,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4905,7 +6509,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4915,7 +6523,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4925,7 +6537,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4935,7 +6551,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4945,7 +6565,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4955,7 +6579,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4965,7 +6593,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4975,7 +6607,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4985,7 +6621,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4995,7 +6635,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5005,7 +6649,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5015,7 +6663,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5025,7 +6677,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5035,7 +6691,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5045,7 +6705,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5055,7 +6719,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5065,7 +6733,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5075,7 +6747,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5085,7 +6761,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5095,7 +6775,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5105,7 +6789,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5115,7 +6803,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5125,7 +6817,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5135,7 +6831,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5145,7 +6845,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5155,7 +6859,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5165,7 +6873,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5175,7 +6887,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5185,7 +6901,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5195,7 +6915,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5205,7 +6929,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5215,7 +6943,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5225,7 +6957,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5235,7 +6971,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5245,7 +6985,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5255,7 +6999,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1455,
+      1494,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5265,7 +7013,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1497,
+      1543,
+      3
+    ],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",
@@ -5278,7 +7030,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1546,
+      1593,
+      3
+    ],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",
@@ -5291,7 +7047,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      981,
+      1025,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -5316,7 +7076,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      981,
+      1025,
+      0
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -5330,7 +7094,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1685,
+      1709,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5346,14 +7114,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1685,
+      1709,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1685,
+      1709,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -5366,14 +7142,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1685,
+      1709,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5389,14 +7173,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -5409,14 +7201,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5433,7 +7233,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5450,7 +7254,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5467,7 +7275,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5484,7 +7296,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5501,7 +7317,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5518,7 +7338,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -5526,7 +7350,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5542,7 +7370,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -5552,14 +7384,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -5567,7 +7407,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -5576,7 +7420,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5586,7 +7434,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5596,7 +7448,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5606,7 +7462,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5616,7 +7476,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5626,7 +7490,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5636,7 +7504,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5646,7 +7518,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5656,7 +7532,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5666,7 +7546,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5676,7 +7560,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5686,7 +7574,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1949,
+      1973,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5696,7 +7588,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1685,
+      1709,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5712,14 +7608,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1685,
+      1709,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1685,
+      1709,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -5732,14 +7636,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1685,
+      1709,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5755,14 +7667,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -5775,14 +7695,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5799,7 +7727,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5816,7 +7748,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5833,7 +7769,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5850,7 +7790,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5867,7 +7811,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5884,7 +7832,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -5892,7 +7844,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5908,7 +7864,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -5918,14 +7878,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -5933,7 +7901,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -5942,7 +7914,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5952,7 +7928,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5962,7 +7942,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5972,7 +7956,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5982,7 +7970,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5992,7 +7984,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6002,7 +7998,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6012,7 +8012,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6022,7 +8026,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6032,7 +8040,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6042,7 +8054,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6052,7 +8068,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2015,
+      2039,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6062,7 +8082,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1076,
+      1143,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -6087,7 +8111,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1076,
+      1143,
+      0
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -6101,7 +8129,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2123,
+      2150,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -6117,14 +8149,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2123,
+      2150,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2123,
+      2150,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -6137,14 +8177,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2123,
+      2150,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2158,
+      2180,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6161,7 +8209,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2188,
+      2210,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6178,7 +8230,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2218,
+      2240,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6195,7 +8251,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2248,
+      2271,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6212,7 +8272,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2279,
+      2302,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6229,7 +8293,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2310,
+      2345,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6246,7 +8314,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2353,
+      2360,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -6254,7 +8326,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2368,
+      2432,
+      3
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -6323,7 +8399,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -6339,7 +8419,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -6349,14 +8433,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -6364,7 +8456,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -6373,7 +8469,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6383,7 +8483,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6393,7 +8497,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6403,7 +8511,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6413,7 +8525,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6423,7 +8539,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6433,7 +8553,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6443,7 +8567,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6453,7 +8581,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6463,7 +8595,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6473,7 +8609,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6483,7 +8623,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6493,7 +8637,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -6509,7 +8657,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -6519,14 +8671,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -6534,7 +8694,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -6543,7 +8707,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6553,7 +8721,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6563,7 +8735,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6573,7 +8749,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6583,7 +8763,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6593,7 +8777,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6603,7 +8791,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6613,7 +8805,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6623,7 +8819,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6633,7 +8833,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6643,7 +8847,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6653,7 +8861,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6663,7 +8875,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -6679,7 +8895,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -6689,14 +8909,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -6704,7 +8932,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -6713,7 +8945,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6723,7 +8959,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6733,7 +8973,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6743,7 +8987,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6753,7 +9001,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6763,7 +9015,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6773,7 +9029,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6783,7 +9043,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6793,7 +9057,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6803,7 +9071,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6813,7 +9085,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -6823,7 +9099,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2523,
+      2547,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -6833,7 +9113,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1213,
+      1280,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -6858,7 +9142,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1213,
+      1280,
+      0
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -6872,7 +9160,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2632,
+      2661,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -6888,14 +9180,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2632,
+      2661,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2632,
+      2661,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -6908,14 +9208,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2632,
+      2661,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2669,
+      2704,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6932,7 +9240,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2712,
+      2737,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6949,7 +9261,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2745,
+      2781,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6966,7 +9282,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2789,
+      2813,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -6983,7 +9303,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2821,
+      2855,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7000,7 +9324,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2863,
+      2898,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7017,7 +9345,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2906,
+      2913,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -7025,7 +9357,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2921,
+      2987,
+      3
+    ],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -7065,7 +9401,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -7081,7 +9421,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -7091,14 +9435,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -7106,7 +9458,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -7115,7 +9471,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7125,7 +9485,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7135,7 +9499,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7145,7 +9513,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7155,7 +9527,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7165,7 +9541,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7175,7 +9555,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7185,7 +9569,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7195,7 +9583,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7205,7 +9597,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7215,7 +9611,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7225,7 +9625,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7235,7 +9639,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -7251,7 +9659,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -7261,14 +9673,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -7276,7 +9696,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -7285,7 +9709,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7295,7 +9723,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7305,7 +9737,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7315,7 +9751,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7325,7 +9765,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7335,7 +9779,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7345,7 +9793,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7355,7 +9807,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7365,7 +9821,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7375,7 +9835,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7385,7 +9849,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7395,7 +9863,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3083,
+      3107,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7405,7 +9877,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3748,
+      3783,
+      3
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -7430,7 +9906,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3748,
+      3783,
+      3
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -7444,7 +9924,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3215,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -7453,21 +9937,29 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3215,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3215,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -7480,14 +9972,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3215,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3223,
+      3242,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7504,7 +10004,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3250,
+      3340,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7529,7 +10033,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3814,
+      3845,
+      3
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -7538,7 +10046,7 @@ description: Artifact commands bench.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 1.0,
+        "x": -1.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -7554,7 +10062,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3814,
+      3845,
+      3
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -7568,7 +10080,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3440,
+      3473,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -7576,22 +10092,30 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.0,
+        "x": 0.0,
         "y": 1.0,
-        "z": -0.0
+        "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3440,
+      3473,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3440,
+      3473,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -7604,14 +10128,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3440,
+      3473,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3481,
+      3500,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7628,7 +10160,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3508,
+      3530,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7645,7 +10181,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3538,
+      3561,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7662,7 +10202,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3569,
+      3589,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7679,7 +10223,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3597,
+      3621,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7696,7 +10244,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3629,
+      3652,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7713,7 +10265,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3660,
+      3667,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -7721,7 +10277,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "sweep",
       "target": "[uuid]",
@@ -7732,7 +10292,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -7740,7 +10304,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -7749,7 +10317,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7759,7 +10331,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7769,7 +10345,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7779,7 +10359,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7789,7 +10373,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7799,7 +10387,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7809,7 +10401,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7819,7 +10415,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7829,7 +10429,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7839,7 +10443,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7849,7 +10457,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7859,7 +10471,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7869,7 +10485,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -7879,7 +10499,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -7889,7 +10513,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3748,
+      3783,
+      3
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -7914,7 +10542,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3748,
+      3783,
+      3
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -7928,7 +10560,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3215,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -7937,21 +10573,29 @@ description: Artifact commands bench.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": -1.0,
-        "y": -0.0,
-        "z": -0.0
+        "y": 0.0,
+        "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3215,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3215,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -7964,14 +10608,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3215,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3223,
+      3242,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -7988,7 +10640,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3250,
+      3340,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -8013,7 +10669,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3814,
+      3845,
+      3
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -8022,7 +10682,7 @@ description: Artifact commands bench.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 1.0,
+        "x": -1.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -8038,7 +10698,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3814,
+      3845,
+      3
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -8052,7 +10716,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3440,
+      3473,
+      3
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -8060,22 +10728,30 @@ description: Artifact commands bench.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.0,
+        "x": 0.0,
         "y": 1.0,
-        "z": -0.0
+        "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3440,
+      3473,
+      3
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3440,
+      3473,
+      3
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -8088,14 +10764,22 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3440,
+      3473,
+      3
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3481,
+      3500,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -8112,7 +10796,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3508,
+      3530,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -8129,7 +10817,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3538,
+      3561,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -8146,7 +10838,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3569,
+      3589,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -8163,7 +10859,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3597,
+      3621,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -8180,7 +10880,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3629,
+      3652,
+      3
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -8197,7 +10901,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3660,
+      3667,
+      3
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -8205,7 +10913,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "sweep",
       "target": "[uuid]",
@@ -8216,7 +10928,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -8224,7 +10940,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -8233,7 +10953,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -8243,7 +10967,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -8253,7 +10981,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -8263,7 +10995,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -8273,7 +11009,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -8283,7 +11023,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -8293,7 +11037,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -8303,7 +11051,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -8313,7 +11065,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -8323,7 +11079,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -8333,7 +11093,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -8343,7 +11107,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -8353,7 +11121,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -8363,7 +11135,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3857,
+      3884,
+      3
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -8373,7 +11149,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8382,7 +11162,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8391,7 +11175,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8400,7 +11188,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      361,
+      394,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8409,7 +11201,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1685,
+      1709,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8418,7 +11214,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8427,7 +11227,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1685,
+      1709,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8436,7 +11240,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1717,
+      1847,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8445,7 +11253,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2123,
+      2150,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8454,7 +11266,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2632,
+      2661,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8463,7 +11279,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3215,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8472,7 +11292,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3440,
+      3473,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8481,7 +11305,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3215,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -8490,7 +11318,11 @@ description: Artifact commands bench.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3440,
+      3473,
+      3
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

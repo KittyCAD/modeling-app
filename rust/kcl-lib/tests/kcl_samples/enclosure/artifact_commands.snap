@@ -5,7 +5,11 @@ description: Artifact commands enclosure.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,25 +17,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -39,7 +29,49 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      82,
+      115,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      243,
+      262,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -64,7 +96,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      268,
+      293,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -80,14 +116,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      268,
+      293,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      268,
+      293,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -100,14 +144,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      268,
+      293,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      299,
+      365,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -124,7 +176,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      371,
+      499,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -141,7 +197,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      505,
+      651,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -158,7 +218,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      657,
+      742,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -175,7 +239,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      748,
+      755,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -183,7 +251,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -199,7 +271,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -209,14 +285,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -224,7 +308,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -233,7 +321,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -243,7 +335,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -253,7 +349,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -263,7 +363,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -273,7 +377,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -283,7 +391,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -293,7 +405,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -303,7 +419,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      769,
+      804,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -313,7 +433,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      878,
+      919,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -323,7 +447,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      930,
+      971,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -333,7 +461,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      982,
+      1023,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -343,7 +475,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1034,
+      1075,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -353,7 +489,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      810,
+      1091,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -365,7 +505,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      810,
+      1091,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -377,7 +521,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      810,
+      1091,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -389,7 +537,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      810,
+      1091,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -401,7 +553,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1170,
+      1240,
+      0
+    ],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",
@@ -414,7 +570,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1655,
+      1678,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -439,7 +599,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -455,14 +619,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -475,14 +647,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -507,7 +687,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -515,7 +699,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -531,14 +719,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -551,14 +747,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -583,7 +787,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -591,7 +799,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1804,
+      1907,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -600,7 +812,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1804,
+      1907,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -609,7 +825,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -625,7 +845,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -635,14 +859,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -650,7 +882,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -659,7 +895,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -669,7 +909,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -679,7 +923,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -689,7 +937,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -699,7 +951,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1655,
+      1678,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -724,7 +980,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -740,14 +1000,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -760,14 +1028,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -792,7 +1068,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -800,7 +1080,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -816,14 +1100,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -836,14 +1128,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -868,7 +1168,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -876,7 +1180,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1804,
+      1907,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -885,7 +1193,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1804,
+      1907,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -894,7 +1206,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -910,7 +1226,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -920,14 +1240,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -935,7 +1263,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -944,7 +1276,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -954,7 +1290,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -964,7 +1304,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -974,7 +1318,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -984,7 +1332,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1655,
+      1678,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1009,7 +1361,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1025,14 +1381,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1045,14 +1409,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1077,7 +1449,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1085,7 +1461,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1101,14 +1481,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1121,14 +1509,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1153,7 +1549,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1161,7 +1561,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1804,
+      1907,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1170,7 +1574,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1804,
+      1907,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1179,7 +1587,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1195,7 +1607,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1205,14 +1621,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1220,7 +1644,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1229,7 +1657,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1239,7 +1671,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1249,7 +1685,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1259,7 +1699,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1269,7 +1713,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1655,
+      1678,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1294,7 +1742,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1310,14 +1762,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1330,14 +1790,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1362,7 +1830,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1370,7 +1842,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1386,14 +1862,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1406,14 +1890,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1438,7 +1930,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1446,7 +1942,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1804,
+      1907,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1455,7 +1955,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1804,
+      1907,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1464,7 +1968,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1480,7 +1988,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1490,14 +2002,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1505,7 +2025,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1514,7 +2038,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1524,7 +2052,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1534,7 +2066,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1544,7 +2080,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1923,
+      1974,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1554,7 +2094,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2451,
+      2470,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1579,7 +2123,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2476,
+      2511,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1595,14 +2143,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2476,
+      2511,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2476,
+      2511,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1615,14 +2171,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2476,
+      2511,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2517,
+      2583,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1639,7 +2203,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2589,
+      2717,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1656,7 +2224,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2723,
+      2869,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1673,7 +2245,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2875,
+      2960,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1690,7 +2266,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2966,
+      2973,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1698,7 +2278,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2984,
+      3139,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1714,14 +2298,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2984,
+      3139,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2984,
+      3139,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1734,14 +2326,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2984,
+      3139,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2984,
+      3139,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1766,7 +2366,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2984,
+      3139,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1774,7 +2378,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2979,
+      3143,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1783,7 +2391,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2979,
+      3143,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1792,7 +2404,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3154,
+      3320,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1808,14 +2424,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3154,
+      3320,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3154,
+      3320,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1828,14 +2452,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3154,
+      3320,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3154,
+      3320,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1860,7 +2492,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3154,
+      3320,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1868,7 +2504,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3149,
+      3324,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1877,7 +2517,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3149,
+      3324,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1886,7 +2530,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3335,
+      3492,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1902,14 +2550,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3335,
+      3492,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3335,
+      3492,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1922,14 +2578,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3335,
+      3492,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3335,
+      3492,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1954,7 +2618,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3335,
+      3492,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1962,7 +2630,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3330,
+      3496,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1971,7 +2643,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3330,
+      3496,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1980,7 +2656,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3507,
+      3675,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1996,14 +2676,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3507,
+      3675,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3507,
+      3675,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2016,14 +2704,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3507,
+      3675,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3507,
+      3675,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2048,7 +2744,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3507,
+      3675,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2056,7 +2756,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3502,
+      3679,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2065,7 +2769,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3502,
+      3679,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2074,7 +2782,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2090,7 +2802,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2100,14 +2816,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2115,7 +2839,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2124,7 +2852,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2134,7 +2866,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2144,7 +2880,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2154,7 +2894,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2164,7 +2908,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2174,7 +2922,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2184,7 +2936,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2194,7 +2950,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2204,7 +2964,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2214,7 +2978,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2224,7 +2992,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2234,7 +3006,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2244,7 +3020,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2254,7 +3034,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2264,7 +3048,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2274,7 +3062,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3693,
+      3735,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2284,7 +3076,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3809,
+      3850,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2294,7 +3090,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3861,
+      3902,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2304,7 +3104,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3913,
+      3954,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2314,7 +3118,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3965,
+      4006,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2324,7 +3132,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3741,
+      4022,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2336,7 +3148,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3741,
+      4022,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2348,7 +3164,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3741,
+      4022,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2360,7 +3180,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3741,
+      4022,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2372,7 +3196,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4115,
+      4199,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2384,14 +3212,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4115,
+      4199,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4115,
+      4199,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2404,14 +3240,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4115,
+      4199,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4205,
+      4293,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2428,7 +3272,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4299,
+      4449,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2445,7 +3293,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4455,
+      4601,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2462,7 +3314,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4607,
+      4692,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2479,7 +3335,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4698,
+      4705,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2487,7 +3347,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4716,
+      4887,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2499,14 +3363,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4716,
+      4887,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4716,
+      4887,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2519,14 +3391,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4716,
+      4887,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4716,
+      4887,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2551,7 +3431,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4716,
+      4887,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2559,7 +3443,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4711,
+      4891,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2568,7 +3456,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4711,
+      4891,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2577,7 +3469,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4902,
+      5084,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2589,14 +3485,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4902,
+      5084,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4902,
+      5084,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2609,14 +3513,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4902,
+      5084,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4902,
+      5084,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2641,7 +3553,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4902,
+      5084,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2649,7 +3565,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4897,
+      5088,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2658,7 +3578,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4897,
+      5088,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2667,7 +3591,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5099,
+      5272,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2679,14 +3607,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5099,
+      5272,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5099,
+      5272,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2699,14 +3635,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5099,
+      5272,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5099,
+      5272,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2731,7 +3675,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5099,
+      5272,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2739,7 +3687,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5094,
+      5276,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2748,7 +3700,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5094,
+      5276,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2757,7 +3713,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5287,
+      5471,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2769,14 +3729,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5287,
+      5471,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5287,
+      5471,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2789,14 +3757,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5287,
+      5471,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5287,
+      5471,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2821,7 +3797,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5287,
+      5471,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2829,7 +3809,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5282,
+      5475,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2838,7 +3822,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5282,
+      5475,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2847,7 +3835,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2859,7 +3851,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2869,14 +3865,22 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2884,7 +3888,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2893,7 +3901,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2903,7 +3915,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2913,7 +3929,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2923,7 +3943,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2933,7 +3957,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2943,7 +3971,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2953,7 +3985,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2963,7 +3999,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2973,7 +4013,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2983,7 +4027,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2993,7 +4041,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3003,7 +4055,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3013,7 +4069,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3023,7 +4083,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3033,7 +4097,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3043,7 +4111,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5489,
+      5531,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3053,7 +4125,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5605,
+      5646,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3063,7 +4139,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5657,
+      5698,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3073,7 +4153,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5709,
+      5750,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3083,7 +4167,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5761,
+      5802,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3093,7 +4181,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3102,7 +4194,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3111,7 +4207,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3120,7 +4220,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3129,7 +4233,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3138,7 +4246,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3147,7 +4259,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1686,
+      1796,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3156,7 +4272,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1809,
+      1903,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3165,7 +4285,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5537,
+      5818,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3177,7 +4301,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5537,
+      5818,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3189,7 +4317,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5537,
+      5818,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3201,7 +4333,11 @@ description: Artifact commands enclosure.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5537,
+      5818,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",

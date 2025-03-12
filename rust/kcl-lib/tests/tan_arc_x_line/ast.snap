@@ -6,22 +6,18 @@ description: Result of parsing tan_arc_x_line.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 0,
         "declaration": {
-          "commentStart": 0,
-          "end": 0,
+          "end": 10,
           "id": {
-            "commentStart": 0,
-            "end": 0,
+            "end": 6,
             "name": "startX",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 9,
-            "end": 0,
+            "end": 10,
             "raw": "0",
-            "start": 0,
+            "start": 9,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -32,29 +28,25 @@ description: Result of parsing tan_arc_x_line.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 0,
+        "end": 10,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 11,
         "declaration": {
-          "commentStart": 11,
-          "end": 0,
+          "end": 21,
           "id": {
-            "commentStart": 11,
-            "end": 0,
+            "end": 17,
             "name": "startY",
-            "start": 0,
+            "start": 11,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 20,
-            "end": 0,
+            "end": 21,
             "raw": "0",
-            "start": 0,
+            "start": 20,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -62,32 +54,28 @@ description: Result of parsing tan_arc_x_line.kcl
               "suffix": "None"
             }
           },
-          "start": 0,
+          "start": 11,
           "type": "VariableDeclarator"
         },
-        "end": 0,
+        "end": 21,
         "kind": "const",
-        "start": 0,
+        "start": 11,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 22,
         "declaration": {
-          "commentStart": 22,
-          "end": 0,
+          "end": 39,
           "id": {
-            "commentStart": 22,
-            "end": 0,
+            "end": 33,
             "name": "angleOffset",
-            "start": 0,
+            "start": 22,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 36,
-            "end": 0,
+            "end": 39,
             "raw": "135",
-            "start": 0,
+            "start": 36,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -95,32 +83,28 @@ description: Result of parsing tan_arc_x_line.kcl
               "suffix": "None"
             }
           },
-          "start": 0,
+          "start": 22,
           "type": "VariableDeclarator"
         },
-        "end": 0,
+        "end": 39,
         "kind": "const",
-        "start": 0,
+        "start": 22,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 40,
         "declaration": {
-          "commentStart": 40,
-          "end": 0,
+          "end": 45,
           "id": {
-            "commentStart": 40,
-            "end": 0,
+            "end": 41,
             "name": "r",
-            "start": 0,
+            "start": 40,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 44,
-            "end": 0,
+            "end": 45,
             "raw": "1",
-            "start": 0,
+            "start": 44,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -128,32 +112,28 @@ description: Result of parsing tan_arc_x_line.kcl
               "suffix": "None"
             }
           },
-          "start": 0,
+          "start": 40,
           "type": "VariableDeclarator"
         },
-        "end": 0,
+        "end": 45,
         "kind": "const",
-        "start": 0,
+        "start": 40,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 46,
         "declaration": {
-          "commentStart": 46,
-          "end": 0,
+          "end": 62,
           "id": {
-            "commentStart": 46,
-            "end": 0,
+            "end": 56,
             "name": "angleStart",
-            "start": 0,
+            "start": 46,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 59,
-            "end": 0,
+            "end": 62,
             "raw": "110",
-            "start": 0,
+            "start": 59,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -161,582 +141,80 @@ description: Result of parsing tan_arc_x_line.kcl
               "suffix": "None"
             }
           },
-          "start": 0,
+          "start": 46,
           "type": "VariableDeclarator"
         },
-        "end": 0,
+        "end": 62,
         "kind": "const",
-        "start": 0,
+        "start": 46,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 62,
-        "end": 0,
+        "end": 458,
         "expression": {
           "body": [
             {
               "arguments": [
                 {
-                  "commentStart": 78,
-                  "end": 0,
+                  "end": 82,
                   "raw": "'XY'",
-                  "start": 0,
+                  "start": 78,
                   "type": "Literal",
                   "type": "Literal",
                   "value": "XY"
                 }
               ],
               "callee": {
-                "abs_path": false,
-                "commentStart": 64,
-                "end": 0,
-                "name": {
-                  "commentStart": 64,
-                  "end": 0,
-                  "name": "startSketchOn",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
+                "end": 77,
+                "name": "startSketchOn",
+                "start": 64,
+                "type": "Identifier"
               },
-              "commentStart": 64,
-              "end": 0,
-              "start": 0,
+              "end": 83,
+              "start": 64,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
-                  "commentStart": 104,
                   "elements": [
                     {
-                      "abs_path": false,
-                      "commentStart": 105,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 105,
-                        "end": 0,
-                        "name": "startX",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
+                      "end": 111,
+                      "name": "startX",
+                      "start": 105,
+                      "type": "Identifier",
+                      "type": "Identifier"
                     },
                     {
-                      "abs_path": false,
-                      "commentStart": 113,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 113,
-                        "end": 0,
-                        "name": "startY",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
+                      "end": 119,
+                      "name": "startY",
+                      "start": 113,
+                      "type": "Identifier",
+                      "type": "Identifier"
                     }
                   ],
-                  "end": 0,
-                  "start": 0,
+                  "end": 120,
+                  "start": 104,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 },
                 {
-                  "commentStart": 122,
-                  "end": 0,
-                  "start": 0,
+                  "end": 123,
+                  "start": 122,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               ],
               "callee": {
-                "abs_path": false,
-                "commentStart": 89,
-                "end": 0,
-                "name": {
-                  "commentStart": 89,
-                  "end": 0,
-                  "name": "startProfileAt",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
+                "end": 103,
+                "name": "startProfileAt",
+                "start": 89,
+                "type": "Identifier"
               },
-              "commentStart": 89,
-              "end": 0,
-              "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
-            },
-            {
-              "arguments": [
-                {
-                  "commentStart": 141,
-                  "end": 0,
-                  "properties": [
-                    {
-                      "commentStart": 143,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 143,
-                        "end": 0,
-                        "name": "angle",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "abs_path": false,
-                        "commentStart": 151,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 151,
-                          "end": 0,
-                          "name": "angleStart",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "commentStart": 163,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 163,
-                        "end": 0,
-                        "name": "length",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 172,
-                        "end": 0,
-                        "raw": ".000001",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.000001,
-                          "suffix": "None"
-                        }
-                      }
-                    }
-                  ],
-                  "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                },
-                {
-                  "commentStart": 183,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
-              ],
-              "callee": {
-                "abs_path": false,
-                "commentStart": 130,
-                "end": 0,
-                "name": {
-                  "commentStart": 130,
-                  "end": 0,
-                  "name": "angledLine",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
-              },
-              "commentStart": 130,
-              "end": 0,
-              "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
-            },
-            {
-              "arguments": [
-                {
-                  "commentStart": 205,
-                  "end": 0,
-                  "properties": [
-                    {
-                      "commentStart": 207,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 207,
-                        "end": 0,
-                        "name": "offset",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "abs_path": false,
-                        "commentStart": 216,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 216,
-                          "end": 0,
-                          "name": "angleOffset",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "commentStart": 229,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 229,
-                        "end": 0,
-                        "name": "radius",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "abs_path": false,
-                        "commentStart": 238,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 238,
-                          "end": 0,
-                          "name": "r",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    }
-                  ],
-                  "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                },
-                {
-                  "commentStart": 243,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                },
-                {
-                  "commentStart": 246,
-                  "end": 0,
-                  "start": 0,
-                  "type": "TagDeclarator",
-                  "type": "TagDeclarator",
-                  "value": "arc1"
-                }
-              ],
-              "callee": {
-                "abs_path": false,
-                "commentStart": 191,
-                "end": 0,
-                "name": {
-                  "commentStart": 191,
-                  "end": 0,
-                  "name": "tangentialArc",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
-              },
-              "commentStart": 191,
-              "end": 0,
-              "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
-            },
-            {
-              "arguments": [
-                {
-                  "commentStart": 272,
-                  "end": 0,
-                  "properties": [
-                    {
-                      "commentStart": 281,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 281,
-                        "end": 0,
-                        "name": "offset",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "abs_path": false,
-                        "commentStart": 290,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 290,
-                          "end": 0,
-                          "name": "angleOffset",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    {
-                      "commentStart": 310,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 310,
-                        "end": 0,
-                        "name": "radius",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 319,
-                        "end": 0,
-                        "left": {
-                          "commentStart": 319,
-                          "end": 0,
-                          "raw": "0.5",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.5,
-                            "suffix": "None"
-                          }
-                        },
-                        "operator": "*",
-                        "right": {
-                          "abs_path": false,
-                          "commentStart": 325,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 325,
-                            "end": 0,
-                            "name": "r",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      }
-                    }
-                  ],
-                  "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                },
-                {
-                  "commentStart": 335,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                },
-                {
-                  "commentStart": 338,
-                  "end": 0,
-                  "start": 0,
-                  "type": "TagDeclarator",
-                  "type": "TagDeclarator",
-                  "value": "arc2"
-                }
-              ],
-              "callee": {
-                "abs_path": false,
-                "commentStart": 258,
-                "end": 0,
-                "name": {
-                  "commentStart": 258,
-                  "end": 0,
-                  "name": "tangentialArc",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
-              },
-              "commentStart": 258,
-              "end": 0,
-              "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
-            },
-            {
-              "arguments": [
-                {
-                  "commentStart": 364,
-                  "end": 0,
-                  "properties": [
-                    {
-                      "commentStart": 373,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 373,
-                        "end": 0,
-                        "name": "offset",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "argument": {
-                          "abs_path": false,
-                          "commentStart": 383,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 383,
-                            "end": 0,
-                            "name": "angleOffset",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "commentStart": 382,
-                        "end": 0,
-                        "operator": "-",
-                        "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    },
-                    {
-                      "commentStart": 403,
-                      "end": 0,
-                      "key": {
-                        "commentStart": 403,
-                        "end": 0,
-                        "name": "radius",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "start": 0,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "commentStart": 412,
-                        "end": 0,
-                        "left": {
-                          "commentStart": 412,
-                          "end": 0,
-                          "raw": "0.5",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 0.5,
-                            "suffix": "None"
-                          }
-                        },
-                        "operator": "*",
-                        "right": {
-                          "abs_path": false,
-                          "commentStart": 418,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 418,
-                            "end": 0,
-                            "name": "r",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      }
-                    }
-                  ],
-                  "start": 0,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                },
-                {
-                  "commentStart": 428,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                },
-                {
-                  "commentStart": 431,
-                  "end": 0,
-                  "start": 0,
-                  "type": "TagDeclarator",
-                  "type": "TagDeclarator",
-                  "value": "arc3"
-                }
-              ],
-              "callee": {
-                "abs_path": false,
-                "commentStart": 350,
-                "end": 0,
-                "name": {
-                  "commentStart": 350,
-                  "end": 0,
-                  "name": "tangentialArc",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
-              },
-              "commentStart": 350,
-              "end": 0,
-              "start": 0,
+              "end": 124,
+              "start": 89,
               "type": "CallExpression",
               "type": "CallExpression"
             },
@@ -745,17 +223,322 @@ description: Result of parsing tan_arc_x_line.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "commentStart": 449,
-                    "end": 0,
-                    "name": "endAbsolute",
-                    "start": 0,
+                    "end": 146,
+                    "name": "angle",
+                    "start": 141,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "commentStart": 463,
-                    "end": 0,
+                    "end": 159,
+                    "name": "angleStart",
+                    "start": 149,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 167,
+                    "name": "length",
+                    "start": 161,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 177,
+                    "raw": ".000001",
+                    "start": 170,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.000001,
+                      "suffix": "None"
+                    }
+                  }
+                }
+              ],
+              "callee": {
+                "end": 140,
+                "name": "angledLine",
+                "start": 130,
+                "type": "Identifier"
+              },
+              "end": 178,
+              "start": 130,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
+            },
+            {
+              "arguments": [
+                {
+                  "end": 234,
+                  "properties": [
+                    {
+                      "end": 220,
+                      "key": {
+                        "end": 206,
+                        "name": "offset",
+                        "start": 200,
+                        "type": "Identifier"
+                      },
+                      "start": 200,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 220,
+                        "name": "angleOffset",
+                        "start": 209,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    },
+                    {
+                      "end": 232,
+                      "key": {
+                        "end": 228,
+                        "name": "radius",
+                        "start": 222,
+                        "type": "Identifier"
+                      },
+                      "start": 222,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 232,
+                        "name": "r",
+                        "start": 231,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    }
+                  ],
+                  "start": 198,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                },
+                {
+                  "end": 237,
+                  "start": 236,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                },
+                {
+                  "end": 244,
+                  "start": 239,
+                  "type": "TagDeclarator",
+                  "type": "TagDeclarator",
+                  "value": "arc1"
+                }
+              ],
+              "callee": {
+                "end": 197,
+                "name": "tangentialArc",
+                "start": 184,
+                "type": "Identifier"
+              },
+              "end": 245,
+              "start": 184,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "end": 326,
+                  "properties": [
+                    {
+                      "end": 294,
+                      "key": {
+                        "end": 280,
+                        "name": "offset",
+                        "start": 274,
+                        "type": "Identifier"
+                      },
+                      "start": 274,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 294,
+                        "name": "angleOffset",
+                        "start": 283,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    },
+                    {
+                      "end": 319,
+                      "key": {
+                        "end": 309,
+                        "name": "radius",
+                        "start": 303,
+                        "type": "Identifier"
+                      },
+                      "start": 303,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 319,
+                        "left": {
+                          "end": 315,
+                          "raw": "0.5",
+                          "start": 312,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.5,
+                            "suffix": "None"
+                          }
+                        },
+                        "operator": "*",
+                        "right": {
+                          "end": 319,
+                          "name": "r",
+                          "start": 318,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "start": 312,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      }
+                    }
+                  ],
+                  "start": 265,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                },
+                {
+                  "end": 329,
+                  "start": 328,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                },
+                {
+                  "end": 336,
+                  "start": 331,
+                  "type": "TagDeclarator",
+                  "type": "TagDeclarator",
+                  "value": "arc2"
+                }
+              ],
+              "callee": {
+                "end": 264,
+                "name": "tangentialArc",
+                "start": 251,
+                "type": "Identifier"
+              },
+              "end": 337,
+              "start": 251,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "end": 419,
+                  "properties": [
+                    {
+                      "end": 387,
+                      "key": {
+                        "end": 372,
+                        "name": "offset",
+                        "start": 366,
+                        "type": "Identifier"
+                      },
+                      "start": 366,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "argument": {
+                          "end": 387,
+                          "name": "angleOffset",
+                          "start": 376,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "end": 387,
+                        "operator": "-",
+                        "start": 375,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    },
+                    {
+                      "end": 412,
+                      "key": {
+                        "end": 402,
+                        "name": "radius",
+                        "start": 396,
+                        "type": "Identifier"
+                      },
+                      "start": 396,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 412,
+                        "left": {
+                          "end": 408,
+                          "raw": "0.5",
+                          "start": 405,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.5,
+                            "suffix": "None"
+                          }
+                        },
+                        "operator": "*",
+                        "right": {
+                          "end": 412,
+                          "name": "r",
+                          "start": 411,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "start": 405,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      }
+                    }
+                  ],
+                  "start": 357,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                },
+                {
+                  "end": 422,
+                  "start": 421,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                },
+                {
+                  "end": 429,
+                  "start": 424,
+                  "type": "TagDeclarator",
+                  "type": "TagDeclarator",
+                  "value": "arc3"
+                }
+              ],
+              "callee": {
+                "end": 356,
+                "name": "tangentialArc",
+                "start": 343,
+                "type": "Identifier"
+              },
+              "end": 430,
+              "start": 343,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 453,
+                    "name": "endAbsolute",
+                    "start": 442,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 457,
                     "raw": "1",
-                    "start": 0,
+                    "start": 456,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -766,48 +549,35 @@ description: Result of parsing tan_arc_x_line.kcl
                 }
               ],
               "callee": {
-                "abs_path": false,
-                "commentStart": 443,
-                "end": 0,
-                "name": {
-                  "commentStart": 443,
-                  "end": 0,
-                  "name": "xLine",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
+                "end": 441,
+                "name": "xLine",
+                "start": 436,
+                "type": "Identifier"
               },
-              "commentStart": 443,
-              "end": 0,
-              "start": 0,
+              "end": 458,
+              "start": 436,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "commentStart": 64,
-          "end": 0,
-          "start": 0,
+          "end": 458,
+          "start": 64,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 0,
+        "start": 64,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "commentStart": 0,
-    "end": 0,
+    "end": 459,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "4": [
           {
-            "commentStart": 62,
-            "end": 0,
-            "start": 0,
+            "end": 64,
+            "start": 62,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

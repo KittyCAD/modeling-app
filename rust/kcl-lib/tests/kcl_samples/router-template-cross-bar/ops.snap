@@ -7,14 +7,22 @@ description: Operations executed router-template-cross-bar.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "type": "String",
+          "value": "XZ"
         },
-        "sourceRange": []
+        "sourceRange": [
+          451,
+          455,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      437,
+      456,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -34,11 +42,19 @@ description: Operations executed router-template-cross-bar.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1705,
+          1706,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1677,
+      1707,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -47,7 +63,11 @@ description: Operations executed router-template-cross-bar.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1685,
+        1694,
+        0
+      ]
     }
   },
   {
@@ -59,18 +79,30 @@ description: Operations executed router-template-cross-bar.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1735,
+          1745,
+          0
+        ]
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": []
+        "sourceRange": [
+          1747,
+          1754,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      1721,
+      1755,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -90,11 +122,19 @@ description: Operations executed router-template-cross-bar.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2305,
+          2307,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      2277,
+      2308,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -103,7 +143,11 @@ description: Operations executed router-template-cross-bar.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        2285,
+        2294,
+        0
+      ]
     }
   },
   {
@@ -115,18 +159,30 @@ description: Operations executed router-template-cross-bar.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2336,
+          2346,
+          0
+        ]
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "START"
         },
-        "sourceRange": []
+        "sourceRange": [
+          2348,
+          2355,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      2322,
+      2356,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -146,11 +202,19 @@ description: Operations executed router-template-cross-bar.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2906,
+          2908,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      2878,
+      2909,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -159,7 +223,11 @@ description: Operations executed router-template-cross-bar.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        2886,
+        2895,
+        0
+      ]
     }
   },
   {
@@ -171,18 +239,30 @@ description: Operations executed router-template-cross-bar.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2937,
+          2947,
+          0
+        ]
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": []
+        "sourceRange": [
+          2949,
+          2954,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      2923,
+      2955,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -202,11 +282,19 @@ description: Operations executed router-template-cross-bar.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          3511,
+          3512,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      3483,
+      3513,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -215,7 +303,11 @@ description: Operations executed router-template-cross-bar.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        3491,
+        3500,
+        0
+      ]
     }
   }
 ]

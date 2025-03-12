@@ -105,20 +105,20 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```
+/// ```no_run
 /// // Sweep two sketches along the same path.
 ///
 /// sketch001 = startSketchOn('XY')
 /// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
-///     |> angledLine([0, 73.47], %, $rectangleSegmentA001)
-///     |> angledLine([
-///         segAng(rectangleSegmentA001) - 90,
-///         50.61
-///     ], %)
-///     |> angledLine([
-///         segAng(rectangleSegmentA001),
-///         -segLen(rectangleSegmentA001)
-///     ], %)
+///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001) - 90,
+///         length = 50.61,
+///     )
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001),
+///         length = -segLen(rectangleSegmentA001),
+///     )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///

@@ -7,38 +7,64 @@ description: Operations executed pipe.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "type": "String",
+          "value": "XY"
         },
-        "sourceRange": []
+        "sourceRange": [
+          619,
+          623,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      605,
+      624,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "axis": {
+      "data": {
         "value": {
-          "type": "String",
-          "value": "y"
+          "type": "Object",
+          "value": {
+            "axis": {
+              "type": "String",
+              "value": "y"
+            }
+          }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1147,
+          1161,
+          0
+        ]
+      },
+      "sketches": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1163,
+          1173,
+          0
+        ]
       }
     },
     "name": "revolve",
-    "sourceRange": [],
+    "sourceRange": [
+      1139,
+      1174,
+      0
+    ],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   }
 ]

@@ -7,14 +7,22 @@ description: Operations executed enclosure.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "type": "String",
+          "value": "XY"
         },
-        "sourceRange": []
+        "sourceRange": [
+          257,
+          261,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      243,
+      262,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -34,11 +42,19 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          797,
+          803,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      769,
+      804,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -47,7 +63,11 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        777,
+        786,
+        0
+      ]
     }
   },
   {
@@ -60,7 +80,11 @@ description: Operations executed enclosure.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          834,
+          851,
+          0
+        ]
       },
       "tags": {
         "value": {
@@ -84,11 +108,19 @@ description: Operations executed enclosure.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          867,
+          1084,
+          0
+        ]
       }
     },
     "name": "fillet",
-    "sourceRange": [],
+    "sourceRange": [
+      810,
+      1091,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -97,7 +129,11 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        810,
+        1091,
+        0
+      ]
     }
   },
   {
@@ -112,7 +148,11 @@ description: Operations executed enclosure.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          1192,
+          1199,
+          0
+        ]
       },
       "thickness": {
         "value": {
@@ -128,11 +168,19 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1220,
+          1233,
+          0
+        ]
       }
     },
     "name": "shell",
-    "sourceRange": [],
+    "sourceRange": [
+      1170,
+      1240,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -141,20 +189,28 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1170,
+        1240,
+        0
+      ]
     }
   },
   {
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1254,
-      1851,
+      1346,
+      1997,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      2043,
+      2120,
+      0
+    ]
   },
   {
     "labeledArgs": {
@@ -345,121 +401,21 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1669,
+          1677,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      1655,
+      1678,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 7.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -470,7 +426,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1809,
+          1903,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -479,11 +439,19 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1905,
+          1906,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
+    "sourceRange": [
+      1804,
+      1907,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -503,11 +471,19 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1951,
+          1973,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1923,
+      1974,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -516,7 +492,11 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1931,
+        1940,
+        0
+      ]
     }
   },
   {
@@ -526,13 +506,17 @@ description: Operations executed enclosure.kcl
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1254,
-      1851,
+      1346,
+      1997,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      2121,
+      2209,
+      0
+    ]
   },
   {
     "labeledArgs": {
@@ -723,121 +707,21 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1669,
+          1677,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      1655,
+      1678,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 162.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 7.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 162.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -848,7 +732,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1809,
+          1903,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -857,11 +745,19 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1905,
+          1906,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
+    "sourceRange": [
+      1804,
+      1907,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -881,11 +777,19 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1951,
+          1973,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1923,
+      1974,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -894,7 +798,11 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1931,
+        1940,
+        0
+      ]
     }
   },
   {
@@ -904,13 +812,17 @@ description: Operations executed enclosure.kcl
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1254,
-      1851,
+      1346,
+      1997,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      2210,
+      2297,
+      0
+    ]
   },
   {
     "labeledArgs": {
@@ -1101,121 +1013,21 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1669,
+          1677,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      1655,
+      1678,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 112.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 7.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 112.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1226,7 +1038,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1809,
+          1903,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -1235,11 +1051,19 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1905,
+          1906,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
+    "sourceRange": [
+      1804,
+      1907,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1259,11 +1083,19 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1951,
+          1973,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1923,
+      1974,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1272,7 +1104,11 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1931,
+        1940,
+        0
+      ]
     }
   },
   {
@@ -1282,13 +1118,17 @@ description: Operations executed enclosure.kcl
     "type": "UserDefinedFunctionCall",
     "name": "function001",
     "functionSourceRange": [
-      1254,
-      1851,
+      1346,
+      1997,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      2298,
+      2396,
+      0
+    ]
   },
   {
     "labeledArgs": {
@@ -1479,121 +1319,21 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1669,
+          1677,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      1655,
+      1678,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 112.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 162.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 7.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 112.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 162.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
@@ -1604,7 +1344,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1809,
+          1903,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -1613,11 +1357,19 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1905,
+          1906,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
+    "sourceRange": [
+      1804,
+      1907,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1637,11 +1389,19 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1951,
+          1973,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1923,
+      1974,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1650,7 +1410,11 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1931,
+        1940,
+        0
+      ]
     }
   },
   {
@@ -1660,70 +1424,24 @@ description: Operations executed enclosure.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "type": "String",
+          "value": "XY"
         },
-        "sourceRange": []
+        "sourceRange": [
+          2465,
+          2469,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      2451,
+      2470,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 163.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -1734,7 +1452,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2984,
+          3139,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -1743,67 +1465,21 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          3141,
+          3142,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      2979,
+      3143,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 163.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 162.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -1814,7 +1490,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          3154,
+          3320,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -1823,67 +1503,21 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          3322,
+          3323,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      3149,
+      3324,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 262.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -1894,7 +1528,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          3335,
+          3492,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -1903,67 +1541,21 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          3494,
+          3495,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      3330,
+      3496,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 262.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 162.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -1974,7 +1566,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          3507,
+          3675,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -1983,11 +1579,19 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          3677,
+          3678,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
+    "sourceRange": [
+      3502,
+      3679,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2007,11 +1611,19 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          3721,
+          3734,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      3693,
+      3735,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2020,7 +1632,11 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        3701,
+        3710,
+        0
+      ]
     }
   },
   {
@@ -2033,7 +1649,11 @@ description: Operations executed enclosure.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          3765,
+          3782,
+          0
+        ]
       },
       "tags": {
         "value": {
@@ -2057,11 +1677,19 @@ description: Operations executed enclosure.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          3798,
+          4015,
+          0
+        ]
       }
     },
     "name": "fillet",
-    "sourceRange": [],
+    "sourceRange": [
+      3741,
+      4022,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2070,7 +1698,11 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        3741,
+        4022,
+        0
+      ]
     }
   },
   {
@@ -2082,74 +1714,32 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          4091,
+          4101,
+          0
+        ]
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "END"
         },
-        "sourceRange": []
+        "sourceRange": [
+          4103,
+          4108,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      4077,
+      4109,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 163.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 7.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -2160,7 +1750,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          4716,
+          4887,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -2169,67 +1763,21 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          4889,
+          4890,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      4711,
+      4891,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 163.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 162.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 7.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -2240,7 +1788,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          4902,
+          5084,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -2249,67 +1801,21 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5086,
+          5087,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      4897,
+      5088,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 262.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 13.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 7.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -2320,7 +1826,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5099,
+          5272,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -2329,67 +1839,21 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5274,
+          5275,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      5094,
+      5276,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 262.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 162.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 7.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -2400,7 +1864,11 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5287,
+          5471,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -2409,11 +1877,19 @@ description: Operations executed enclosure.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5473,
+          5474,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
+    "sourceRange": [
+      5282,
+      5475,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2433,11 +1909,19 @@ description: Operations executed enclosure.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5517,
+          5530,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      5489,
+      5531,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2446,7 +1930,11 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        5497,
+        5506,
+        0
+      ]
     }
   },
   {
@@ -2459,7 +1947,11 @@ description: Operations executed enclosure.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5561,
+          5578,
+          0
+        ]
       },
       "tags": {
         "value": {
@@ -2483,11 +1975,19 @@ description: Operations executed enclosure.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          5594,
+          5811,
+          0
+        ]
       }
     },
     "name": "fillet",
-    "sourceRange": [],
+    "sourceRange": [
+      5537,
+      5818,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2496,7 +1996,11 @@ description: Operations executed enclosure.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        5537,
+        5818,
+        0
+      ]
     }
   }
 ]

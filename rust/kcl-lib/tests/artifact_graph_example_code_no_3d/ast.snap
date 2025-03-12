@@ -6,13 +6,10 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 0,
         "declaration": {
-          "commentStart": 0,
-          "end": 0,
+          "end": 440,
           "id": {
-            "commentStart": 0,
-            "end": 0,
+            "end": 9,
             "name": "sketch003",
             "start": 0,
             "type": "Identifier"
@@ -22,46 +19,33 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 26,
-                    "end": 0,
+                    "end": 30,
                     "raw": "'YZ'",
-                    "start": 0,
+                    "start": 26,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "YZ"
                   }
                 ],
                 "callee": {
-                  "abs_path": false,
-                  "commentStart": 12,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 12,
-                    "end": 0,
-                    "name": "startSketchOn",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
+                  "end": 25,
+                  "name": "startSketchOn",
+                  "start": 12,
+                  "type": "Identifier"
                 },
-                "commentStart": 12,
-                "end": 0,
-                "start": 0,
+                "end": 31,
+                "start": 12,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "commentStart": 52,
                     "elements": [
                       {
-                        "commentStart": 53,
-                        "end": 0,
+                        "end": 57,
                         "raw": "5.82",
-                        "start": 0,
+                        "start": 53,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -70,10 +54,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       },
                       {
-                        "commentStart": 59,
-                        "end": 0,
+                        "end": 60,
                         "raw": "0",
-                        "start": 0,
+                        "start": 59,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -82,365 +65,26 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       }
                     ],
-                    "end": 0,
-                    "start": 0,
+                    "end": 61,
+                    "start": 52,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 63,
-                    "end": 0,
-                    "start": 0,
+                    "end": 64,
+                    "start": 63,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "abs_path": false,
-                  "commentStart": 37,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 37,
-                    "end": 0,
-                    "name": "startProfileAt",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
+                  "end": 51,
+                  "name": "startProfileAt",
+                  "start": 37,
+                  "type": "Identifier"
                 },
-                "commentStart": 37,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "commentStart": 82,
-                    "elements": [
-                      {
-                        "commentStart": 83,
-                        "end": 0,
-                        "raw": "180",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 180.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 88,
-                        "end": 0,
-                        "raw": "11.54",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 11.54,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "end": 0,
-                    "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "commentStart": 96,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "commentStart": 99,
-                    "end": 0,
-                    "start": 0,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentA001"
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 71,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 71,
-                    "end": 0,
-                    "name": "angledLine",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 71,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "commentStart": 138,
-                    "elements": [
-                      {
-                        "commentStart": 147,
-                        "end": 0,
-                        "left": {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 154,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 154,
-                                "end": 0,
-                                "name": "rectangleSegmentA001",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 147,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 147,
-                              "end": 0,
-                              "name": "segAng",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 147,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "operator": "-",
-                        "right": {
-                          "commentStart": 178,
-                          "end": 0,
-                          "raw": "90",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 90.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      {
-                        "commentStart": 189,
-                        "end": 0,
-                        "raw": "8.21",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 8.21,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "end": 0,
-                    "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "commentStart": 202,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "commentStart": 205,
-                    "end": 0,
-                    "start": 0,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentB001"
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 127,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 127,
-                    "end": 0,
-                    "name": "angledLine",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 127,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "commentStart": 244,
-                    "elements": [
-                      {
-                        "arguments": [
-                          {
-                            "abs_path": false,
-                            "commentStart": 260,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 260,
-                              "end": 0,
-                              "name": "rectangleSegmentA001",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
-                        ],
-                        "callee": {
-                          "abs_path": false,
-                          "commentStart": 253,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 253,
-                            "end": 0,
-                            "name": "segAng",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name"
-                        },
-                        "commentStart": 253,
-                        "end": 0,
-                        "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "argument": {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 298,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 298,
-                                "end": 0,
-                                "name": "rectangleSegmentA001",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 291,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 291,
-                              "end": 0,
-                              "name": "segLen",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 291,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "commentStart": 290,
-                        "end": 0,
-                        "operator": "-",
-                        "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    ],
-                    "end": 0,
-                    "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "commentStart": 328,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "commentStart": 331,
-                    "end": 0,
-                    "start": 0,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentC001"
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 233,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 233,
-                    "end": 0,
-                    "name": "angledLine",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 233,
-                "end": 0,
-                "start": 0,
+                "end": 65,
+                "start": 37,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -449,103 +93,337 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 364,
-                      "end": 0,
-                      "name": "endAbsolute",
-                      "start": 0,
+                      "end": 87,
+                      "name": "angle",
+                      "start": 82,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 378,
+                      "end": 93,
+                      "raw": "180",
+                      "start": 90,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 180.0,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 101,
+                      "name": "length",
+                      "start": 95,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 109,
+                      "raw": "11.54",
+                      "start": 104,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 11.54,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 114,
+                      "name": "tag",
+                      "start": 111,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 138,
+                      "start": 117,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentA001"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 81,
+                  "name": "angledLine",
+                  "start": 71,
+                  "type": "Identifier"
+                },
+                "end": 139,
+                "start": 71,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 161,
+                      "name": "angle",
+                      "start": 156,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 197,
+                      "left": {
+                        "arguments": [
+                          {
+                            "end": 191,
+                            "name": "rectangleSegmentA001",
+                            "start": 171,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 170,
+                          "name": "segAng",
+                          "start": 164,
+                          "type": "Identifier"
+                        },
+                        "end": 192,
+                        "start": 164,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "operator": "-",
+                      "right": {
+                        "end": 197,
+                        "raw": "90",
+                        "start": 195,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 90.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 164,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 205,
+                      "name": "length",
+                      "start": 199,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 212,
+                      "raw": "8.21",
+                      "start": 208,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 8.21,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 217,
+                      "name": "tag",
+                      "start": 214,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 241,
+                      "start": 220,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentB001"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 155,
+                  "name": "angledLine",
+                  "start": 145,
+                  "type": "Identifier"
+                },
+                "end": 242,
+                "start": 145,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 264,
+                      "name": "angle",
+                      "start": 259,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "end": 294,
+                          "name": "rectangleSegmentA001",
+                          "start": 274,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "callee": {
+                        "end": 273,
+                        "name": "segAng",
+                        "start": 267,
+                        "type": "Identifier"
+                      },
+                      "end": 295,
+                      "start": 267,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 303,
+                      "name": "length",
+                      "start": 297,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "arguments": [
+                          {
+                            "end": 334,
+                            "name": "rectangleSegmentA001",
+                            "start": 314,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 313,
+                          "name": "segLen",
+                          "start": 307,
+                          "type": "Identifier"
+                        },
+                        "end": 335,
+                        "start": 307,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "end": 335,
+                      "operator": "-",
+                      "start": 306,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 340,
+                      "name": "tag",
+                      "start": 337,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 364,
+                      "start": 343,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentC001"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 258,
+                  "name": "angledLine",
+                  "start": 248,
+                  "type": "Identifier"
+                },
+                "end": 365,
+                "start": 248,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 387,
+                      "name": "endAbsolute",
+                      "start": 376,
+                      "type": "Identifier"
+                    },
+                    "arg": {
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 393,
-                              "end": 0,
-                              "start": 0,
+                              "end": 406,
+                              "start": 405,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "abs_path": false,
-                            "commentStart": 379,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 379,
-                              "end": 0,
-                              "name": "profileStartX",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
+                            "end": 404,
+                            "name": "profileStartX",
+                            "start": 391,
+                            "type": "Identifier"
                           },
-                          "commentStart": 379,
-                          "end": 0,
-                          "start": 0,
+                          "end": 407,
+                          "start": 391,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "commentStart": 411,
-                              "end": 0,
-                              "start": 0,
+                              "end": 424,
+                              "start": 423,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "abs_path": false,
-                            "commentStart": 397,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 397,
-                              "end": 0,
-                              "name": "profileStartY",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
+                            "end": 422,
+                            "name": "profileStartY",
+                            "start": 409,
+                            "type": "Identifier"
                           },
-                          "commentStart": 397,
-                          "end": 0,
-                          "start": 0,
+                          "end": 425,
+                          "start": 409,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 0,
-                      "start": 0,
+                      "end": 426,
+                      "start": 390,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "abs_path": false,
-                  "commentStart": 359,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 359,
-                    "end": 0,
-                    "name": "line",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
+                  "end": 375,
+                  "name": "line",
+                  "start": 371,
+                  "type": "Identifier"
                 },
-                "commentStart": 359,
-                "end": 0,
-                "start": 0,
+                "end": 427,
+                "start": 371,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -553,52 +431,38 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "abs_path": false,
-                  "commentStart": 421,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 421,
-                    "end": 0,
-                    "name": "close",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
+                  "end": 438,
+                  "name": "close",
+                  "start": 433,
+                  "type": "Identifier"
                 },
-                "commentStart": 421,
-                "end": 0,
-                "start": 0,
+                "end": 440,
+                "start": 433,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 12,
-            "end": 0,
-            "start": 0,
+            "end": 440,
+            "start": 12,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 0,
+        "end": 440,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 429,
         "declaration": {
-          "commentStart": 429,
-          "end": 0,
+          "end": 609,
           "id": {
-            "commentStart": 429,
-            "end": 0,
+            "end": 450,
             "name": "sketch004",
-            "start": 0,
+            "start": 441,
             "type": "Identifier"
           },
           "init": {
@@ -606,46 +470,33 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 455,
-                    "end": 0,
+                    "end": 472,
                     "raw": "'-XZ'",
-                    "start": 0,
+                    "start": 467,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "-XZ"
                   }
                 ],
                 "callee": {
-                  "abs_path": false,
-                  "commentStart": 441,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 441,
-                    "end": 0,
-                    "name": "startSketchOn",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
+                  "end": 466,
+                  "name": "startSketchOn",
+                  "start": 453,
+                  "type": "Identifier"
                 },
-                "commentStart": 441,
-                "end": 0,
-                "start": 0,
+                "end": 473,
+                "start": 453,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "commentStart": 482,
                     "elements": [
                       {
-                        "commentStart": 483,
-                        "end": 0,
+                        "end": 496,
                         "raw": "0",
-                        "start": 0,
+                        "start": 495,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -654,10 +505,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       },
                       {
-                        "commentStart": 486,
-                        "end": 0,
+                        "end": 503,
                         "raw": "14.36",
-                        "start": 0,
+                        "start": 498,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -666,37 +516,26 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       }
                     ],
-                    "end": 0,
-                    "start": 0,
+                    "end": 504,
+                    "start": 494,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 494,
-                    "end": 0,
-                    "start": 0,
+                    "end": 507,
+                    "start": 506,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "abs_path": false,
-                  "commentStart": 467,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 467,
-                    "end": 0,
-                    "name": "startProfileAt",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
+                  "end": 493,
+                  "name": "startProfileAt",
+                  "start": 479,
+                  "type": "Identifier"
                 },
-                "commentStart": 467,
-                "end": 0,
-                "start": 0,
+                "end": 508,
+                "start": 479,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -705,20 +544,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 507,
-                      "end": 0,
+                      "end": 522,
                       "name": "end",
-                      "start": 0,
+                      "start": 519,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 513,
                       "elements": [
                         {
-                          "commentStart": 514,
-                          "end": 0,
+                          "end": 531,
                           "raw": "15.49",
-                          "start": 0,
+                          "start": 526,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -727,10 +563,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                           }
                         },
                         {
-                          "commentStart": 521,
-                          "end": 0,
+                          "end": 537,
                           "raw": "0.05",
-                          "start": 0,
+                          "start": 533,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -739,31 +574,21 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                           }
                         }
                       ],
-                      "end": 0,
-                      "start": 0,
+                      "end": 538,
+                      "start": 525,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "abs_path": false,
-                  "commentStart": 502,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 502,
-                    "end": 0,
-                    "name": "line",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
+                  "end": 518,
+                  "name": "line",
+                  "start": 514,
+                  "type": "Identifier"
                 },
-                "commentStart": 502,
-                "end": 0,
-                "start": 0,
+                "end": 539,
+                "start": 514,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -771,13 +596,11 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 549,
                     "elements": [
                       {
-                        "commentStart": 550,
-                        "end": 0,
+                        "end": 563,
                         "raw": "0",
-                        "start": 0,
+                        "start": 562,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -786,10 +609,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       },
                       {
-                        "commentStart": 553,
-                        "end": 0,
+                        "end": 566,
                         "raw": "0",
-                        "start": 0,
+                        "start": 565,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -798,51 +620,38 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       }
                     ],
-                    "end": 0,
-                    "start": 0,
+                    "end": 567,
+                    "start": 561,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 557,
-                    "end": 0,
-                    "start": 0,
+                    "end": 570,
+                    "start": 569,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "abs_path": false,
-                  "commentStart": 533,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 533,
-                    "end": 0,
-                    "name": "tangentialArcTo",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
+                  "end": 560,
+                  "name": "tangentialArcTo",
+                  "start": 545,
+                  "type": "Identifier"
                 },
-                "commentStart": 533,
-                "end": 0,
-                "start": 0,
+                "end": 571,
+                "start": 545,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "commentStart": 581,
                     "elements": [
                       {
                         "argument": {
-                          "commentStart": 583,
-                          "end": 0,
+                          "end": 598,
                           "raw": "6.8",
-                          "start": 0,
+                          "start": 595,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -850,18 +659,16 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                             "suffix": "None"
                           }
                         },
-                        "commentStart": 582,
-                        "end": 0,
+                        "end": 598,
                         "operator": "-",
-                        "start": 0,
+                        "start": 594,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       {
-                        "commentStart": 588,
-                        "end": 0,
+                        "end": 604,
                         "raw": "8.17",
-                        "start": 0,
+                        "start": 600,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -870,59 +677,46 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       }
                     ],
-                    "end": 0,
-                    "start": 0,
+                    "end": 605,
+                    "start": 593,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "commentStart": 595,
-                    "end": 0,
-                    "start": 0,
+                    "end": 608,
+                    "start": 607,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "abs_path": false,
-                  "commentStart": 565,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 565,
-                    "end": 0,
-                    "name": "tangentialArcTo",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
+                  "end": 592,
+                  "name": "tangentialArcTo",
+                  "start": 577,
+                  "type": "Identifier"
                 },
-                "commentStart": 565,
-                "end": 0,
-                "start": 0,
+                "end": 609,
+                "start": 577,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 441,
-            "end": 0,
-            "start": 0,
+            "end": 609,
+            "start": 453,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 0,
+          "start": 441,
           "type": "VariableDeclarator"
         },
-        "end": 0,
+        "end": 609,
         "kind": "const",
-        "start": 0,
+        "start": 441,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "commentStart": 0,
-    "end": 0,
+    "end": 610,
     "start": 0
   }
 }

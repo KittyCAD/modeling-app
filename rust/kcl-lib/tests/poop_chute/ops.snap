@@ -10,120 +10,143 @@ description: Operations executed poop_chute.kcl
           "type": "String",
           "value": "-YZ"
         },
-        "sourceRange": []
+        "sourceRange": [
+          196,
+          201,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      182,
+      202,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "angle": {
-        "value": {
-          "type": "Number",
-          "value": 90.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
-      "axis": {
+      "data": {
         "value": {
           "type": "Object",
           "value": {
-            "custom": {
+            "angle": {
+              "type": "Number",
+              "value": 90.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "axis": {
               "type": "Object",
               "value": {
-                "axis": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
+                "custom": {
+                  "type": "Object",
+                  "value": {
+                    "axis": {
+                      "type": "Array",
+                      "value": [
+                        {
+                          "type": "Number",
+                          "value": 1.0,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
                         },
-                        "angle": {
-                          "type": "Degrees"
+                        {
+                          "type": "Number",
+                          "value": 0.0,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
                         }
-                      }
+                      ]
                     },
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
+                    "origin": {
+                      "type": "Array",
+                      "value": [
+                        {
+                          "type": "Number",
+                          "value": 0.0,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
                         },
-                        "angle": {
-                          "type": "Degrees"
+                        {
+                          "type": "Number",
+                          "value": 5.5000001,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
-                  ]
-                },
-                "origin": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    {
-                      "type": "Number",
-                      "value": 5.5000001,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  ]
+                  }
                 }
               }
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          853,
+          971,
+          0
+        ]
+      },
+      "sketches": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          973,
+          982,
+          0
+        ]
       }
     },
     "name": "revolve",
-    "sourceRange": [],
+    "sourceRange": [
+      845,
+      983,
+      0
+    ],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -132,11 +155,19 @@ description: Operations executed poop_chute.kcl
           "type": "String",
           "value": "-YZ"
         },
-        "sourceRange": []
+        "sourceRange": [
+          1011,
+          1016,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      997,
+      1017,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -156,11 +187,19 @@ description: Operations executed poop_chute.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1672,
+          1692,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1655,
+      1693,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -169,7 +208,11 @@ description: Operations executed poop_chute.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1655,
+        1693,
+        0
+      ]
     }
   }
 ]

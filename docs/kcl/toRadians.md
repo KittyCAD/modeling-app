@@ -33,10 +33,7 @@ toRadians(num: number): number
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine({
-       angle = 50,
-       length = 70 * cos(toRadians(45))
-     }, %)
+  |> angledLine(angle = 50, length = 70 * cos(toRadians(45)))
   |> yLine(endAbsolute = 0)
   |> close()
 

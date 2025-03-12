@@ -26,11 +26,14 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            558,
+            597,
+            0
+          ],
           "tag": {
-            "commentStart": 588,
-            "end": 594,
-            "start": 588,
+            "end": 596,
+            "start": 590,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -39,18 +42,25 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            603,
+            701,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            707,
+            783,
+            0
+          ],
           "tag": {
-            "commentStart": 774,
-            "end": 780,
-            "start": 774,
+            "end": 782,
+            "start": 776,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -59,11 +69,14 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            789,
+            858,
+            0
+          ],
           "tag": {
-            "commentStart": 849,
-            "end": 855,
-            "start": 849,
+            "end": 857,
+            "start": 851,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -72,11 +85,14 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            864,
+            904,
+            0
+          ],
           "tag": {
-            "commentStart": 895,
-            "end": 901,
-            "start": 895,
+            "end": 903,
+            "start": 897,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -85,42 +101,66 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            989,
+            1019,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1025,
+            1054,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1060,
+            1089,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1095,
+            1124,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1130,
+            1230,
+            0
+          ],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1236,
+            1292,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -132,16 +172,19 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                558,
+                597,
+                0
+              ]
             },
             "from": [
               0.0,
               28.1188
             ],
             "tag": {
-              "commentStart": 588,
-              "end": 594,
-              "start": 588,
+              "end": 596,
+              "start": 590,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -157,7 +200,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                603,
+                701,
+                0
+              ]
             },
             "ccw": false,
             "center": [
@@ -182,16 +229,19 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                707,
+                783,
+                0
+              ]
             },
             "from": [
               18.8688,
               20.0
             ],
             "tag": {
-              "commentStart": 774,
-              "end": 780,
-              "start": 774,
+              "end": 782,
+              "start": 776,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -207,16 +257,19 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                789,
+                858,
+                0
+              ]
             },
             "from": [
               18.8688,
               -12.4937
             ],
             "tag": {
-              "commentStart": 849,
-              "end": 855,
-              "start": 849,
+              "end": 857,
+              "start": 851,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -232,16 +285,19 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                864,
+                904,
+                0
+              ]
             },
             "from": [
               30.75,
               -12.4937
             ],
             "tag": {
-              "commentStart": 895,
-              "end": 901,
-              "start": 895,
+              "end": 903,
+              "start": 897,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -257,16 +313,19 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                910,
+                949,
+                0
+              ]
             },
             "from": [
               30.75,
               -122.4938
             ],
             "tag": {
-              "commentStart": 937,
-              "end": 943,
-              "start": 937,
+              "end": 948,
+              "start": 942,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -282,7 +341,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                989,
+                1019,
+                0
+              ]
             },
             "from": [
               0.0,
@@ -301,7 +364,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1025,
+                1054,
+                0
+              ]
             },
             "from": [
               -30.75,
@@ -320,7 +387,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1060,
+                1089,
+                0
+              ]
             },
             "from": [
               -30.75,
@@ -339,7 +410,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1095,
+                1124,
+                0
+              ]
             },
             "from": [
               -18.8688,
@@ -358,7 +433,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1130,
+                1230,
+                0
+              ]
             },
             "ccw": false,
             "center": [
@@ -383,7 +462,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1236,
+                1292,
+                0
+              ]
             },
             "from": [
               -10.75,
@@ -402,7 +485,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1298,
+                1305,
+                0
+              ]
             },
             "from": [
               0.0,
@@ -463,7 +550,11 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              509,
+              552,
+              0
+            ]
           }
         },
         "tags": {
@@ -512,11 +603,14 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1566,
+            1613,
+            0
+          ],
           "tag": {
-            "commentStart": 1586,
-            "end": 1607,
-            "start": 1586,
+            "end": 1612,
+            "start": 1591,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -525,11 +619,14 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1619,
+            1760,
+            0
+          ],
           "tag": {
-            "commentStart": 1707,
-            "end": 1728,
-            "start": 1707,
+            "end": 1752,
+            "start": 1731,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -538,11 +635,14 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1766,
+            1912,
+            0
+          ],
           "tag": {
-            "commentStart": 1833,
-            "end": 1854,
-            "start": 1833,
+            "end": 1904,
+            "start": 1883,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -551,7 +651,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1918,
+            1974,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -563,16 +667,19 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1566,
+                1613,
+                0
+              ]
             },
             "from": [
               -20.75,
               -12.4937
             ],
             "tag": {
-              "commentStart": 1586,
-              "end": 1607,
-              "start": 1586,
+              "end": 1612,
+              "start": 1591,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -588,16 +695,19 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1619,
+                1760,
+                0
+              ]
             },
             "from": [
               -27.75,
               -12.4937
             ],
             "tag": {
-              "commentStart": 1707,
-              "end": 1728,
-              "start": 1707,
+              "end": 1752,
+              "start": 1731,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -613,16 +723,19 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1766,
+                1912,
+                0
+              ]
             },
             "from": [
               -27.75,
               -92.4938
             ],
             "tag": {
-              "commentStart": 1833,
-              "end": 1854,
-              "start": 1833,
+              "end": 1904,
+              "start": 1883,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -638,7 +751,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1918,
+                1974,
+                0
+              ]
             },
             "from": [
               -20.75,
@@ -657,7 +774,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1980,
+                1987,
+                0
+              ]
             },
             "from": [
               -20.75,
@@ -702,11 +823,14 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  558,
+                  597,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 588,
-                  "end": 594,
-                  "start": 588,
+                  "end": 596,
+                  "start": 590,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -715,18 +839,25 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  603,
+                  701,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  707,
+                  783,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 774,
-                  "end": 780,
-                  "start": 774,
+                  "end": 782,
+                  "start": 776,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -735,11 +866,14 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  789,
+                  858,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 849,
-                  "end": 855,
-                  "start": 849,
+                  "end": 857,
+                  "start": 851,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -748,11 +882,14 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  864,
+                  904,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 895,
-                  "end": 901,
-                  "start": 895,
+                  "end": 903,
+                  "start": 897,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -761,42 +898,66 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  989,
+                  1019,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  1025,
+                  1054,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  1060,
+                  1089,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  1095,
+                  1124,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  1130,
+                  1230,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  1236,
+                  1292,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -808,16 +969,19 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      558,
+                      597,
+                      0
+                    ]
                   },
                   "from": [
                     0.0,
                     28.1188
                   ],
                   "tag": {
-                    "commentStart": 588,
-                    "end": 594,
-                    "start": 588,
+                    "end": 596,
+                    "start": 590,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -833,7 +997,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      603,
+                      701,
+                      0
+                    ]
                   },
                   "ccw": false,
                   "center": [
@@ -858,16 +1026,19 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      707,
+                      783,
+                      0
+                    ]
                   },
                   "from": [
                     18.8688,
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 774,
-                    "end": 780,
-                    "start": 774,
+                    "end": 782,
+                    "start": 776,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
@@ -883,16 +1054,19 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      789,
+                      858,
+                      0
+                    ]
                   },
                   "from": [
                     18.8688,
                     -12.4937
                   ],
                   "tag": {
-                    "commentStart": 849,
-                    "end": 855,
-                    "start": 849,
+                    "end": 857,
+                    "start": 851,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -908,16 +1082,19 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      864,
+                      904,
+                      0
+                    ]
                   },
                   "from": [
                     30.75,
                     -12.4937
                   ],
                   "tag": {
-                    "commentStart": 895,
-                    "end": 901,
-                    "start": 895,
+                    "end": 903,
+                    "start": 897,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -933,16 +1110,19 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      910,
+                      949,
+                      0
+                    ]
                   },
                   "from": [
                     30.75,
                     -122.4938
                   ],
                   "tag": {
-                    "commentStart": 937,
-                    "end": 943,
-                    "start": 937,
+                    "end": 948,
+                    "start": 942,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -958,7 +1138,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      989,
+                      1019,
+                      0
+                    ]
                   },
                   "from": [
                     0.0,
@@ -977,7 +1161,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1025,
+                      1054,
+                      0
+                    ]
                   },
                   "from": [
                     -30.75,
@@ -996,7 +1184,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1060,
+                      1089,
+                      0
+                    ]
                   },
                   "from": [
                     -30.75,
@@ -1015,7 +1207,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1095,
+                      1124,
+                      0
+                    ]
                   },
                   "from": [
                     -18.8688,
@@ -1034,7 +1230,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1130,
+                      1230,
+                      0
+                    ]
                   },
                   "ccw": false,
                   "center": [
@@ -1059,7 +1259,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1236,
+                      1292,
+                      0
+                    ]
                   },
                   "from": [
                     -10.75,
@@ -1078,7 +1282,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1298,
+                      1305,
+                      0
+                    ]
                   },
                   "from": [
                     0.0,
@@ -1139,7 +1347,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    509,
+                    552,
+                    0
+                  ]
                 }
               },
               "tags": {
@@ -1196,7 +1408,11 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1460,
+              1560,
+              0
+            ]
           }
         },
         "tags": {
@@ -1237,11 +1453,14 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            2249,
+            2295,
+            0
+          ],
           "tag": {
-            "commentStart": 2216,
-            "end": 2237,
-            "start": 2216,
+            "end": 2294,
+            "start": 2273,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -1250,21 +1469,33 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            2301,
+            2406,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            2412,
+            2522,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            2528,
+            2584,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -1276,16 +1507,19 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2249,
+                2295,
+                0
+              ]
             },
             "from": [
               20.75,
               -12.4937
             ],
             "tag": {
-              "commentStart": 2216,
-              "end": 2237,
-              "start": 2216,
+              "end": 2294,
+              "start": 2273,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -1301,7 +1535,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2301,
+                2406,
+                0
+              ]
             },
             "from": [
               27.75,
@@ -1320,7 +1558,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2412,
+                2522,
+                0
+              ]
             },
             "from": [
               27.75,
@@ -1339,7 +1581,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2528,
+                2584,
+                0
+              ]
             },
             "from": [
               20.75,
@@ -1358,7 +1604,11 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                2590,
+                2597,
+                0
+              ]
             },
             "from": [
               20.75,
@@ -1403,11 +1653,14 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  558,
+                  597,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 588,
-                  "end": 594,
-                  "start": 588,
+                  "end": 596,
+                  "start": 590,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1416,18 +1669,25 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  603,
+                  701,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  707,
+                  783,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 774,
-                  "end": 780,
-                  "start": 774,
+                  "end": 782,
+                  "start": 776,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -1436,11 +1696,14 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  789,
+                  858,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 849,
-                  "end": 855,
-                  "start": 849,
+                  "end": 857,
+                  "start": 851,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -1449,11 +1712,14 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  864,
+                  904,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 895,
-                  "end": 901,
-                  "start": 895,
+                  "end": 903,
+                  "start": 897,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -1462,42 +1728,66 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  989,
+                  1019,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  1025,
+                  1054,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  1060,
+                  1089,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  1095,
+                  1124,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  1130,
+                  1230,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  1236,
+                  1292,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -1509,16 +1799,19 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      558,
+                      597,
+                      0
+                    ]
                   },
                   "from": [
                     0.0,
                     28.1188
                   ],
                   "tag": {
-                    "commentStart": 588,
-                    "end": 594,
-                    "start": 588,
+                    "end": 596,
+                    "start": 590,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -1534,7 +1827,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      603,
+                      701,
+                      0
+                    ]
                   },
                   "ccw": false,
                   "center": [
@@ -1559,16 +1856,19 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      707,
+                      783,
+                      0
+                    ]
                   },
                   "from": [
                     18.8688,
                     20.0
                   ],
                   "tag": {
-                    "commentStart": 774,
-                    "end": 780,
-                    "start": 774,
+                    "end": 782,
+                    "start": 776,
                     "type": "TagDeclarator",
                     "value": "seg05"
                   },
@@ -1584,16 +1884,19 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      789,
+                      858,
+                      0
+                    ]
                   },
                   "from": [
                     18.8688,
                     -12.4937
                   ],
                   "tag": {
-                    "commentStart": 849,
-                    "end": 855,
-                    "start": 849,
+                    "end": 857,
+                    "start": 851,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -1609,16 +1912,19 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      864,
+                      904,
+                      0
+                    ]
                   },
                   "from": [
                     30.75,
                     -12.4937
                   ],
                   "tag": {
-                    "commentStart": 895,
-                    "end": 901,
-                    "start": 895,
+                    "end": 903,
+                    "start": 897,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -1634,16 +1940,19 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      910,
+                      949,
+                      0
+                    ]
                   },
                   "from": [
                     30.75,
                     -122.4938
                   ],
                   "tag": {
-                    "commentStart": 937,
-                    "end": 943,
-                    "start": 937,
+                    "end": 948,
+                    "start": 942,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1659,7 +1968,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      989,
+                      1019,
+                      0
+                    ]
                   },
                   "from": [
                     0.0,
@@ -1678,7 +1991,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1025,
+                      1054,
+                      0
+                    ]
                   },
                   "from": [
                     -30.75,
@@ -1697,7 +2014,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1060,
+                      1089,
+                      0
+                    ]
                   },
                   "from": [
                     -30.75,
@@ -1716,7 +2037,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1095,
+                      1124,
+                      0
+                    ]
                   },
                   "from": [
                     -18.8688,
@@ -1735,7 +2060,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1130,
+                      1230,
+                      0
+                    ]
                   },
                   "ccw": false,
                   "center": [
@@ -1760,7 +2089,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1236,
+                      1292,
+                      0
+                    ]
                   },
                   "from": [
                     -10.75,
@@ -1779,7 +2112,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      1298,
+                      1305,
+                      0
+                    ]
                   },
                   "from": [
                     0.0,
@@ -1840,7 +2177,11 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    509,
+                    552,
+                    0
+                  ]
                 }
               },
               "tags": {
@@ -1897,7 +2238,11 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2144,
+              2243,
+              0
+            ]
           }
         },
         "tags": {
@@ -2033,16 +2378,19 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              558,
+              597,
+              0
+            ]
           },
           "from": [
             0.0,
             28.1188
           ],
           "tag": {
-            "commentStart": 588,
-            "end": 594,
-            "start": 588,
+            "end": 596,
+            "start": 590,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -2058,7 +2406,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              603,
+              701,
+              0
+            ]
           },
           "ccw": false,
           "center": [
@@ -2083,16 +2435,19 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              707,
+              783,
+              0
+            ]
           },
           "from": [
             18.8688,
             20.0
           ],
           "tag": {
-            "commentStart": 774,
-            "end": 780,
-            "start": 774,
+            "end": 782,
+            "start": 776,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -2108,16 +2463,19 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              789,
+              858,
+              0
+            ]
           },
           "from": [
             18.8688,
             -12.4937
           ],
           "tag": {
-            "commentStart": 849,
-            "end": 855,
-            "start": 849,
+            "end": 857,
+            "start": 851,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2133,16 +2491,19 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              864,
+              904,
+              0
+            ]
           },
           "from": [
             30.75,
             -12.4937
           ],
           "tag": {
-            "commentStart": 895,
-            "end": 901,
-            "start": 895,
+            "end": 903,
+            "start": 897,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2158,16 +2519,19 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              910,
+              949,
+              0
+            ]
           },
           "from": [
             30.75,
             -122.4938
           ],
           "tag": {
-            "commentStart": 937,
-            "end": 943,
-            "start": 937,
+            "end": 948,
+            "start": 942,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2183,7 +2547,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              989,
+              1019,
+              0
+            ]
           },
           "from": [
             0.0,
@@ -2202,7 +2570,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1025,
+              1054,
+              0
+            ]
           },
           "from": [
             -30.75,
@@ -2221,7 +2593,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1060,
+              1089,
+              0
+            ]
           },
           "from": [
             -30.75,
@@ -2240,7 +2616,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1095,
+              1124,
+              0
+            ]
           },
           "from": [
             -18.8688,
@@ -2259,7 +2639,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1130,
+              1230,
+              0
+            ]
           },
           "ccw": false,
           "center": [
@@ -2284,7 +2668,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1236,
+              1292,
+              0
+            ]
           },
           "from": [
             -10.75,
@@ -2303,7 +2691,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1298,
+              1305,
+              0
+            ]
           },
           "from": [
             0.0,
@@ -2364,7 +2756,11 @@ description: Variables in memory after executing router-template-slate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            509,
+            552,
+            0
+          ]
         }
       },
       "tags": {
@@ -2405,16 +2801,19 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1566,
+              1613,
+              0
+            ]
           },
           "from": [
             -20.75,
             -12.4937
           ],
           "tag": {
-            "commentStart": 1586,
-            "end": 1607,
-            "start": 1586,
+            "end": 1612,
+            "start": 1591,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -2430,16 +2829,19 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1619,
+              1760,
+              0
+            ]
           },
           "from": [
             -27.75,
             -12.4937
           ],
           "tag": {
-            "commentStart": 1707,
-            "end": 1728,
-            "start": 1707,
+            "end": 1752,
+            "start": 1731,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -2455,16 +2857,19 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1766,
+              1912,
+              0
+            ]
           },
           "from": [
             -27.75,
             -92.4938
           ],
           "tag": {
-            "commentStart": 1833,
-            "end": 1854,
-            "start": 1833,
+            "end": 1904,
+            "start": 1883,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -2480,7 +2885,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1918,
+              1974,
+              0
+            ]
           },
           "from": [
             -20.75,
@@ -2499,7 +2908,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1980,
+              1987,
+              0
+            ]
           },
           "from": [
             -20.75,
@@ -2544,11 +2957,14 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                558,
+                597,
+                0
+              ],
               "tag": {
-                "commentStart": 588,
-                "end": 594,
-                "start": 588,
+                "end": 596,
+                "start": 590,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2557,18 +2973,25 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                603,
+                701,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                707,
+                783,
+                0
+              ],
               "tag": {
-                "commentStart": 774,
-                "end": 780,
-                "start": 774,
+                "end": 782,
+                "start": 776,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -2577,11 +3000,14 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                789,
+                858,
+                0
+              ],
               "tag": {
-                "commentStart": 849,
-                "end": 855,
-                "start": 849,
+                "end": 857,
+                "start": 851,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -2590,11 +3016,14 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                864,
+                904,
+                0
+              ],
               "tag": {
-                "commentStart": 895,
-                "end": 901,
-                "start": 895,
+                "end": 903,
+                "start": 897,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -2603,42 +3032,66 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                989,
+                1019,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1025,
+                1054,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1060,
+                1089,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1095,
+                1124,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1130,
+                1230,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1236,
+                1292,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -2650,16 +3103,19 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    558,
+                    597,
+                    0
+                  ]
                 },
                 "from": [
                   0.0,
                   28.1188
                 ],
                 "tag": {
-                  "commentStart": 588,
-                  "end": 594,
-                  "start": 588,
+                  "end": 596,
+                  "start": 590,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2675,7 +3131,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    603,
+                    701,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -2700,16 +3160,19 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    707,
+                    783,
+                    0
+                  ]
                 },
                 "from": [
                   18.8688,
                   20.0
                 ],
                 "tag": {
-                  "commentStart": 774,
-                  "end": 780,
-                  "start": 774,
+                  "end": 782,
+                  "start": 776,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -2725,16 +3188,19 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    789,
+                    858,
+                    0
+                  ]
                 },
                 "from": [
                   18.8688,
                   -12.4937
                 ],
                 "tag": {
-                  "commentStart": 849,
-                  "end": 855,
-                  "start": 849,
+                  "end": 857,
+                  "start": 851,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -2750,16 +3216,19 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    864,
+                    904,
+                    0
+                  ]
                 },
                 "from": [
                   30.75,
                   -12.4937
                 ],
                 "tag": {
-                  "commentStart": 895,
-                  "end": 901,
-                  "start": 895,
+                  "end": 903,
+                  "start": 897,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -2775,16 +3244,19 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    910,
+                    949,
+                    0
+                  ]
                 },
                 "from": [
                   30.75,
                   -122.4938
                 ],
                 "tag": {
-                  "commentStart": 937,
-                  "end": 943,
-                  "start": 937,
+                  "end": 948,
+                  "start": 942,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2800,7 +3272,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    989,
+                    1019,
+                    0
+                  ]
                 },
                 "from": [
                   0.0,
@@ -2819,7 +3295,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1025,
+                    1054,
+                    0
+                  ]
                 },
                 "from": [
                   -30.75,
@@ -2838,7 +3318,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1060,
+                    1089,
+                    0
+                  ]
                 },
                 "from": [
                   -30.75,
@@ -2857,7 +3341,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1095,
+                    1124,
+                    0
+                  ]
                 },
                 "from": [
                   -18.8688,
@@ -2876,7 +3364,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1130,
+                    1230,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -2901,7 +3393,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1236,
+                    1292,
+                    0
+                  ]
                 },
                 "from": [
                   -10.75,
@@ -2920,7 +3416,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1298,
+                    1305,
+                    0
+                  ]
                 },
                 "from": [
                   0.0,
@@ -2981,7 +3481,11 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  509,
+                  552,
+                  0
+                ]
               }
             },
             "tags": {
@@ -3038,7 +3542,11 @@ description: Variables in memory after executing router-template-slate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            1460,
+            1560,
+            0
+          ]
         }
       },
       "tags": {
@@ -3071,16 +3579,19 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2249,
+              2295,
+              0
+            ]
           },
           "from": [
             20.75,
             -12.4937
           ],
           "tag": {
-            "commentStart": 2216,
-            "end": 2237,
-            "start": 2216,
+            "end": 2294,
+            "start": 2273,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -3096,7 +3607,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2301,
+              2406,
+              0
+            ]
           },
           "from": [
             27.75,
@@ -3115,7 +3630,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2412,
+              2522,
+              0
+            ]
           },
           "from": [
             27.75,
@@ -3134,7 +3653,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2528,
+              2584,
+              0
+            ]
           },
           "from": [
             20.75,
@@ -3153,7 +3676,11 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              2590,
+              2597,
+              0
+            ]
           },
           "from": [
             20.75,
@@ -3198,11 +3725,14 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                558,
+                597,
+                0
+              ],
               "tag": {
-                "commentStart": 588,
-                "end": 594,
-                "start": 588,
+                "end": 596,
+                "start": 590,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -3211,18 +3741,25 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                603,
+                701,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                707,
+                783,
+                0
+              ],
               "tag": {
-                "commentStart": 774,
-                "end": 780,
-                "start": 774,
+                "end": 782,
+                "start": 776,
                 "type": "TagDeclarator",
                 "value": "seg05"
               },
@@ -3231,11 +3768,14 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                789,
+                858,
+                0
+              ],
               "tag": {
-                "commentStart": 849,
-                "end": 855,
-                "start": 849,
+                "end": 857,
+                "start": 851,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -3244,11 +3784,14 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                864,
+                904,
+                0
+              ],
               "tag": {
-                "commentStart": 895,
-                "end": 901,
-                "start": 895,
+                "end": 903,
+                "start": 897,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -3257,42 +3800,66 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                989,
+                1019,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1025,
+                1054,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1060,
+                1089,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1095,
+                1124,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1130,
+                1230,
+                0
+              ],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                1236,
+                1292,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -3304,16 +3871,19 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    558,
+                    597,
+                    0
+                  ]
                 },
                 "from": [
                   0.0,
                   28.1188
                 ],
                 "tag": {
-                  "commentStart": 588,
-                  "end": 594,
-                  "start": 588,
+                  "end": 596,
+                  "start": 590,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -3329,7 +3899,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    603,
+                    701,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -3354,16 +3928,19 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    707,
+                    783,
+                    0
+                  ]
                 },
                 "from": [
                   18.8688,
                   20.0
                 ],
                 "tag": {
-                  "commentStart": 774,
-                  "end": 780,
-                  "start": 774,
+                  "end": 782,
+                  "start": 776,
                   "type": "TagDeclarator",
                   "value": "seg05"
                 },
@@ -3379,16 +3956,19 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    789,
+                    858,
+                    0
+                  ]
                 },
                 "from": [
                   18.8688,
                   -12.4937
                 ],
                 "tag": {
-                  "commentStart": 849,
-                  "end": 855,
-                  "start": 849,
+                  "end": 857,
+                  "start": 851,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -3404,16 +3984,19 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    864,
+                    904,
+                    0
+                  ]
                 },
                 "from": [
                   30.75,
                   -12.4937
                 ],
                 "tag": {
-                  "commentStart": 895,
-                  "end": 901,
-                  "start": 895,
+                  "end": 903,
+                  "start": 897,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -3429,16 +4012,19 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    910,
+                    949,
+                    0
+                  ]
                 },
                 "from": [
                   30.75,
                   -122.4938
                 ],
                 "tag": {
-                  "commentStart": 937,
-                  "end": 943,
-                  "start": 937,
+                  "end": 948,
+                  "start": 942,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -3454,7 +4040,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    989,
+                    1019,
+                    0
+                  ]
                 },
                 "from": [
                   0.0,
@@ -3473,7 +4063,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1025,
+                    1054,
+                    0
+                  ]
                 },
                 "from": [
                   -30.75,
@@ -3492,7 +4086,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1060,
+                    1089,
+                    0
+                  ]
                 },
                 "from": [
                   -30.75,
@@ -3511,7 +4109,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1095,
+                    1124,
+                    0
+                  ]
                 },
                 "from": [
                   -18.8688,
@@ -3530,7 +4132,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1130,
+                    1230,
+                    0
+                  ]
                 },
                 "ccw": false,
                 "center": [
@@ -3555,7 +4161,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1236,
+                    1292,
+                    0
+                  ]
                 },
                 "from": [
                   -10.75,
@@ -3574,7 +4184,11 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    1298,
+                    1305,
+                    0
+                  ]
                 },
                 "from": [
                   0.0,
@@ -3635,7 +4249,11 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  509,
+                  552,
+                  0
+                ]
               }
             },
             "tags": {
@@ -3692,7 +4310,11 @@ description: Variables in memory after executing router-template-slate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            2144,
+            2243,
+            0
+          ]
         }
       },
       "tags": {

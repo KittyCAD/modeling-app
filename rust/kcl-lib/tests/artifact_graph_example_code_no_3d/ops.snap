@@ -10,11 +10,19 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
           "type": "String",
           "value": "YZ"
         },
-        "sourceRange": []
+        "sourceRange": [
+          26,
+          30,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      12,
+      31,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -25,11 +33,19 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
           "type": "String",
           "value": "-XZ"
         },
-        "sourceRange": []
+        "sourceRange": [
+          467,
+          472,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      453,
+      473,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   }

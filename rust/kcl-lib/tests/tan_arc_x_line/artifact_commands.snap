@@ -5,7 +5,11 @@ description: Artifact commands tan_arc_x_line.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,7 +17,23 @@ description: Artifact commands tan_arc_x_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -22,7 +42,11 @@ description: Artifact commands tan_arc_x_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -31,7 +55,11 @@ description: Artifact commands tan_arc_x_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      64,
+      83,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -56,7 +84,11 @@ description: Artifact commands tan_arc_x_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      89,
+      124,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -72,14 +104,22 @@ description: Artifact commands tan_arc_x_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      89,
+      124,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      89,
+      124,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -92,14 +132,22 @@ description: Artifact commands tan_arc_x_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      89,
+      124,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      130,
+      178,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -116,7 +164,11 @@ description: Artifact commands tan_arc_x_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      184,
+      245,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -132,7 +184,11 @@ description: Artifact commands tan_arc_x_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      251,
+      337,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -148,7 +204,11 @@ description: Artifact commands tan_arc_x_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      343,
+      430,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -164,7 +224,11 @@ description: Artifact commands tan_arc_x_line.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      436,
+      458,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",

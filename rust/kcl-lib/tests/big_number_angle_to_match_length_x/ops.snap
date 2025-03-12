@@ -10,11 +10,19 @@ description: Operations executed big_number_angle_to_match_length_x.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": []
+        "sourceRange": [
+          24,
+          28,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      10,
+      29,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -34,11 +42,19 @@ description: Operations executed big_number_angle_to_match_length_x.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          215,
+          217,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      198,
+      218,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -47,7 +63,11 @@ description: Operations executed big_number_angle_to_match_length_x.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        198,
+        218,
+        0
+      ]
     }
   }
 ]

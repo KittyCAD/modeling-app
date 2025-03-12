@@ -104,10 +104,10 @@ pub async fn sqrt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = sqrt(2500),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -137,15 +137,15 @@ pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [8, 0])
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = abs(myAngle),
 ///     length = 5,
-///   }, %)
+///   )
 ///   |> line(end = [-5, 0])
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = myAngle,
 ///     length = 5,
-///   }, %)
+///   )
 ///   |> close()
 ///
 /// baseExtrusion = extrude(sketch001, length = 5)
@@ -255,10 +255,10 @@ pub async fn min(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 70,
 ///     length = min(15, 31, 4, 13, 22)
-///   }, %)
+///   )
 ///   |> line(end = [20, 0])
 ///   |> close()
 ///
@@ -292,10 +292,10 @@ pub async fn max(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 70,
 ///     length = max(15, 31, 4, 13, 22)
-///   }, %)
+///   )
 ///   |> line(end = [20, 0])
 ///   |> close()
 ///
@@ -343,10 +343,10 @@ pub async fn pow(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = pow(5, 2),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -373,10 +373,10 @@ pub async fn acos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = toDegrees(acos(0.5)),
 ///     length = 10,
-///   }, %)
+///   )
 ///   |> line(end = [5, 0])
 ///   |> line(endAbsolute = [12, 0])
 ///   |> close()
@@ -404,10 +404,10 @@ pub async fn asin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = toDegrees(asin(0.5)),
 ///     length = 20,
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -434,10 +434,10 @@ pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = toDegrees(atan(1.25)),
 ///     length = 20,
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -464,10 +464,10 @@ pub async fn atan2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```no_run
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = toDegrees(atan2(1.25, 2)),
 ///     length = 20,
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -628,10 +628,10 @@ pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 30,
 ///     length = 2 * e() ^ 2,
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///  
@@ -660,10 +660,10 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = 10 * tau(),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -691,10 +691,10 @@ pub async fn to_radians(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = 70 * cos(toRadians(45)),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -721,10 +721,10 @@ pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 50,
 ///     length = 70 * cos(toDegrees(pi()/4)),
-///   }, %)
+///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///

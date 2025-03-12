@@ -13,11 +13,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            105,
+            172,
+            0
+          ],
           "tag": {
-            "commentStart": 132,
-            "end": 153,
-            "start": 132,
+            "end": 171,
+            "start": 150,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -26,11 +29,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            178,
+            262,
+            0
+          ],
           "tag": {
-            "commentStart": 240,
-            "end": 246,
-            "start": 240,
+            "end": 261,
+            "start": 255,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -39,18 +45,25 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            268,
+            356,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            362,
+            432,
+            0
+          ],
           "tag": {
-            "commentStart": 419,
-            "end": 425,
-            "start": 419,
+            "end": 431,
+            "start": 425,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -59,11 +72,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            538,
+            605,
+            0
+          ],
           "tag": {
-            "commentStart": 593,
-            "end": 599,
-            "start": 593,
+            "end": 604,
+            "start": 598,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -72,11 +88,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            611,
+            661,
+            0
+          ],
           "tag": {
-            "commentStart": 649,
-            "end": 655,
-            "start": 649,
+            "end": 660,
+            "start": 654,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -90,16 +109,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                105,
+                172,
+                0
+              ]
             },
             "from": [
               75.8,
               317.2
             ],
             "tag": {
-              "commentStart": 132,
-              "end": 153,
-              "start": 132,
+              "end": 171,
+              "start": 150,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -115,16 +137,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                178,
+                262,
+                0
+              ]
             },
             "from": [
               344.23,
               317.2
             ],
             "tag": {
-              "commentStart": 240,
-              "end": 246,
-              "start": 240,
+              "end": 261,
+              "start": 255,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -140,7 +165,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                268,
+                356,
+                0
+              ]
             },
             "from": [
               344.23,
@@ -159,16 +188,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                362,
+                432,
+                0
+              ]
             },
             "from": [
               75.8,
               99.94
             ],
             "tag": {
-              "commentStart": 419,
-              "end": 425,
-              "start": 419,
+              "end": 431,
+              "start": 425,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -184,7 +216,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                438,
+                445,
+                0
+              ]
             },
             "from": [
               75.8,
@@ -245,7 +281,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              37,
+              69,
+              0
+            ]
           }
         },
         "tags": {
@@ -293,9 +333,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "length": 50.0,
           "edgeId": "[uuid]",
           "tag": {
-            "commentStart": 593,
-            "end": 599,
-            "start": 593,
+            "end": 604,
+            "start": 598,
             "type": "TagDeclarator",
             "value": "seg03"
           }
@@ -306,9 +345,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "length": 50.0,
           "edgeId": "[uuid]",
           "tag": {
-            "commentStart": 649,
-            "end": 655,
-            "start": 649,
+            "end": 660,
+            "start": 654,
             "type": "TagDeclarator",
             "value": "seg04"
           }
@@ -329,11 +367,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1213,
+            1279,
+            0
+          ],
           "tag": {
-            "commentStart": 1223,
-            "end": 1244,
-            "start": 1223,
+            "end": 1278,
+            "start": 1257,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -342,11 +383,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1285,
+            1384,
+            0
+          ],
           "tag": {
-            "commentStart": 1331,
-            "end": 1352,
-            "start": 1331,
+            "end": 1383,
+            "start": 1362,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -355,11 +399,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1390,
+            1507,
+            0
+          ],
           "tag": {
-            "commentStart": 1457,
-            "end": 1478,
-            "start": 1457,
+            "end": 1506,
+            "start": 1485,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -368,7 +415,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [],
+          "sourceRange": [
+            1513,
+            1569,
+            0
+          ],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -380,16 +431,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1213,
+                1279,
+                0
+              ]
             },
             "from": [
               159.25,
               278.35
             ],
             "tag": {
-              "commentStart": 1223,
-              "end": 1244,
-              "start": 1223,
+              "end": 1278,
+              "start": 1257,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -405,16 +459,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1285,
+                1384,
+                0
+              ]
             },
             "from": [
               200.07,
               278.35
             ],
             "tag": {
-              "commentStart": 1331,
-              "end": 1352,
-              "start": 1331,
+              "end": 1383,
+              "start": 1362,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -430,16 +487,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1390,
+                1507,
+                0
+              ]
             },
             "from": [
               200.07,
               146.08
             ],
             "tag": {
-              "commentStart": 1457,
-              "end": 1478,
-              "start": 1457,
+              "end": 1506,
+              "start": 1485,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -455,7 +515,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1513,
+                1569,
+                0
+              ]
             },
             "from": [
               159.25,
@@ -474,7 +538,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": []
+              "sourceRange": [
+                1575,
+                1582,
+                0
+              ]
             },
             "from": [
               159.25,
@@ -519,11 +587,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  105,
+                  172,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 132,
-                  "end": 153,
-                  "start": 132,
+                  "end": 171,
+                  "start": 150,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -532,11 +603,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  178,
+                  262,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 240,
-                  "end": 246,
-                  "start": 240,
+                  "end": 261,
+                  "start": 255,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -545,18 +619,25 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  268,
+                  356,
+                  0
+                ],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  362,
+                  432,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 419,
-                  "end": 425,
-                  "start": 419,
+                  "end": 431,
+                  "start": 425,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -565,11 +646,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  538,
+                  605,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 593,
-                  "end": 599,
-                  "start": 593,
+                  "end": 604,
+                  "start": 598,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -578,11 +662,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [],
+                "sourceRange": [
+                  611,
+                  661,
+                  0
+                ],
                 "tag": {
-                  "commentStart": 649,
-                  "end": 655,
-                  "start": 649,
+                  "end": 660,
+                  "start": 654,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -596,16 +683,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      105,
+                      172,
+                      0
+                    ]
                   },
                   "from": [
                     75.8,
                     317.2
                   ],
                   "tag": {
-                    "commentStart": 132,
-                    "end": 153,
-                    "start": 132,
+                    "end": 171,
+                    "start": 150,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -621,16 +711,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      178,
+                      262,
+                      0
+                    ]
                   },
                   "from": [
                     344.23,
                     317.2
                   ],
                   "tag": {
-                    "commentStart": 240,
-                    "end": 246,
-                    "start": 240,
+                    "end": 261,
+                    "start": 255,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -646,7 +739,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      268,
+                      356,
+                      0
+                    ]
                   },
                   "from": [
                     344.23,
@@ -665,16 +762,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      362,
+                      432,
+                      0
+                    ]
                   },
                   "from": [
                     75.8,
                     99.94
                   ],
                   "tag": {
-                    "commentStart": 419,
-                    "end": 425,
-                    "start": 419,
+                    "end": 431,
+                    "start": 425,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -690,7 +790,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": []
+                    "sourceRange": [
+                      438,
+                      445,
+                      0
+                    ]
                   },
                   "from": [
                     75.8,
@@ -751,7 +855,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    37,
+                    69,
+                    0
+                  ]
                 }
               },
               "tags": {
@@ -799,9 +907,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "length": 50.0,
                 "edgeId": "[uuid]",
                 "tag": {
-                  "commentStart": 593,
-                  "end": 599,
-                  "start": 593,
+                  "end": 604,
+                  "start": 598,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 }
@@ -812,9 +919,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "length": 50.0,
                 "edgeId": "[uuid]",
                 "tag": {
-                  "commentStart": 649,
-                  "end": 655,
-                  "start": 649,
+                  "end": 660,
+                  "start": 654,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 }
@@ -843,7 +949,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1172,
+              1207,
+              0
+            ]
           }
         },
         "tags": {
@@ -938,16 +1048,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              105,
+              172,
+              0
+            ]
           },
           "from": [
             75.8,
             317.2
           ],
           "tag": {
-            "commentStart": 132,
-            "end": 153,
-            "start": 132,
+            "end": 171,
+            "start": 150,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -963,16 +1076,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              178,
+              262,
+              0
+            ]
           },
           "from": [
             344.23,
             317.2
           ],
           "tag": {
-            "commentStart": 240,
-            "end": 246,
-            "start": 240,
+            "end": 261,
+            "start": 255,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -988,7 +1104,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              268,
+              356,
+              0
+            ]
           },
           "from": [
             344.23,
@@ -1007,16 +1127,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              362,
+              432,
+              0
+            ]
           },
           "from": [
             75.8,
             99.94
           ],
           "tag": {
-            "commentStart": 419,
-            "end": 425,
-            "start": 419,
+            "end": 431,
+            "start": 425,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1032,7 +1155,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              438,
+              445,
+              0
+            ]
           },
           "from": [
             75.8,
@@ -1093,7 +1220,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            37,
+            69,
+            0
+          ]
         }
       },
       "tags": {
@@ -1134,16 +1265,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1213,
+              1279,
+              0
+            ]
           },
           "from": [
             159.25,
             278.35
           ],
           "tag": {
-            "commentStart": 1223,
-            "end": 1244,
-            "start": 1223,
+            "end": 1278,
+            "start": 1257,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -1159,16 +1293,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1285,
+              1384,
+              0
+            ]
           },
           "from": [
             200.07,
             278.35
           ],
           "tag": {
-            "commentStart": 1331,
-            "end": 1352,
-            "start": 1331,
+            "end": 1383,
+            "start": 1362,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -1184,16 +1321,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1390,
+              1507,
+              0
+            ]
           },
           "from": [
             200.07,
             146.08
           ],
           "tag": {
-            "commentStart": 1457,
-            "end": 1478,
-            "start": 1457,
+            "end": 1506,
+            "start": 1485,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -1209,7 +1349,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1513,
+              1569,
+              0
+            ]
           },
           "from": [
             159.25,
@@ -1228,7 +1372,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1575,
+              1582,
+              0
+            ]
           },
           "from": [
             159.25,
@@ -1273,11 +1421,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                105,
+                172,
+                0
+              ],
               "tag": {
-                "commentStart": 132,
-                "end": 153,
-                "start": 132,
+                "end": 171,
+                "start": 150,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -1286,11 +1437,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                178,
+                262,
+                0
+              ],
               "tag": {
-                "commentStart": 240,
-                "end": 246,
-                "start": 240,
+                "end": 261,
+                "start": 255,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1299,18 +1453,25 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                268,
+                356,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                362,
+                432,
+                0
+              ],
               "tag": {
-                "commentStart": 419,
-                "end": 425,
-                "start": 419,
+                "end": 431,
+                "start": 425,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1319,11 +1480,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                538,
+                605,
+                0
+              ],
               "tag": {
-                "commentStart": 593,
-                "end": 599,
-                "start": 593,
+                "end": 604,
+                "start": 598,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -1332,11 +1496,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                611,
+                661,
+                0
+              ],
               "tag": {
-                "commentStart": 649,
-                "end": 655,
-                "start": 649,
+                "end": 660,
+                "start": 654,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -1350,16 +1517,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    105,
+                    172,
+                    0
+                  ]
                 },
                 "from": [
                   75.8,
                   317.2
                 ],
                 "tag": {
-                  "commentStart": 132,
-                  "end": 153,
-                  "start": 132,
+                  "end": 171,
+                  "start": 150,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -1375,16 +1545,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    178,
+                    262,
+                    0
+                  ]
                 },
                 "from": [
                   344.23,
                   317.2
                 ],
                 "tag": {
-                  "commentStart": 240,
-                  "end": 246,
-                  "start": 240,
+                  "end": 261,
+                  "start": 255,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1400,7 +1573,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    268,
+                    356,
+                    0
+                  ]
                 },
                 "from": [
                   344.23,
@@ -1419,16 +1596,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    362,
+                    432,
+                    0
+                  ]
                 },
                 "from": [
                   75.8,
                   99.94
                 ],
                 "tag": {
-                  "commentStart": 419,
-                  "end": 425,
-                  "start": 419,
+                  "end": 431,
+                  "start": 425,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1444,7 +1624,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    438,
+                    445,
+                    0
+                  ]
                 },
                 "from": [
                   75.8,
@@ -1505,7 +1689,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  37,
+                  69,
+                  0
+                ]
               }
             },
             "tags": {
@@ -1553,9 +1741,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
-                "commentStart": 593,
-                "end": 599,
-                "start": 593,
+                "end": 604,
+                "start": 598,
                 "type": "TagDeclarator",
                 "value": "seg03"
               }
@@ -1566,9 +1753,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
-                "commentStart": 649,
-                "end": 655,
-                "start": 649,
+                "end": 660,
+                "start": 654,
                 "type": "TagDeclarator",
                 "value": "seg04"
               }
@@ -1597,7 +1783,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            1172,
+            1207,
+            0
+          ]
         }
       },
       "tags": {
@@ -1630,16 +1820,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              753,
+              819,
+              0
+            ]
           },
           "from": [
             -69.1,
             277.34
           ],
           "tag": {
-            "commentStart": 774,
-            "end": 795,
-            "start": 774,
+            "end": 818,
+            "start": 797,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -1655,16 +1848,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              825,
+              923,
+              0
+            ]
           },
           "from": [
             -27.62,
             277.34
           ],
           "tag": {
-            "commentStart": 881,
-            "end": 902,
-            "start": 881,
+            "end": 922,
+            "start": 901,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -1680,16 +1876,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              929,
+              1046,
+              0
+            ]
           },
           "from": [
             -27.62,
             172.54
           ],
           "tag": {
-            "commentStart": 1007,
-            "end": 1028,
-            "start": 1007,
+            "end": 1045,
+            "start": 1024,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -1705,7 +1904,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1052,
+              1108,
+              0
+            ]
           },
           "from": [
             -69.1,
@@ -1724,7 +1927,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": []
+            "sourceRange": [
+              1114,
+              1121,
+              0
+            ]
           },
           "from": [
             -69.1,
@@ -1769,11 +1976,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                105,
+                172,
+                0
+              ],
               "tag": {
-                "commentStart": 132,
-                "end": 153,
-                "start": 132,
+                "end": 171,
+                "start": 150,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -1782,11 +1992,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                178,
+                262,
+                0
+              ],
               "tag": {
-                "commentStart": 240,
-                "end": 246,
-                "start": 240,
+                "end": 261,
+                "start": 255,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1795,18 +2008,25 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                268,
+                356,
+                0
+              ],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                362,
+                432,
+                0
+              ],
               "tag": {
-                "commentStart": 419,
-                "end": 425,
-                "start": 419,
+                "end": 431,
+                "start": 425,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1815,11 +2035,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                538,
+                605,
+                0
+              ],
               "tag": {
-                "commentStart": 593,
-                "end": 599,
-                "start": 593,
+                "end": 604,
+                "start": 598,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -1828,11 +2051,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
+              "sourceRange": [
+                611,
+                661,
+                0
+              ],
               "tag": {
-                "commentStart": 649,
-                "end": 655,
-                "start": 649,
+                "end": 660,
+                "start": 654,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -1846,16 +2072,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    105,
+                    172,
+                    0
+                  ]
                 },
                 "from": [
                   75.8,
                   317.2
                 ],
                 "tag": {
-                  "commentStart": 132,
-                  "end": 153,
-                  "start": 132,
+                  "end": 171,
+                  "start": 150,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -1871,16 +2100,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    178,
+                    262,
+                    0
+                  ]
                 },
                 "from": [
                   344.23,
                   317.2
                 ],
                 "tag": {
-                  "commentStart": 240,
-                  "end": 246,
-                  "start": 240,
+                  "end": 261,
+                  "start": 255,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1896,7 +2128,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    268,
+                    356,
+                    0
+                  ]
                 },
                 "from": [
                   344.23,
@@ -1915,16 +2151,19 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    362,
+                    432,
+                    0
+                  ]
                 },
                 "from": [
                   75.8,
                   99.94
                 ],
                 "tag": {
-                  "commentStart": 419,
-                  "end": 425,
-                  "start": 419,
+                  "end": 431,
+                  "start": 425,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1940,7 +2179,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": []
+                  "sourceRange": [
+                    438,
+                    445,
+                    0
+                  ]
                 },
                 "from": [
                   75.8,
@@ -2001,7 +2244,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": []
+                "sourceRange": [
+                  37,
+                  69,
+                  0
+                ]
               }
             },
             "tags": {
@@ -2049,9 +2296,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
-                "commentStart": 593,
-                "end": 599,
-                "start": 593,
+                "end": 604,
+                "start": 598,
                 "type": "TagDeclarator",
                 "value": "seg03"
               }
@@ -2062,9 +2308,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
-                "commentStart": 649,
-                "end": 655,
-                "start": 649,
+                "end": 660,
+                "start": 654,
                 "type": "TagDeclarator",
                 "value": "seg04"
               }
@@ -2093,7 +2338,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": []
+          "sourceRange": [
+            713,
+            747,
+            0
+          ]
         }
       },
       "tags": {

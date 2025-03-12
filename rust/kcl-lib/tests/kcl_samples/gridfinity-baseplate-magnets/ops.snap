@@ -19,18 +19,30 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1243,
+          1255,
+          0
+        ]
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [],
+    "sourceRange": [
+      1216,
+      1256,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
+        "type": "String",
+        "value": "YZ"
       },
-      "sourceRange": []
+      "sourceRange": [
+        1228,
+        1232,
+        0
+      ]
     }
   },
   {
@@ -38,12 +50,16 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "name": "face",
     "functionSourceRange": [
       868,
-      1182,
+      1152,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      1211,
+      1257,
+      0
+    ]
   },
   {
     "labeledArgs": {
@@ -52,11 +68,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": []
+        "sourceRange": [
+          907,
+          912,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      893,
+      913,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -73,11 +97,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1268,
+          1297,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1203,
+      1301,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -86,7 +118,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1211,
+        1257,
+        0
+      ]
     }
   },
   {
@@ -105,7 +141,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1424,
+          1427,
+          0
+        ]
       },
       "axis": {
         "value": {
@@ -152,7 +192,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          1438,
+          1447,
+          0
+        ]
       },
       "center": {
         "value": {
@@ -187,7 +231,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          1460,
+          1493,
+          0
+        ]
       },
       "instances": {
         "value": {
@@ -203,18 +251,30 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1509,
+          1510,
+          0
+        ]
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": []
+        "sourceRange": [
+          1533,
+          1537,
+          0
+        ]
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [],
+    "sourceRange": [
+      1376,
+      1539,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -223,7 +283,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1397,
+        1407,
+        0
+      ]
     }
   },
   {
@@ -242,18 +306,30 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1789,
+          1801,
+          0
+        ]
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [],
+    "sourceRange": [
+      1762,
+      1802,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
+        "type": "String",
+        "value": "YZ"
       },
-      "sourceRange": []
+      "sourceRange": [
+        1774,
+        1778,
+        0
+      ]
     }
   },
   {
@@ -261,12 +337,16 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "name": "face",
     "functionSourceRange": [
       868,
-      1182,
+      1152,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      1757,
+      1803,
+      0
+    ]
   },
   {
     "labeledArgs": {
@@ -275,11 +355,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": []
+        "sourceRange": [
+          907,
+          912,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      893,
+      913,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -288,110 +376,125 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
   },
   {
     "labeledArgs": {
-      "angle": {
-        "value": {
-          "type": "Number",
-          "value": -90.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
-      "axis": {
+      "data": {
         "value": {
           "type": "Object",
           "value": {
-            "custom": {
+            "angle": {
+              "type": "Number",
+              "value": -90.0,
+              "ty": {
+                "type": "Default",
+                "len": {
+                  "type": "Mm"
+                },
+                "angle": {
+                  "type": "Degrees"
+                }
+              }
+            },
+            "axis": {
               "type": "Object",
               "value": {
-                "axis": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
+                "custom": {
+                  "type": "Object",
+                  "value": {
+                    "axis": {
+                      "type": "Array",
+                      "value": [
+                        {
+                          "type": "Number",
+                          "value": 0.0,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
                         },
-                        "angle": {
-                          "type": "Degrees"
+                        {
+                          "type": "Number",
+                          "value": 1.0,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
                         }
-                      }
+                      ]
                     },
-                    {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
+                    "origin": {
+                      "type": "Array",
+                      "value": [
+                        {
+                          "type": "Number",
+                          "value": 4.0,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
                         },
-                        "angle": {
-                          "type": "Degrees"
+                        {
+                          "type": "Number",
+                          "value": 4.0,
+                          "ty": {
+                            "type": "Default",
+                            "len": {
+                              "type": "Mm"
+                            },
+                            "angle": {
+                              "type": "Degrees"
+                            }
+                          }
                         }
-                      }
+                      ]
                     }
-                  ]
-                },
-                "origin": {
-                  "type": "Array",
-                  "value": [
-                    {
-                      "type": "Number",
-                      "value": 4.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    {
-                      "type": "Number",
-                      "value": 4.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Mm"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  ]
+                  }
                 }
               }
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1724,
+          1755,
+          0
+        ]
+      },
+      "sketches": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": [
+          1757,
+          1803,
+          0
+        ]
       }
     },
     "name": "revolve",
-    "sourceRange": [],
+    "sourceRange": [
+      1716,
+      1804,
+      0
+    ],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -409,7 +512,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1899,
+          1902,
+          0
+        ]
       },
       "axis": {
         "value": {
@@ -456,7 +563,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          1913,
+          1922,
+          0
+        ]
       },
       "center": {
         "value": {
@@ -491,7 +602,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          1935,
+          1968,
+          0
+        ]
       },
       "instances": {
         "value": {
@@ -507,18 +622,30 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1984,
+          1985,
+          0
+        ]
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": []
+        "sourceRange": [
+          2008,
+          2012,
+          0
+        ]
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [],
+    "sourceRange": [
+      1849,
+      2014,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -527,7 +654,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1870,
+        1882,
+        0
+      ]
     }
   },
   {
@@ -577,7 +708,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          2122,
+          2137,
+          0
+        ]
       },
       "distance": {
         "value": {
@@ -593,7 +728,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2191,
+          2200,
+          0
+        ]
       },
       "instances": {
         "value": {
@@ -609,11 +748,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2158,
+          2171,
+          0
+        ]
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [],
+    "sourceRange": [
+      2077,
+      2207,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -645,7 +792,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [
+        2101,
+        2106,
+        0
+      ]
     }
   },
   {
@@ -695,7 +846,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          2244,
+          2259,
+          0
+        ]
       },
       "distance": {
         "value": {
@@ -711,7 +866,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2314,
+          2323,
+          0
+        ]
       },
       "instances": {
         "value": {
@@ -727,11 +886,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2280,
+          2294,
+          0
+        ]
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [],
+    "sourceRange": [
+      2213,
+      2330,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -787,7 +954,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [
+        2213,
+        2330,
+        0
+      ]
     }
   },
   {
@@ -837,7 +1008,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          2463,
+          2478,
+          0
+        ]
       },
       "distance": {
         "value": {
@@ -853,7 +1028,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2532,
+          2541,
+          0
+        ]
       },
       "instances": {
         "value": {
@@ -869,11 +1048,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2499,
+          2512,
+          0
+        ]
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [],
+    "sourceRange": [
+      2416,
+      2548,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -905,7 +1092,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [
+        2440,
+        2447,
+        0
+      ]
     }
   },
   {
@@ -955,7 +1146,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          2585,
+          2600,
+          0
+        ]
       },
       "distance": {
         "value": {
@@ -971,7 +1166,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2655,
+          2664,
+          0
+        ]
       },
       "instances": {
         "value": {
@@ -987,11 +1186,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2621,
+          2635,
+          0
+        ]
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [],
+    "sourceRange": [
+      2554,
+      2671,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1047,96 +1254,72 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [
+        2554,
+        2671,
+        0
+      ]
     }
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "type": "String",
+          "value": "XY"
         },
-        "sourceRange": []
+        "sourceRange": [
+          4815,
+          4819,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      4801,
+      4820,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 8.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 8.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 3.25,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
     "name": "magnetBase",
     "functionSourceRange": [
-      4364,
-      4706,
+      4396,
+      4738,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      5149,
+      5165,
+      0
+    ]
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "type": "String",
+          "value": "XY"
         },
-        "sourceRange": []
+        "sourceRange": [
+          4441,
+          4446,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      4427,
+      4447,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1144,26 +1327,38 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "type": "UserDefinedFunctionCall",
     "name": "magnetCenterCutout",
     "functionSourceRange": [
-      2713,
-      4304,
+      2745,
+      4336,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      4681,
+      4706,
+      0
+    ]
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "type": "String",
+          "value": "XY"
         },
-        "sourceRange": []
+        "sourceRange": [
+          2786,
+          2791,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      2772,
+      2792,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1179,7 +1374,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          4681,
+          4706,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -1188,11 +1387,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          4708,
+          4709,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
+    "sourceRange": [
+      4676,
+      4710,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1231,7 +1438,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          5176,
+          5189,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -1240,11 +1451,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5191,
+          5192,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
+    "sourceRange": [
+      5171,
+      5193,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1264,11 +1483,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5303,
+          5312,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      5271,
+      5313,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1277,7 +1504,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        5279,
+        5292,
+        0
+      ]
     }
   },
   {
@@ -1296,7 +1527,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5417,
+          5429,
+          0
+        ]
       },
       "tags": {
         "value": {
@@ -1320,11 +1555,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          5440,
+          5712,
+          0
+        ]
       }
     },
     "name": "fillet",
-    "sourceRange": [],
+    "sourceRange": [
+      5376,
+      5714,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1333,7 +1576,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        5386,
+        5404,
+        0
+      ]
     }
   },
   {
@@ -1352,31 +1599,47 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5833,
+          5842,
+          0
+        ]
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [],
+    "sourceRange": [
+      5806,
+      5843,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
+        "type": "String",
+        "value": "XY"
       },
-      "sourceRange": []
+      "sourceRange": [
+        5818,
+        5822,
+        0
+      ]
     }
   },
   {
     "type": "UserDefinedFunctionCall",
     "name": "magnetBase",
     "functionSourceRange": [
-      4364,
-      4706,
+      4396,
+      4738,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      5795,
+      5844,
+      0
+    ]
   },
   {
     "labeledArgs": {
@@ -1385,11 +1648,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": []
+        "sourceRange": [
+          4441,
+          4446,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      4427,
+      4447,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1397,13 +1668,17 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "type": "UserDefinedFunctionCall",
     "name": "magnetCenterCutout",
     "functionSourceRange": [
-      2713,
-      4304,
+      2745,
+      4336,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      4681,
+      4706,
+      0
+    ]
   },
   {
     "labeledArgs": {
@@ -1412,11 +1687,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": []
+        "sourceRange": [
+          2786,
+          2791,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      2772,
+      2792,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1432,7 +1715,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          4681,
+          4706,
+          0
+        ]
       },
       "sketch": {
         "value": {
@@ -1441,11 +1728,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          4708,
+          4709,
+          0
+        ]
       }
     },
     "name": "hole",
-    "sourceRange": [],
+    "sourceRange": [
+      4676,
+      4710,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1468,11 +1763,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          5967,
+          5976,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      5926,
+      5977,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1481,7 +1784,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        5934,
+        5956,
+        0
+      ]
     }
   },
   {
@@ -1500,7 +1807,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          6083,
+          6095,
+          0
+        ]
       },
       "tags": {
         "value": {
@@ -1524,11 +1835,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          6106,
+          6382,
+          0
+        ]
       }
     },
     "name": "fillet",
-    "sourceRange": [],
+    "sourceRange": [
+      6041,
+      6384,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1537,7 +1856,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        6051,
+        6070,
+        0
+      ]
     }
   },
   {
@@ -1587,7 +1910,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          6492,
+          6507,
+          0
+        ]
       },
       "distance": {
         "value": {
@@ -1603,7 +1930,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          6561,
+          6570,
+          0
+        ]
       },
       "instances": {
         "value": {
@@ -1619,11 +1950,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          6528,
+          6541,
+          0
+        ]
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [],
+    "sourceRange": [
+      6427,
+      6577,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1632,7 +1971,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        6451,
+        6476,
+        0
+      ]
     }
   },
   {
@@ -1682,7 +2025,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          6614,
+          6629,
+          0
+        ]
       },
       "distance": {
         "value": {
@@ -1698,7 +2045,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          6684,
+          6693,
+          0
+        ]
       },
       "instances": {
         "value": {
@@ -1714,11 +2065,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          6650,
+          6664,
+          0
+        ]
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [],
+    "sourceRange": [
+      6583,
+      6700,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1738,7 +2097,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [
+        6583,
+        6700,
+        0
+      ]
     }
   },
   {
@@ -1788,7 +2151,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          6812,
+          6827,
+          0
+        ]
       },
       "distance": {
         "value": {
@@ -1804,7 +2171,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          6881,
+          6890,
+          0
+        ]
       },
       "instances": {
         "value": {
@@ -1820,11 +2191,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          6848,
+          6861,
+          0
+        ]
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [],
+    "sourceRange": [
+      6746,
+      6897,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1833,7 +2212,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        6770,
+        6796,
+        0
+      ]
     }
   },
   {
@@ -1883,7 +2266,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           ]
         },
-        "sourceRange": []
+        "sourceRange": [
+          6934,
+          6949,
+          0
+        ]
       },
       "distance": {
         "value": {
@@ -1899,7 +2286,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          7004,
+          7013,
+          0
+        ]
       },
       "instances": {
         "value": {
@@ -1915,11 +2306,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          6970,
+          6984,
+          0
+        ]
       }
     },
     "name": "patternLinear3d",
-    "sourceRange": [],
+    "sourceRange": [
+      6903,
+      7020,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1939,7 +2338,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [
+        6903,
+        7020,
+        0
+      ]
     }
   }
 ]

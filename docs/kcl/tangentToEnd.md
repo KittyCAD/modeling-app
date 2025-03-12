@@ -32,10 +32,7 @@ pillSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [20, 0])
   |> tangentialArcToRelative([0, 10], %, $arc1)
-  |> angledLine({
-       angle = tangentToEnd(arc1),
-       length = 20
-     }, %)
+  |> angledLine(angle = tangentToEnd(arc1), length = 20)
   |> tangentialArcToRelative([0, -10], %)
   |> close()
 
@@ -50,10 +47,7 @@ pillSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 20])
   |> tangentialArcTo([10, 20], %, $arc1)
-  |> angledLine({
-       angle = tangentToEnd(arc1),
-       length = 20
-     }, %)
+  |> angledLine(angle = tangentToEnd(arc1), length = 20)
   |> tangentialArcToRelative([-10, 0], %)
   |> close()
 
@@ -66,10 +60,7 @@ pillExtrude = extrude(pillSketch, length = 10)
 rectangleSketch = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [10, 0], tag = $seg1)
-  |> angledLine({
-       angle = tangentToEnd(seg1),
-       length = 10
-     }, %)
+  |> angledLine(angle = tangentToEnd(seg1), length = 10)
   |> line(end = [0, 10])
   |> line(end = [-20, 0])
   |> close()
@@ -83,7 +74,7 @@ rectangleExtrude = extrude(rectangleSketch, length = 10)
 bottom = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> arcTo({ end = [10, 10], interior = [5, 1] }, %, $arc1)
-  |> angledLine([tangentToEnd(arc1), 20], %)
+  |> angledLine(angle = tangentToEnd(arc1), length = 20)
   |> close()
 ```
 
@@ -95,7 +86,7 @@ circSketch = startSketchOn(XY)
 
 triangleSketch = startSketchOn(XY)
   |> startProfileAt([-5, 0], %)
-  |> angledLine([tangentToEnd(circ), 10], %)
+  |> angledLine(angle = tangentToEnd(circ), length = 10)
   |> line(end = [-15, 0])
   |> close()
 ```

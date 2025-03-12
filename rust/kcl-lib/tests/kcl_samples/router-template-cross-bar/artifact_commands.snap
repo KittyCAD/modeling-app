@@ -5,7 +5,11 @@ description: Artifact commands router-template-cross-bar.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,25 +17,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -39,7 +29,49 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      98,
+      131,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      437,
+      456,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -64,7 +96,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      462,
+      508,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -80,14 +116,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      462,
+      508,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      462,
+      508,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -100,14 +144,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      462,
+      508,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      514,
+      567,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -124,7 +176,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      573,
+      675,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -149,7 +205,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      681,
+      734,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -166,7 +226,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      740,
+      787,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -183,7 +247,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      793,
+      888,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -200,7 +268,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      894,
+      965,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -217,7 +289,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      971,
+      1022,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -234,7 +310,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1028,
+      1081,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -251,7 +331,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1087,
+      1156,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -268,7 +352,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1162,
+      1201,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -285,7 +373,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1207,
+      1237,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -302,7 +394,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1243,
+      1273,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -319,7 +415,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1279,
+      1309,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -336,7 +436,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1315,
+      1345,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -353,7 +457,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1351,
+      1380,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -370,7 +478,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1386,
+      1416,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -387,7 +499,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1422,
+      1451,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -404,7 +520,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1457,
+      1486,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -421,7 +541,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1492,
+      1588,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -446,7 +570,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1594,
+      1650,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -463,7 +591,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1656,
+      1663,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -471,7 +603,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -487,7 +623,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -497,14 +637,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -512,7 +660,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -521,7 +673,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -531,7 +687,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -541,7 +701,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -551,7 +715,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -561,7 +729,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -571,7 +743,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -581,7 +757,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -591,7 +771,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -601,7 +785,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -611,7 +799,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -621,7 +813,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -631,7 +827,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -641,7 +841,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -651,7 +855,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -661,7 +869,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -671,7 +883,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -681,7 +897,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -691,7 +911,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -701,7 +925,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -711,7 +939,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -721,7 +953,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -731,7 +967,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -741,7 +981,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -751,7 +995,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -761,7 +1009,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -771,7 +1023,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -781,7 +1037,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -791,7 +1051,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -801,7 +1065,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -811,7 +1079,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -821,7 +1093,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -831,7 +1107,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -841,7 +1121,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -851,7 +1135,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -861,7 +1149,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -871,7 +1163,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -881,7 +1177,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -891,7 +1191,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1707,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -901,7 +1205,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1761,
+      1805,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -913,14 +1221,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1761,
+      1805,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1761,
+      1805,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -933,14 +1249,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1761,
+      1805,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1811,
+      1891,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -957,7 +1281,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1897,
+      2036,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -974,7 +1302,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2042,
+      2188,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -991,7 +1323,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2194,
+      2250,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1008,7 +1344,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2256,
+      2263,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1016,7 +1356,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1028,7 +1372,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1038,14 +1386,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1053,7 +1409,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1062,7 +1422,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1072,7 +1436,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1082,7 +1450,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1092,7 +1464,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1102,7 +1478,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1112,7 +1492,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1122,7 +1506,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1132,7 +1520,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2277,
+      2308,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1142,7 +1534,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2362,
+      2407,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1154,14 +1550,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2362,
+      2407,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2362,
+      2407,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1174,14 +1578,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2362,
+      2407,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2413,
+      2491,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1198,7 +1610,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2497,
+      2636,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1215,7 +1631,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2642,
+      2788,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1232,7 +1652,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2794,
+      2850,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1249,7 +1673,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2856,
+      2863,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1257,7 +1685,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1269,7 +1701,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1279,14 +1715,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1294,7 +1738,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1303,7 +1751,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1313,7 +1765,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1323,7 +1779,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1333,7 +1793,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1343,7 +1807,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1353,7 +1821,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1363,7 +1835,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1373,7 +1849,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2878,
+      2909,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1383,7 +1863,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2961,
+      3006,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1395,14 +1879,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2961,
+      3006,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2961,
+      3006,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1415,14 +1907,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2961,
+      3006,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3012,
+      3097,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1439,7 +1939,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3103,
+      3242,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1456,7 +1960,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3248,
+      3394,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1473,7 +1981,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3400,
+      3456,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1490,7 +2002,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3462,
+      3469,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1498,7 +2014,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1510,7 +2030,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1520,14 +2044,22 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1535,7 +2067,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1544,7 +2080,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1554,7 +2094,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1564,7 +2108,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1574,7 +2122,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1584,7 +2136,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1594,7 +2150,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1604,7 +2164,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1614,7 +2178,11 @@ description: Artifact commands router-template-cross-bar.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3483,
+      3513,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

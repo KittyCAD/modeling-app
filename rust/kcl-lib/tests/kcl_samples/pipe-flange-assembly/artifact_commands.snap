@@ -5,7 +5,11 @@ description: Artifact commands pipe-flange-assembly.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,7 +17,23 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -22,7 +42,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -31,7 +55,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      346,
+      379,
+      0
+    ],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -39,2689 +67,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 0.375,
-        "y": 2.375,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 2.375
-        },
-        "radius": 0.375,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_circular_pattern",
-      "entity_id": "[uuid]",
-      "axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "center": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "num_repetitions": 3,
-      "arc_degrees": 360.0,
-      "rotate_duplicates": false
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 3.0,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 3.0,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.69,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 1.81,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 1.81,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.06,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 1.53,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 1.53,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.25,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 1.22,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 1.22,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -1.0,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.7294118,
-        "g": 0.6901961,
-        "b": 0.6901961,
-        "a": 100.0
-      },
-      "metalness": 0.0,
-      "roughness": 0.0,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 0.375,
-        "y": 2.375,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 2.375
-        },
-        "radius": 0.375,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_circular_pattern",
-      "entity_id": "[uuid]",
-      "axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "center": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "num_repetitions": 3,
-      "arc_degrees": 360.0,
-      "rotate_duplicates": false
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 3.0,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 3.0,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.69,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 1.81,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 1.81,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.06,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 1.53,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 1.53,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.25,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 1.22,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 1.22,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -1.0,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.7294118,
-        "g": 0.6901961,
-        "b": 0.6901961,
-        "a": 100.0
-      },
-      "metalness": 0.0,
-      "roughness": 0.0,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": null,
-          "rotate_rpy": null,
-          "rotate_angle_axis": {
-            "property": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "w": 180.0
-            },
-            "set": false,
-            "is_local": true
-          },
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 0.151
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 2.0625,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 2.0625,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.031,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 1.1875,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 1.1875,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.031,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.8156863,
-        "g": 0.79607844,
-        "b": 0.24313726,
-        "a": 100.0
-      },
-      "metalness": 0.0,
-      "roughness": 0.0,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": -0.091
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 0.594,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 0.594,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.032,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 0.32,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 0.32,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.032,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.93333334,
-        "g": 0.30980393,
-        "b": 0.30980393,
-        "a": 100.0
-      },
-      "metalness": 0.0,
-      "roughness": 0.0,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 2.375,
-              "y": 0.0,
-              "z": 0.69
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_circular_pattern",
-      "entity_id": "[uuid]",
-      "axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "center": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "num_repetitions": 3,
-      "arc_degrees": 360.0,
-      "rotate_duplicates": false
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": -0.0,
-              "y": -0.0,
-              "z": -1.563
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": -0.0,
-              "y": -0.0,
-              "z": -1.563
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": -0.0,
-              "y": -0.0,
-              "z": -1.563
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_linear_pattern_transform",
-      "entity_id": "[uuid]",
-      "transform": [],
-      "transforms": [
-        [
-          {
-            "translate": {
-              "x": -0.0,
-              "y": -0.0,
-              "z": -1.563
-            },
-            "scale": {
-              "x": 1.0,
-              "y": 1.0,
-              "z": 1.0
-            },
-            "rotation": {
-              "axis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "angle": {
-                "unit": "degrees",
-                "value": 0.0
-              },
-              "origin": {
-                "type": "local"
-              }
-            },
-            "replicate": true
-          }
-        ]
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4280,
+      4299,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -2746,7 +96,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4305,
+      4402,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2762,34 +116,50 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4305,
+      4402,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4305,
+      4402,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.469,
-        "y": 0.0,
+        "x": 0.1975,
+        "y": 1.375,
         "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4305,
+      4402,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4305,
+      4402,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2797,9 +167,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
-          "y": 0.0
+          "y": 1.375
         },
-        "radius": 0.469,
+        "radius": 0.1975,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2814,7 +184,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4305,
+      4402,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2822,7 +196,65 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4408,
+      4535,
+      0
+    ],
+    "command": {
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "num_repetitions": 6,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4575,
+      4594,
+      0
+    ],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4600,
+      4647,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2831,192 +263,57 @@ description: Artifact commands pipe-flange-assembly.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
+        "y": 0.0,
+        "z": 1.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.625,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.02,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.02,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4600,
+      4647,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4600,
+      4647,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.25,
-        "y": 0.14433756729740643,
+        "x": 0.49,
+        "y": 0.0,
         "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4600,
+      4647,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.0,
-          "y": -0.2887,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.25,
-          "y": -0.1443,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.25,
-          "y": 0.1443,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4653,
+      4672,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3024,7 +321,7 @@ description: Artifact commands pipe-flange-assembly.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.2887,
+          "y": -2.0,
           "z": 0.0
         },
         "relative": true
@@ -3033,7 +330,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4678,
+      4714,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3041,7 +342,7 @@ description: Artifact commands pipe-flange-assembly.kcl
         "type": "line",
         "end": {
           "x": 0.25,
-          "y": 0.1443,
+          "y": -0.433,
           "z": 0.0
         },
         "relative": true
@@ -3050,245 +351,221 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.46875,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 0.3125,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4720,
+      4739,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 0.3125,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
+        "type": "line",
         "end": {
-          "unit": "degrees",
-          "value": 360.0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         },
-        "relative": false
+        "relative": true
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4745,
+      4778,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -0.125,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4784,
+      4802,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4808,
+      4845,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -0.25,
+          "y": 0.433,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4851,
+      4869,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 5.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4875,
+      4910,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.25,
+          "y": 0.433,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4916,
+      4934,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4940,
+      4972,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.125,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4978,
+      4997,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5003,
+      5039,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -0.25,
+          "y": -0.433,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5045,
+      5052,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3296,353 +573,39 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
+      "type": "revolve",
       "target": "[uuid]",
-      "distance": 2.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.3019608,
-        "g": 0.8156863,
-        "b": 0.2627451,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 2.375,
-              "y": 0.0,
-              "z": 0.722
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_object_transform",
-      "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": null,
-          "rotate_rpy": {
-            "property": {
-              "x": 90.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "entity_circular_pattern",
-      "entity_id": "[uuid]",
-      "axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "center": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "num_repetitions": 3,
-      "arc_degrees": 360.0,
-      "rotate_duplicates": false
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "make_plane",
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0
       },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
+      "axis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0
       },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
+      "axis_is_2d": true,
+      "angle": {
+        "unit": "degrees",
+        "value": 360.0
+      },
+      "tolerance": 0.0000001
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 0.46875,
-        "y": 0.27063293868263705,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.0,
-          "y": -0.5413,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.4687,
-          "y": -0.2706,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.4688,
-          "y": 0.2706,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": 0.5413,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.4688,
-          "y": 0.2706,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 0.546875,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3650,7 +613,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3659,7 +626,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3669,7 +640,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3679,7 +654,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3689,7 +668,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3699,7 +682,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3709,7 +696,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3719,7 +710,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3729,7 +724,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3739,7 +738,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3749,7 +752,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3759,7 +766,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3769,7 +780,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3779,31 +794,609 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5058,
+      5084,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5090,
+      5119,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.48235294,
+        "g": 0.4745098,
+        "b": 0.84313726,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5159,
+      5178,
+      0
+    ],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5184,
+      5211,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": null
+      "planar_normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5184,
+      5211,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5184,
+      5211,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.3125,
+        "x": -4.0,
+        "y": -4.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5184,
+      5211,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5217,
+      5235,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 8.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5241,
+      5259,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 8.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5265,
+      5284,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": -8.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5290,
+      5297,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5303,
+      5331,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5342,
+      5414,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5342,
+      5414,
+      0
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5342,
+      5414,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 0.5,
         "y": 0.0,
         "z": 0.0
       }
@@ -3811,14 +1404,22 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5342,
+      5414,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5342,
+      5414,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3826,6 +1427,1368 @@ description: Artifact commands pipe-flange-assembly.kcl
         "type": "arc",
         "center": {
           "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.5,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5342,
+      5414,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5337,
+      5418,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5337,
+      5418,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5424,
+      5455,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5461,
+      5490,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.78039217,
+        "g": 0.6666667,
+        "b": 0.56078434,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5538,
+      5557,
+      0
+    ],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5563,
+      5631,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5563,
+      5631,
+      0
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5563,
+      5631,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5563,
+      5631,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5563,
+      5631,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 2.0,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5563,
+      5631,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5637,
+      5665,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5676,
+      5748,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5676,
+      5748,
+      0
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5676,
+      5748,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 0.5,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5676,
+      5748,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5676,
+      5748,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.5,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5676,
+      5748,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5671,
+      5752,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5671,
+      5752,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.125,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5758,
+      5792,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5798,
+      5827,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.60784316,
+        "g": 0.5921569,
+        "b": 0.5921569,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2925,
+      2945,
+      0
+    ],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": 0.125,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "y_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 1.6875,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 1.375,
           "y": 0.0
         },
         "radius": 0.3125,
@@ -3843,7 +2806,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2953,
+      3040,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3851,36 +2818,182 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3053,
+      3140,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": null
+      "planar_normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3053,
+      3140,
+      0
+    ],
     "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.546875,
-      "faces": null
+      "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 1.5675,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3053,
+      3140,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 1.375,
+          "y": 0.0
+        },
+        "radius": 0.1925,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3048,
+      3144,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3048,
+      3144,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.0625,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3888,7 +3001,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3152,
+      3173,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3897,7 +3014,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3152,
+      3173,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3907,7 +3028,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3152,
+      3173,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3917,75 +3042,217 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3152,
+      3173,
+      0
+    ],
     "command": {
-      "type": "object_set_material_params_pbr",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
-      "color": {
-        "r": 0.30588236,
-        "g": 0.8745098,
-        "b": 0.8352941,
-        "a": 100.0
-      },
-      "metalness": 0.0,
-      "roughness": 0.0,
-      "ambient_occlusion": 0.0
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3152,
+      3173,
+      0
+    ],
     "command": {
-      "type": "set_object_transform",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 2.375,
-              "y": 0.0,
-              "z": -1.419875
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5969,
+      6124,
+      0
+    ],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
       "axis": {
         "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
+        "y": 1.0,
+        "z": 0.0
       },
       "center": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0
       },
-      "num_repetitions": 3,
+      "num_repetitions": 6,
       "arc_degrees": 360.0,
-      "rotate_duplicates": false
+      "rotate_duplicates": true
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6130,
+      6159,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.84705883,
+        "g": 0.85490197,
+        "b": 0.3647059,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6130,
+      6159,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.84705883,
+        "g": 0.85490197,
+        "b": 0.3647059,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6130,
+      6159,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.84705883,
+        "g": 0.85490197,
+        "b": 0.3647059,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6130,
+      6159,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.84705883,
+        "g": 0.85490197,
+        "b": 0.3647059,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6130,
+      6159,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.84705883,
+        "g": 0.85490197,
+        "b": 0.3647059,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6130,
+      6159,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.84705883,
+        "g": 0.85490197,
+        "b": 0.3647059,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6130,
+      6159,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.84705883,
+        "g": 0.85490197,
+        "b": 0.3647059,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1521,
+      1546,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "y": 0.1875,
+        "z": 1.375
       },
       "x_axis": {
         "x": 1.0,
@@ -4004,7 +3271,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1554,
+      1626,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4013,26 +3284,34 @@ description: Artifact commands pipe-flange-assembly.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1554,
+      1626,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1554,
+      1626,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.1875,
+        "x": 0.3088815789473684,
         "y": 0.0,
         "z": 0.0
       }
@@ -4040,14 +3319,22 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1554,
+      1626,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1554,
+      1626,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4057,7 +3344,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.1875,
+        "radius": 0.3088815789473684,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -4072,7 +3359,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1554,
+      1626,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4080,7 +3371,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1715,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4089,31 +3384,43 @@ description: Artifact commands pipe-flange-assembly.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1715,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 6.0,
+      "distance": 0.375,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1715,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1715,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4121,7 +3428,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1715,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4130,7 +3441,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1715,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4140,7 +3455,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1677,
+      1715,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4150,7 +3469,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1837,
+      1927,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4162,59 +3485,176 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1837,
+      1927,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1837,
+      1927,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.15419407894736842,
+        "y": 1.375,
         "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1837,
+      1927,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1935,
+      1969,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 1.0,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
+        "type": "line",
         "end": {
-          "unit": "degrees",
-          "value": 360.0
+          "x": 0.0,
+          "y": -0.089,
+          "z": 0.0
         },
-        "relative": false
+        "relative": true
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1977,
+      2064,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -0.1542,
+          "y": -0.089,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2072,
+      2176,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -0.1542,
+          "y": 0.089,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2184,
+      2294,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 0.178,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2302,
+      2412,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.1542,
+          "y": 0.089,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2420,
+      2530,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.1542,
+          "y": -0.089,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2538,
+      2545,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4222,7 +3662,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2561,
+      2615,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4234,24 +3678,36 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2561,
+      2615,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -6.0,
+      "distance": -0.28125,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2561,
+      2615,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2561,
+      2615,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4259,7 +3715,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2561,
+      2615,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4268,7 +3728,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2561,
+      2615,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4278,7 +3742,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2561,
+      2615,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4288,14 +3756,211 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2561,
+      2615,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6327,
+      6482,
+      0
+    ],
+    "command": {
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "num_repetitions": 6,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6488,
+      6517,
+      0
+    ],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
       "color": {
-        "r": 0.63529414,
-        "g": 0.30588236,
-        "b": 0.8156863,
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
         "a": 100.0
       },
       "metalness": 0.0,
@@ -4305,61 +3970,143 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6488,
+      6517,
+      0
+    ],
     "command": {
-      "type": "set_object_transform",
+      "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": null,
-          "rotate_rpy": {
-            "property": {
-              "x": -90.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6488,
+      6517,
+      0
+    ],
     "command": {
-      "type": "set_object_transform",
+      "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 0.43999999999999995
-            },
-            "set": false,
-            "is_local": false
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6488,
+      6517,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6488,
+      6517,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6488,
+      6517,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6488,
+      6517,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6537,
+      6562,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "y": 0.1875,
+        "z": 1.375
       },
       "x_axis": {
         "x": 1.0,
@@ -4378,7 +4125,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6568,
+      6635,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4387,26 +4138,34 @@ description: Artifact commands pipe-flange-assembly.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6568,
+      6635,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6568,
+      6635,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.1875,
+        "x": 0.1875,
         "y": 0.0,
         "z": 0.0
       }
@@ -4414,14 +4173,22 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6568,
+      6635,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6568,
+      6635,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4431,7 +4198,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.1875,
+        "radius": 0.1875,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -4446,7 +4213,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6568,
+      6635,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4454,7 +4225,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6648,
+      6695,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4463,31 +4238,43 @@ description: Artifact commands pipe-flange-assembly.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -1.0,
+        "y": 1.0,
         "z": 0.0
       }
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6648,
+      6695,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 6.0,
+      "distance": -1.125,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6648,
+      6695,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6648,
+      6695,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4495,7 +4282,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6648,
+      6695,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4504,7 +4295,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6648,
+      6695,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4514,7 +4309,11 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6648,
+      6695,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4524,152 +4323,43 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6701,
+      6856,
+      0
+    ],
     "command": {
-      "type": "enable_sketch_mode",
+      "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 1.0,
+      "axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "center": {
+        "x": 0.0,
         "y": 0.0,
         "z": 0.0
-      }
+      },
+      "num_repetitions": 6,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 0.0,
-          "y": 0.0
-        },
-        "radius": 1.0,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -6.0,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6862,
+      6891,
+      0
+    ],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
       "color": {
-        "r": 0.63529414,
-        "g": 0.30588236,
-        "b": 0.8156863,
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
         "a": 100.0
       },
       "metalness": 0.0,
@@ -4679,50 +4369,1554 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6862,
+      6891,
+      0
+    ],
     "command": {
-      "type": "set_object_transform",
+      "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": null,
-          "rotate_rpy": {
-            "property": {
-              "x": 90.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "set": false,
-            "is_local": true
-          },
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6862,
+      6891,
+      0
+    ],
     "command": {
-      "type": "set_object_transform",
+      "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
-      "transforms": [
-        {
-          "translate": {
-            "property": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": -0.591
-            },
-            "set": false,
-            "is_local": false
-          },
-          "rotate_rpy": null,
-          "rotate_angle_axis": null,
-          "scale": null
-        }
-      ]
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6862,
+      6891,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6862,
+      6891,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6862,
+      6891,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6862,
+      6891,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.29803923,
+        "g": 0.83137256,
+        "b": 0.06666667,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2925,
+      2945,
+      0
+    ],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": -0.5625,
+        "z": 0.0
+      },
+      "x_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "y_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 1.6875,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 1.375,
+          "y": 0.0
+        },
+        "radius": 0.3125,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 1.5675,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 1.375,
+          "y": 0.0
+        },
+        "radius": 0.1925,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3048,
+      3144,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3048,
+      3144,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.0625,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3173,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7346,
+      7501,
+      0
+    ],
+    "command": {
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "num_repetitions": 6,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7507,
+      7536,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.9098039,
+        "g": 0.9254902,
+        "b": 0.03529412,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7507,
+      7536,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.9098039,
+        "g": 0.9254902,
+        "b": 0.03529412,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7507,
+      7536,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.9098039,
+        "g": 0.9254902,
+        "b": 0.03529412,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7507,
+      7536,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.9098039,
+        "g": 0.9254902,
+        "b": 0.03529412,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7507,
+      7536,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.9098039,
+        "g": 0.9254902,
+        "b": 0.03529412,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7507,
+      7536,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.9098039,
+        "g": 0.9254902,
+        "b": 0.03529412,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7507,
+      7536,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.9098039,
+        "g": 0.9254902,
+        "b": 0.03529412,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3270,
+      3596,
+      0
+    ],
+    "command": {
+      "type": "make_plane",
+      "origin": {
+        "x": 0.0,
+        "y": -0.5625,
+        "z": 1.375
+      },
+      "x_axis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "y_axis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "size": 60.0,
+      "clobber": false,
+      "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3604,
+      3654,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3604,
+      3654,
+      0
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3604,
+      3654,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 0.34650000000000003,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3604,
+      3654,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3662,
+      3745,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -0.1733,
+          "y": -0.3001,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3753,
+      3836,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -0.3465,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3844,
+      3927,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -0.1732,
+          "y": 0.3001,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3935,
+      4017,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.1733,
+          "y": 0.3001,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4025,
+      4071,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.3465,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4079,
+      4086,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4099,
+      4172,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4099,
+      4172,
+      0
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4099,
+      4172,
+      0
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 0.1925,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4099,
+      4172,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4099,
+      4172,
+      0
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.1925,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4099,
+      4172,
+      0
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4094,
+      4176,
+      0
+    ],
+    "command": {
+      "type": "solid2d_add_hole",
+      "object_id": "[uuid]",
+      "hole_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4094,
+      4176,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.25,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4184,
+      4206,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7698,
+      7853,
+      0
+    ],
+    "command": {
+      "type": "entity_circular_pattern",
+      "entity_id": "[uuid]",
+      "axis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "center": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "num_repetitions": 6,
+      "arc_degrees": 360.0,
+      "rotate_duplicates": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7859,
+      7888,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.7372549,
+        "g": 0.20392157,
+        "b": 0.20392157,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7859,
+      7888,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.7372549,
+        "g": 0.20392157,
+        "b": 0.20392157,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7859,
+      7888,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.7372549,
+        "g": 0.20392157,
+        "b": 0.20392157,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7859,
+      7888,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.7372549,
+        "g": 0.20392157,
+        "b": 0.20392157,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7859,
+      7888,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.7372549,
+        "g": 0.20392157,
+        "b": 0.20392157,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7859,
+      7888,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.7372549,
+        "g": 0.20392157,
+        "b": 0.20392157,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      7859,
+      7888,
+      0
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.7372549,
+        "g": 0.20392157,
+        "b": 0.20392157,
+        "a": 100.0
+      },
+      "metalness": 0.0,
+      "roughness": 0.0,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1554,
+      1626,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6568,
+      6635,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2953,
+      3040,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3053,
+      3140,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3604,
+      3654,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4099,
+      4172,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   }
 ]

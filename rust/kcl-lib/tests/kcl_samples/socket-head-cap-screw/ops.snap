@@ -13,111 +13,60 @@ description: Operations executed socket-head-cap-screw.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      655,
+      673,
+      0
+    ]
   },
   {
     "type": "UserDefinedFunctionReturn"
   },
   {
     "type": "UserDefinedFunctionCall",
-    "name": "bolt",
+    "name": "capScrew",
     "functionSourceRange": [
-      662,
-      1968,
+      861,
+      2254,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": []
+    "sourceRange": [
+      2256,
+      2315,
+      0
+    ]
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
+          "type": "String",
+          "value": "XZ"
         },
-        "sourceRange": []
+        "sourceRange": [
+          971,
+          975,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      957,
+      976,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 0.1565,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
-        "value": {
-          "type": "TagDeclarator",
-          "name": "topEdge"
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.19,
+          "value": 0.19,
           "ty": {
             "type": "Default",
             "len": {
@@ -128,11 +77,19 @@ description: Operations executed socket-head-cap-screw.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1162,
+          1175,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1128,
+      1176,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -141,56 +98,11 @@ description: Operations executed socket-head-cap-screw.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 0.02,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
-      "tags": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "TagIdentifier",
-              "value": "topEdge",
-              "artifact_id": "[uuid]"
-            },
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            }
-          ]
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
+      "sourceRange": [
+        1136,
+        1151,
+        0
+      ]
     }
   },
   {
@@ -202,18 +114,30 @@ description: Operations executed socket-head-cap-screw.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          1273,
+          1282,
+          0
+        ]
       },
       "tag": {
         "value": {
           "type": "String",
-          "value": "start"
+          "value": "end"
         },
-        "sourceRange": []
+        "sourceRange": [
+          1284,
+          1289,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
+    "sourceRange": [
+      1259,
+      1290,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -227,11 +151,19 @@ description: Operations executed socket-head-cap-screw.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2013,
+          2031,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      1978,
+      2032,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -240,7 +172,11 @@ description: Operations executed socket-head-cap-screw.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
+      "sourceRange": [
+        1986,
+        2002,
+        0
+      ]
     }
   },
   {
@@ -252,87 +188,32 @@ description: Operations executed socket-head-cap-screw.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2068,
+          2077,
+          0
+        ]
       },
       "tag": {
         "value": {
           "type": "String",
-          "value": "end"
+          "value": "start"
         },
-        "sourceRange": []
+        "sourceRange": [
+          2079,
+          2086,
+          0
+        ]
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "circle",
-    "functionSourceRange": [
-      0,
-      0,
+    "sourceRange": [
+      2054,
+      2087,
       0
     ],
-    "unlabeledArg": null,
-    "labeledArgs": {
-      "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 0.095,
-          "ty": {
-            "type": "Unknown"
-          }
-        },
-        "sourceRange": []
-      },
-      "tag": {
-        "value": {
-          "type": "TagDeclarator",
-          "name": "filletEdge"
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -350,11 +231,19 @@ description: Operations executed socket-head-cap-screw.kcl
             }
           }
         },
-        "sourceRange": []
+        "sourceRange": [
+          2226,
+          2232,
+          0
+        ]
       }
     },
     "name": "extrude",
-    "sourceRange": [],
+    "sourceRange": [
+      2192,
+      2233,
+      0
+    ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -363,51 +252,11 @@ description: Operations executed socket-head-cap-screw.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "radius": {
-        "value": {
-          "type": "Number",
-          "value": 0.02,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
-      "tags": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Uuid",
-              "value": "[uuid]"
-            }
-          ]
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
+      "sourceRange": [
+        2200,
+        2215,
+        0
+      ]
     }
   },
   {

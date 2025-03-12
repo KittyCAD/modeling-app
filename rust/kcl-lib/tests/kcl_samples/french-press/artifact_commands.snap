@@ -5,7 +5,11 @@ description: Artifact commands french-press.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,7 +17,23 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -22,7 +42,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -31,7 +55,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      71,
+      104,
+      0
+    ],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -39,7 +67,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      241,
+      260,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -64,7 +96,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      266,
+      310,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -80,14 +116,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      266,
+      310,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      266,
+      310,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -100,14 +144,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      266,
+      310,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      316,
+      380,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -124,7 +176,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      386,
+      513,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -141,7 +197,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      519,
+      665,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -158,7 +218,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      671,
+      727,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -175,7 +239,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      733,
+      740,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -183,7 +251,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -207,7 +279,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -215,7 +291,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -224,7 +304,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -234,7 +318,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -244,7 +332,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -254,7 +346,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -264,7 +360,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -274,7 +374,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -284,7 +388,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -294,7 +402,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      746,
+      785,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -304,7 +416,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1034,
+      1057,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -329,7 +445,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1063,
+      1107,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -345,14 +465,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1063,
+      1107,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1063,
+      1107,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -365,14 +493,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1063,
+      1107,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1113,
+      1132,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -389,7 +525,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1138,
+      1172,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -406,7 +546,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1178,
+      1262,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -431,7 +575,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1268,
+      1319,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -448,7 +596,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1325,
+      1409,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -473,7 +625,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1415,
+      1473,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -490,7 +646,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1479,
+      1561,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -515,7 +675,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1567,
+      1607,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -532,7 +696,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1613,
+      1632,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -549,7 +717,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1638,
+      1691,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -566,7 +738,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1697,
+      1779,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -591,7 +767,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1785,
+      1884,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -608,7 +788,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1890,
+      1974,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -633,7 +817,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1980,
+      2079,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -650,7 +838,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2085,
+      2169,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -675,7 +867,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2175,
+      2231,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -692,7 +888,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2237,
+      2244,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -700,7 +900,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -716,7 +920,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -726,14 +934,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -741,7 +957,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -750,7 +970,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -760,7 +984,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -770,7 +998,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -780,7 +1012,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -790,7 +1026,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -800,7 +1040,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -810,7 +1054,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -820,7 +1068,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -830,7 +1082,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -840,7 +1096,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -850,7 +1110,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -860,7 +1124,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -870,7 +1138,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -880,7 +1152,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -890,7 +1166,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -900,7 +1180,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -910,7 +1194,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -920,7 +1208,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -930,7 +1222,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -940,7 +1236,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -950,7 +1250,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -960,7 +1264,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -970,7 +1278,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -980,7 +1292,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -990,7 +1306,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1000,7 +1320,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1010,7 +1334,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1020,7 +1348,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1030,7 +1362,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1040,7 +1376,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1050,7 +1390,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1060,7 +1404,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2250,
+      2272,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1070,7 +1418,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2278,
+      2433,
+      0
+    ],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -1091,7 +1443,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2476,
+      2505,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1116,7 +1472,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2476,
+      2505,
+      0
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -1130,7 +1490,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2512,
+      2592,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1146,14 +1510,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2512,
+      2592,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2512,
+      2592,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1166,14 +1538,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2512,
+      2592,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2512,
+      2592,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1198,7 +1578,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2512,
+      2592,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1206,7 +1590,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2607,
+      2641,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1222,7 +1610,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2607,
+      2641,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1232,14 +1624,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2607,
+      2641,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2607,
+      2641,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1247,7 +1647,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2607,
+      2641,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1256,7 +1660,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2607,
+      2641,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1266,7 +1674,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2607,
+      2641,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1276,7 +1688,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2693,
+      2723,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1288,14 +1704,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2693,
+      2723,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2693,
+      2723,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1308,14 +1732,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2693,
+      2723,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2729,
+      2748,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1332,7 +1764,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2754,
+      2837,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1357,7 +1793,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2843,
+      2899,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1374,7 +1814,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2905,
+      2912,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1382,7 +1826,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2918,
+      3045,
+      0
+    ],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -1403,7 +1851,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1415,7 +1867,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1425,14 +1881,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1440,7 +1904,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1449,7 +1917,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1459,7 +1931,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1469,7 +1945,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1479,7 +1959,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1489,7 +1973,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1499,7 +1987,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1509,7 +2001,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1521,7 +2017,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1531,14 +2031,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1546,7 +2054,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1555,7 +2067,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1565,7 +2081,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1575,7 +2095,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1585,7 +2109,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1595,7 +2123,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1605,7 +2137,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1615,7 +2151,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1627,7 +2167,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1637,14 +2181,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1652,7 +2204,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1661,7 +2217,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1671,7 +2231,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1681,7 +2245,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1691,7 +2259,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1701,7 +2273,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1711,7 +2287,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3060,
+      3095,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1721,7 +2301,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3126,
+      3145,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1746,7 +2330,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3151,
+      3182,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1762,14 +2350,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3151,
+      3182,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3151,
+      3182,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1782,14 +2378,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3151,
+      3182,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3188,
+      3233,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1806,7 +2410,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3239,
+      3345,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1823,7 +2431,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3351,
+      3390,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1840,7 +2452,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3396,
+      3442,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1857,7 +2473,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3448,
+      3473,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1874,7 +2494,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3479,
+      3535,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1891,7 +2515,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3541,
+      3548,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1899,7 +2527,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -1923,7 +2555,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1931,7 +2567,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1940,7 +2580,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1950,7 +2594,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1960,7 +2608,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1970,7 +2622,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1980,7 +2636,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1990,7 +2650,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2000,7 +2664,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2010,7 +2678,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2020,7 +2692,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2030,7 +2706,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2040,7 +2720,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2050,7 +2734,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3554,
+      3580,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2060,7 +2748,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3614,
+      3633,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -2085,7 +2777,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3639,
+      3666,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2101,14 +2797,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3639,
+      3666,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3639,
+      3666,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2121,14 +2825,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3639,
+      3666,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3672,
+      3692,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2145,7 +2857,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3698,
+      3741,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2162,7 +2878,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3747,
+      3765,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2179,7 +2899,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3771,
+      3791,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2196,7 +2920,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3797,
+      3817,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2213,7 +2941,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3823,
+      3871,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2229,7 +2961,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3877,
+      3933,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2246,7 +2982,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3939,
+      3946,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2254,7 +2994,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -2278,7 +3022,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2286,7 +3034,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2295,7 +3047,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2305,7 +3061,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2315,7 +3075,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2325,7 +3089,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2335,7 +3103,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2345,7 +3117,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2355,7 +3131,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2365,7 +3145,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2375,7 +3159,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2385,7 +3173,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2395,7 +3187,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2405,7 +3201,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2415,7 +3215,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2425,7 +3229,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3952,
+      3978,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2435,7 +3243,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4022,
+      4054,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -2460,7 +3272,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4022,
+      4054,
+      0
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -2474,7 +3290,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4061,
+      4141,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2490,14 +3310,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4061,
+      4141,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4061,
+      4141,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2510,14 +3338,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4061,
+      4141,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4061,
+      4141,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2542,7 +3378,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4061,
+      4141,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2550,7 +3390,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4152,
+      4189,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2566,14 +3410,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4152,
+      4189,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4152,
+      4189,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2586,14 +3438,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4152,
+      4189,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4152,
+      4189,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2618,7 +3478,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4152,
+      4189,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2626,7 +3490,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4147,
+      4193,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2635,7 +3503,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4147,
+      4193,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2644,7 +3516,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4208,
+      4242,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2660,7 +3536,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4208,
+      4242,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2670,14 +3550,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4208,
+      4242,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4208,
+      4242,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2685,7 +3573,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4208,
+      4242,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2694,7 +3586,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4208,
+      4242,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2704,7 +3600,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4208,
+      4242,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2714,7 +3614,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4208,
+      4242,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2724,7 +3628,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4208,
+      4242,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2734,7 +3642,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4331,
+      4369,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2746,14 +3658,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4331,
+      4369,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4331,
+      4369,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2766,14 +3686,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4331,
+      4369,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4331,
+      4369,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2798,7 +3726,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4331,
+      4369,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2806,7 +3738,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4375,
+      4502,
+      0
+    ],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -2827,7 +3763,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2839,7 +3779,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2849,14 +3793,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2864,7 +3816,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2873,7 +3829,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2883,7 +3843,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2893,7 +3857,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2905,7 +3873,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2915,14 +3887,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2930,7 +3910,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2939,7 +3923,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2949,7 +3937,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2959,7 +3951,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2971,7 +3967,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2981,14 +3981,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2996,7 +4004,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3005,7 +4017,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3015,7 +4031,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3025,7 +4045,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3037,7 +4061,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3047,14 +4075,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3062,7 +4098,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3071,7 +4111,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3081,7 +4125,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3091,7 +4139,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3103,7 +4155,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3113,14 +4169,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3128,7 +4192,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3137,7 +4205,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3147,7 +4219,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3157,7 +4233,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3169,7 +4249,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3179,14 +4263,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3194,7 +4286,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3203,7 +4299,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3213,7 +4313,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3223,7 +4327,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3235,7 +4343,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3245,14 +4357,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3260,7 +4380,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3269,7 +4393,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3279,7 +4407,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3289,7 +4421,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3301,7 +4437,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3311,14 +4451,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3326,7 +4474,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3335,7 +4487,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3345,7 +4501,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4517,
+      4552,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3355,7 +4515,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4641,
+      4679,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3367,14 +4531,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4641,
+      4679,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4641,
+      4679,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3387,14 +4559,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4641,
+      4679,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4641,
+      4679,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3419,7 +4599,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4641,
+      4679,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3427,7 +4611,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4685,
+      4812,
+      0
+    ],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -3448,7 +4636,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3460,7 +4652,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3470,14 +4666,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3485,7 +4689,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3494,7 +4702,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3504,7 +4716,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3514,7 +4730,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3526,7 +4746,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3536,14 +4760,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3551,7 +4783,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3560,7 +4796,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3570,7 +4810,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3580,7 +4824,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3592,7 +4840,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3602,14 +4854,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3617,7 +4877,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3626,7 +4890,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3636,7 +4904,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3646,7 +4918,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3658,7 +4934,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3668,14 +4948,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3683,7 +4971,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3692,7 +4984,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3702,7 +4998,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4827,
+      4862,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3712,7 +5012,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4907,
+      4926,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -3737,7 +5041,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4932,
+      5005,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3753,14 +5061,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4932,
+      5005,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4932,
+      5005,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3773,14 +5089,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4932,
+      5005,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4932,
+      5005,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3805,7 +5129,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4932,
+      5005,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3813,7 +5141,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5101,
+      5142,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3829,7 +5161,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5101,
+      5142,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3839,14 +5175,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5101,
+      5142,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5101,
+      5142,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3854,7 +5198,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5101,
+      5142,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3863,7 +5211,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5101,
+      5142,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3873,7 +5225,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5101,
+      5142,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3883,7 +5239,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5148,
+      5187,
+      0
+    ],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",
@@ -3896,7 +5256,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5229,
+      5248,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -3921,7 +5285,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5254,
+      5298,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3937,14 +5305,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5254,
+      5298,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5254,
+      5298,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3957,14 +5333,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5254,
+      5298,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5304,
+      5344,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3981,7 +5365,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5350,
+      5369,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3998,7 +5386,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5375,
+      5394,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4015,7 +5407,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5400,
+      5419,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4032,7 +5428,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5425,
+      5450,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4049,7 +5449,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5456,
+      5596,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4076,7 +5480,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5602,
+      5658,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4093,7 +5501,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5664,
+      5671,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4101,7 +5513,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -4125,7 +5541,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4133,7 +5553,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4142,7 +5566,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4152,7 +5580,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4162,7 +5594,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4172,7 +5608,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4182,7 +5622,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4192,7 +5636,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4202,7 +5650,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4212,7 +5664,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4222,7 +5678,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4232,7 +5692,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4242,7 +5706,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4252,7 +5720,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4262,7 +5734,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4272,7 +5748,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5677,
+      5703,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4282,7 +5762,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5758,
+      5805,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -4307,7 +5791,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5758,
+      5805,
+      0
+    ],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -4321,7 +5809,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5812,
+      5841,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4337,14 +5829,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5812,
+      5841,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5812,
+      5841,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -4357,14 +5857,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5812,
+      5841,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5847,
+      5868,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4381,7 +5889,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5874,
+      5905,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4398,7 +5910,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5911,
+      5942,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4415,7 +5931,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5948,
+      5980,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4432,7 +5952,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5986,
+      6008,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4449,7 +5973,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6014,
+      6035,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4466,7 +5994,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6041,
+      6066,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4483,7 +6015,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6072,
+      6103,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4500,7 +6036,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6109,
+      6141,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4517,7 +6057,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6147,
+      6179,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4534,7 +6078,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6185,
+      6206,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4551,7 +6099,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6212,
+      6268,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4568,7 +6120,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6274,
+      6281,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4576,7 +6132,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4592,7 +6152,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -4602,14 +6166,22 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4617,7 +6189,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4626,7 +6202,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4636,7 +6216,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4646,7 +6230,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4656,7 +6244,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4666,7 +6258,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4676,7 +6272,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4686,7 +6286,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4696,7 +6300,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4706,7 +6314,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4716,7 +6328,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4726,7 +6342,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4736,7 +6356,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4746,7 +6370,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4756,7 +6384,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4766,7 +6398,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4776,7 +6412,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4786,7 +6426,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4796,7 +6440,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4806,7 +6454,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4816,7 +6468,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4826,7 +6482,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4836,7 +6496,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4846,7 +6510,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4856,7 +6524,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6295,
+      6340,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4866,7 +6538,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1063,
+      1107,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4875,7 +6551,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2512,
+      2592,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4884,7 +6564,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4061,
+      4141,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4893,7 +6577,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4152,
+      4189,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4902,7 +6590,11 @@ description: Artifact commands french-press.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5812,
+      5841,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

@@ -283,16 +283,16 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLine(length = 15)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 80,
 ///     length = 15,
-///   }, %)
+///   )
 ///   |> line(end = [8, -10])
 ///   |> xLine(length = 10)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 120,
 ///     length = 30,
-///   }, %)
+///   )
 ///   |> xLine(length = -15)
 ///   |> close()
 ///
@@ -352,10 +352,10 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLine(length = 15)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 30,
 ///     length = 15,
-///   }, %)
+///   )
 ///   |> line(end = [8, -10])
 ///   |> yLine(length = -5)
 ///   |> close()
@@ -432,10 +432,10 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLine(endAbsolute = 15)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 30,
 ///     length = 15,
-///   }, %)
+///   )
 ///   |> line(end = [8, -10])
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -1320,9 +1320,9 @@ pub async fn profile_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```no_run
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine([-26.6, 50], %)
-///  |> angledLine([90, 50], %)
-///  |> angledLineToX({ angle = 30, to = profileStartX(%) }, %)
+///  |> angledLine(angle = -26.6, length = 50)
+///  |> angledLine(angle = 90, length = 50)
+///  |> angledLine(angle = 30, endAbsoluteX = profileStartX(%))
 /// ```
 #[stdlib {
     name = "profileStartX"
@@ -1345,8 +1345,8 @@ pub async fn profile_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```no_run
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine({ angle = -60, length = 14 }, %)
-///  |> angledLineToY({ angle = 30, to = profileStartY(%) }, %)
+///  |> angledLine(angle = -60, length = 14 )
+///  |> angledLine(angle = 30, endAbsoluteY =  profileStartY(%))
 /// ```
 #[stdlib {
     name = "profileStartY"
@@ -1369,8 +1369,8 @@ pub async fn profile_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// ```no_run
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine({ angle = 120, length = 50 }, %, $seg01)
-///  |> angledLine({ angle = segAng(seg01) + 120, length = 50 }, %)
+///  |> angledLine(angle = 120, length = 50 , tag = $seg01)
+///  |> angledLine(angle = segAng(seg01) + 120, length = 50 )
 ///  |> line(end = profileStart(%))
 ///  |> close()
 ///  |> extrude(length = 20)
@@ -1739,15 +1739,15 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 60,
 ///     length = 10,
-///   }, %)
+///   )
 ///   |> tangentialArc({ radius = 10, offset = -120 }, %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = -60,
 ///     length = 10,
-///   }, %)
+///   )
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 10)
@@ -1873,10 +1873,10 @@ pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) 
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 60,
 ///     length = 10,
-///   }, %)
+///   )
 ///   |> tangentialArcTo([15, 15], %)
 ///   |> line(end = [10, -15])
 ///   |> close()
@@ -1940,10 +1940,10 @@ async fn inner_tangential_arc_to(
 /// ```no_run
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
+///   |> angledLine(
 ///     angle = 45,
 ///     length = 10,
-///   }, %)
+///   )
 ///   |> tangentialArcToRelative([0, -10], %)
 ///   |> line(end = [-10, 0])
 ///   |> close()

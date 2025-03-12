@@ -1,14 +1,8 @@
 sketch003 = startSketchOn('YZ')
   |> startProfileAt([5.82, 0], %)
-  |> angledLine([180, 11.54], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       8.21
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> angledLine(angle = 180, length = 11.54, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 8.21, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch004 = startSketchOn('-XZ')

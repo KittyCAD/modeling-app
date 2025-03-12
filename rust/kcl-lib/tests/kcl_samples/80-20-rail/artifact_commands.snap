@@ -5,7 +5,11 @@ description: Artifact commands 80-20-rail.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -13,7 +17,23 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -22,7 +42,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      0,
+      0,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -31,7 +55,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      149,
+      182,
+      0
+    ],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -39,7 +67,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      298,
+      318,
+      0
+    ],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -64,7 +96,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      326,
+      423,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -80,14 +116,22 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      326,
+      423,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      326,
+      423,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -100,14 +144,22 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      326,
+      423,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      431,
+      536,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -132,7 +184,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      544,
+      653,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -157,7 +213,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      661,
+      693,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -174,7 +234,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      701,
+      810,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -199,7 +263,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      818,
+      865,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -216,7 +284,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      873,
+      921,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -233,7 +305,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      929,
+      978,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -250,7 +326,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      986,
+      1121,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -267,7 +347,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1129,
+      1177,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -284,7 +368,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1185,
+      1311,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -301,7 +389,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1319,
+      1368,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -318,7 +410,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1376,
+      1425,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -335,7 +431,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1433,
+      1466,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -352,7 +452,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1474,
+      1583,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -377,7 +481,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1591,
+      1623,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -394,7 +502,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1631,
+      1740,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -419,7 +531,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1748,
+      1851,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -444,7 +560,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      1892,
+      2002,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -469,7 +589,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2010,
+      2042,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -486,7 +610,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2050,
+      2160,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -511,7 +639,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2168,
+      2215,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -528,7 +660,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2223,
+      2273,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -545,7 +681,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2281,
+      2331,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -562,7 +702,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2349,
+      2496,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -579,7 +723,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2514,
+      2563,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -596,7 +744,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2577,
+      2709,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -613,7 +765,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2723,
+      2773,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -630,7 +786,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2787,
+      2836,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -647,7 +807,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2844,
+      2877,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -664,7 +828,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      2885,
+      2995,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -689,7 +857,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3003,
+      3035,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -706,7 +878,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3043,
+      3153,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -731,7 +907,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3194,
+      3296,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -756,7 +936,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3304,
+      3414,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -781,7 +965,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3422,
+      3455,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -798,7 +986,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3463,
+      3573,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -823,7 +1015,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3581,
+      3630,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -840,7 +1036,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3638,
+      3688,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -857,7 +1057,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3696,
+      3745,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -874,7 +1078,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3753,
+      3899,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -891,7 +1099,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3907,
+      3957,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -908,7 +1120,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      3965,
+      4098,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -925,7 +1141,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4106,
+      4155,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -942,7 +1162,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4163,
+      4212,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -959,7 +1183,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4220,
+      4254,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -976,7 +1204,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4262,
+      4372,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1001,7 +1233,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4380,
+      4413,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1018,7 +1254,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4421,
+      4531,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1043,7 +1283,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4539,
+      4643,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1068,7 +1312,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4684,
+      4794,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1093,7 +1341,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4802,
+      4835,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1110,7 +1362,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4843,
+      4953,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1135,7 +1391,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      4961,
+      5010,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1152,7 +1412,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5018,
+      5067,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1169,7 +1433,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5075,
+      5124,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1186,7 +1454,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5132,
+      5269,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1203,7 +1475,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5277,
+      5327,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1220,7 +1496,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5335,
+      5461,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1237,7 +1517,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5469,
+      5518,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1254,7 +1538,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5526,
+      5576,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1271,7 +1559,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5584,
+      5618,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1288,7 +1580,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5626,
+      5736,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1313,7 +1609,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5744,
+      5777,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1330,7 +1630,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5785,
+      5895,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1355,7 +1659,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5903,
+      5910,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1363,7 +1671,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5961,
+      6138,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1379,14 +1691,22 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5961,
+      6138,
+      0
+    ],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5961,
+      6138,
+      0
+    ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1399,14 +1719,22 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5961,
+      6138,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5961,
+      6138,
+      0
+    ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1431,7 +1759,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5961,
+      6138,
+      0
+    ],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1439,7 +1771,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5956,
+      6142,
+      0
+    ],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1448,7 +1784,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      5956,
+      6142,
+      0
+    ],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1457,7 +1797,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1473,7 +1817,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1483,14 +1831,22 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1498,7 +1854,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1507,7 +1867,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1517,7 +1881,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1527,7 +1895,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1537,7 +1909,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1547,7 +1923,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1557,7 +1937,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1567,7 +1951,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1577,7 +1965,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1587,7 +1979,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1597,7 +1993,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1607,7 +2007,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1617,7 +2021,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1627,7 +2035,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1637,7 +2049,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1647,7 +2063,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1657,7 +2077,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1667,7 +2091,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1677,7 +2105,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1687,7 +2119,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1697,7 +2133,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1707,7 +2147,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1717,7 +2161,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1727,7 +2175,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1737,7 +2189,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1747,7 +2203,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1757,7 +2217,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1767,7 +2231,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1777,7 +2245,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1787,7 +2259,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1797,7 +2273,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1807,7 +2287,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1817,7 +2301,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1827,7 +2315,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1837,7 +2329,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1847,7 +2343,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1857,7 +2357,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1867,7 +2371,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1877,7 +2385,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1887,7 +2399,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1897,7 +2413,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1907,7 +2427,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1917,7 +2441,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1927,7 +2455,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1937,7 +2469,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1947,7 +2483,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1957,7 +2497,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1967,7 +2511,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1977,7 +2525,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1987,7 +2539,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1997,7 +2553,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2007,7 +2567,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2017,7 +2581,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2027,7 +2595,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2037,7 +2609,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2047,7 +2623,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2057,7 +2637,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2067,7 +2651,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2077,7 +2665,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2087,7 +2679,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2097,7 +2693,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2107,7 +2707,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2117,7 +2721,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2127,7 +2735,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2137,7 +2749,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2147,7 +2763,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2157,7 +2777,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2167,7 +2791,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2177,7 +2805,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2187,7 +2819,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2197,7 +2833,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2207,7 +2847,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2217,7 +2861,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2227,7 +2875,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2237,7 +2889,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2247,7 +2903,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2257,7 +2917,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2267,7 +2931,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2277,7 +2945,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2287,7 +2959,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2297,7 +2973,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2307,7 +2987,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2317,7 +3001,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2327,7 +3015,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2337,7 +3029,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2347,7 +3043,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2357,7 +3057,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2367,7 +3071,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2377,7 +3085,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2387,7 +3099,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2397,7 +3113,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2407,7 +3127,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2417,7 +3141,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2427,7 +3155,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2437,7 +3169,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2447,7 +3183,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2457,7 +3197,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2467,7 +3211,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2477,7 +3225,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2487,7 +3239,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2497,7 +3253,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2507,7 +3267,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2517,7 +3281,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2527,7 +3295,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2537,7 +3309,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2547,7 +3323,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2557,7 +3337,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2567,7 +3351,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2577,7 +3365,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2587,7 +3379,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2597,7 +3393,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2607,7 +3407,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2617,7 +3421,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2627,7 +3435,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2637,7 +3449,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2647,7 +3463,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2657,7 +3477,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2667,7 +3491,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2677,7 +3505,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2687,7 +3519,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2697,7 +3533,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2707,7 +3547,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2717,7 +3561,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2727,7 +3575,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2737,7 +3589,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2747,7 +3603,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2757,7 +3617,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2767,7 +3631,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2777,7 +3645,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2787,7 +3659,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2797,7 +3673,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6150,
+      6178,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2807,7 +3687,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6247,
+      6273,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2817,7 +3701,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6286,
+      6312,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2827,7 +3715,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6325,
+      6351,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2837,7 +3729,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6364,
+      6390,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2847,7 +3743,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6403,
+      6430,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2857,7 +3757,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6443,
+      6470,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2867,7 +3771,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6483,
+      6510,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2877,7 +3785,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6523,
+      6550,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2887,7 +3799,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6563,
+      6590,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2897,7 +3813,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6603,
+      6630,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2907,7 +3827,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6643,
+      6670,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2917,7 +3841,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6683,
+      6710,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2927,7 +3855,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6723,
+      6750,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2937,7 +3869,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6763,
+      6790,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2947,7 +3883,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6803,
+      6830,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2957,7 +3897,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6843,
+      6870,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2967,7 +3911,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6959,
+      6985,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2977,7 +3925,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6998,
+      7024,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2987,7 +3939,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7037,
+      7063,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2997,7 +3953,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7076,
+      7102,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3007,7 +3967,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7115,
+      7141,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3017,7 +3981,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7154,
+      7181,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3027,7 +3995,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7194,
+      7221,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3037,7 +4009,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7234,
+      7261,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3047,7 +4023,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7274,
+      7301,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3057,7 +4037,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7314,
+      7341,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3067,7 +4051,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7354,
+      7381,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3077,7 +4065,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7394,
+      7421,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3087,7 +4079,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7434,
+      7461,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3097,7 +4093,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7474,
+      7501,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3107,7 +4107,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7514,
+      7541,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3117,7 +4121,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      7554,
+      7581,
+      0
+    ],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3127,7 +4135,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3139,7 +4151,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3151,7 +4167,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3163,7 +4183,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3175,7 +4199,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3187,7 +4215,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3199,7 +4231,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3211,7 +4247,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3223,7 +4263,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3235,7 +4279,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3247,7 +4295,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3259,7 +4311,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3271,7 +4327,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3283,7 +4343,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3295,7 +4359,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3307,7 +4375,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6186,
+      6890,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3319,7 +4391,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3331,7 +4407,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3343,7 +4423,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3355,7 +4439,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3367,7 +4455,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3379,7 +4471,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3391,7 +4487,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3403,7 +4503,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3415,7 +4519,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3427,7 +4535,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3439,7 +4551,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3451,7 +4567,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3463,7 +4583,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3475,7 +4599,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3487,7 +4615,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -3499,7 +4631,11 @@ description: Artifact commands 80-20-rail.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [],
+    "range": [
+      6898,
+      7601,
+      0
+    ],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
