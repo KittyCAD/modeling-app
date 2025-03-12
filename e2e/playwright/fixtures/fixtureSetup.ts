@@ -306,6 +306,7 @@ const fixturesForElectron = {
   ) => {
     await tronApp.createInstanceIfMissing(testInfo)
     await use(tronApp.page)
+    await tronApp?.makeAvailableAgain()
   },
   context: async (
     { tronApp }: { tronApp: ElectronZoo },
@@ -318,8 +319,32 @@ const fixturesForElectron = {
 }
 
 const fixturesForWeb = {
-  page: async ({ page }: { page: Page }, use: FnUse) => {
+  page: async (
+    { page, context }: { page: Page; context: BrowserContext },
+    use: FnUse,
+    testInfo: TestInfo
+  ) => {
     page.setBodyDimensions = page.setViewportSize
+
+    // We do the same thing in ElectronZoo. addInitScript simply doesn't fire
+    // at the correct time, so we reload the page and it fires appropriately.
+    const oldPageAddInitScript = page.addInitScript
+    page.addInitScript = async function (...args) {
+      // @ts-expect-error
+      await oldPageAddInitScript.apply(this, args)
+      await page.reload()
+    }
+
+    const oldContextAddInitScript = context.addInitScript
+    context.addInitScript = async function (...args) {
+      // @ts-expect-error
+      await oldContextAddInitScript.apply(this, args)
+      await page.reload()
+    }
+
+    const webApp = new AuthenticatedApp(context, page, testInfo)
+    await webApp.initialise()
+
     await use(page)
   },
 }

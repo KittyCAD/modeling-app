@@ -5,7 +5,6 @@ import { test as playwrightTestFn, ElectronApplication } from '@playwright/test'
 import {
   fixturesBasedOnProcessEnvPlatform,
   Fixtures,
-  AuthenticatedApp,
   ElectronZoo,
 } from './fixtures/fixtureSetup'
 
@@ -53,34 +52,5 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
 const test = playwrightTestFnWithFixtures_.extend<Fixtures>(
   fixturesBasedOnProcessEnvPlatform
 )
-
-test.beforeEach(async ({ context, page }, testInfo) => {
-  if (process.env.PLATFORM !== 'web') return
-
-  // We do the same thing in ElectronZoo. addInitScript simply doesn't fire
-  // at the correct time, so we reload the page and it fires appropriately.
-  const oldPageAddInitScript = page.addInitScript
-  page.addInitScript = async function (...args) {
-    // @ts-expect-error
-    await oldPageAddInitScript.apply(this, args)
-    await page.reload()
-  }
-
-  const oldContextAddInitScript = context.addInitScript
-  context.addInitScript = async function (...args) {
-    // @ts-expect-error
-    await oldContextAddInitScript.apply(this, args)
-    await page.reload()
-  }
-
-  const webApp = new AuthenticatedApp(context, page, testInfo)
-  await webApp.initialise()
-})
-
-test.afterEach(async ({ tronApp }) => {
-  if (process.env.PLATFORM === 'web') return
-
-  await tronApp?.makeAvailableAgain()
-})
 
 export { test }
