@@ -8,7 +8,6 @@
 mountingHoleDia = .625
 baseDia = 4.625
 pipeDia = 1.25
-thickness = .625
 totalThickness = 0.813
 topTotalDiameter = 2.313
 bottomThickness = 0.06
@@ -16,7 +15,6 @@ bottomTotalDiameter = 2.5
 mountingHolePlacementDiameter = 3.5
 baseThickness = .625
 topTotalThickness = totalThickness - (bottomThickness + baseThickness)
-holeLocator = baseDia - 8
 nHoles = 4
 
 // Add assertion so nHoles are always greater than 1
@@ -42,42 +40,25 @@ flangeBase = startSketchOn('XY')
        radius = baseDia / 2
      )
   |> hole(circles, %)
-  |> hole(circle(
-       center = [0, 0],
-       radius = pipeDia / 2
-     ), %)
   |> extrude(length = baseThickness)
 
-// Plane for top face
-topFacePlane = {
-  plane = {
-    origin = { x = 0, y = 0, z = baseThickness },
-    xAxis = { x = 1, y = 0, z = 0 },
-    yAxis = { x = 0, y = 1, z = 0 },
-    zAxis = { x = 0, y = 0, z = 1 }
-  }
-}
-
 // Create the extrusion on the top of the flange base
-topExtrusion = startSketchOn(topFacePlane)
+topExtrusion = startSketchOn(flangeBase, 'end')
   |> circle(
        center = [0, 0],
        radius = topTotalDiameter / 2
      )
-  |> hole(circle(
-       center = [0, 0],
-       radius = pipeDia / 2
-     ), %)
   |> extrude(length = topTotalThickness)
 
 // Create the extrusion on the bottom of the flange base
-bottomExtrusion = startSketchOn("XY")
+bottomExtrusion = startSketchOn(flangeBase, 'start')
   |> circle(
        center = [0, 0],
        radius = bottomTotalDiameter / 2
      )
-  |> hole(circle(
-       center = [0, 0],
-       radius = pipeDia / 2
-     ), %)
-  |> extrude(length = -bottomThickness)
+  |> extrude(length = bottomThickness)
+
+// Cut a hole through the entire body
+pipeHole = startSketchOn(topExtrusion, 'end')
+  |> circle(center = [0, 0], radius = pipeDia/2)
+  |> extrude(%, length = -(topTotalThickness + baseThickness + bottomThickness))
