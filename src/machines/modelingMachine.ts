@@ -1972,8 +1972,6 @@ export const modelingMachine = setup({
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
-
-        console.log('end of sweepastmod')
       }
     ),
     loftAstMod: fromPromise(
