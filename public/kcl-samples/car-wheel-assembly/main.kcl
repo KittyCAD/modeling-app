@@ -12,6 +12,7 @@ import 'car-tire.kcl' as carTire
 import lugCount from 'globals.kcl'
 
 carRotor
+  |> translate(translate = [0, 0.5, 0])
 carWheel
 lugNut
   |> patternCircular3d(
@@ -22,4 +23,5 @@ lugNut
      rotateDuplicates = false
    )
 brakeCaliper
+  |> translate(translate = [0, 0.5, 0])
 carTire
