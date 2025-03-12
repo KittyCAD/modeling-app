@@ -1287,6 +1287,16 @@ impl<'a> FromKclValue<'a> for crate::execution::Solid {
     }
 }
 
+impl<'a> FromKclValue<'a> for crate::execution::SolidOrImportedGeometry {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Solid { value } => Some(Self::Solid(value.clone())),
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            _ => None,
+        }
+    }
+}
+
 impl<'a> FromKclValue<'a> for super::sketch::SketchData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Order is critical since PlaneData is a subset of Plane.
