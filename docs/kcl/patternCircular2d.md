@@ -10,7 +10,7 @@ Repeat a 2-dimensional sketch some number of times along a partial or complete c
 
 ```js
 patternCircular2d(
-  sketchSet: SketchSet,
+  sketchSet: [Sketch],
   instances: integer,
   center: [number],
   arcDegrees: number,
@@ -24,7 +24,7 @@ patternCircular2d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | Which sketch(es) to pattern | Yes |
+| `sketchSet` | [`[Sketch]`](/docs/kcl/types/Sketch) | Which sketch(es) to pattern | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `center` | [`[number]`](/docs/kcl/types/number) | The center about which to make the pattern. This is a 2D vector. | Yes |
 | `arcDegrees` | [`number`](/docs/kcl/types/number) | The arc angle (in degrees) to place the repetitions. Must be greater than 0. | Yes |

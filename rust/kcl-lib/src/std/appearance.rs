@@ -12,7 +12,10 @@ use validator::Validate;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Solid, SolidSet},
+    execution::{
+        kcl_value::{ArrayLen, RuntimeType},
+        ExecState, KclValue, PrimitiveType, Solid,
+    },
     std::Args,
 };
 
@@ -38,8 +41,12 @@ struct AppearanceData {
 }
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
-pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid_set: SolidSet = args.get_unlabeled_kw_arg("solidSet")?;
+pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let solids = args.get_unlabeled_kw_arg_typed(
+        "solids",
+        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
+        exec_state,
+    )?;
 
     let color: String = args.get_kw_arg("color")?;
     let metalness: Option<f64> = args.get_kw_arg_opt("metalness")?;
@@ -66,7 +73,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
         }));
     }
 
-    let result = inner_appearance(solid_set, data.color, data.metalness, data.roughness, args).await?;
+    let result = inner_appearance(solids, data.color, data.metalness, data.roughness, args).await?;
     Ok(result.into())
 }
 
@@ -276,21 +283,19 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
     keywords = true,
     unlabeled_first = true,
     args = {
-        solid_set = { docs = "The solid(s) whose appearance is being set" },
+        solids = { docs = "The solid(s) whose appearance is being set" },
         color = { docs = "Color of the new material, a hex string like '#ff0000'"},
         metalness = { docs = "Metalness of the new material, a percentage like 95.7." },
         roughness = { docs = "Roughness of the new material, a percentage like 95.7." },
     }
 }]
 async fn inner_appearance(
-    solid_set: SolidSet,
+    solids: Vec<Solid>,
     color: String,
     metalness: Option<f64>,
     roughness: Option<f64>,
     args: Args,
-) -> Result<SolidSet, KclError> {
-    let solids: Vec<Box<Solid>> = solid_set.into();
-
+) -> Result<Vec<Solid>, KclError> {
     for solid in &solids {
         // Set the material properties.
         let rgb = rgba_simple::RGB::<f32>::from_hex(&color).map_err(|err| {
@@ -323,5 +328,5 @@ async fn inner_appearance(
         // I can't think of a use case for it.
     }
 
-    Ok(SolidSet::from(solids))
+    Ok(solids)
 }

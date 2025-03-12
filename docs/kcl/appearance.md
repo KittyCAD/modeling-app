@@ -10,11 +10,11 @@ This will work on any solid, including extruded solids, revolved solids, and she
 
 ```js
 appearance(
-  solidSet: SolidSet,
+  solids: [Solid],
   color: String,
   metalness?: number,
   roughness?: number,
-): SolidSet
+): [Solid]
 ```
 
 
@@ -22,14 +22,14 @@ appearance(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) whose appearance is being set | Yes |
+| `solids` | [`[Solid]`](/docs/kcl/types/Solid) | The solid(s) whose appearance is being set | Yes |
 | `color` | `String` | Color of the new material, a hex string like '#ff0000' | Yes |
 | `metalness` | [`number`](/docs/kcl/types/number) | Metalness of the new material, a percentage like 95.7. | No |
 | `roughness` | [`number`](/docs/kcl/types/number) | Roughness of the new material, a percentage like 95.7. | No |
 
 ### Returns
 
-[`SolidSet`](/docs/kcl/types/SolidSet) - A solid or a group of solids.
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples

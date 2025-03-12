@@ -13,7 +13,7 @@ Mirror occurs around a local sketch axis rather than a global axis.
 ```js
 mirror2d(
   data: Mirror2dData,
-  sketchSet: SketchSet,
+  sketches: [Sketch],
 ): [Sketch]
 ```
 
@@ -23,7 +23,7 @@ mirror2d(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`Mirror2dData`](/docs/kcl/types/Mirror2dData) | Data for a mirror. | Yes |
-| `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
+| `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) |  | Yes |
 
 ### Returns
 

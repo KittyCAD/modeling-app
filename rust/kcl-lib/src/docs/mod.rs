@@ -128,9 +128,9 @@ impl StdLibFnArg {
             ""
         };
         if self.type_ == "Sketch"
-            || self.type_ == "SketchSet"
+            || self.type_ == "[Sketch]"
             || self.type_ == "Solid"
-            || self.type_ == "SolidSet"
+            || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
             || self.type_ == "SketchOrSurface"
             || self.type_ == "SolidOrImportedGeometry"

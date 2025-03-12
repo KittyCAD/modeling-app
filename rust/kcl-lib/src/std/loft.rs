@@ -9,7 +9,10 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Sketch, Solid},
+    execution::{
+        kcl_value::{ArrayLen, RuntimeType},
+        ExecState, KclValue, PrimitiveType, Sketch, Solid,
+    },
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
@@ -17,7 +20,11 @@ const DEFAULT_V_DEGREE: u32 = 2;
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
 pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg("sketches")?;
+    let sketches = args.get_unlabeled_kw_arg_typed(
+        "sketches",
+        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
+        exec_state,
+    )?;
     let v_degree: NonZeroU32 = args
         .get_kw_arg_opt("vDegree")?
         .unwrap_or(NonZeroU32::new(DEFAULT_V_DEGREE).unwrap());
@@ -159,5 +166,7 @@ async fn inner_loft(
     let mut sketch = sketches[0].clone();
     // Override its id with the loft id so we can get its faces later
     sketch.id = id;
-    do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await
+    Ok(Box::new(
+        do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await?,
+    ))
 }

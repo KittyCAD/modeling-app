@@ -13,13 +13,17 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, SolidOrImportedGeometry},
+    execution::{kcl_value::RuntimeType, ExecState, KclValue, PrimitiveType, SolidOrImportedGeometry},
     std::Args,
 };
 
 /// Scale a solid.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid")?;
+    let solid = args.get_unlabeled_kw_arg_typed(
+        "solid",
+        &RuntimeType::Union(vec![PrimitiveType::Solid, PrimitiveType::ImportedGeometry]),
+        exec_state,
+    )?;
     let scale = args.get_kw_arg("scale")?;
     let global = args.get_kw_arg_opt("global")?;
 
@@ -131,7 +135,11 @@ async fn inner_scale(
 
 /// Move a solid.
 pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid")?;
+    let solid = args.get_unlabeled_kw_arg_typed(
+        "solid",
+        &RuntimeType::Union(vec![PrimitiveType::Solid, PrimitiveType::ImportedGeometry]),
+        exec_state,
+    )?;
     let translate = args.get_kw_arg("translate")?;
     let global = args.get_kw_arg_opt("global")?;
 
@@ -235,7 +243,11 @@ async fn inner_translate(
 
 /// Rotate a solid.
 pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid")?;
+    let solid = args.get_unlabeled_kw_arg_typed(
+        "solid",
+        &RuntimeType::Union(vec![PrimitiveType::Solid, PrimitiveType::ImportedGeometry]),
+        exec_state,
+    )?;
     let roll = args.get_kw_arg_opt("roll")?;
     let pitch = args.get_kw_arg_opt("pitch")?;
     let yaw = args.get_kw_arg_opt("yaw")?;

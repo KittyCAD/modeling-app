@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing car-wheel-assembly.kcl
 ---
 {
@@ -12,6 +12,71 @@ description: Variables in memory after executing car-wheel-assembly.kcl
           200,
           242,
           0
+        ]
+      }
+    ]
+  },
+  "c1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "c1",
+    "info": {
+      "type": "TagEngineInfo",
+      "id": "[uuid]",
+      "sketch": "[uuid]",
+      "path": {
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": [
+            1002,
+            1042,
+            6
+          ]
+        },
+        "from": [
+          0.3543,
+          1.2992
+        ],
+        "tag": {
+          "end": 1041,
+          "moduleId": 6,
+          "start": 1038,
+          "type": "TagDeclarator",
+          "value": "c1"
+        },
+        "to": [
+          0.001,
+          1.2992
+        ],
+        "type": "ToPoint",
+        "units": {
+          "type": "Inches"
+        }
+      },
+      "surface": {
+        "faceId": "[uuid]",
+        "id": "[uuid]",
+        "sourceRange": [
+          1002,
+          1042,
+          6
+        ],
+        "tag": {
+          "end": 1041,
+          "moduleId": 6,
+          "start": 1038,
+          "type": "TagDeclarator",
+          "value": "c1"
+        },
+        "type": "extrudePlane"
+      }
+    },
+    "__meta": [
+      {
+        "sourceRange": [
+          1038,
+          1041,
+          6
         ]
       }
     ]
