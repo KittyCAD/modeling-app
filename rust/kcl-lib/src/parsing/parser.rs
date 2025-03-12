@@ -4669,7 +4669,7 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
         // since there is an early exit if encountering a reserved word, the error should be about
         // that and not the missing comma
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 $sketch], %)"#;
+sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 $struct], %)"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
@@ -4702,7 +4702,7 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([}], %)"#;
     fn test_parse_object_reserved_word_early_exit() {
         // since there is an early exit if encountering a reserved word, the error should be about
         // that and not the missing comma
-        let some_program_string = r#"{bar = foo sketch = man}"#;
+        let some_program_string = r#"{bar = foo struct = man}"#;
 
         assert_err(
             some_program_string,
