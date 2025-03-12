@@ -1,7 +1,7 @@
 import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import { Command, CommandArgumentOption } from '../commandTypes'
 import toast from 'react-hot-toast'
-import { engineCommandManager } from 'lib/singletons'
+import { engineCommandManager, sceneInfra } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { settingsActor } from 'machines/appMachine'
 import { reportRejection } from 'lib/trap'
@@ -187,6 +187,16 @@ export function createNamedViewsCommand() {
             },
           })
 
+          // Update the camera by triggering the callback workflow to get the camera settings
+          // Setting the view won't update the client side camera.
+          // Asking for the default camera settings after setting the view will internally sync the camera
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'default_camera_get_settings',
+            },
+          })
           toast.success(`Named view ${name} loaded.`)
         } else {
           toast.error(`Unable to load named view, could not find named view`)
