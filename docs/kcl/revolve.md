@@ -15,8 +15,8 @@ You can provide more than one sketch to revolve, and they will all be revolved a
 ```js
 revolve(
   data: RevolveData,
-  sketchSet: SketchSet,
-): SolidSet
+  sketches: [Sketch],
+): [Solid]
 ```
 
 
@@ -25,11 +25,11 @@ revolve(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`RevolveData`](/docs/kcl/types/RevolveData) | Data for revolution surfaces. | Yes |
-| `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
+| `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) |  | Yes |
 
 ### Returns
 
-[`SolidSet`](/docs/kcl/types/SolidSet) - A solid or a group of solids.
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples
