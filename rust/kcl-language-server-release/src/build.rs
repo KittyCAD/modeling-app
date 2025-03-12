@@ -72,7 +72,7 @@ impl Build {
 }
 
 fn build_client(sh: &Shell, version: &str, release_tag: &str, target: &Target) -> anyhow::Result<()> {
-    let bundle_path = Path::new("server");
+    let bundle_path = Path::new("kcl-language-server/server");
     sh.create_dir(bundle_path)?;
     sh.copy_file(&target.server_path, bundle_path)?;
     if let Some(symbols_path) = &target.symbols_path {
