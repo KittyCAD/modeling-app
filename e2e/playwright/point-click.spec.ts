@@ -2270,8 +2270,8 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
       cmdBar,
     }) => {
       const initialCode = `sketch001 = startSketchOn('XZ')
-    |> circle(center = [0, 0], radius = 30)
-    extrude001 = extrude(sketch001, length = 30)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)
     `
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
@@ -2354,49 +2354,44 @@ chamfer04 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
         await scene.expectPixelColor([146, 146, 146], testPoint, 15)
       })
 
-      // TODO: this test hits a case that happens sometimes in manual testing where
-      // we can't edit the shell right after its creation. As if the codemod didn't fully
-      // register during the initall add flow.
-      // await test.step('Edit shell via feature tree selection works', async () => {
-      //   await toolbar.closePane('code')
-      //   await toolbar.openPane('feature-tree')
-      //   const operationButton = await toolbar.getFeatureTreeOperation(
-      //     'Shell',
-      //     0
-      //   )
-      //   await operationButton.dblclick({ button: 'left' })
-      //   await cmdBar.expectState({
-      //     stage: 'arguments',
-      //     currentArgKey: 'thickness',
-      //     currentArgValue: '5',
-      //     headerArguments: {
-      //       Selection: '1 cap',
-      //       Thickness: '5',
-      //     },
-      //     highlightedHeaderArg: 'thickness',
-      //     commandName: 'Shell',
-      //   })
-      //   await page.keyboard.insertText('2')
-      //   await cmdBar.progressCmdBar()
-      //   await cmdBar.expectState({
-      //     stage: 'review',
-      //     headerArguments: {
-      //       Selection: '1 cap',
-      //       Thickness: '2',
-      //     },
-      //     commandName: 'Shell',
-      //   })
-      //   await cmdBar.progressCmdBar()
-      //   await toolbar.closePane('feature-tree')
-      //   await scene.expectPixelColor([150, 150, 150], testPoint, 15)
-      //   await toolbar.openPane('code')
-      //   await editor.expectEditor.toContain(editedShellDeclaration)
-      //   await editor.expectState({
-      //     diagnostics: [],
-      //     activeLines: [editedShellDeclaration],
-      //     highlightedCode: '',
-      //   })
-      // })
+      await test.step('Edit shell via feature tree selection works', async () => {
+        await toolbar.closePane('code')
+        await toolbar.openPane('feature-tree')
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Shell',
+          0
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'thickness',
+          currentArgValue: '5',
+          headerArguments: {
+            Thickness: '5',
+          },
+          highlightedHeaderArg: 'thickness',
+          commandName: 'Shell',
+        })
+        await page.keyboard.insertText('2')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Thickness: '2',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await scene.expectPixelColor([150, 150, 150], testPoint, 15)
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(editedShellDeclaration)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [editedShellDeclaration],
+          highlightedCode: '',
+        })
+      })
     })
   })
 
