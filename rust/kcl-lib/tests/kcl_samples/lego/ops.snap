@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed lego.kcl
 ---
 [
@@ -64,8 +64,8 @@ description: Operations executed lego.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1780,
+        1804,
         0
       ]
     }
@@ -138,8 +138,8 @@ description: Operations executed lego.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2221,
+        2252,
         0
       ]
     }
@@ -262,8 +262,8 @@ description: Operations executed lego.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        2687,
+        2715,
         0
       ]
     }
@@ -528,8 +528,8 @@ description: Operations executed lego.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        3197,
+        3226,
         0
       ]
     }

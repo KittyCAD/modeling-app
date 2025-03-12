@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed ball-bearing.kcl
 ---
 [
@@ -519,8 +519,8 @@ description: Operations executed ball-bearing.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1561,
+        1721,
         0
       ]
     }
@@ -779,8 +779,8 @@ description: Operations executed ball-bearing.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2214,
+        2374,
         0
       ]
     }
@@ -1027,8 +1027,8 @@ description: Operations executed ball-bearing.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2718,
+        2878,
         0
       ]
     }

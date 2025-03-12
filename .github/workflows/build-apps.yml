@@ -33,26 +33,63 @@ jobs:
 
       - run: yarn install
 
+      - id: filter
+        name: Check for Rust changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            rust:
+              - 'rust/**'
+
+      - name: Download Wasm Cache
+        id: download-wasm
+        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
+        uses: dawidd6/action-download-artifact@v7
+        continue-on-error: true
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          name: wasm-bundle
+          workflow: build-and-store-wasm.yml
+          branch: main
+          path: rust/kcl-wasm-lib/pkg
+
+      - name: Build WASM condition
+        id: wasm
+        run: |
+          set -euox pipefail
+          # Build wasm if this is a push to main or tag, there are Rust changes, or
+          # downloading from the wasm cache failed.
+          if [[ ${{github.event_name}} == 'push' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+            echo "should-build-wasm=true" >> $GITHUB_OUTPUT
+          else
+            echo "should-build-wasm=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Use correct Rust toolchain
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+
       - name: Install rust
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
 
-      # TODO: see if we can fetch from main instead if no diff at rust
       - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
 
       - name: Rust Cache
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: rust
 
       - name: Run build:wasm
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         run: "yarn build:wasm"
 
       - name: Set nightly version, product name, release notes, and icons

@@ -1,4 +1,4 @@
-use std::{collections::HashSet, f64::consts::PI};
+use std::f64::consts::PI;
 
 use kittycad_modeling_cmds::shared::Angle;
 
@@ -7,16 +7,6 @@ use crate::{
     execution::Point2d,
     source_range::SourceRange,
 };
-
-/// Count the number of unique items in a `Vec` in O(n) time.
-pub(crate) fn unique_count<T: Eq + std::hash::Hash>(vec: Vec<T>) -> usize {
-    // Add to a set.
-    let mut set = HashSet::with_capacity(vec.len());
-    for item in vec {
-        set.insert(item);
-    }
-    set.len()
-}
 
 /// Get the distance between two points.
 pub fn distance(a: Point2d, b: Point2d) -> f64 {
@@ -684,11 +674,6 @@ mod get_tangential_arc_to_info_tests {
 
     fn round_to_three_decimals(num: f64) -> f64 {
         (num * 1000.0).round() / 1000.0
-    }
-
-    #[test]
-    fn test_unique_count() {
-        assert_eq!(unique_count(vec![1, 2, 2, 3, 2]), 3);
     }
 
     #[test]
