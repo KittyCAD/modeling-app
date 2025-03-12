@@ -28,58 +28,62 @@ const fileExists = async (path) => {
 
 test.describe('Named view tests', () => {
   test('Verify project.toml is not created', async ({
-    context,
-    homePage,
-    cmdBar,
-    editor,
-    toolbar,
-    scene,
     page,
   }, testInfo) => {
+
+    // Create project and load it
     const projectName = 'named-views'
     await createProject({ name: projectName, page })
+
+    // Generate file paths for project.toml
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
     const tempProjectSettingsFilePath = join(
       projectDirName,
       projectName,
       PROJECT_SETTINGS_FILE_NAME
     )
+
+    // project.toml should not exist on initial project creation
     let exists = await fileExists(tempProjectSettingsFilePath)
     expect(exists).toBe(false)
-    // await homePage.goToModelingScene()
-    // await scene.waitForExecutionDone()
   })
   test('Verify named view gets created', async ({
-    context,
-    homePage,
     cmdBar,
-    editor,
-    toolbar,
     scene,
     page,
   }, testInfo) => {
     const projectName = 'named-views'
     const myNamedView = 'cool-named-view'
+
+    // Create and load project
     await createProject({ name: projectName, page })
     await scene.waitForExecutionDone()
 
+    // Create named view
     const projectDirName = testInfo.outputPath('electron-test-projects-dir')
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('create named view')
     await cmdBar.argumentInput.fill(myNamedView)
     await cmdBar.progressCmdBar(false)
 
+    // Generate paths for the project.toml
     const tempProjectSettingsFilePath = join(
       projectDirName,
       projectName,
       PROJECT_SETTINGS_FILE_NAME
     )
+
+    // Expect project.toml to be generated on disk since a named view was created
     await expect(async () => {
       let exists = await fileExists(tempProjectSettingsFilePath)
       expect(exists).toBe(true)
     }).toPass()
+
+    // Read project.toml into memory
     const tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
     const settings = tomlToPerProjectSettings(tomlString)
+
+    // Check that the named view created on disk has the same name originall requested
     let namedViewName = null
     if (settings) {
       const namedViews = settings?.settings?.app?.named_views
@@ -88,6 +92,57 @@ test.describe('Named view tests', () => {
         namedViewName = namedViews[key[0]]?.name
       }
     }
+
+    // Check named view names
+    expect(namedViewName).toBe(myNamedView)
+  })
+  test('Verify named view gets deleted', async ({
+    cmdBar,
+    scene,
+    page,
+  }, testInfo) => {
+    const projectName = 'named-views'
+    const myNamedView = 'cool-named-view'
+
+    // Create project and go into the project
+    await createProject({ name: projectName, page })
+    await scene.waitForExecutionDone()
+
+    // Create a new named view
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('create named view')
+    await cmdBar.argumentInput.fill(myNamedView)
+    await cmdBar.progressCmdBar(false)
+
+    // Generate file paths for project.toml
+    const projectDirName = testInfo.outputPath('electron-test-projects-dir')
+    const tempProjectSettingsFilePath = join(
+      projectDirName,
+      projectName,
+      PROJECT_SETTINGS_FILE_NAME
+    )
+
+    // Except the project.toml to be written to disk since a named view was created
+    await expect(async () => {
+      let exists = await fileExists(tempProjectSettingsFilePath)
+      expect(exists).toBe(true)
+    }).toPass()
+
+    // Read project.toml into memory
+    const tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
+    const settings = tomlToPerProjectSettings(tomlString)
+
+    // Find the named view
+    let namedViewName = null
+    if (settings) {
+      const namedViews = settings?.settings?.app?.named_views
+      if (namedViews) {
+        const key = Object.keys(namedViews)
+        namedViewName = namedViews[key[0]]?.name
+      }
+    }
+
+    // Except the name view to be created
     expect(namedViewName).toBe(myNamedView)
   })
 })
