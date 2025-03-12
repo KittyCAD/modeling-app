@@ -120,7 +120,12 @@ export type CommandArgumentConfig<
       ) => boolean)
   warningMessage?: string
   /** If `true`, arg is used as passed-through data, never for user input */
-  hidden?: boolean
+  hidden?:
+    | boolean
+    | ((
+        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+        machineContext?: C
+      ) => boolean)
   skip?: boolean
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
@@ -236,7 +241,12 @@ export type CommandArgument<
         machineContext?: ContextFrom<T>
       ) => boolean)
   /** If `true`, arg is used as passed-through data, never for user input */
-  hidden?: boolean
+  hidden?:
+    | boolean
+    | ((
+        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+        machineContext?: ContextFrom<T>
+      ) => boolean)
   skip?: boolean
   machineActor?: Actor<T>
   warningMessage?: string
