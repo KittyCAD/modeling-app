@@ -146,10 +146,6 @@ harness = false
 required-features = ["lsp-test-util"]
 
 [[bench]]
-name = "executor_benchmark_criterion"
-harness = false
-
-[[bench]]
 name = "benchmark_kcl_samples"
 harness = false
 
