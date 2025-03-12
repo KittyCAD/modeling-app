@@ -223,6 +223,33 @@ pub struct ImportedGeometry {
     pub meta: Vec<Metadata>,
 }
 
+/// Data for a solid or an imported geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum SolidOrImportedGeometry {
+    Solid(Box<Solid>),
+    ImportedGeometry(Box<ImportedGeometry>),
+}
+
+impl SolidOrImportedGeometry {
+    pub fn id(&self) -> uuid::Uuid {
+        match self {
+            SolidOrImportedGeometry::Solid(s) => s.id,
+            SolidOrImportedGeometry::ImportedGeometry(s) => s.id,
+        }
+    }
+}
+
+impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
+    fn from(value: SolidOrImportedGeometry) -> Self {
+        match value {
+            SolidOrImportedGeometry::Solid(s) => crate::execution::KclValue::Solid { value: s },
+            SolidOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+        }
+    }
+}
+
 /// A helix.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]

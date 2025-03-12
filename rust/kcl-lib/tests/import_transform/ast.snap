@@ -1,0 +1,287 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing import_transform.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "end": 43,
+        "path": {
+          "type": "Foreign",
+          "path": "2-5-long-m8-chc-screw.stl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "end": 43,
+            "name": "screw",
+            "start": 38,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 232,
+        "expression": {
+          "body": [
+            {
+              "end": 50,
+              "name": "screw",
+              "start": 45,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 85,
+                    "name": "roll",
+                    "start": 81,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 92,
+                    "raw": "3.14",
+                    "start": 88,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 106,
+                    "name": "pitch",
+                    "start": 101,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 113,
+                    "raw": "3.14",
+                    "start": 109,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                },
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 125,
+                    "name": "yaw",
+                    "start": 122,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 132,
+                    "raw": "3.14",
+                    "start": 128,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 3.14,
+                      "suffix": "None"
+                    }
+                  }
+                }
+              ],
+              "callee": {
+                "end": 62,
+                "name": "rotate",
+                "start": 56,
+                "type": "Identifier"
+              },
+              "end": 140,
+              "start": 56,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 72,
+                "start": 71,
+                "type": "PipeSubstitution",
+                "type": "PipeSubstitution"
+              }
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 168,
+                    "name": "translate",
+                    "start": 159,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "elements": [
+                      {
+                        "end": 176,
+                        "raw": "3.14",
+                        "start": 172,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.14,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 182,
+                        "raw": "3.14",
+                        "start": 178,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.14,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 188,
+                        "raw": "3.14",
+                        "start": 184,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.14,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 189,
+                    "start": 171,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 155,
+                "name": "translate",
+                "start": 146,
+                "type": "Identifier"
+              },
+              "end": 190,
+              "start": 146,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 157,
+                "start": 156,
+                "type": "PipeSubstitution",
+                "type": "PipeSubstitution"
+              }
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 210,
+                    "name": "scale",
+                    "start": 205,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "elements": [
+                      {
+                        "end": 218,
+                        "raw": "3.14",
+                        "start": 214,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.14,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 224,
+                        "raw": "3.14",
+                        "start": 220,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.14,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 230,
+                        "raw": "3.14",
+                        "start": 226,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.14,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 231,
+                    "start": 213,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 201,
+                "name": "scale",
+                "start": 196,
+                "type": "Identifier"
+              },
+              "end": 232,
+              "start": 196,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 203,
+                "start": 202,
+                "type": "PipeSubstitution",
+                "type": "PipeSubstitution"
+              }
+            }
+          ],
+          "end": 232,
+          "start": 45,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 45,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 233,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 45,
+            "start": 43,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

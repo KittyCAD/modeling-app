@@ -77,7 +77,7 @@ fn read<P>(filename: &str, dir: P) -> String
 where
     P: AsRef<Path>,
 {
-    std::fs::read_to_string(dir.as_ref().join(filename)).unwrap()
+    std::fs::read_to_string(dir.as_ref().join(filename)).expect("Failed to read file: {filename}")
 }
 
 fn parse(test_name: &str) {
@@ -2117,6 +2117,28 @@ mod import_file_parse_error {
 
 mod flush_batch_on_end {
     const TEST_NAME: &str = "flush_batch_on_end";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod import_transform {
+    const TEST_NAME: &str = "import_transform";
 
     /// Test parsing KCL.
     #[test]
