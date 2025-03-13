@@ -504,8 +504,7 @@ export class CameraControls {
     event.preventDefault()
 
     // TODO: find a better way than this clipping to +/- 100 to prevent the bug in #5120
-    const deltaY =
-      Math.sign(event.deltaY) * Math.max(Math.abs(event.deltaY), 100)
+    const deltaY = Math.max(-100, Math.min(100, event.deltaY))
 
     if (this.syncDirection === 'engineToClient') {
       if (interaction === 'zoom') {
