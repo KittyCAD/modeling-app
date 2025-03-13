@@ -465,6 +465,10 @@ export const modelingMachine = setup({
     'Selection is on face': () => false,
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
+    'no kcl errors': ()  => {
+      // Note: kclManager.hasErrors() seems always false!
+      return !kclManager.errors.length
+    },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
     'Can make selection horizontal': ({ context: { selectionRanges } }) => {
@@ -2341,7 +2345,10 @@ export const modelingMachine = setup({
       states: {
         hidePlanes: {
           on: {
-            'Artifact graph populated': 'showPlanes',
+            'Artifact graph populated': {
+              target: 'showPlanes',
+              guard: 'no kcl errors'
+            }
           },
 
           entry: 'hide default planes',
