@@ -150,6 +150,17 @@ description: Artifact commands gear.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1328,
+      1399,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -356,6 +367,17 @@ description: Artifact commands gear.kcl
         "y": 0.340430781396414,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1878,
+      1915,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -4644,17 +4666,6 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2115,
-      2122,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2128,
       2156,
       0
@@ -4789,6 +4800,17 @@ description: Artifact commands gear.kcl
         "y": 0.125,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2597,
+      2697,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

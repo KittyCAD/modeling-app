@@ -133,6 +133,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      361,
+      394,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       402,
       428,
       3
@@ -560,17 +571,6 @@ description: Artifact commands 3d-boaty.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1284,
-      1291,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1283,6 +1283,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      361,
+      394,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       402,
       428,
       3
@@ -1710,17 +1721,6 @@ description: Artifact commands 3d-boaty.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1284,
-      1291,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2485,6 +2485,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      361,
+      394,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       402,
       428,
       3
@@ -2501,6 +2512,19 @@ description: Artifact commands 3d-boaty.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      361,
+      394,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -2912,17 +2936,6 @@ description: Artifact commands 3d-boaty.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1284,
-      1291,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -3606,6 +3619,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      361,
+      394,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       402,
       428,
       3
@@ -3622,6 +3646,19 @@ description: Artifact commands 3d-boaty.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      361,
+      394,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -4033,17 +4070,6 @@ description: Artifact commands 3d-boaty.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1284,
-      1291,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -4808,6 +4834,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      361,
+      394,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       402,
       428,
       3
@@ -4824,6 +4861,19 @@ description: Artifact commands 3d-boaty.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      361,
+      394,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -5235,17 +5285,6 @@ description: Artifact commands 3d-boaty.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1284,
-      1291,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -5929,6 +5968,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      361,
+      394,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       402,
       428,
       3
@@ -5945,6 +5995,19 @@ description: Artifact commands 3d-boaty.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      361,
+      394,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -6356,17 +6419,6 @@ description: Artifact commands 3d-boaty.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1284,
-      1291,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -7131,6 +7183,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      1685,
+      1709,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1717,
       1847,
       3
@@ -7174,6 +7237,17 @@ description: Artifact commands 3d-boaty.kcl
         "y": 8.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1717,
+      1847,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -7603,6 +7677,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      1685,
+      1709,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1717,
       1847,
       3
@@ -7646,6 +7731,17 @@ description: Artifact commands 3d-boaty.kcl
         "y": 8.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1717,
+      1847,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -8122,6 +8218,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      2123,
+      2150,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       2158,
       2180,
       3
@@ -8138,6 +8245,71 @@ description: Artifact commands 3d-boaty.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1685,
+      1709,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1717,
+      1847,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1685,
+      1709,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1717,
+      1847,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2123,
+      2150,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -8255,17 +8427,6 @@ description: Artifact commands 3d-boaty.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2353,
-      2360,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -9153,6 +9314,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      2632,
+      2661,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       2669,
       2692,
       3
@@ -9190,6 +9362,19 @@ description: Artifact commands 3d-boaty.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2632,
+      2661,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -9286,17 +9471,6 @@ description: Artifact commands 3d-boaty.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2870,
-      2877,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -9917,6 +10091,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      3152,
+      3179,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       3187,
       3206,
       3
@@ -9933,6 +10118,19 @@ description: Artifact commands 3d-boaty.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3179,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -10062,6 +10260,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      3404,
+      3437,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       3445,
       3464,
       3
@@ -10078,6 +10287,19 @@ description: Artifact commands 3d-boaty.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3404,
+      3437,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -10195,17 +10417,6 @@ description: Artifact commands 3d-boaty.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3624,
-      3631,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -10542,6 +10753,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      3152,
+      3179,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       3187,
       3206,
       3
@@ -10558,6 +10780,19 @@ description: Artifact commands 3d-boaty.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3152,
+      3179,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -10687,6 +10922,17 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      3404,
+      3437,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       3445,
       3464,
       3
@@ -10703,6 +10949,19 @@ description: Artifact commands 3d-boaty.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3404,
+      3437,
+      3
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -10820,17 +11079,6 @@ description: Artifact commands 3d-boaty.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3624,
-      3631,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -11067,188 +11315,6 @@ description: Artifact commands 3d-boaty.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      361,
-      394,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      361,
-      394,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      361,
-      394,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      361,
-      394,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1685,
-      1709,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1717,
-      1847,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1685,
-      1709,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1717,
-      1847,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2123,
-      2150,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2632,
-      2661,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3152,
-      3179,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3404,
-      3437,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3152,
-      3179,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3404,
-      3437,
-      3
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   }
 ]

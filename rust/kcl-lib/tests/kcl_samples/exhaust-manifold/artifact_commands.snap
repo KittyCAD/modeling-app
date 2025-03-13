@@ -145,6 +145,17 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      816,
+      851,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       859,
       885,
       0
@@ -161,6 +172,19 @@ description: Artifact commands exhaust-manifold.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      816,
+      851,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -330,6 +354,17 @@ description: Artifact commands exhaust-manifold.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1328,
+      1417,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -409,6 +444,17 @@ description: Artifact commands exhaust-manifold.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1430,
+      1535,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -626,6 +672,17 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      816,
+      851,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       859,
       885,
       0
@@ -642,6 +699,19 @@ description: Artifact commands exhaust-manifold.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      816,
+      851,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -811,6 +881,17 @@ description: Artifact commands exhaust-manifold.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1328,
+      1417,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -890,6 +971,17 @@ description: Artifact commands exhaust-manifold.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1430,
+      1535,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1107,6 +1199,17 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      816,
+      851,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       859,
       885,
       0
@@ -1123,6 +1226,19 @@ description: Artifact commands exhaust-manifold.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      816,
+      851,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -1292,6 +1408,17 @@ description: Artifact commands exhaust-manifold.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1328,
+      1417,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -1371,6 +1498,17 @@ description: Artifact commands exhaust-manifold.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1430,
+      1535,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1588,6 +1726,17 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      816,
+      851,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       859,
       885,
       0
@@ -1604,6 +1753,19 @@ description: Artifact commands exhaust-manifold.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      816,
+      851,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -1773,6 +1935,17 @@ description: Artifact commands exhaust-manifold.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1328,
+      1417,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -1852,6 +2025,17 @@ description: Artifact commands exhaust-manifold.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1430,
+      1535,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2064,6 +2248,17 @@ description: Artifact commands exhaust-manifold.kcl
         "y": -1.25,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1864,
+      1899,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2409,17 +2604,6 @@ description: Artifact commands exhaust-manifold.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2713,
-      2720,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2792,
       2886,
       0
@@ -2463,6 +2647,17 @@ description: Artifact commands exhaust-manifold.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2792,
+      2886,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2588,6 +2783,17 @@ description: Artifact commands exhaust-manifold.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2901,
+      2995,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -2693,6 +2899,17 @@ description: Artifact commands exhaust-manifold.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3010,
+      3104,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2818,6 +3035,17 @@ description: Artifact commands exhaust-manifold.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3119,
+      3213,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -2923,6 +3151,17 @@ description: Artifact commands exhaust-manifold.kcl
         "y": -0.975,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3267,
+      3405,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -3048,6 +3287,17 @@ description: Artifact commands exhaust-manifold.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3420,
+      3556,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -3163,6 +3413,17 @@ description: Artifact commands exhaust-manifold.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3571,
+      3717,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -3268,6 +3529,17 @@ description: Artifact commands exhaust-manifold.kcl
         "y": -0.975,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3732,
+      3877,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -4133,58 +4405,6 @@ description: Artifact commands exhaust-manifold.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {

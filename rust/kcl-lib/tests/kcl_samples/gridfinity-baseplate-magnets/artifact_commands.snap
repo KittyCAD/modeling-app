@@ -151,6 +151,17 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      921,
+      946,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       954,
       976,
       0
@@ -167,6 +178,19 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      921,
+      946,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -242,17 +266,6 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1153,
-      1160,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -588,6 +601,17 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      921,
+      946,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       954,
       976,
       0
@@ -604,6 +628,19 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      921,
+      946,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -679,17 +716,6 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1153,
-      1160,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2515,6 +2541,17 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4856,
+      4957,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -2653,6 +2690,17 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      4485,
+      4510,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       4518,
       4559,
       0
@@ -2723,17 +2771,6 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      4677,
-      4698,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2811,6 +2848,17 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "y": 13.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2830,
+      2917,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -3191,17 +3239,6 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      4335,
-      4342,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -4230,6 +4267,17 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      4485,
+      4510,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       4518,
       4559,
       0
@@ -4246,6 +4294,83 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5406,
+      5744,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 4.0,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5406,
+      5744,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 4.0,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5406,
+      5744,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 4.0,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5406,
+      5744,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 4.0,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4485,
+      4510,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -4305,17 +4430,6 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4677,
-      4698,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2830,
       2917,
       0
@@ -4364,6 +4478,17 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      2830,
+      2917,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       2925,
       3004,
       0
@@ -4380,6 +4505,19 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2830,
+      2917,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -4739,17 +4877,6 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      4335,
-      4342,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -5467,70 +5594,6 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5406,
-      5744,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 4.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5406,
-      5744,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 4.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5406,
-      5744,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 4.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5406,
-      5744,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 4.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       6457,
       6607,
       0
@@ -5970,58 +6033,6 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
           }
         ]
       ]
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      921,
-      946,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      921,
-      946,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      4485,
-      4510,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2830,
-      2917,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   }
 ]

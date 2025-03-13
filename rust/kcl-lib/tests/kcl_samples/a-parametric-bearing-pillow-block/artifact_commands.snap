@@ -145,6 +145,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      966,
+      1010,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1016,
       1060,
       0
@@ -220,17 +231,6 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1165,
-      1172,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1183,
       1331,
       0
@@ -274,6 +274,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
         "y": -2.25,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1183,
+      1331,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -399,6 +410,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1346,
+      1491,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -514,6 +536,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1506,
+      1648,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -619,6 +652,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
         "y": -2.25,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1663,
+      1808,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -734,6 +778,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1823,
+      1892,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1205,6 +1260,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      2455,
+      2499,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       2505,
       2549,
       0
@@ -1221,6 +1287,19 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
         },
         "relative": false
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2455,
+      2499,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -1280,17 +1359,6 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2654,
-      2661,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2672,
       2818,
       0
@@ -1334,6 +1402,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
         "y": -2.25,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2672,
+      2818,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1459,6 +1538,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2833,
+      2976,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -1574,6 +1664,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2991,
+      3131,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -1679,6 +1780,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
         "y": -2.25,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3146,
+      3289,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1794,6 +1906,17 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3304,
+      3373,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2183,19 +2306,6 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2455,
-      2499,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
