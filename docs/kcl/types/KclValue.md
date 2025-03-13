@@ -25,7 +25,6 @@ Any KCL value.
 |----------|------|-------------|----------|
 | `type` |enum: `Uuid`|  | No |
 | `value` |[`string`](/docs/kcl/types/string)|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -42,7 +41,6 @@ Any KCL value.
 |----------|------|-------------|----------|
 | `type` |enum: `Bool`|  | No |
 | `value` |`boolean`|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -60,7 +58,6 @@ Any KCL value.
 | `type` |enum: `Number`|  | No |
 | `value` |[`number`](/docs/kcl/types/number)|  | No |
 | `ty` |[`NumericType`](/docs/kcl/types/NumericType)|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -77,7 +74,6 @@ Any KCL value.
 |----------|------|-------------|----------|
 | `type` |enum: `String`|  | No |
 | `value` |[`string`](/docs/kcl/types/string)|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -94,7 +90,6 @@ Any KCL value.
 |----------|------|-------------|----------|
 | `type` |enum: `MixedArray`|  | No |
 | `value` |`[` [`KclValue`](/docs/kcl/types/KclValue) `]`|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -111,7 +106,6 @@ Any KCL value.
 |----------|------|-------------|----------|
 | `type` |enum: `Object`|  | No |
 | `value` |`object`|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -129,7 +123,6 @@ Any KCL value.
 | `type` |enum: [`TagIdentifier`](/docs/kcl/types#tag-identifier)|  | No |
 | `value` |[`string`](/docs/kcl/types/string)|  | No |
 | `info` |[`TagEngineInfo`](/docs/kcl/types/TagEngineInfo)|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -279,7 +272,6 @@ Data for an imported geometry.
 | `type` |enum: [`ImportedGeometry`](/docs/kcl/types/ImportedGeometry)|  | No |
 | `id` |[`string`](/docs/kcl/types/string)| The ID of the imported geometry. | No |
 | `value` |`[` [`string`](/docs/kcl/types/string) `]`| The original file paths. | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -295,7 +287,6 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Function`|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -312,7 +303,6 @@ Data for an imported geometry.
 |----------|------|-------------|----------|
 | `type` |enum: `Module`|  | No |
 | `value` |[`ModuleId`](/docs/kcl/types/ModuleId)| Identifier of a source file.  Uses a u32 to keep the size small. | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -328,7 +318,6 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Type`|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -345,7 +334,6 @@ Data for an imported geometry.
 |----------|------|-------------|----------|
 | `type` |enum: [`KclNone`](/docs/kcl/types/KclNone)|  | No |
 | `value` |[`KclNone`](/docs/kcl/types/KclNone)| KCL value for an optional parameter which was not given an argument. (remember, parameters are in the function declaration, arguments are in the function call/application). | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----
@@ -362,7 +350,6 @@ Data for an imported geometry.
 |----------|------|-------------|----------|
 | `type` |enum: `Tombstone`|  | No |
 | `value` |`null`|  | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
 ----

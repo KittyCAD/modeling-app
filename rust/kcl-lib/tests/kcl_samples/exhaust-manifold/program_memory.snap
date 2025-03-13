@@ -14,16 +14,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          231,
-          232,
-          0
-        ]
-      }
-    ]
+    }
   },
   "flangeSketch": {
     "type": "Solid",
@@ -747,8 +738,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -824,16 +814,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1932,
-                  1938,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg03": {
             "type": "TagIdentifier",
@@ -886,16 +867,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2130,
-                  2136,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg04": {
             "type": "TagIdentifier",
@@ -948,16 +920,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2179,
-                  2185,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg05": {
             "type": "TagIdentifier",
@@ -1010,16 +973,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2218,
-                  2224,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg07": {
             "type": "TagIdentifier",
@@ -1072,16 +1026,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2426,
-                  2432,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg08": {
             "type": "TagIdentifier",
@@ -1134,16 +1079,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2483,
-                  2489,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg09": {
             "type": "TagIdentifier",
@@ -1196,32 +1132,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2533,
-                  2539,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1864,
-              1899,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.125,
       "startCapId": "[uuid]",
@@ -1258,16 +1176,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
       ],
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1864,
-            1899,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "plateHeight": {
@@ -1281,28 +1190,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          212,
-          217,
-          0
-        ]
-      }
-    ]
+    }
   },
   "primaryTube": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          329,
-          1587,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "primaryTubeDiameter": {
     "type": "Number",
@@ -1315,16 +1206,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          170,
-          175,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg01": {
     "type": "TagIdentifier",
@@ -1378,16 +1260,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1932,
-          1938,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg03": {
     "type": "TagIdentifier",
@@ -1441,16 +1314,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2130,
-          2136,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg04": {
     "type": "TagIdentifier",
@@ -1504,16 +1368,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2179,
-          2185,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg05": {
     "type": "TagIdentifier",
@@ -1567,16 +1422,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2218,
-          2224,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg07": {
     "type": "TagIdentifier",
@@ -1630,16 +1476,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2426,
-          2432,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg08": {
     "type": "TagIdentifier",
@@ -1693,16 +1530,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2483,
-          2489,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg09": {
     "type": "TagIdentifier",
@@ -1756,16 +1584,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2533,
-          2539,
-          0
-        ]
-      }
-    ]
+    }
   },
   "wallThickness": {
     "type": "Number",
@@ -1778,15 +1597,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          192,
-          197,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

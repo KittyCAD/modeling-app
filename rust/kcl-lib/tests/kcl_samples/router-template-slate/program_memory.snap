@@ -14,16 +14,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          365,
-          367,
-          0
-        ]
-      }
-    ]
+    }
   },
   "extrude001": {
     "type": "Solid",
@@ -542,8 +533,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -619,16 +609,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  590,
-                  596,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg02": {
             "type": "TagIdentifier",
@@ -666,16 +647,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 }
               },
               "surface": null
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  942,
-                  948,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg03": {
             "type": "TagIdentifier",
@@ -728,16 +700,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  897,
-                  903,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg04": {
             "type": "TagIdentifier",
@@ -790,16 +753,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  851,
-                  857,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg05": {
             "type": "TagIdentifier",
@@ -852,48 +806,21 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  776,
-                  782,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              509,
-              552,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            509,
-            552,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude002": {
@@ -1633,8 +1560,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -1710,16 +1636,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        590,
-                        596,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -1757,16 +1674,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       }
                     },
                     "surface": null
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        942,
-                        948,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg03": {
                   "type": "TagIdentifier",
@@ -1819,16 +1727,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        897,
-                        903,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg04": {
                   "type": "TagIdentifier",
@@ -1881,16 +1780,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        851,
-                        857,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg05": {
                   "type": "TagIdentifier",
@@ -1943,61 +1833,25 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        776,
-                        782,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    509,
-                    552,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1420,
-                1454,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -2073,16 +1927,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1591,
-                  1612,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentB001": {
             "type": "TagIdentifier",
@@ -2135,16 +1980,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1712,
-                  1733,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentC001": {
             "type": "TagIdentifier",
@@ -2197,48 +2033,21 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1838,
-                  1859,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1460,
-              1560,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 7.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1460,
-            1560,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude003": {
@@ -2958,8 +2767,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -3035,16 +2843,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        590,
-                        596,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -3082,16 +2881,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       }
                     },
                     "surface": null
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        942,
-                        948,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg03": {
                   "type": "TagIdentifier",
@@ -3144,16 +2934,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        897,
-                        903,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg04": {
                   "type": "TagIdentifier",
@@ -3206,16 +2987,7 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        851,
-                        857,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg05": {
                   "type": "TagIdentifier",
@@ -3268,61 +3040,25 @@ description: Variables in memory after executing router-template-slate.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        776,
-                        782,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    509,
-                    552,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2052,
-                2086,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -3398,48 +3134,21 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2221,
-                  2242,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2092,
-              2191,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 7.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2092,
-            2191,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "length001": {
@@ -3447,30 +3156,7 @@ description: Variables in memory after executing router-template-slate.kcl
     "value": 10.75,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          283,
-          287,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          290,
-          291,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          354,
-          356,
-          0
-        ]
-      }
-    ]
+    }
   },
   "length002": {
     "type": "Number",
@@ -3483,30 +3169,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          365,
-          367,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          314,
-          316,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          319,
-          321,
-          0
-        ]
-      }
-    ]
+    }
   },
   "minClampingDistance": {
     "type": "Number",
@@ -3519,23 +3182,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          314,
-          316,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          319,
-          321,
-          0
-        ]
-      }
-    ]
+    }
   },
   "radius": {
     "type": "Number",
@@ -3548,16 +3195,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          354,
-          356,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
@@ -3611,16 +3249,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1591,
-          1612,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA002": {
     "type": "TagIdentifier",
@@ -3674,16 +3303,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2221,
-          2242,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
@@ -3737,16 +3357,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1712,
-          1733,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC001": {
     "type": "TagIdentifier",
@@ -3800,16 +3411,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1838,
-          1859,
-          0
-        ]
-      }
-    ]
+    }
   },
   "routerDiameter": {
     "type": "Number",
@@ -3822,16 +3424,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          165,
-          169,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg01": {
     "type": "TagIdentifier",
@@ -3885,16 +3478,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          590,
-          596,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg02": {
     "type": "TagIdentifier",
@@ -3933,16 +3517,7 @@ description: Variables in memory after executing router-template-slate.kcl
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          942,
-          948,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg03": {
     "type": "TagIdentifier",
@@ -3996,16 +3571,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          897,
-          903,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg04": {
     "type": "TagIdentifier",
@@ -4059,16 +3625,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          851,
-          857,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg05": {
     "type": "TagIdentifier",
@@ -4122,16 +3679,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          776,
-          782,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch001": {
     "type": "Sketch",
@@ -4503,8 +4051,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -4580,16 +4127,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                590,
-                596,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg02": {
           "type": "TagIdentifier",
@@ -4627,16 +4165,7 @@ description: Variables in memory after executing router-template-slate.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                942,
-                948,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg03": {
           "type": "TagIdentifier",
@@ -4689,16 +4218,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                897,
-                903,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg04": {
           "type": "TagIdentifier",
@@ -4751,16 +4271,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                851,
-                857,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg05": {
           "type": "TagIdentifier",
@@ -4813,32 +4324,14 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                776,
-                782,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            509,
-            552,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -5513,8 +5006,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -5590,16 +5082,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      590,
-                      596,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg02": {
                 "type": "TagIdentifier",
@@ -5637,16 +5120,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     }
                   },
                   "surface": null
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      942,
-                      948,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg03": {
                 "type": "TagIdentifier",
@@ -5699,16 +5173,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      897,
-                      903,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg04": {
                 "type": "TagIdentifier",
@@ -5761,16 +5226,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      851,
-                      857,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg05": {
                 "type": "TagIdentifier",
@@ -5823,61 +5279,25 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      776,
-                      782,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                509,
-                552,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1420,
-              1454,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -5953,16 +5373,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1591,
-                1612,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
@@ -6015,16 +5426,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1712,
-                1733,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentC001": {
           "type": "TagIdentifier",
@@ -6077,32 +5479,14 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1838,
-                1859,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1460,
-            1560,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch003": {
@@ -6767,8 +6151,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -6844,16 +6227,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      590,
-                      596,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg02": {
                 "type": "TagIdentifier",
@@ -6891,16 +6265,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     }
                   },
                   "surface": null
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      942,
-                      948,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg03": {
                 "type": "TagIdentifier",
@@ -6953,16 +6318,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      897,
-                      903,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg04": {
                 "type": "TagIdentifier",
@@ -7015,16 +6371,7 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      851,
-                      857,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg05": {
                 "type": "TagIdentifier",
@@ -7077,61 +6424,25 @@ description: Variables in memory after executing router-template-slate.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      776,
-                      782,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                509,
-                552,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2052,
-              2086,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -7207,32 +6518,14 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2221,
-                2242,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2092,
-            2191,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "slateWidthHalf": {
@@ -7240,104 +6533,21 @@ description: Variables in memory after executing router-template-slate.kcl
     "value": 20.75,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          283,
-          287,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          290,
-          291,
-          0
-        ]
-      }
-    ]
+    }
   },
   "templateDiameter": {
     "type": "Number",
     "value": 17.4625,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          189,
-          191,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          194,
-          196,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          199,
-          205,
-          0
-        ]
-      }
-    ]
+    }
   },
   "templateGap": {
     "type": "Number",
     "value": 1.8812,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          189,
-          191,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          194,
-          196,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          199,
-          205,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          165,
-          169,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          258,
-          259,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          262,
-          265,
-          0
-        ]
-      }
-    ]
+    }
   },
   "templateThickness": {
     "type": "Number",
@@ -7350,15 +6560,6 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          342,
-          344,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing basic_fillet_cube_next_adjacent.kcl
 ---
 {
@@ -219,8 +219,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -296,16 +295,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  92,
-                  98,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "thing1": {
             "type": "TagIdentifier",
@@ -358,16 +348,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  131,
-                  138,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "thing2": {
             "type": "TagIdentifier",
@@ -420,16 +401,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  172,
-                  179,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "thing3": {
             "type": "TagIdentifier",
@@ -482,32 +454,14 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  198,
-                  205,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              35,
-              60,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 10.0,
       "startCapId": "[uuid]",
@@ -523,16 +477,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            35,
-            60,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "thing": {
@@ -587,16 +532,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          92,
-          98,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thing1": {
     "type": "TagIdentifier",
@@ -650,16 +586,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          131,
-          138,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thing2": {
     "type": "TagIdentifier",
@@ -713,16 +640,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          172,
-          179,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thing3": {
     "type": "TagIdentifier",
@@ -776,15 +694,6 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          198,
-          205,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

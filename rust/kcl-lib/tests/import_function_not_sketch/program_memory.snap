@@ -1,30 +1,12 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_function_not_sketch.kcl
 ---
 {
   "one": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          83,
-          108,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "two": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          372,
-          390,
-          3
-        ]
-      }
-    ]
+    "type": "Function"
   }
 }

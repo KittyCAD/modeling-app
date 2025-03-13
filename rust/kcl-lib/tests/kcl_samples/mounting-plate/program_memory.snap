@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing mounting-plate.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          354,
-          355,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge1": {
     "type": "TagIdentifier",
@@ -77,16 +68,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          691,
-          697,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge2": {
     "type": "TagIdentifier",
@@ -140,16 +122,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          765,
-          771,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge3": {
     "type": "TagIdentifier",
@@ -203,16 +176,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          841,
-          847,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge4": {
     "type": "TagIdentifier",
@@ -266,16 +230,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          868,
-          874,
-          0
-        ]
-      }
-    ]
+    }
   },
   "filletRadius": {
     "type": "Number",
@@ -288,16 +243,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          309,
-          312,
-          0
-        ]
-      }
-    ]
+    }
   },
   "holeIndex": {
     "type": "Number",
@@ -310,16 +256,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          974,
-          977,
-          0
-        ]
-      }
-    ]
+    }
   },
   "holeRadius": {
     "type": "Number",
@@ -332,16 +269,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          958,
-          961,
-          0
-        ]
-      }
-    ]
+    }
   },
   "part": {
     "type": "Solid",
@@ -559,8 +487,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -636,16 +563,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  691,
-                  697,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "edge2": {
             "type": "TagIdentifier",
@@ -698,16 +616,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  765,
-                  771,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "edge3": {
             "type": "TagIdentifier",
@@ -760,16 +669,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  841,
-                  847,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "edge4": {
             "type": "TagIdentifier",
@@ -822,32 +722,14 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  868,
-                  874,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              567,
-              622,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": "[uuid]",
@@ -884,16 +766,7 @@ description: Variables in memory after executing mounting-plate.kcl
       ],
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            567,
-            622,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "plateLength": {
@@ -907,16 +780,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          276,
-          278,
-          0
-        ]
-      }
-    ]
+    }
   },
   "plateThickness": {
     "type": "Number",
@@ -929,16 +793,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          330,
-          332,
-          0
-        ]
-      }
-    ]
+    }
   },
   "plateWidth": {
     "type": "Number",
@@ -951,28 +806,10 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          292,
-          293,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectShape": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          519,
-          889,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "rs": {
     "type": "Sketch",
@@ -1120,8 +957,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -1197,16 +1033,7 @@ description: Variables in memory after executing mounting-plate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                691,
-                697,
-                0
-              ]
-            }
-          ]
+          }
         },
         "edge2": {
           "type": "TagIdentifier",
@@ -1259,16 +1086,7 @@ description: Variables in memory after executing mounting-plate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                765,
-                771,
-                0
-              ]
-            }
-          ]
+          }
         },
         "edge3": {
           "type": "TagIdentifier",
@@ -1321,16 +1139,7 @@ description: Variables in memory after executing mounting-plate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                841,
-                847,
-                0
-              ]
-            }
-          ]
+          }
         },
         "edge4": {
           "type": "TagIdentifier",
@@ -1383,32 +1192,14 @@ description: Variables in memory after executing mounting-plate.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                868,
-                874,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            567,
-            622,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

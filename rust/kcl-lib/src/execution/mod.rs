@@ -92,7 +92,7 @@ pub struct DefaultPlanes {
 pub struct TagIdentifier {
     pub value: String,
     pub info: Option<TagEngineInfo>,
-    #[serde(rename = "__meta")]
+    #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 

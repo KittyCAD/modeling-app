@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing a-parametric-bearing-pillow-block.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          830,
-          831,
-          0
-        ]
-      }
-    ]
+    }
   },
   "block": {
     "type": "Solid",
@@ -201,8 +192,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -230,32 +220,14 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              966,
-              1010,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.75,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            966,
-            1010,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "cbDepth": {
@@ -269,16 +241,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          773,
-          776,
-          0
-        ]
-      }
-    ]
+    }
   },
   "cbDia": {
     "type": "Number",
@@ -291,16 +254,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          785,
-          787,
-          0
-        ]
-      }
-    ]
+    }
   },
   "height": {
     "type": "Number",
@@ -313,16 +267,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          761,
-          762,
-          0
-        ]
-      }
-    ]
+    }
   },
   "holeDia": {
     "type": "Number",
@@ -335,16 +280,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          798,
-          802,
-          0
-        ]
-      }
-    ]
+    }
   },
   "length": {
     "type": "Number",
@@ -357,16 +293,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          740,
-          741,
-          0
-        ]
-      }
-    ]
+    }
   },
   "padding": {
     "type": "Number",
@@ -379,16 +306,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          813,
-          816,
-          0
-        ]
-      }
-    ]
+    }
   },
   "secondHalf": {
     "type": "Solid",
@@ -566,8 +484,7 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -595,32 +512,14 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2455,
-              2499,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.25,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2455,
-            2499,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "width": {
@@ -634,15 +533,6 @@ description: Variables in memory after executing a-parametric-bearing-pillow-blo
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          750,
-          751,
-          0
-        ]
-      }
-    ]
+    }
   }
 }
