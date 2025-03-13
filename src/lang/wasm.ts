@@ -320,17 +320,10 @@ function execStateFromRust(
   execOutcome: RustExecOutcome,
   program: Node<Program>
 ): ExecState {
-  const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
-  // We haven't ported pathToNode logic to Rust yet, so we need to fill it in.
-  for (const [id, artifact] of artifactGraph) {
-    if (!artifact) continue
-    if (!('codeRef' in artifact)) continue
-    const pathToNode = getNodePathFromSourceRange(
-      program,
-      sourceRangeFromRust(artifact.codeRef.range)
-    )
-    artifact.codeRef.pathToNode = pathToNode
-  }
+  const artifactGraph = artifactGraphFromRust(
+    execOutcome.artifactGraph,
+    program
+  )
 
   return {
     variables: execOutcome.variables,
@@ -342,29 +335,30 @@ function execStateFromRust(
   }
 }
 
-function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
-  return {
-    variables: execOutcome.variables,
-    operations: execOutcome.operations,
-    artifactCommands: execOutcome.artifactCommands,
-    artifactGraph: new Map<ArtifactId, Artifact>(),
-    errors: execOutcome.errors,
-    filenames: execOutcome.filenames,
-  }
-}
-
 export type ArtifactGraph = Map<ArtifactId, Artifact>
 
-function rustArtifactGraphToMap(
-  rustArtifactGraph: RustArtifactGraph
+function artifactGraphFromRust(
+  rustArtifactGraph: RustArtifactGraph,
+  program: Node<Program>
 ): ArtifactGraph {
-  const map = new Map<ArtifactId, Artifact>()
+  const artifactGraph = new Map<ArtifactId, Artifact>()
+  // Convert to a Map.
   for (const [id, artifact] of Object.entries(rustArtifactGraph.map)) {
     if (!artifact) continue
-    map.set(id, artifact)
+    artifactGraph.set(id, artifact)
   }
 
-  return map
+  // We haven't ported pathToNode logic to Rust yet, so we need to fill it in.
+  for (const [id, artifact] of artifactGraph) {
+    if (!artifact) continue
+    if (!('codeRef' in artifact)) continue
+    const pathToNode = getNodePathFromSourceRange(
+      program,
+      sourceRangeFromRust(artifact.codeRef.range)
+    )
+    artifact.codeRef.pathToNode = pathToNode
+  }
+  return artifactGraph
 }
 
 export function defaultArtifactGraph(): ArtifactGraph {
@@ -427,9 +421,9 @@ export const executeMock = async (
       usePrevMemory,
       fileSystemManager
     )
-    return mockExecStateFromRust(execOutcome)
+    return execStateFromRust(execOutcome, node)
   } catch (e: any) {
-    return Promise.reject(errFromErrWithOutputs(e))
+    return Promise.reject(errFromErrWithOutputs(e, node))
   }
 }
 
@@ -454,7 +448,7 @@ export const executeWithEngine = async (
     )
     return execStateFromRust(execOutcome, node)
   } catch (e: any) {
-    return Promise.reject(errFromErrWithOutputs(e))
+    return Promise.reject(errFromErrWithOutputs(e, node))
   }
 }
 
@@ -471,7 +465,7 @@ const jsAppSettings = async () => {
   return jsAppSettings
 }
 
-const errFromErrWithOutputs = (e: any): KCLError => {
+const errFromErrWithOutputs = (e: any, program: Node<Program>): KCLError => {
   const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
   return new KCLError(
     parsed.error.kind,
@@ -479,7 +473,7 @@ const errFromErrWithOutputs = (e: any): KCLError => {
     firstSourceRange(parsed.error),
     parsed.operations,
     parsed.artifactCommands,
-    rustArtifactGraphToMap(parsed.artifactGraph),
+    artifactGraphFromRust(parsed.artifactGraph, program),
     parsed.filenames
   )
 }
