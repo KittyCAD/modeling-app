@@ -89,7 +89,7 @@ export function isNamedView(
   ] as const
 
   return namedViewKeys.every((key) => {
-    return namedView && namedView[key]
+    return namedView && key in namedView
   })
 }
 
@@ -243,12 +243,14 @@ export async function loadAndValidateSettings(
     if (err(projectSettings))
       return Promise.reject(new Error('Invalid project settings'))
 
+
     const projectSettingsPayload = projectSettings
     settingsNext = setSettingsAtLevel(
       settingsNext,
       'project',
       projectConfigurationToSettingsPayload(projectSettingsPayload)
     )
+
   }
 
   // Return the settings object

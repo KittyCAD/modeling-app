@@ -1,0 +1,26 @@
+[settings.app.named_views.ac1c5d87-30d1-42f7-bf8d-b3f9246935f1]
+name = "cool-named-view"
+eye_offset = 1378.0059
+fov_y = 45.0
+is_ortho = false
+ortho_scale_enabled = true
+ortho_scale_factor = 1.6
+pivot_position = [
+    0.0,
+    0.0,
+    0.0,
+]
+pivot_rotation = [
+    0.5380994,
+    0.0,
+    0.0,
+    0.8428814,
+]
+world_coord_system = "right_handed_up_z"
+version = 1.0
+
+[settings.modeling]
+
+[settings.text_editor]
+
+[settings.command_bar]

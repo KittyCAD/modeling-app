@@ -1,21 +1,8 @@
-import { test, expect, Page } from './zoo-test'
-import { EditorFixture } from './fixtures/editorFixture'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { ToolbarFixture } from './fixtures/toolbarFixture'
-import { Locator } from '@playwright/test'
-import path from 'path'
+import { test, expect } from './zoo-test'
 import { PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import {
-  getUtils,
-  executorInputPath,
-  createProject,
-  tomlToSettings,
-  settingsToToml,
-  tomlToPerProjectSettings
-} from './test-utils'
+import { createProject, tomlToPerProjectSettings } from './test-utils'
 
 const fileExists = async (path) => {
   return !!(await fsp
@@ -24,13 +11,8 @@ const fileExists = async (path) => {
     .catch((e) => false))
 }
 
-// test file is for testing point an click code gen functionality that's not sketch mode related
-
 test.describe('Named view tests', () => {
-  test('Verify project.toml is not created', async ({
-    page,
-  }, testInfo) => {
-
+  test('Verify project.toml is not created', async ({ page }, testInfo) => {
     // Create project and load it
     const projectName = 'named-views'
     await createProject({ name: projectName, page })
@@ -81,20 +63,10 @@ test.describe('Named view tests', () => {
 
     // Read project.toml into memory
     const tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-    const settings = tomlToPerProjectSettings(tomlString)
 
-    // Check that the named view created on disk has the same name originall requested
-    let namedViewName = null
-    if (settings) {
-      const namedViews = settings?.settings?.app?.named_views
-      if (namedViews) {
-        const key = Object.keys(namedViews)
-        namedViewName = namedViews[key[0]]?.name
-      }
-    }
-
-    // Check named view names
-    expect(namedViewName).toBe(myNamedView)
+    // Write the entire tomlString to a snapshot.
+    // There are many key/value pairs to check this is a safer match.
+    expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
   })
   test('Verify named view gets deleted', async ({
     cmdBar,
@@ -129,20 +101,23 @@ test.describe('Named view tests', () => {
     }).toPass()
 
     // Read project.toml into memory
-    const tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-    const settings = tomlToPerProjectSettings(tomlString)
+    let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
 
-    // Find the named view
-    let namedViewName = null
-    if (settings) {
-      const namedViews = settings?.settings?.app?.named_views
-      if (namedViews) {
-        const key = Object.keys(namedViews)
-        namedViewName = namedViews[key[0]]?.name
-      }
-    }
+    // Write the entire tomlString to a snapshot.
+    // There are many key/value pairs to check this is a safer match.
+    expect(tomlString).toMatchSnapshot('verify-named-view-gets-created')
 
-    // Except the name view to be created
-    expect(namedViewName).toBe(myNamedView)
+    // Delete a named view
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('delete named view')
+    cmdBar.selectOption({ name: myNamedView })
+    await cmdBar.progressCmdBar(false)
+
+    // // Read project.toml into memory
+    tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
+
+    // // Write the entire tomlString to a snapshot.
+    // // There are many key/value pairs to check this is a safer match.
+    expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted')
   })
 })

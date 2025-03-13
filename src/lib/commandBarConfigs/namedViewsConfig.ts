@@ -3,7 +3,7 @@ import { Command, CommandArgumentOption } from '../commandTypes'
 import toast from 'react-hot-toast'
 import { engineCommandManager, sceneInfra } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
-import { settingsActor } from 'machines/appMachine'
+import { settingsActor, getSettings } from 'machines/appMachine'
 import { reportRejection } from 'lib/trap'
 
 export function createNamedViewsCommand() {
@@ -62,10 +62,11 @@ export function createNamedViewsCommand() {
               value: requestedNamedViews,
             },
           })
+
           toast.success(`Named view ${requestedView.name} created.`)
         }
       }
-      invokeAndForgetCreateNamedView().catch(reportRejection)
+      invokeAndForgetCreateNamedView()
     },
     args: {
       name: {
@@ -118,9 +119,10 @@ export function createNamedViewsCommand() {
       name: {
         required: true,
         inputType: 'options',
-        options: () => {
+        options: (commandBar, machineContext) => {
+          const settings = getSettings()
           const namedViews = {
-            ...settingsActor.getSnapshot().context.app.namedViews.current,
+            ...settings.app.namedViews.current,
           }
           const options: CommandArgumentOption<any>[] = []
           Object.entries(namedViews).forEach(([key, view]) => {
@@ -202,15 +204,16 @@ export function createNamedViewsCommand() {
           toast.error(`Unable to load named view, could not find named view`)
         }
       }
-      invokeAndForgetLoadNamedView().catch(reportRejection)
+      invokeAndForgetLoadNamedView()
     },
     args: {
       name: {
         required: true,
         inputType: 'options',
         options: () => {
+          const settings = getSettings()
           const namedViews = {
-            ...settingsActor.getSnapshot().context.app.namedViews.current,
+            ...settings.app.namedViews.current,
           }
           const options: CommandArgumentOption<any>[] = []
           Object.entries(namedViews).forEach(([key, view]) => {
