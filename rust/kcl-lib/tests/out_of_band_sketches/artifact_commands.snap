@@ -133,6 +133,17 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      45,
+      87,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       143,
       166,
       0
@@ -247,6 +258,17 @@ description: Artifact commands out_of_band_sketches.kcl
         "y": -63.5,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      277,
+      318,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -389,6 +411,17 @@ description: Artifact commands out_of_band_sketches.kcl
       "target": "[uuid]",
       "distance": 10.14,
       "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      704,
+      769,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -560,6 +593,17 @@ description: Artifact commands out_of_band_sketches.kcl
       "target": "[uuid]",
       "distance": 10.14,
       "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      704,
+      769,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

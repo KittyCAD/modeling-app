@@ -1251,6 +1251,10 @@ pub(crate) async fn inner_start_profile_at(
             }),
             cmd_id: move_pen_id.into(),
         },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
     ])
     .await?;
 

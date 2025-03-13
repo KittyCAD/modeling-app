@@ -558,6 +558,10 @@ impl Sketch {
                 cmd_id: exec_state.next_uuid().into(),
             },
             inner_cmd,
+            ModelingCmdReq {
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                cmd_id: exec_state.next_uuid().into(),
+            },
         ]
     }
 }
