@@ -108,7 +108,7 @@ export type SyntaxType =
   | 'BinaryExpression'
   | 'CallExpression'
   | 'CallExpressionKw'
-  | 'Identifier'
+  | 'Name'
   | 'ReturnStatement'
   | 'VariableDeclaration'
   | 'VariableDeclarator'

@@ -40,10 +40,17 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 44,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 44,
+                              "name": "startSketchOn",
+                              "start": 31,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 31,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 50,
                           "start": 31,
@@ -53,11 +60,18 @@ description: Result of parsing function_sketch_with_position.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 74,
-                              "name": "p",
+                              "name": {
+                                "end": 74,
+                                "name": "p",
+                                "start": 73,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 73,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             {
                               "end": 77,
@@ -67,10 +81,17 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 72,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 72,
+                              "name": "startProfileAt",
+                              "start": 58,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 58,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 78,
                           "start": 58,
@@ -101,11 +122,18 @@ description: Result of parsing function_sketch_with_position.kcl
                                     }
                                   },
                                   {
+                                    "abs_path": false,
                                     "end": 102,
-                                    "name": "l",
+                                    "name": {
+                                      "end": 102,
+                                      "name": "l",
+                                      "start": 101,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 101,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 ],
                                 "end": 103,
@@ -116,10 +144,17 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 90,
-                            "name": "line",
+                            "name": {
+                              "end": 90,
+                              "name": "line",
+                              "start": 86,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 86,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 104,
                           "start": 86,
@@ -140,11 +175,18 @@ description: Result of parsing function_sketch_with_position.kcl
                               "arg": {
                                 "elements": [
                                   {
+                                    "abs_path": false,
                                     "end": 125,
-                                    "name": "w",
+                                    "name": {
+                                      "end": 125,
+                                      "name": "w",
+                                      "start": 124,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 124,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   {
                                     "end": 128,
@@ -166,10 +208,17 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 116,
-                            "name": "line",
+                            "name": {
+                              "end": 116,
+                              "name": "line",
+                              "start": 112,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 112,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 130,
                           "start": 112,
@@ -202,11 +251,18 @@ description: Result of parsing function_sketch_with_position.kcl
                                   },
                                   {
                                     "argument": {
+                                      "abs_path": false,
                                       "end": 155,
-                                      "name": "l",
+                                      "name": {
+                                        "end": 155,
+                                        "name": "l",
+                                        "start": 154,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 154,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "end": 155,
                                     "operator": "-",
@@ -223,10 +279,17 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 142,
-                            "name": "line",
+                            "name": {
+                              "end": 142,
+                              "name": "line",
+                              "start": 138,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 138,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 157,
                           "start": 138,
@@ -244,10 +307,17 @@ description: Result of parsing function_sketch_with_position.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 170,
-                            "name": "close",
+                            "name": {
+                              "end": 170,
+                              "name": "close",
+                              "start": 165,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 165,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 173,
                           "start": 165,
@@ -265,19 +335,33 @@ description: Result of parsing function_sketch_with_position.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "end": 199,
-                                "name": "h",
+                                "name": {
+                                  "end": 199,
+                                  "name": "h",
+                                  "start": 198,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 198,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 188,
-                            "name": "extrude",
+                            "name": {
+                              "end": 188,
+                              "name": "extrude",
+                              "start": 181,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 181,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 200,
                           "start": 181,
@@ -302,11 +386,18 @@ description: Result of parsing function_sketch_with_position.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 216,
-                    "name": "myBox",
+                    "name": {
+                      "end": 216,
+                      "name": "myBox",
+                      "start": 211,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 211,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 216,
                   "start": 204,
@@ -460,10 +551,17 @@ description: Result of parsing function_sketch_with_position.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 231,
-              "name": "box",
+              "name": {
+                "end": 231,
+                "name": "box",
+                "start": 228,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 228,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 249,
             "start": 228,

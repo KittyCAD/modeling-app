@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing boolean_logical_multiple.kcl
 ---
 {
@@ -72,11 +72,18 @@ description: Result of parsing boolean_logical_multiple.kcl
           },
           "init": {
             "cond": {
+              "abs_path": false,
               "end": 35,
-              "name": "ii",
+              "name": {
+                "end": 35,
+                "name": "ii",
+                "start": 33,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 33,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
@@ -147,11 +154,18 @@ description: Result of parsing boolean_logical_multiple.kcl
             {
               "end": 70,
               "left": {
+                "abs_path": false,
                 "end": 65,
-                "name": "i",
+                "name": {
+                  "end": 65,
+                  "name": "i",
+                  "start": 64,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 64,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
@@ -179,10 +193,17 @@ description: Result of parsing boolean_logical_multiple.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 63,
-            "name": "assert",
+            "name": {
+              "end": 63,
+              "name": "assert",
+              "start": 57,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 57,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 108,
           "start": 57,
@@ -297,11 +318,18 @@ description: Result of parsing boolean_logical_multiple.kcl
           },
           "init": {
             "cond": {
+              "abs_path": false,
               "end": 161,
-              "name": "jj",
+              "name": {
+                "end": 161,
+                "name": "jj",
+                "start": 159,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 159,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
@@ -372,11 +400,18 @@ description: Result of parsing boolean_logical_multiple.kcl
             {
               "end": 196,
               "left": {
+                "abs_path": false,
                 "end": 191,
-                "name": "j",
+                "name": {
+                  "end": 191,
+                  "name": "j",
+                  "start": 190,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 190,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
@@ -404,10 +439,17 @@ description: Result of parsing boolean_logical_multiple.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 189,
-            "name": "assert",
+            "name": {
+              "end": 189,
+              "name": "assert",
+              "start": 183,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 183,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 227,
           "start": 183,

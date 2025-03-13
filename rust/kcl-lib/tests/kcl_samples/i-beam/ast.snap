@@ -144,10 +144,17 @@ description: Result of parsing i-beam.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 392,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 392,
+                    "name": "startSketchOn",
+                    "start": 379,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 379,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 399,
                 "start": 379,
@@ -172,11 +179,18 @@ description: Result of parsing i-beam.kcl
                       {
                         "end": 436,
                         "left": {
+                          "abs_path": false,
                           "end": 434,
-                          "name": "beamHeight",
+                          "name": {
+                            "end": 434,
+                            "name": "beamHeight",
+                            "start": 424,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 424,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -208,10 +222,17 @@ description: Result of parsing i-beam.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 419,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 419,
+                    "name": "startProfileAt",
+                    "start": 405,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 405,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 441,
                 "start": 405,
@@ -231,11 +252,18 @@ description: Result of parsing i-beam.kcl
                     "arg": {
                       "end": 473,
                       "left": {
+                        "abs_path": false,
                         "end": 471,
-                        "name": "beamWidth",
+                        "name": {
+                          "end": 471,
+                          "name": "beamWidth",
+                          "start": 462,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 462,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -256,10 +284,17 @@ description: Result of parsing i-beam.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 452,
-                  "name": "xLine",
+                  "name": {
+                    "end": 452,
+                    "name": "xLine",
+                    "start": 447,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 447,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 474,
                 "start": 447,
@@ -279,11 +314,18 @@ description: Result of parsing i-beam.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 509,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 509,
+                          "name": "wallThickness",
+                          "start": 496,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 496,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 509,
                       "operator": "-",
@@ -294,10 +336,17 @@ description: Result of parsing i-beam.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 485,
-                  "name": "yLine",
+                  "name": {
+                    "end": 485,
+                    "name": "yLine",
+                    "start": 480,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 480,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 510,
                 "start": 480,
@@ -318,11 +367,18 @@ description: Result of parsing i-beam.kcl
                     "arg": {
                       "end": 551,
                       "left": {
+                        "abs_path": false,
                         "end": 549,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 549,
+                          "name": "wallThickness",
+                          "start": 536,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 536,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -343,10 +399,17 @@ description: Result of parsing i-beam.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 521,
-                  "name": "xLine",
+                  "name": {
+                    "end": 521,
+                    "name": "xLine",
+                    "start": 516,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 516,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 552,
                 "start": 516,
@@ -378,10 +441,17 @@ description: Result of parsing i-beam.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 563,
-                  "name": "yLine",
+                  "name": {
+                    "end": 563,
+                    "name": "yLine",
+                    "start": 558,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 558,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 580,
                 "start": 558,
@@ -426,10 +496,17 @@ description: Result of parsing i-beam.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 594,
-                  "name": "mirror2d",
+                  "name": {
+                    "end": 594,
+                    "name": "mirror2d",
+                    "start": 586,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 586,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 613,
                 "start": 586,
@@ -473,10 +550,17 @@ description: Result of parsing i-beam.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 627,
-                  "name": "mirror2d",
+                  "name": {
+                    "end": 627,
+                    "name": "mirror2d",
+                    "start": 619,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 619,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 646,
                 "start": 619,
@@ -494,19 +578,33 @@ description: Result of parsing i-beam.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 679,
-                      "name": "beamLength",
+                      "name": {
+                        "end": 679,
+                        "name": "beamLength",
+                        "start": 669,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 669,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 659,
-                  "name": "extrude",
+                  "name": {
+                    "end": 659,
+                    "name": "extrude",
+                    "start": 652,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 652,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 680,
                 "start": 652,
@@ -552,11 +650,18 @@ description: Result of parsing i-beam.kcl
             "start": 120,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 142,
-              "name": "in",
+              "name": {
+                "end": 142,
+                "name": "in",
+                "start": 140,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 140,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing import_foreign.kcl
 ---
 {
@@ -34,11 +34,18 @@ description: Result of parsing import_foreign.kcl
             "type": "Identifier"
           },
           "init": {
+            "abs_path": false,
             "end": 50,
-            "name": "cube",
+            "name": {
+              "end": 50,
+              "name": "cube",
+              "start": 46,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 46,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           },
           "start": 38,
           "type": "VariableDeclarator"

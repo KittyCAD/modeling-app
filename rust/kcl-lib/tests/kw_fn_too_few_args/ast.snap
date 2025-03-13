@@ -21,19 +21,33 @@ description: Result of parsing kw_fn_too_few_args.kcl
                   "argument": {
                     "end": 29,
                     "left": {
+                      "abs_path": false,
                       "end": 25,
-                      "name": "x",
+                      "name": {
+                        "end": 25,
+                        "name": "x",
+                        "start": 24,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 24,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "end": 29,
-                      "name": "y",
+                      "name": {
+                        "end": 29,
+                        "name": "y",
+                        "start": 28,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 28,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 24,
                     "type": "BinaryExpression",
@@ -115,10 +129,17 @@ description: Result of parsing kw_fn_too_few_args.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 44,
-              "name": "add",
+              "name": {
+                "end": 44,
+                "name": "add",
+                "start": 41,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 41,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 51,
             "start": 41,

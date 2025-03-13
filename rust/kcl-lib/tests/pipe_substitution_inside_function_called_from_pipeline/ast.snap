@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing pipe_substitution_inside_function_called_from_pipeline.kcl
 ---
 {
@@ -85,10 +85,17 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 108,
-                  "name": "f",
+                  "name": {
+                    "end": 108,
+                    "name": "f",
+                    "start": 107,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 107,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 111,
                 "start": 107,

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing array_elem_push_fail.kcl
 ---
 {
@@ -76,11 +76,18 @@ description: Result of parsing array_elem_push_fail.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 36,
-                "name": "arr",
+                "name": {
+                  "end": 36,
+                  "name": "arr",
+                  "start": 33,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 33,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "end": 39,
@@ -95,10 +102,17 @@ description: Result of parsing array_elem_push_fail.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 32,
-              "name": "push",
+              "name": {
+                "end": 32,
+                "name": "push",
+                "start": 28,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 28,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 40,
             "start": 28,

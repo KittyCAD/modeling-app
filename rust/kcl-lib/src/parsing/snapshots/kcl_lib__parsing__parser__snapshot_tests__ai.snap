@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -30,10 +30,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 9,
-                "name": "f",
+                "name": {
+                  "end": 9,
+                  "name": "f",
+                  "start": 8,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 8,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 12,
               "start": 8,
@@ -61,10 +68,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 17,
-                "name": "g",
+                "name": {
+                  "end": 17,
+                  "name": "g",
+                  "start": 16,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 16,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 23,
               "start": 16,

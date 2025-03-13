@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing double_map_fn.kcl
 ---
 {
@@ -21,11 +21,18 @@ description: Result of parsing double_map_fn.kcl
                   "argument": {
                     "end": 32,
                     "left": {
+                      "abs_path": false,
                       "end": 28,
-                      "name": "i",
+                      "name": {
+                        "end": 28,
+                        "name": "i",
+                        "start": 27,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 27,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
@@ -136,11 +143,18 @@ description: Result of parsing double_map_fn.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "end": 55,
-                "name": "xs",
+                "name": {
+                  "end": 55,
+                  "name": "xs",
+                  "start": 53,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 53,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
@@ -151,18 +165,32 @@ description: Result of parsing double_map_fn.kcl
                     "type": "PipeSubstitution"
                   },
                   {
+                    "abs_path": false,
                     "end": 77,
-                    "name": "increment",
+                    "name": {
+                      "end": 77,
+                      "name": "increment",
+                      "start": 68,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 68,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 64,
-                  "name": "map",
+                  "name": {
+                    "end": 64,
+                    "name": "map",
+                    "start": 61,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 61,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 78,
                 "start": 61,
@@ -178,18 +206,32 @@ description: Result of parsing double_map_fn.kcl
                     "type": "PipeSubstitution"
                   },
                   {
+                    "abs_path": false,
                     "end": 100,
-                    "name": "increment",
+                    "name": {
+                      "end": 100,
+                      "name": "increment",
+                      "start": 91,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 91,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 87,
-                  "name": "map",
+                  "name": {
+                    "end": 87,
+                    "name": "map",
+                    "start": 84,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 84,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 101,
                 "start": 84,

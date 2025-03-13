@@ -26,9 +26,14 @@ import {
   unitLenToUnitLength,
   unitAngToUnitAngle,
   VariableMap,
+  Identifier,
 } from './wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
+import {
+  createIdentifier,
+  createLocalName,
+  splitPathAtLastIndex,
+} from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
 import { getAngle, isArray } from '../lib/utils'
 import { ARG_TAG, getArgForEnd, getFirstArg } from './std/sketch'
@@ -179,6 +184,7 @@ type KCLNode = Node<
   | VariableDeclarator
   | TypeDeclaration
   | ReturnStatement
+  | Identifier
 >
 
 export function traverse(
@@ -237,7 +243,7 @@ export function traverse(
   } else if (_node.type === 'BinaryExpression') {
     _traverse(_node.left, [...pathToNode, ['left', 'BinaryExpression']])
     _traverse(_node.right, [...pathToNode, ['right', 'BinaryExpression']])
-  } else if (_node.type === 'Identifier') {
+  } else if (_node.type === 'Name') {
     // do nothing
   } else if (_node.type === 'Literal') {
     // do nothing
@@ -384,7 +390,7 @@ export function isNodeSafeToReplacePath(
   }
   const acceptedNodeTypes: SyntaxType[] = [
     'BinaryExpression',
-    'Identifier',
+    'Name',
     'CallExpression',
     'Literal',
     'UnaryExpression',
@@ -404,7 +410,7 @@ export function isNodeSafeToReplacePath(
       : [value, outPath]
 
   const replaceNodeWithIdentifier: ReplacerFn = (_ast, varName) => {
-    const identifier = createIdentifier(varName)
+    const identifier = createLocalName(varName)
     const last = finPath[finPath.length - 1]
     const pathToReplaced = structuredClone(finPath)
     const index = pathToReplaced[1][0]
@@ -561,7 +567,7 @@ export function isLinesParallelAndConstrained(
     const isAbsolute = false // ADAM: TODO
     const constraintType = getConstraintType(
       secondaryFirstArg.val,
-      secondaryNode.callee.name as ToolTip,
+      secondaryNode.callee.name.name as ToolTip,
       isAbsolute
     )
 
@@ -675,15 +681,17 @@ export function findUsesOfTagInPipe(
   const node = nodeMeta.node
   if (node.type !== 'CallExpressionKw' && node.type !== 'CallExpression')
     return []
-  const tagIndex = node.callee.name === 'close' ? 1 : 2
+  const tagIndex = node.callee.name.name === 'close' ? 1 : 2
   const tagParam =
     node.type === 'CallExpression'
       ? node.arguments[tagIndex]
       : findKwArg(ARG_TAG, node)
-  if (!(tagParam?.type === 'TagDeclarator' || tagParam?.type === 'Identifier'))
+  if (!(tagParam?.type === 'TagDeclarator' || tagParam?.type === 'Name'))
     return []
   const tag =
-    tagParam?.type === 'TagDeclarator' ? String(tagParam.value) : tagParam.name
+    tagParam?.type === 'TagDeclarator'
+      ? String(tagParam.value)
+      : tagParam.name.name
 
   const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     ast,
@@ -700,14 +708,15 @@ export function findUsesOfTagInPipe(
     enter: (node) => {
       if (
         node.type !== 'CallExpression' ||
-        !stdlibFunctionsThatTakeTagInputs.includes(node.callee.name)
+        !stdlibFunctionsThatTakeTagInputs.includes(node.callee.name.name)
       )
         return
       const tagArg = node.arguments[0]
-      if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Identifier'))
-        return
+      if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Name')) return
       const tagArgValue =
-        tagArg.type === 'TagDeclarator' ? String(tagArg.value) : tagArg.name
+        tagArg.type === 'TagDeclarator'
+          ? String(tagArg.value)
+          : tagArg.name.name
       if (tagArgValue === tag)
         dependentRanges.push(topLevelRange(node.start, node.end))
     },
@@ -738,7 +747,8 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
     enter(node) {
       if (
         (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
-        (node.callee.name === 'extrude' || node.callee.name === 'revolve')
+        (node.callee.name.name === 'extrude' ||
+          node.callee.name.name === 'revolve')
       ) {
         extruded = true
       }
@@ -750,23 +760,23 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
       enter(node) {
         if (
           node.type === 'CallExpression' &&
-          node.callee.type === 'Identifier' &&
-          (node.callee.name === 'extrude' ||
-            node.callee.name === 'revolve' ||
-            node.callee.name === 'loft') &&
-          node.arguments?.[1]?.type === 'Identifier' &&
-          node.arguments[1].name === varDec.id.name
+          node.callee.type === 'Name' &&
+          (node.callee.name.name === 'extrude' ||
+            node.callee.name.name === 'revolve' ||
+            node.callee.name.name === 'loft') &&
+          node.arguments?.[1]?.type === 'Name' &&
+          node.arguments[1].name.name === varDec.id.name
         ) {
           extruded = true
         }
         if (
           node.type === 'CallExpressionKw' &&
-          node.callee.type === 'Identifier' &&
-          (node.callee.name === 'extrude' ||
-            node.callee.name === 'revolve' ||
-            node.callee.name === 'loft') &&
-          node.unlabeled?.type === 'Identifier' &&
-          node.unlabeled?.name === varDec.id.name
+          node.callee.type === 'Name' &&
+          (node.callee.name.name === 'extrude' ||
+            node.callee.name.name === 'revolve' ||
+            node.callee.name.name === 'loft') &&
+          node.unlabeled?.type === 'Name' &&
+          node.unlabeled?.name.name === varDec.id.name
         ) {
           extruded = true
         }
@@ -793,28 +803,28 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
           if (
             (pipe.type === 'CallExpressionKw' ||
               pipe.type === 'CallExpression') &&
-            pipe.callee.name === 'startProfileAt'
+            pipe.callee.name.name === 'startProfileAt'
           ) {
             hasStartProfileAt = true
           }
           if (
             (pipe.type === 'CallExpressionKw' ||
               pipe.type === 'CallExpression') &&
-            pipe.callee.name === 'startSketchOn'
+            pipe.callee.name.name === 'startSketchOn'
           ) {
             hasStartSketchOn = true
           }
           if (
             (pipe.type === 'CallExpressionKw' ||
               pipe.type === 'CallExpression') &&
-            pipe.callee.name === 'close'
+            pipe.callee.name.name === 'close'
           ) {
             hasClose = true
           }
           if (
             (pipe.type === 'CallExpressionKw' ||
               pipe.type === 'CallExpression') &&
-            pipe.callee.name === 'circle'
+            pipe.callee.name.name === 'circle'
           ) {
             hasCircle = true
           }
@@ -828,18 +838,20 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
         }
       } else if (
         node.type === 'CallExpression' &&
-        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
-        node.arguments[1]?.type === 'Identifier' &&
-        theMap?.[node?.arguments?.[1]?.name]
+        (node.callee.name.name === 'extrude' ||
+          node.callee.name.name === 'revolve') &&
+        node.arguments[1]?.type === 'Name' &&
+        theMap?.[node?.arguments?.[1]?.name.name]
       ) {
-        delete theMap[node.arguments[1].name]
+        delete theMap[node.arguments[1].name.name]
       } else if (
         node.type === 'CallExpressionKw' &&
-        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
-        node.unlabeled?.type === 'Identifier' &&
-        theMap?.[node?.unlabeled?.name]
+        (node.callee.name.name === 'extrude' ||
+          node.callee.name.name === 'revolve') &&
+        node.unlabeled?.type === 'Name' &&
+        theMap?.[node?.unlabeled?.name.name]
       ) {
-        delete theMap[node.unlabeled.name]
+        delete theMap[node.unlabeled.name.name]
       }
     },
   })
@@ -858,7 +870,7 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
           if (
             (pipe.type === 'CallExpressionKw' ||
               pipe.type === 'CallExpression') &&
-            pipe.callee.name === 'extrude'
+            pipe.callee.name.name === 'extrude'
           ) {
             theMap[node.id.name] = true
             break
@@ -866,11 +878,11 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
         }
       } else if (
         (node.type === 'CallExpression' &&
-          node.callee.name === 'extrude' &&
-          node.arguments[1]?.type === 'Identifier') ||
+          node.callee.name.name === 'extrude' &&
+          node.arguments[1]?.type === 'Name') ||
         (node.type === 'CallExpressionKw' &&
-          node.callee.name === 'extrude' &&
-          node.unlabeled?.type === 'Identifier')
+          node.callee.name.name === 'extrude' &&
+          node.unlabeled?.type === 'Name')
       ) {
         theMap[node.moduleId] = true
       }
@@ -913,8 +925,8 @@ export function isCallExprWithName(
   expr: Expr | CallExpression,
   name: string
 ): expr is CallExpression {
-  if (expr.type === 'CallExpression' && expr.callee.type === 'Identifier') {
-    return expr.callee.name === name
+  if (expr.type === 'CallExpression' && expr.callee.type === 'Name') {
+    return expr.callee.name.name === name
   }
   return false
 }

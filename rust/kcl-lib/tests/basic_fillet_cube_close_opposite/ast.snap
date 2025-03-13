@@ -28,10 +28,17 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 23,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 23,
+                    "name": "startSketchOn",
+                    "start": 10,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 10,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 29,
                 "start": 10,
@@ -78,10 +85,17 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 49,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 49,
+                    "name": "startProfileAt",
+                    "start": 35,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 35,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 60,
                 "start": 35,
@@ -147,10 +161,17 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 70,
-                  "name": "line",
+                  "name": {
+                    "end": 70,
+                    "name": "line",
+                    "start": 66,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 66,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 99,
                 "start": 66,
@@ -201,10 +222,17 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 109,
-                  "name": "line",
+                  "name": {
+                    "end": 109,
+                    "name": "line",
+                    "start": 105,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 105,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 124,
                 "start": 105,
@@ -278,10 +306,17 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 134,
-                  "name": "line",
+                  "name": {
+                    "end": 134,
+                    "name": "line",
+                    "start": 130,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 130,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 165,
                 "start": 130,
@@ -309,10 +344,17 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 176,
-                  "name": "close",
+                  "name": {
+                    "end": 176,
+                    "name": "close",
+                    "start": 171,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 171,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 191,
                 "start": 171,
@@ -344,10 +386,17 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 204,
-                  "name": "extrude",
+                  "name": {
+                    "end": 204,
+                    "name": "extrude",
+                    "start": 197,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 197,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 217,
                 "start": 197,
@@ -388,27 +437,48 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 256,
-                          "name": "thing3",
+                          "name": {
+                            "end": 256,
+                            "name": "thing3",
+                            "start": 250,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 250,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 280,
-                              "name": "thing3",
+                              "name": {
+                                "end": 280,
+                                "name": "thing3",
+                                "start": 274,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 274,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 273,
-                            "name": "getOppositeEdge",
+                            "name": {
+                              "end": 273,
+                              "name": "getOppositeEdge",
+                              "start": 258,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 258,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 281,
                           "start": 258,
@@ -424,10 +494,17 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 229,
-                  "name": "fillet",
+                  "name": {
+                    "end": 229,
+                    "name": "fillet",
+                    "start": 223,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 223,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 283,
                 "start": 223,

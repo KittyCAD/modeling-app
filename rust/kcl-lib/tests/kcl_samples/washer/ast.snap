@@ -147,18 +147,32 @@ description: Result of parsing washer.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 819,
-                              "name": "plane",
+                              "name": {
+                                "end": 819,
+                                "name": "plane",
+                                "start": 814,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 814,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 813,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 813,
+                              "name": "startSketchOn",
+                              "start": 800,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 800,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 820,
                           "start": 800,
@@ -217,11 +231,18 @@ description: Result of parsing washer.kcl
                               "arg": {
                                 "end": 892,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 888,
-                                  "name": "outerDia",
+                                  "name": {
+                                    "end": 888,
+                                    "name": "outerDia",
+                                    "start": 880,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 880,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -242,10 +263,17 @@ description: Result of parsing washer.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 834,
-                            "name": "circle",
+                            "name": {
+                              "end": 834,
+                              "name": "circle",
+                              "start": 828,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 828,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 901,
                           "start": 828,
@@ -307,11 +335,18 @@ description: Result of parsing washer.kcl
                                   "arg": {
                                     "end": 978,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 974,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 974,
+                                        "name": "innerDia",
+                                        "start": 966,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 966,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "/",
                                     "right": {
@@ -332,10 +367,17 @@ description: Result of parsing washer.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 920,
-                                "name": "circle",
+                                "name": {
+                                  "end": 920,
+                                  "name": "circle",
+                                  "start": 914,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 914,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 987,
                               "start": 914,
@@ -351,10 +393,17 @@ description: Result of parsing washer.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 913,
-                            "name": "hole",
+                            "name": {
+                              "end": 913,
+                              "name": "hole",
+                              "start": 909,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 909,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 991,
                           "start": 909,
@@ -396,30 +445,51 @@ description: Result of parsing washer.kcl
                             "type": "Identifier"
                           },
                           "arg": {
+                            "abs_path": false,
                             "end": 1038,
-                            "name": "thk",
+                            "name": {
+                              "end": 1038,
+                              "name": "thk",
+                              "start": 1035,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1035,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 1011,
-                        "name": "extrude",
+                        "name": {
+                          "end": 1011,
+                          "name": "extrude",
+                          "start": 1004,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1004,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 1039,
                       "start": 1004,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
+                        "abs_path": false,
                         "end": 1024,
-                        "name": "washerSketch",
+                        "name": {
+                          "end": 1024,
+                          "name": "washerSketch",
+                          "start": 1012,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1012,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     },
                     "start": 995,
@@ -433,11 +503,18 @@ description: Result of parsing washer.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 1055,
-                    "name": "washer",
+                    "name": {
+                      "end": 1055,
+                      "name": "washer",
+                      "start": 1049,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1049,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 1055,
                   "start": 1042,
@@ -539,32 +616,60 @@ description: Result of parsing washer.kcl
               "value": "XY"
             },
             {
+              "abs_path": false,
               "end": 1085,
-              "name": "innerDiameter",
+              "name": {
+                "end": 1085,
+                "name": "innerDiameter",
+                "start": 1072,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1072,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
+              "abs_path": false,
               "end": 1100,
-              "name": "outerDiameter",
+              "name": {
+                "end": 1100,
+                "name": "outerDiameter",
+                "start": 1087,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1087,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
+              "abs_path": false,
               "end": 1114,
-              "name": "thicknessMax",
+              "name": {
+                "end": 1114,
+                "name": "thicknessMax",
+                "start": 1102,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1102,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1065,
-            "name": "washer",
+            "name": {
+              "end": 1065,
+              "name": "washer",
+              "start": 1059,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1059,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1115,
           "start": 1059,
@@ -598,11 +703,18 @@ description: Result of parsing washer.kcl
             "start": 495,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 517,
-              "name": "in",
+              "name": {
+                "end": 517,
+                "name": "in",
+                "start": 515,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 515,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

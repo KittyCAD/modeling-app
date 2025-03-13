@@ -349,19 +349,33 @@ description: Result of parsing pipe-flange-assembly.kcl
               {
                 "end": 668,
                 "left": {
+                  "abs_path": false,
                   "end": 650,
-                  "name": "flangeThickness",
+                  "name": {
+                    "end": 650,
+                    "name": "flangeThickness",
+                    "start": 635,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 635,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "+",
                 "right": {
+                  "abs_path": false,
                   "end": 668,
-                  "name": "washerThickness",
+                  "name": {
+                    "end": 668,
+                    "name": "washerThickness",
+                    "start": 653,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 653,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "start": 635,
                 "type": "BinaryExpression",
@@ -587,11 +601,18 @@ description: Result of parsing pipe-flange-assembly.kcl
             },
             "operator": "-",
             "right": {
+              "abs_path": false,
               "end": 936,
-              "name": "hexInteriorAngle",
+              "name": {
+                "end": 936,
+                "name": "hexInteriorAngle",
+                "start": 920,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 920,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 914,
             "type": "BinaryExpression",
@@ -1055,11 +1076,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "Identifier"
                     },
                     "init": {
+                      "abs_path": false,
                       "end": 1242,
-                      "name": "dia",
+                      "name": {
+                        "end": 1242,
+                        "name": "dia",
+                        "start": 1239,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1239,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 1226,
                     "type": "VariableDeclarator"
@@ -1082,19 +1110,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                     "init": {
                       "end": 1286,
                       "left": {
+                        "abs_path": false,
                         "end": 1280,
-                        "name": "hexRatio",
+                        "name": {
+                          "end": 1280,
+                          "name": "hexRatio",
+                          "start": 1272,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1272,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
+                        "abs_path": false,
                         "end": 1286,
-                        "name": "dia",
+                        "name": {
+                          "end": 1286,
+                          "name": "dia",
+                          "start": 1283,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1283,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 1272,
                       "type": "BinaryExpression",
@@ -1121,19 +1163,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                     "init": {
                       "end": 1313,
                       "left": {
+                        "abs_path": false,
                         "end": 1302,
-                        "name": "dia",
+                        "name": {
+                          "end": 1302,
+                          "name": "dia",
+                          "start": 1299,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1299,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
+                        "abs_path": false,
                         "end": 1313,
-                        "name": "capRatio",
+                        "name": {
+                          "end": 1313,
+                          "name": "capRatio",
+                          "start": 1305,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1305,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 1299,
                       "type": "BinaryExpression",
@@ -1164,11 +1220,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "left": {
                           "end": 1352,
                           "left": {
+                            "abs_path": false,
                             "end": 1348,
-                            "name": "wallToWallLength",
+                            "name": {
+                              "end": 1348,
+                              "name": "wallToWallLength",
+                              "start": 1332,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1332,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1220,10 +1283,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                               }
                             ],
                             "callee": {
+                              "abs_path": false,
                               "end": 1372,
-                              "name": "toRadians",
+                              "name": {
+                                "end": 1372,
+                                "name": "toRadians",
+                                "start": 1363,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1363,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
                             "end": 1376,
                             "start": 1363,
@@ -1232,10 +1302,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 1362,
-                          "name": "cos",
+                          "name": {
+                            "end": 1362,
+                            "name": "cos",
+                            "start": 1359,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1359,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 1377,
                         "start": 1359,
@@ -1265,11 +1342,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "Identifier"
                     },
                     "init": {
+                      "abs_path": false,
                       "end": 1461,
-                      "name": "dia",
+                      "name": {
+                        "end": 1461,
+                        "name": "dia",
+                        "start": 1458,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1458,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 1442,
                     "type": "VariableDeclarator"
@@ -1294,18 +1378,32 @@ description: Result of parsing pipe-flange-assembly.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1545,
-                              "name": "screwPlane",
+                              "name": {
+                                "end": 1545,
+                                "name": "screwPlane",
+                                "start": 1535,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1535,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1534,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 1534,
+                              "name": "startSketchOn",
+                              "start": 1521,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1521,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1546,
                           "start": 1521,
@@ -1364,11 +1462,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                               "arg": {
                                 "end": 1617,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 1613,
-                                  "name": "headDia",
+                                  "name": {
+                                    "end": 1613,
+                                    "name": "headDia",
+                                    "start": 1606,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1606,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -1389,10 +1494,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1560,
-                            "name": "circle",
+                            "name": {
+                              "end": 1560,
+                              "name": "circle",
+                              "start": 1554,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1554,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1626,
                           "start": 1554,
@@ -1452,30 +1564,51 @@ description: Result of parsing pipe-flange-assembly.kcl
                             "type": "Identifier"
                           },
                           "arg": {
+                            "abs_path": false,
                             "end": 1714,
-                            "name": "dia",
+                            "name": {
+                              "end": 1714,
+                              "name": "dia",
+                              "start": 1711,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1711,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 1684,
-                        "name": "extrude",
+                        "name": {
+                          "end": 1684,
+                          "name": "extrude",
+                          "start": 1677,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1677,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 1715,
                       "start": 1677,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
+                        "abs_path": false,
                         "end": 1700,
-                        "name": "screwHeadSketch",
+                        "name": {
+                          "end": 1700,
+                          "name": "screwHeadSketch",
+                          "start": 1685,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1685,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     },
                     "start": 1665,
@@ -1501,11 +1634,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1821,
-                              "name": "screwHead",
+                              "name": {
+                                "end": 1821,
+                                "name": "screwHead",
+                                "start": 1812,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1812,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             {
                               "end": 1828,
@@ -1517,10 +1657,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1811,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 1811,
+                              "name": "startSketchOn",
+                              "start": 1798,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1798,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1829,
                           "start": 1798,
@@ -1569,11 +1716,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "right": {
                                     "end": 1895,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 1891,
-                                      "name": "wallToWallLength",
+                                      "name": {
+                                        "end": 1891,
+                                        "name": "wallToWallLength",
+                                        "start": 1875,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1875,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "/",
                                     "right": {
@@ -1634,10 +1788,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1851,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 1851,
+                              "name": "startProfileAt",
+                              "start": 1837,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1837,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1927,
                           "start": 1837,
@@ -1658,11 +1819,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 "end": 1968,
                                 "left": {
                                   "argument": {
+                                    "abs_path": false,
                                     "end": 1964,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 1964,
+                                      "name": "hexWallLength",
+                                      "start": 1951,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1951,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "end": 1964,
                                   "operator": "-",
@@ -1689,10 +1857,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1940,
-                            "name": "yLine",
+                            "name": {
+                              "end": 1940,
+                              "name": "yLine",
+                              "start": 1935,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1935,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1969,
                           "start": 1935,
@@ -1716,11 +1891,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "start": 1999,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 2023,
-                                    "name": "hexStartingAngle",
+                                    "name": {
+                                      "end": 2023,
+                                      "name": "hexStartingAngle",
+                                      "start": 2007,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 2007,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 },
                                 {
@@ -1734,11 +1916,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "start": 2034,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 2056,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 2056,
+                                      "name": "hexWallLength",
+                                      "start": 2043,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 2043,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1754,10 +1943,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1987,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 1987,
+                              "name": "angledLine",
+                              "start": 1977,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1977,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2069,
                           "start": 1977,
@@ -1782,19 +1978,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "value": {
                                     "end": 2140,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 2123,
-                                      "name": "hexStartingAngle",
+                                      "name": {
+                                        "end": 2123,
+                                        "name": "hexStartingAngle",
+                                        "start": 2107,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 2107,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "-",
                                     "right": {
+                                      "abs_path": false,
                                       "end": 2140,
-                                      "name": "hexChangeAngle",
+                                      "name": {
+                                        "end": 2140,
+                                        "name": "hexChangeAngle",
+                                        "start": 2126,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 2126,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "start": 2107,
                                     "type": "BinaryExpression",
@@ -1812,11 +2022,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "start": 2151,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 2173,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 2173,
+                                      "name": "hexWallLength",
+                                      "start": 2160,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 2160,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1832,10 +2049,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2087,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 2087,
+                              "name": "angledLine",
+                              "start": 2077,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2077,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2186,
                           "start": 2077,
@@ -1860,11 +2084,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "value": {
                                     "end": 2262,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 2240,
-                                      "name": "hexStartingAngle",
+                                      "name": {
+                                        "end": 2240,
+                                        "name": "hexStartingAngle",
+                                        "start": 2224,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 2224,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "-",
                                     "right": {
@@ -1882,11 +2113,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                       },
                                       "operator": "*",
                                       "right": {
+                                        "abs_path": false,
                                         "end": 2262,
-                                        "name": "hexChangeAngle",
+                                        "name": {
+                                          "end": 2262,
+                                          "name": "hexChangeAngle",
+                                          "start": 2248,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 2248,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "start": 2244,
                                       "type": "BinaryExpression",
@@ -1908,11 +2146,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "start": 2274,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 2296,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 2296,
+                                      "name": "hexWallLength",
+                                      "start": 2283,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 2283,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1928,10 +2173,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2204,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 2204,
+                              "name": "angledLine",
+                              "start": 2194,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2194,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2309,
                           "start": 2194,
@@ -1956,11 +2208,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "value": {
                                     "end": 2385,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 2363,
-                                      "name": "hexStartingAngle",
+                                      "name": {
+                                        "end": 2363,
+                                        "name": "hexStartingAngle",
+                                        "start": 2347,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 2347,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "-",
                                     "right": {
@@ -1978,11 +2237,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                       },
                                       "operator": "*",
                                       "right": {
+                                        "abs_path": false,
                                         "end": 2385,
-                                        "name": "hexChangeAngle",
+                                        "name": {
+                                          "end": 2385,
+                                          "name": "hexChangeAngle",
+                                          "start": 2371,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 2371,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "start": 2367,
                                       "type": "BinaryExpression",
@@ -2004,11 +2270,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "start": 2397,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 2419,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 2419,
+                                      "name": "hexWallLength",
+                                      "start": 2406,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 2406,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -2024,10 +2297,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2327,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 2327,
+                              "name": "angledLine",
+                              "start": 2317,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2317,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2432,
                           "start": 2317,
@@ -2052,11 +2332,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "value": {
                                     "end": 2508,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 2486,
-                                      "name": "hexStartingAngle",
+                                      "name": {
+                                        "end": 2486,
+                                        "name": "hexStartingAngle",
+                                        "start": 2470,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 2470,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "-",
                                     "right": {
@@ -2074,11 +2361,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                       },
                                       "operator": "*",
                                       "right": {
+                                        "abs_path": false,
                                         "end": 2508,
-                                        "name": "hexChangeAngle",
+                                        "name": {
+                                          "end": 2508,
+                                          "name": "hexChangeAngle",
+                                          "start": 2494,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 2494,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "start": 2490,
                                       "type": "BinaryExpression",
@@ -2100,11 +2394,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "start": 2520,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 2542,
-                                    "name": "hexWallLength",
+                                    "name": {
+                                      "end": 2542,
+                                      "name": "hexWallLength",
+                                      "start": 2529,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 2529,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -2120,10 +2421,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2450,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 2450,
+                              "name": "angledLine",
+                              "start": 2440,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2440,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2555,
                           "start": 2440,
@@ -2133,10 +2441,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "abs_path": false,
                             "end": 2568,
-                            "name": "close",
+                            "name": {
+                              "end": 2568,
+                              "name": "close",
+                              "start": 2563,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2563,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2570,
                           "start": 2563,
@@ -2181,11 +2496,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                             "end": 2639,
                             "left": {
                               "argument": {
+                                "abs_path": false,
                                 "end": 2632,
-                                "name": "headLength",
+                                "name": {
+                                  "end": 2632,
+                                  "name": "headLength",
+                                  "start": 2622,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2622,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "end": 2632,
                               "operator": "-",
@@ -2212,21 +2534,35 @@ description: Result of parsing pipe-flange-assembly.kcl
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 2593,
-                        "name": "extrude",
+                        "name": {
+                          "end": 2593,
+                          "name": "extrude",
+                          "start": 2586,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2586,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 2640,
                       "start": 2586,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
+                        "abs_path": false,
                         "end": 2610,
-                        "name": "hexPatternSketch",
+                        "name": {
+                          "end": 2610,
+                          "name": "hexPatternSketch",
+                          "start": 2594,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2594,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     },
                     "start": 2573,
@@ -2240,11 +2576,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 2661,
-                    "name": "hexPattern",
+                    "name": {
+                      "end": 2661,
+                      "name": "hexPattern",
+                      "start": 2651,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2651,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 2661,
                   "start": 2644,
@@ -2450,11 +2793,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                             "start": 2716,
                             "type": "ObjectProperty",
                             "value": {
+                              "abs_path": false,
                               "end": 2735,
-                              "name": "flangeThickness",
+                              "name": {
+                                "end": 2735,
+                                "name": "flangeThickness",
+                                "start": 2720,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2720,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           },
                           {
@@ -2786,18 +3136,32 @@ description: Result of parsing pipe-flange-assembly.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2969,
-                              "name": "plane",
+                              "name": {
+                                "end": 2969,
+                                "name": "plane",
+                                "start": 2964,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2964,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2963,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 2963,
+                              "name": "startSketchOn",
+                              "start": 2950,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2950,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2970,
                           "start": 2950,
@@ -2884,11 +3248,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                               "arg": {
                                 "end": 3056,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 3052,
-                                  "name": "outerDia",
+                                  "name": {
+                                    "end": 3052,
+                                    "name": "outerDia",
+                                    "start": 3044,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3044,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -2909,10 +3280,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2984,
-                            "name": "circle",
+                            "name": {
+                              "end": 2984,
+                              "name": "circle",
+                              "start": 2978,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2978,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3065,
                           "start": 2978,
@@ -3002,11 +3380,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "arg": {
                                     "end": 3156,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 3152,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 3152,
+                                        "name": "innerDia",
+                                        "start": 3144,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 3144,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "/",
                                     "right": {
@@ -3027,10 +3412,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 3084,
-                                "name": "circle",
+                                "name": {
+                                  "end": 3084,
+                                  "name": "circle",
+                                  "start": 3078,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3078,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 3165,
                               "start": 3078,
@@ -3046,10 +3438,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3077,
-                            "name": "hole",
+                            "name": {
+                              "end": 3077,
+                              "name": "hole",
+                              "start": 3073,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3073,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3169,
                           "start": 3073,
@@ -3067,19 +3466,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "end": 3197,
-                                "name": "thk",
+                                "name": {
+                                  "end": 3197,
+                                  "name": "thk",
+                                  "start": 3194,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3194,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3184,
-                            "name": "extrude",
+                            "name": {
+                              "end": 3184,
+                              "name": "extrude",
+                              "start": 3177,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3177,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3198,
                           "start": 3177,
@@ -3104,11 +3517,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 3220,
-                    "name": "washerSketch",
+                    "name": {
+                      "end": 3220,
+                      "name": "washerSketch",
+                      "start": 3208,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 3208,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 3220,
                   "start": 3201,
@@ -3284,11 +3704,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                                 "end": 3428,
                                                 "left": {
                                                   "argument": {
+                                                    "abs_path": false,
                                                     "end": 3410,
-                                                    "name": "wallThickness",
+                                                    "name": {
+                                                      "end": 3410,
+                                                      "name": "wallThickness",
+                                                      "start": 3397,
+                                                      "type": "Identifier"
+                                                    },
+                                                    "path": [],
                                                     "start": 3397,
-                                                    "type": "Identifier",
-                                                    "type": "Identifier"
+                                                    "type": "Name",
+                                                    "type": "Name"
                                                   },
                                                   "end": 3410,
                                                   "operator": "-",
@@ -3298,11 +3725,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                                 },
                                                 "operator": "-",
                                                 "right": {
+                                                  "abs_path": false,
                                                   "end": 3428,
-                                                  "name": "washerThickness",
+                                                  "name": {
+                                                    "end": 3428,
+                                                    "name": "washerThickness",
+                                                    "start": 3413,
+                                                    "type": "Identifier"
+                                                  },
+                                                  "path": [],
                                                   "start": 3413,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
+                                                  "type": "Name",
+                                                  "type": "Name"
                                                 },
                                                 "start": 3396,
                                                 "type": "BinaryExpression",
@@ -3619,10 +4053,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3308,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 3308,
+                              "name": "startSketchOn",
+                              "start": 3295,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3295,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3621,
                           "start": 3295,
@@ -3650,19 +4091,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "right": {
                                     "end": 3671,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 3657,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 3657,
+                                        "name": "innerDia",
+                                        "start": 3649,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 3649,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "*",
                                     "right": {
+                                      "abs_path": false,
                                       "end": 3671,
-                                      "name": "hexNutScale",
+                                      "name": {
+                                        "end": 3671,
+                                        "name": "hexNutScale",
+                                        "start": 3660,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 3660,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "start": 3649,
                                     "type": "BinaryExpression",
@@ -3697,10 +4152,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3643,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 3643,
+                              "name": "startProfileAt",
+                              "start": 3629,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3629,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3679,
                           "start": 3629,
@@ -3747,19 +4209,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "value": {
                                     "end": 3762,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 3748,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 3748,
+                                        "name": "innerDia",
+                                        "start": 3740,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 3740,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "*",
                                     "right": {
+                                      "abs_path": false,
                                       "end": 3762,
-                                      "name": "hexNutScale",
+                                      "name": {
+                                        "end": 3762,
+                                        "name": "hexNutScale",
+                                        "start": 3751,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 3751,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "start": 3740,
                                     "type": "BinaryExpression",
@@ -3779,10 +4255,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3697,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 3697,
+                              "name": "angledLine",
+                              "start": 3687,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3687,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3775,
                           "start": 3687,
@@ -3829,19 +4312,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "value": {
                                     "end": 3858,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 3844,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 3844,
+                                        "name": "innerDia",
+                                        "start": 3836,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 3836,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "*",
                                     "right": {
+                                      "abs_path": false,
                                       "end": 3858,
-                                      "name": "hexNutScale",
+                                      "name": {
+                                        "end": 3858,
+                                        "name": "hexNutScale",
+                                        "start": 3847,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 3847,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "start": 3836,
                                     "type": "BinaryExpression",
@@ -3861,10 +4358,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3793,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 3793,
+                              "name": "angledLine",
+                              "start": 3783,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3783,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3871,
                           "start": 3783,
@@ -3911,19 +4415,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "value": {
                                     "end": 3954,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 3940,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 3940,
+                                        "name": "innerDia",
+                                        "start": 3932,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 3932,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "*",
                                     "right": {
+                                      "abs_path": false,
                                       "end": 3954,
-                                      "name": "hexNutScale",
+                                      "name": {
+                                        "end": 3954,
+                                        "name": "hexNutScale",
+                                        "start": 3943,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 3943,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "start": 3932,
                                     "type": "BinaryExpression",
@@ -3943,10 +4461,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3889,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 3889,
+                              "name": "angledLine",
+                              "start": 3879,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3879,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3967,
                           "start": 3879,
@@ -3993,19 +4518,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "value": {
                                     "end": 4049,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 4035,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 4035,
+                                        "name": "innerDia",
+                                        "start": 4027,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 4027,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "*",
                                     "right": {
+                                      "abs_path": false,
                                       "end": 4049,
-                                      "name": "hexNutScale",
+                                      "name": {
+                                        "end": 4049,
+                                        "name": "hexNutScale",
+                                        "start": 4038,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 4038,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "start": 4027,
                                     "type": "BinaryExpression",
@@ -4025,10 +4564,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3985,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 3985,
+                              "name": "angledLine",
+                              "start": 3975,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3975,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4062,
                           "start": 3975,
@@ -4075,11 +4621,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "value": {
                                     "end": 4117,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 4111,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 4111,
+                                        "name": "innerDia",
+                                        "start": 4103,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 4103,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "*",
                                     "right": {
@@ -4111,10 +4664,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4080,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 4080,
+                              "name": "angledLine",
+                              "start": 4070,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4070,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4123,
                           "start": 4070,
@@ -4124,10 +4684,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "abs_path": false,
                             "end": 4136,
-                            "name": "close",
+                            "name": {
+                              "end": 4136,
+                              "name": "close",
+                              "start": 4131,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4131,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4138,
                           "start": 4131,
@@ -4188,11 +4755,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                                   "arg": {
                                     "end": 4215,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 4211,
-                                      "name": "innerDia",
+                                      "name": {
+                                        "end": 4211,
+                                        "name": "innerDia",
+                                        "start": 4203,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 4203,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "/",
                                     "right": {
@@ -4213,10 +4787,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 4157,
-                                "name": "circle",
+                                "name": {
+                                  "end": 4157,
+                                  "name": "circle",
+                                  "start": 4151,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 4151,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 4224,
                               "start": 4151,
@@ -4232,10 +4813,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4150,
-                            "name": "hole",
+                            "name": {
+                              "end": 4150,
+                              "name": "hole",
+                              "start": 4146,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4146,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4228,
                           "start": 4146,
@@ -4254,11 +4842,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                               },
                               "arg": {
                                 "argument": {
+                                  "abs_path": false,
                                   "end": 4257,
-                                  "name": "thk",
+                                  "name": {
+                                    "end": 4257,
+                                    "name": "thk",
+                                    "start": 4254,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 4254,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "end": 4257,
                                 "operator": "-",
@@ -4269,10 +4864,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4243,
-                            "name": "extrude",
+                            "name": {
+                              "end": 4243,
+                              "name": "extrude",
+                              "start": 4236,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4236,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4258,
                           "start": 4236,
@@ -4297,11 +4899,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 4280,
-                    "name": "hexNutSketch",
+                    "name": {
+                      "end": 4280,
+                      "name": "hexNutSketch",
+                      "start": 4268,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 4268,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 4280,
                   "start": 4261,
@@ -4378,10 +4987,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4345,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 4345,
+                    "name": "startSketchOn",
+                    "start": 4332,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4332,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4351,
                 "start": 4332,
@@ -4470,11 +5086,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "left": {
                         "end": 4441,
                         "left": {
+                          "abs_path": false,
                           "end": 4437,
-                          "name": "screwDia",
+                          "name": {
+                            "end": 4437,
+                            "name": "screwDia",
+                            "start": 4429,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4429,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -4494,11 +5117,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "abs_path": false,
                         "end": 4447,
-                        "name": "tol",
+                        "name": {
+                          "end": 4447,
+                          "name": "tol",
+                          "start": 4444,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 4444,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 4429,
                       "type": "BinaryExpression",
@@ -4507,10 +5137,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4363,
-                  "name": "circle",
+                  "name": {
+                    "end": 4363,
+                    "name": "circle",
+                    "start": 4357,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4357,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4454,
                 "start": 4357,
@@ -4618,10 +5255,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4477,
-                  "name": "patternCircular2d",
+                  "name": {
+                    "end": 4477,
+                    "name": "patternCircular2d",
+                    "start": 4460,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4460,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4587,
                 "start": 4460,
@@ -4684,10 +5328,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4640,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 4640,
+                    "name": "startSketchOn",
+                    "start": 4627,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4627,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4646,
                 "start": 4627,
@@ -4703,11 +5354,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "left": {
                           "end": 4685,
                           "left": {
+                            "abs_path": false,
                             "end": 4681,
-                            "name": "flangePipeDia",
+                            "name": {
+                              "end": 4681,
+                              "name": "flangePipeDia",
+                              "start": 4668,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4668,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -4727,11 +5385,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "abs_path": false,
                           "end": 4691,
-                          "name": "tol",
+                          "name": {
+                            "end": 4691,
+                            "name": "tol",
+                            "start": 4688,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4688,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 4668,
                         "type": "BinaryExpression",
@@ -4762,10 +5427,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4666,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 4666,
+                    "name": "startProfileAt",
+                    "start": 4652,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4652,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4699,
                 "start": 4652,
@@ -4822,10 +5494,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4709,
-                  "name": "line",
+                  "name": {
+                    "end": 4709,
+                    "name": "line",
+                    "start": 4705,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4705,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4724,
                 "start": 4705,
@@ -4902,10 +5581,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4740,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 4740,
+                    "name": "angledLine",
+                    "start": 4730,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4730,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4773,
                 "start": 4730,
@@ -4962,10 +5648,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4783,
-                  "name": "line",
+                  "name": {
+                    "end": 4783,
+                    "name": "line",
+                    "start": 4779,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4779,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4798,
                 "start": 4779,
@@ -4987,11 +5680,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "elements": [
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 4832,
-                            "name": "flangeThickness",
+                            "name": {
+                              "end": 4832,
+                              "name": "flangeThickness",
+                              "start": 4817,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4817,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 4832,
                           "operator": "-",
@@ -5019,10 +5719,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4808,
-                  "name": "line",
+                  "name": {
+                    "end": 4808,
+                    "name": "line",
+                    "start": 4804,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4804,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4837,
                 "start": 4804,
@@ -5073,10 +5780,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4847,
-                  "name": "line",
+                  "name": {
+                    "end": 4847,
+                    "name": "line",
+                    "start": 4843,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4843,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4861,
                 "start": 4843,
@@ -5153,10 +5867,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4877,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 4877,
+                    "name": "angledLine",
+                    "start": 4867,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4867,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4911,
                 "start": 4867,
@@ -5206,10 +5927,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4921,
-                  "name": "line",
+                  "name": {
+                    "end": 4921,
+                    "name": "line",
+                    "start": 4917,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4917,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4935,
                 "start": 4917,
@@ -5279,10 +6007,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4951,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 4951,
+                    "name": "angledLine",
+                    "start": 4941,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4941,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4983,
                 "start": 4941,
@@ -5332,10 +6067,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4993,
-                  "name": "line",
+                  "name": {
+                    "end": 4993,
+                    "name": "line",
+                    "start": 4989,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4989,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5007,
                 "start": 4989,
@@ -5356,11 +6098,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 5040,
-                          "name": "flangeThickness",
+                          "name": {
+                            "end": 5040,
+                            "name": "flangeThickness",
+                            "start": 5025,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 5025,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 5043,
@@ -5382,10 +6131,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5017,
-                  "name": "line",
+                  "name": {
+                    "end": 5017,
+                    "name": "line",
+                    "start": 5013,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5013,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5045,
                 "start": 5013,
@@ -5443,10 +6199,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5055,
-                  "name": "line",
+                  "name": {
+                    "end": 5055,
+                    "name": "line",
+                    "start": 5051,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5051,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5070,
                 "start": 5051,
@@ -5516,10 +6279,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5086,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 5086,
+                    "name": "angledLine",
+                    "start": 5076,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5076,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5119,
                 "start": 5076,
@@ -5529,10 +6299,17 @@ description: Result of parsing pipe-flange-assembly.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 5130,
-                  "name": "close",
+                  "name": {
+                    "end": 5130,
+                    "name": "close",
+                    "start": 5125,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5125,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5132,
                 "start": 5125,
@@ -5576,10 +6353,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5145,
-                  "name": "revolve",
+                  "name": {
+                    "end": 5145,
+                    "name": "revolve",
+                    "start": 5138,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5138,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5164,
                 "start": 5138,
@@ -5607,10 +6391,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5180,
-                  "name": "appearance",
+                  "name": {
+                    "end": 5180,
+                    "name": "appearance",
+                    "start": 5170,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5170,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5199,
                 "start": 5170,
@@ -5673,10 +6464,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5252,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 5252,
+                    "name": "startSketchOn",
+                    "start": 5239,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5239,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5258,
                 "start": 5239,
@@ -5737,10 +6535,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5278,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 5278,
+                    "name": "startProfileAt",
+                    "start": 5264,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5264,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5291,
                 "start": 5264,
@@ -5790,10 +6595,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5301,
-                  "name": "line",
+                  "name": {
+                    "end": 5301,
+                    "name": "line",
+                    "start": 5297,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5297,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5315,
                 "start": 5297,
@@ -5844,10 +6656,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5325,
-                  "name": "line",
+                  "name": {
+                    "end": 5325,
+                    "name": "line",
+                    "start": 5321,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5321,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5339,
                 "start": 5321,
@@ -5905,10 +6724,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5349,
-                  "name": "line",
+                  "name": {
+                    "end": 5349,
+                    "name": "line",
+                    "start": 5345,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5345,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5364,
                 "start": 5345,
@@ -5919,10 +6745,17 @@ description: Result of parsing pipe-flange-assembly.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 5375,
-                  "name": "close",
+                  "name": {
+                    "end": 5375,
+                    "name": "close",
+                    "start": 5370,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5370,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5377,
                 "start": 5370,
@@ -5932,11 +6765,18 @@ description: Result of parsing pipe-flange-assembly.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 5407,
-                    "name": "mountingHolePattern",
+                    "name": {
+                      "end": 5407,
+                      "name": "mountingHolePattern",
+                      "start": 5388,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 5388,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 5410,
@@ -5946,10 +6786,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5387,
-                  "name": "hole",
+                  "name": {
+                    "end": 5387,
+                    "name": "hole",
+                    "start": 5383,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5383,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5411,
                 "start": 5383,
@@ -6010,11 +6857,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "arg": {
                           "end": 5487,
                           "left": {
+                            "abs_path": false,
                             "end": 5483,
-                            "name": "flangePipeDia",
+                            "name": {
+                              "end": 5483,
+                              "name": "flangePipeDia",
+                              "start": 5470,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5470,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -6035,10 +6889,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 5428,
-                      "name": "circle",
+                      "name": {
+                        "end": 5428,
+                        "name": "circle",
+                        "start": 5422,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 5422,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 5494,
                     "start": 5422,
@@ -6054,10 +6915,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5421,
-                  "name": "hole",
+                  "name": {
+                    "end": 5421,
+                    "name": "hole",
+                    "start": 5417,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5417,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5498,
                 "start": 5417,
@@ -6075,19 +6943,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 5534,
-                      "name": "wallThickness",
+                      "name": {
+                        "end": 5534,
+                        "name": "wallThickness",
+                        "start": 5521,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 5521,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5511,
-                  "name": "extrude",
+                  "name": {
+                    "end": 5511,
+                    "name": "extrude",
+                    "start": 5504,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5504,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5535,
                 "start": 5504,
@@ -6116,10 +6998,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5551,
-                  "name": "appearance",
+                  "name": {
+                    "end": 5551,
+                    "name": "appearance",
+                    "start": 5541,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5541,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5570,
                 "start": 5541,
@@ -6182,10 +7071,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5631,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 5631,
+                    "name": "startSketchOn",
+                    "start": 5618,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5618,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5637,
                 "start": 5618,
@@ -6242,19 +7138,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 5704,
-                      "name": "flangeBaseDia",
+                      "name": {
+                        "end": 5704,
+                        "name": "flangeBaseDia",
+                        "start": 5691,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 5691,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5649,
-                  "name": "circle",
+                  "name": {
+                    "end": 5649,
+                    "name": "circle",
+                    "start": 5643,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5643,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5711,
                 "start": 5643,
@@ -6265,11 +7175,18 @@ description: Result of parsing pipe-flange-assembly.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 5741,
-                    "name": "mountingHolePattern",
+                    "name": {
+                      "end": 5741,
+                      "name": "mountingHolePattern",
+                      "start": 5722,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 5722,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 5744,
@@ -6279,10 +7196,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5721,
-                  "name": "hole",
+                  "name": {
+                    "end": 5721,
+                    "name": "hole",
+                    "start": 5717,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5717,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5745,
                 "start": 5717,
@@ -6343,11 +7267,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                         "arg": {
                           "end": 5821,
                           "left": {
+                            "abs_path": false,
                             "end": 5817,
-                            "name": "flangePipeDia",
+                            "name": {
+                              "end": 5817,
+                              "name": "flangePipeDia",
+                              "start": 5804,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 5804,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -6368,10 +7299,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 5762,
-                      "name": "circle",
+                      "name": {
+                        "end": 5762,
+                        "name": "circle",
+                        "start": 5756,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 5756,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 5828,
                     "start": 5756,
@@ -6387,10 +7325,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5755,
-                  "name": "hole",
+                  "name": {
+                    "end": 5755,
+                    "name": "hole",
+                    "start": 5751,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5751,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5832,
                 "start": 5751,
@@ -6409,11 +7354,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 5871,
-                        "name": "flangeThickness",
+                        "name": {
+                          "end": 5871,
+                          "name": "flangeThickness",
+                          "start": 5856,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 5856,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 5871,
                       "operator": "-",
@@ -6424,10 +7376,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5845,
-                  "name": "extrude",
+                  "name": {
+                    "end": 5845,
+                    "name": "extrude",
+                    "start": 5838,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5838,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5872,
                 "start": 5838,
@@ -6456,10 +7415,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 5888,
-                  "name": "appearance",
+                  "name": {
+                    "end": 5888,
+                    "name": "appearance",
+                    "start": 5878,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5878,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 5907,
                 "start": 5878,
@@ -6506,11 +7472,18 @@ description: Result of parsing pipe-flange-assembly.kcl
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "end": 5979,
-                  "name": "workingPlane",
+                  "name": {
+                    "end": 5979,
+                    "name": "workingPlane",
+                    "start": 5967,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 5967,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 {
                   "elements": [
@@ -6584,19 +7557,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "end": 6035,
                   "left": {
+                    "abs_path": false,
                     "end": 6029,
-                    "name": "screwDia",
+                    "name": {
+                      "end": 6029,
+                      "name": "screwDia",
+                      "start": 6021,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 6021,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 6035,
-                    "name": "tol",
+                    "name": {
+                      "end": 6035,
+                      "name": "tol",
+                      "start": 6032,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 6032,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 6021,
                   "type": "BinaryExpression",
@@ -6615,10 +7602,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 5966,
-                "name": "washer",
+                "name": {
+                  "end": 5966,
+                  "name": "washer",
+                  "start": 5960,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 5960,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 6043,
               "start": 5960,
@@ -6786,10 +7780,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 6066,
-                "name": "patternCircular3d",
+                "name": {
+                  "end": 6066,
+                  "name": "patternCircular3d",
+                  "start": 6049,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 6049,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 6204,
               "start": 6049,
@@ -6818,10 +7819,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 6220,
-                "name": "appearance",
+                "name": {
+                  "end": 6220,
+                  "name": "appearance",
+                  "start": 6210,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 6210,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 6239,
               "start": 6210,
@@ -6878,19 +7886,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                     {
                       "end": 6356,
                       "left": {
+                        "abs_path": false,
                         "end": 6338,
-                        "name": "flangeThickness",
+                        "name": {
+                          "end": 6338,
+                          "name": "flangeThickness",
+                          "start": 6323,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 6323,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "+",
                       "right": {
+                        "abs_path": false,
                         "end": 6356,
-                        "name": "washerThickness",
+                        "name": {
+                          "end": 6356,
+                          "name": "washerThickness",
+                          "start": 6341,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 6341,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 6323,
                       "type": "BinaryExpression",
@@ -6914,25 +7936,46 @@ description: Result of parsing pipe-flange-assembly.kcl
                   "type": "ArrayExpression"
                 },
                 {
+                  "abs_path": false,
                   "end": 6390,
-                  "name": "screwLength",
+                  "name": {
+                    "end": 6390,
+                    "name": "screwLength",
+                    "start": 6379,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6379,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 {
+                  "abs_path": false,
                   "end": 6400,
-                  "name": "screwDia",
+                  "name": {
+                    "end": 6400,
+                    "name": "screwDia",
+                    "start": 6392,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6392,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 6303,
-                "name": "capScrew",
+                "name": {
+                  "end": 6303,
+                  "name": "capScrew",
+                  "start": 6295,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 6295,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 6401,
               "start": 6295,
@@ -7100,10 +8143,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 6424,
-                "name": "patternCircular3d",
+                "name": {
+                  "end": 6424,
+                  "name": "patternCircular3d",
+                  "start": 6407,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 6407,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 6562,
               "start": 6407,
@@ -7132,10 +8182,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 6578,
-                "name": "appearance",
+                "name": {
+                  "end": 6578,
+                  "name": "appearance",
+                  "start": 6568,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 6568,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 6597,
               "start": 6568,
@@ -7167,18 +8224,32 @@ description: Result of parsing pipe-flange-assembly.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 6641,
-                    "name": "screwPlane",
+                    "name": {
+                      "end": 6641,
+                      "name": "screwPlane",
+                      "start": 6631,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 6631,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6630,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 6630,
+                    "name": "startSketchOn",
+                    "start": 6617,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6617,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6642,
                 "start": 6617,
@@ -7237,11 +8308,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                     "arg": {
                       "end": 6708,
                       "left": {
+                        "abs_path": false,
                         "end": 6704,
-                        "name": "screwDia",
+                        "name": {
+                          "end": 6704,
+                          "name": "screwDia",
+                          "start": 6696,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 6696,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -7262,10 +8340,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6654,
-                  "name": "circle",
+                  "name": {
+                    "end": 6654,
+                    "name": "circle",
+                    "start": 6648,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6648,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6715,
                 "start": 6648,
@@ -7311,11 +8396,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 6774,
-                        "name": "screwLength",
+                        "name": {
+                          "end": 6774,
+                          "name": "screwLength",
+                          "start": 6763,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 6763,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 6774,
                       "operator": "-",
@@ -7326,21 +8418,35 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6735,
-                  "name": "extrude",
+                  "name": {
+                    "end": 6735,
+                    "name": "extrude",
+                    "start": 6728,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6728,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6775,
                 "start": 6728,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 6751,
-                  "name": "screwBodySketch",
+                  "name": {
+                    "end": 6751,
+                    "name": "screwBodySketch",
+                    "start": 6736,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6736,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -7504,10 +8610,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6798,
-                  "name": "patternCircular3d",
+                  "name": {
+                    "end": 6798,
+                    "name": "patternCircular3d",
+                    "start": 6781,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6781,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6936,
                 "start": 6781,
@@ -7536,10 +8649,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 6952,
-                  "name": "appearance",
+                  "name": {
+                    "end": 6952,
+                    "name": "appearance",
+                    "start": 6942,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 6942,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 6971,
                 "start": 6942,
@@ -7653,11 +8773,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                               "end": 7142,
                               "left": {
                                 "argument": {
+                                  "abs_path": false,
                                   "end": 7124,
-                                  "name": "wallThickness",
+                                  "name": {
+                                    "end": 7124,
+                                    "name": "wallThickness",
+                                    "start": 7111,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 7111,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "end": 7124,
                                 "operator": "-",
@@ -7667,11 +8794,18 @@ description: Result of parsing pipe-flange-assembly.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "abs_path": false,
                                 "end": 7142,
-                                "name": "washerThickness",
+                                "name": {
+                                  "end": 7142,
+                                  "name": "washerThickness",
+                                  "start": 7127,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 7127,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "start": 7110,
                               "type": "BinaryExpression",
@@ -7988,11 +9122,18 @@ description: Result of parsing pipe-flange-assembly.kcl
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "end": 7356,
-                  "name": "backSideWasherPlane",
+                  "name": {
+                    "end": 7356,
+                    "name": "backSideWasherPlane",
+                    "start": 7337,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 7337,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 {
                   "elements": [
@@ -8066,19 +9207,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "end": 7412,
                   "left": {
+                    "abs_path": false,
                     "end": 7406,
-                    "name": "screwDia",
+                    "name": {
+                      "end": 7406,
+                      "name": "screwDia",
+                      "start": 7398,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 7398,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 7412,
-                    "name": "tol",
+                    "name": {
+                      "end": 7412,
+                      "name": "tol",
+                      "start": 7409,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 7409,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 7398,
                   "type": "BinaryExpression",
@@ -8097,10 +9252,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 7336,
-                "name": "washer",
+                "name": {
+                  "end": 7336,
+                  "name": "washer",
+                  "start": 7330,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 7330,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 7420,
               "start": 7330,
@@ -8268,10 +9430,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 7443,
-                "name": "patternCircular3d",
+                "name": {
+                  "end": 7443,
+                  "name": "patternCircular3d",
+                  "start": 7426,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 7426,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 7581,
               "start": 7426,
@@ -8300,10 +9469,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 7597,
-                "name": "appearance",
+                "name": {
+                  "end": 7597,
+                  "name": "appearance",
+                  "start": 7587,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 7587,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 7616,
               "start": 7587,
@@ -8441,19 +9617,33 @@ description: Result of parsing pipe-flange-assembly.kcl
                 {
                   "end": 7771,
                   "left": {
+                    "abs_path": false,
                     "end": 7765,
-                    "name": "screwDia",
+                    "name": {
+                      "end": 7765,
+                      "name": "screwDia",
+                      "start": 7757,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 7757,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 7771,
-                    "name": "tol",
+                    "name": {
+                      "end": 7771,
+                      "name": "tol",
+                      "start": 7768,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 7768,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 7757,
                   "type": "BinaryExpression",
@@ -8461,10 +9651,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 7676,
-                "name": "hexNut",
+                "name": {
+                  "end": 7676,
+                  "name": "hexNut",
+                  "start": 7670,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 7670,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 7772,
               "start": 7670,
@@ -8632,10 +9829,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 7795,
-                "name": "patternCircular3d",
+                "name": {
+                  "end": 7795,
+                  "name": "patternCircular3d",
+                  "start": 7778,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 7778,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 7933,
               "start": 7778,
@@ -8664,10 +9868,17 @@ description: Result of parsing pipe-flange-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 7949,
-                "name": "appearance",
+                "name": {
+                  "end": 7949,
+                  "name": "appearance",
+                  "start": 7939,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 7939,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 7968,
               "start": 7939,
@@ -8708,11 +9919,18 @@ description: Result of parsing pipe-flange-assembly.kcl
             "start": 356,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 378,
-              "name": "in",
+              "name": {
+                "end": 378,
+                "name": "in",
+                "start": 376,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 376,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

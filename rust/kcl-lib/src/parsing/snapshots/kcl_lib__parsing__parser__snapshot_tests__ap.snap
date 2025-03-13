@@ -18,18 +18,32 @@ expression: actual
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "end": 27,
-                  "name": "XY",
+                  "name": {
+                    "end": 27,
+                    "name": "XY",
+                    "start": 25,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 25,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 24,
-                "name": "startSketchOn",
+                "name": {
+                  "end": 24,
+                  "name": "startSketchOn",
+                  "start": 11,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 11,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 28,
               "start": 11,
@@ -76,10 +90,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 46,
-                "name": "startProfileAt",
+                "name": {
+                  "end": 46,
+                  "name": "startProfileAt",
+                  "start": 32,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 32,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 56,
               "start": 32,

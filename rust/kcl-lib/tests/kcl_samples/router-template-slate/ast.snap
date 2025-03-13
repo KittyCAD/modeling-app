@@ -78,10 +78,17 @@ description: Result of parsing router-template-slate.kcl
             "right": {
               "arguments": [],
               "callee": {
+                "abs_path": false,
                 "end": 203,
-                "name": "inch",
+                "name": {
+                  "end": 203,
+                  "name": "inch",
+                  "start": 199,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 199,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 205,
               "start": 199,
@@ -117,19 +124,33 @@ description: Result of parsing router-template-slate.kcl
               "left": {
                 "end": 254,
                 "left": {
+                  "abs_path": false,
                   "end": 237,
-                  "name": "templateDiameter",
+                  "name": {
+                    "end": 237,
+                    "name": "templateDiameter",
+                    "start": 221,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 221,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "-",
                 "right": {
+                  "abs_path": false,
                   "end": 254,
-                  "name": "routerDiameter",
+                  "name": {
+                    "end": 254,
+                    "name": "routerDiameter",
+                    "start": 240,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 240,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "start": 221,
                 "type": "BinaryExpression",
@@ -369,19 +390,33 @@ description: Result of parsing router-template-slate.kcl
           "init": {
             "end": 403,
             "left": {
+              "abs_path": false,
               "end": 394,
-              "name": "slateWidthHalf",
+              "name": {
+                "end": 394,
+                "name": "slateWidthHalf",
+                "start": 380,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 380,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "-",
             "right": {
+              "abs_path": false,
               "end": 403,
-              "name": "radius",
+              "name": {
+                "end": 403,
+                "name": "radius",
+                "start": 397,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 397,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 380,
             "type": "BinaryExpression",
@@ -408,19 +443,33 @@ description: Result of parsing router-template-slate.kcl
           "init": {
             "end": 443,
             "left": {
+              "abs_path": false,
               "end": 421,
-              "name": "depth",
+              "name": {
+                "end": 421,
+                "name": "depth",
+                "start": 416,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 416,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "+",
             "right": {
+              "abs_path": false,
               "end": 443,
-              "name": "minClampingDistance",
+              "name": {
+                "end": 443,
+                "name": "minClampingDistance",
+                "start": 424,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 424,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 416,
             "type": "BinaryExpression",
@@ -458,10 +507,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 497,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 497,
+                    "name": "startSketchOn",
+                    "start": 484,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 484,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 503,
                 "start": 484,
@@ -486,19 +542,33 @@ description: Result of parsing router-template-slate.kcl
                       {
                         "end": 547,
                         "left": {
+                          "abs_path": false,
                           "end": 533,
-                          "name": "depth",
+                          "name": {
+                            "end": 533,
+                            "name": "depth",
+                            "start": 528,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 528,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
+                          "abs_path": false,
                           "end": 547,
-                          "name": "templateGap",
+                          "name": {
+                            "end": 547,
+                            "name": "templateGap",
+                            "start": 536,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 536,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 528,
                         "type": "BinaryExpression",
@@ -518,10 +588,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 523,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 523,
+                    "name": "startProfileAt",
+                    "start": 509,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 509,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 552,
                 "start": 509,
@@ -539,11 +616,18 @@ description: Result of parsing router-template-slate.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 582,
-                      "name": "length001",
+                      "name": {
+                        "end": 582,
+                        "name": "length001",
+                        "start": 573,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 573,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -564,10 +648,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 563,
-                  "name": "xLine",
+                  "name": {
+                    "end": 563,
+                    "name": "xLine",
+                    "start": 558,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 558,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 597,
                 "start": 558,
@@ -637,19 +728,33 @@ description: Result of parsing router-template-slate.kcl
                         "value": {
                           "end": 690,
                           "left": {
+                            "abs_path": false,
                             "end": 676,
-                            "name": "radius",
+                            "name": {
+                              "end": 676,
+                              "name": "radius",
+                              "start": 670,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 670,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 690,
-                            "name": "templateGap",
+                            "name": {
+                              "end": 690,
+                              "name": "templateGap",
+                              "start": 679,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 679,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 670,
                           "type": "BinaryExpression",
@@ -669,10 +774,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 606,
-                  "name": "arc",
+                  "name": {
+                    "end": 606,
+                    "name": "arc",
+                    "start": 603,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 603,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 701,
                 "start": 603,
@@ -695,11 +807,18 @@ description: Result of parsing router-template-slate.kcl
                         "end": 743,
                         "left": {
                           "argument": {
+                            "abs_path": false,
                             "end": 739,
-                            "name": "templateGap",
+                            "name": {
+                              "end": 739,
+                              "name": "templateGap",
+                              "start": 728,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 728,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 739,
                           "operator": "-",
@@ -727,11 +846,18 @@ description: Result of parsing router-template-slate.kcl
                       "right": {
                         "end": 767,
                         "left": {
+                          "abs_path": false,
                           "end": 763,
-                          "name": "templateDiameter",
+                          "name": {
+                            "end": 763,
+                            "name": "templateDiameter",
+                            "start": 747,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 747,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -772,10 +898,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 712,
-                  "name": "yLine",
+                  "name": {
+                    "end": 712,
+                    "name": "yLine",
+                    "start": 707,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 707,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 783,
                 "start": 707,
@@ -796,19 +929,33 @@ description: Result of parsing router-template-slate.kcl
                     "arg": {
                       "end": 843,
                       "left": {
+                        "abs_path": false,
                         "end": 823,
-                        "name": "slateWidthHalf",
+                        "name": {
+                          "end": 823,
+                          "name": "slateWidthHalf",
+                          "start": 809,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 809,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "+",
                       "right": {
+                        "abs_path": false,
                         "end": 843,
-                        "name": "templateThickness",
+                        "name": {
+                          "end": 843,
+                          "name": "templateThickness",
+                          "start": 826,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 826,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 809,
                       "type": "BinaryExpression",
@@ -833,10 +980,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 794,
-                  "name": "xLine",
+                  "name": {
+                    "end": 794,
+                    "name": "xLine",
+                    "start": 789,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 789,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 858,
                 "start": 789,
@@ -856,11 +1010,18 @@ description: Result of parsing router-template-slate.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 889,
-                        "name": "length002",
+                        "name": {
+                          "end": 889,
+                          "name": "length002",
+                          "start": 880,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 880,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 889,
                       "operator": "-",
@@ -887,10 +1048,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 869,
-                  "name": "yLine",
+                  "name": {
+                    "end": 869,
+                    "name": "yLine",
+                    "start": 864,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 864,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 904,
                 "start": 864,
@@ -909,11 +1077,18 @@ description: Result of parsing router-template-slate.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 934,
-                      "name": "ZERO",
+                      "name": {
+                        "end": 934,
+                        "name": "ZERO",
+                        "start": 930,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 930,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -934,10 +1109,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 915,
-                  "name": "xLine",
+                  "name": {
+                    "end": 915,
+                    "name": "xLine",
+                    "start": 910,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 910,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 949,
                 "start": 910,
@@ -959,18 +1141,32 @@ description: Result of parsing router-template-slate.kcl
                       "argument": {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 1017,
-                            "name": "seg02",
+                            "name": {
+                              "end": 1017,
+                              "name": "seg02",
+                              "start": 1012,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1012,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 1011,
-                          "name": "segLen",
+                          "name": {
+                            "end": 1011,
+                            "name": "segLen",
+                            "start": 1005,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1005,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 1018,
                         "start": 1005,
@@ -986,10 +1182,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 994,
-                  "name": "xLine",
+                  "name": {
+                    "end": 994,
+                    "name": "xLine",
+                    "start": 989,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 989,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1019,
                 "start": 989,
@@ -1010,18 +1213,32 @@ description: Result of parsing router-template-slate.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "abs_path": false,
                           "end": 1052,
-                          "name": "seg03",
+                          "name": {
+                            "end": 1052,
+                            "name": "seg03",
+                            "start": 1047,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1047,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 1046,
-                        "name": "segLen",
+                        "name": {
+                          "end": 1046,
+                          "name": "segLen",
+                          "start": 1040,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1040,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 1053,
                       "start": 1040,
@@ -1031,10 +1248,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1030,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1030,
+                    "name": "yLine",
+                    "start": 1025,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1025,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1054,
                 "start": 1025,
@@ -1055,18 +1279,32 @@ description: Result of parsing router-template-slate.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "abs_path": false,
                           "end": 1087,
-                          "name": "seg04",
+                          "name": {
+                            "end": 1087,
+                            "name": "seg04",
+                            "start": 1082,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1082,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 1081,
-                        "name": "segLen",
+                        "name": {
+                          "end": 1081,
+                          "name": "segLen",
+                          "start": 1075,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1075,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 1088,
                       "start": 1075,
@@ -1076,10 +1314,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1065,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1065,
+                    "name": "xLine",
+                    "start": 1060,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1060,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1089,
                 "start": 1060,
@@ -1100,18 +1345,32 @@ description: Result of parsing router-template-slate.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "abs_path": false,
                           "end": 1122,
-                          "name": "seg05",
+                          "name": {
+                            "end": 1122,
+                            "name": "seg05",
+                            "start": 1117,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1117,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 1116,
-                        "name": "segLen",
+                        "name": {
+                          "end": 1116,
+                          "name": "segLen",
+                          "start": 1110,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1110,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 1123,
                       "start": 1110,
@@ -1121,10 +1380,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1100,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1100,
+                    "name": "yLine",
+                    "start": 1095,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1095,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1124,
                 "start": 1095,
@@ -1194,19 +1460,33 @@ description: Result of parsing router-template-slate.kcl
                         "value": {
                           "end": 1219,
                           "left": {
+                            "abs_path": false,
                             "end": 1205,
-                            "name": "radius",
+                            "name": {
+                              "end": 1205,
+                              "name": "radius",
+                              "start": 1199,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1199,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 1219,
-                            "name": "templateGap",
+                            "name": {
+                              "end": 1219,
+                              "name": "templateGap",
+                              "start": 1208,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1208,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 1199,
                           "type": "BinaryExpression",
@@ -1226,10 +1506,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1133,
-                  "name": "arc",
+                  "name": {
+                    "end": 1133,
+                    "name": "arc",
+                    "start": 1130,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1130,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1230,
                 "start": 1130,
@@ -1258,10 +1545,17 @@ description: Result of parsing router-template-slate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1269,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 1269,
+                              "name": "profileStartX",
+                              "start": 1256,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1256,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1272,
                           "start": 1256,
@@ -1278,10 +1572,17 @@ description: Result of parsing router-template-slate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1287,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 1287,
+                              "name": "profileStartY",
+                              "start": 1274,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1274,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1290,
                           "start": 1274,
@@ -1297,10 +1598,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1240,
-                  "name": "line",
+                  "name": {
+                    "end": 1240,
+                    "name": "line",
+                    "start": 1236,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1236,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1292,
                 "start": 1236,
@@ -1311,10 +1619,17 @@ description: Result of parsing router-template-slate.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 1303,
-                  "name": "close",
+                  "name": {
+                    "end": 1303,
+                    "name": "close",
+                    "start": 1298,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1298,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1305,
                 "start": 1298,
@@ -1398,21 +1713,35 @@ description: Result of parsing router-template-slate.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1355,
-              "name": "extrude",
+              "name": {
+                "end": 1355,
+                "name": "extrude",
+                "start": 1348,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1348,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1378,
             "start": 1348,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 1365,
-              "name": "sketch001",
+              "name": {
+                "end": 1365,
+                "name": "sketch001",
+                "start": 1356,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1356,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 1335,
@@ -1438,11 +1767,18 @@ description: Result of parsing router-template-slate.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 1444,
-                    "name": "extrude001",
+                    "name": {
+                      "end": 1444,
+                      "name": "extrude001",
+                      "start": 1434,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1434,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 1453,
@@ -1454,10 +1790,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1433,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1433,
+                    "name": "startSketchOn",
+                    "start": 1420,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1420,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1454,
                 "start": 1420,
@@ -1470,11 +1813,18 @@ description: Result of parsing router-template-slate.kcl
                     "elements": [
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1499,
-                          "name": "slateWidthHalf",
+                          "name": {
+                            "end": 1499,
+                            "name": "slateWidthHalf",
+                            "start": 1485,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1485,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1499,
                         "operator": "-",
@@ -1488,11 +1838,18 @@ description: Result of parsing router-template-slate.kcl
                           "end": 1524,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 1520,
-                              "name": "templateGap",
+                              "name": {
+                                "end": 1520,
+                                "name": "templateGap",
+                                "start": 1509,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1509,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 1520,
                             "operator": "-",
@@ -1520,11 +1877,18 @@ description: Result of parsing router-template-slate.kcl
                         "right": {
                           "end": 1548,
                           "left": {
+                            "abs_path": false,
                             "end": 1544,
-                            "name": "templateDiameter",
+                            "name": {
+                              "end": 1544,
+                              "name": "templateDiameter",
+                              "start": 1528,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1528,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1560,10 +1924,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1474,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1474,
+                    "name": "startProfileAt",
+                    "start": 1460,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1460,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1560,
                 "start": 1460,
@@ -1617,10 +1988,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1571,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1571,
+                    "name": "xLine",
+                    "start": 1566,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1566,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1613,
                 "start": 1566,
@@ -1637,18 +2015,32 @@ description: Result of parsing router-template-slate.kcl
                         "left": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1666,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 1666,
+                                "name": "rectangleSegmentA001",
+                                "start": 1646,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1646,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1645,
-                            "name": "segAng",
+                            "name": {
+                              "end": 1645,
+                              "name": "segAng",
+                              "start": 1639,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1639,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1667,
                           "start": 1639,
@@ -1672,11 +2064,18 @@ description: Result of parsing router-template-slate.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "abs_path": false,
                         "end": 1700,
-                        "name": "minClampingDistance",
+                        "name": {
+                          "end": 1700,
+                          "name": "minClampingDistance",
+                          "start": 1681,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1681,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 1707,
@@ -1699,10 +2098,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1629,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 1629,
+                    "name": "angledLine",
+                    "start": 1619,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1619,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1734,
                 "start": 1619,
@@ -1716,18 +2122,32 @@ description: Result of parsing router-template-slate.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 1787,
-                            "name": "rectangleSegmentA001",
+                            "name": {
+                              "end": 1787,
+                              "name": "rectangleSegmentA001",
+                              "start": 1767,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1767,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 1766,
-                          "name": "segAng",
+                          "name": {
+                            "end": 1766,
+                            "name": "segAng",
+                            "start": 1760,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1760,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 1788,
                         "start": 1760,
@@ -1738,18 +2158,32 @@ description: Result of parsing router-template-slate.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1825,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 1825,
+                                "name": "rectangleSegmentA001",
+                                "start": 1805,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1805,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1804,
-                            "name": "segLen",
+                            "name": {
+                              "end": 1804,
+                              "name": "segLen",
+                              "start": 1798,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1798,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1826,
                           "start": 1798,
@@ -1783,10 +2217,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1750,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 1750,
+                    "name": "angledLine",
+                    "start": 1740,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1740,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1860,
                 "start": 1740,
@@ -1815,10 +2256,17 @@ description: Result of parsing router-template-slate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1899,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 1899,
+                              "name": "profileStartX",
+                              "start": 1886,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1886,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1902,
                           "start": 1886,
@@ -1835,10 +2283,17 @@ description: Result of parsing router-template-slate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1917,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 1917,
+                              "name": "profileStartY",
+                              "start": 1904,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1904,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1920,
                           "start": 1904,
@@ -1854,10 +2309,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1870,
-                  "name": "line",
+                  "name": {
+                    "end": 1870,
+                    "name": "line",
+                    "start": 1866,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1866,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1922,
                 "start": 1866,
@@ -1868,10 +2330,17 @@ description: Result of parsing router-template-slate.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 1933,
-                  "name": "close",
+                  "name": {
+                    "end": 1933,
+                    "name": "close",
+                    "start": 1928,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1928,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1935,
                 "start": 1928,
@@ -1943,21 +2412,35 @@ description: Result of parsing router-template-slate.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1986,
-              "name": "extrude",
+              "name": {
+                "end": 1986,
+                "name": "extrude",
+                "start": 1979,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1979,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 2011,
             "start": 1979,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 1996,
-              "name": "sketch002",
+              "name": {
+                "end": 1996,
+                "name": "sketch002",
+                "start": 1987,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1987,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 1966,
@@ -1983,11 +2466,18 @@ description: Result of parsing router-template-slate.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2076,
-                    "name": "extrude001",
+                    "name": {
+                      "end": 2076,
+                      "name": "extrude001",
+                      "start": 2066,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2066,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 2085,
@@ -1999,10 +2489,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2065,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2065,
+                    "name": "startSketchOn",
+                    "start": 2052,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2052,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2086,
                 "start": 2052,
@@ -2014,11 +2511,18 @@ description: Result of parsing router-template-slate.kcl
                   {
                     "elements": [
                       {
+                        "abs_path": false,
                         "end": 2130,
-                        "name": "slateWidthHalf",
+                        "name": {
+                          "end": 2130,
+                          "name": "slateWidthHalf",
+                          "start": 2116,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2116,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       {
                         "end": 2179,
@@ -2026,11 +2530,18 @@ description: Result of parsing router-template-slate.kcl
                           "end": 2155,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 2151,
-                              "name": "templateGap",
+                              "name": {
+                                "end": 2151,
+                                "name": "templateGap",
+                                "start": 2140,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2140,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 2151,
                             "operator": "-",
@@ -2058,11 +2569,18 @@ description: Result of parsing router-template-slate.kcl
                         "right": {
                           "end": 2179,
                           "left": {
+                            "abs_path": false,
                             "end": 2175,
-                            "name": "templateDiameter",
+                            "name": {
+                              "end": 2175,
+                              "name": "templateDiameter",
+                              "start": 2159,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2159,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -2098,10 +2616,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2106,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2106,
+                    "name": "startProfileAt",
+                    "start": 2092,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2092,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2191,
                 "start": 2092,
@@ -2148,10 +2673,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2202,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2202,
+                    "name": "xLine",
+                    "start": 2197,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2197,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2243,
                 "start": 2197,
@@ -2168,18 +2700,32 @@ description: Result of parsing router-template-slate.kcl
                         "left": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2296,
-                              "name": "rectangleSegmentA002",
+                              "name": {
+                                "end": 2296,
+                                "name": "rectangleSegmentA002",
+                                "start": 2276,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2276,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2275,
-                            "name": "segAng",
+                            "name": {
+                              "end": 2275,
+                              "name": "segAng",
+                              "start": 2269,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2269,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2297,
                           "start": 2269,
@@ -2203,11 +2749,18 @@ description: Result of parsing router-template-slate.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "abs_path": false,
                         "end": 2330,
-                        "name": "minClampingDistance",
+                        "name": {
+                          "end": 2330,
+                          "name": "minClampingDistance",
+                          "start": 2311,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2311,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 2337,
@@ -2223,10 +2776,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2259,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 2259,
+                    "name": "angledLine",
+                    "start": 2249,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2249,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2341,
                 "start": 2249,
@@ -2240,18 +2800,32 @@ description: Result of parsing router-template-slate.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 2394,
-                            "name": "rectangleSegmentA002",
+                            "name": {
+                              "end": 2394,
+                              "name": "rectangleSegmentA002",
+                              "start": 2374,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2374,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 2373,
-                          "name": "segAng",
+                          "name": {
+                            "end": 2373,
+                            "name": "segAng",
+                            "start": 2367,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2367,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 2395,
                         "start": 2367,
@@ -2262,18 +2836,32 @@ description: Result of parsing router-template-slate.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2432,
-                              "name": "rectangleSegmentA002",
+                              "name": {
+                                "end": 2432,
+                                "name": "rectangleSegmentA002",
+                                "start": 2412,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2412,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2411,
-                            "name": "segLen",
+                            "name": {
+                              "end": 2411,
+                              "name": "segLen",
+                              "start": 2405,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2405,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2433,
                           "start": 2405,
@@ -2300,10 +2888,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2357,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 2357,
+                    "name": "angledLine",
+                    "start": 2347,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2347,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2444,
                 "start": 2347,
@@ -2332,10 +2927,17 @@ description: Result of parsing router-template-slate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2483,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 2483,
+                              "name": "profileStartX",
+                              "start": 2470,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2470,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2486,
                           "start": 2470,
@@ -2352,10 +2954,17 @@ description: Result of parsing router-template-slate.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2501,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 2501,
+                              "name": "profileStartY",
+                              "start": 2488,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2488,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2504,
                           "start": 2488,
@@ -2371,10 +2980,17 @@ description: Result of parsing router-template-slate.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2454,
-                  "name": "line",
+                  "name": {
+                    "end": 2454,
+                    "name": "line",
+                    "start": 2450,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2450,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2506,
                 "start": 2450,
@@ -2385,10 +3001,17 @@ description: Result of parsing router-template-slate.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2517,
-                  "name": "close",
+                  "name": {
+                    "end": 2517,
+                    "name": "close",
+                    "start": 2512,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2512,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2519,
                 "start": 2512,
@@ -2460,21 +3083,35 @@ description: Result of parsing router-template-slate.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 2569,
-              "name": "extrude",
+              "name": {
+                "end": 2569,
+                "name": "extrude",
+                "start": 2562,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2562,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 2594,
             "start": 2562,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 2579,
-              "name": "sketch003",
+              "name": {
+                "end": 2579,
+                "name": "sketch003",
+                "start": 2570,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2570,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 2549,
@@ -2509,11 +3146,18 @@ description: Result of parsing router-template-slate.kcl
             "start": 103,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 125,
-              "name": "mm",
+              "name": {
+                "end": 125,
+                "name": "mm",
+                "start": 123,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 123,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

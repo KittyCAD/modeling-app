@@ -21,11 +21,18 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
                   "argument": {
                     "end": 27,
                     "left": {
+                      "abs_path": false,
                       "end": 23,
-                      "name": "x",
+                      "name": {
+                        "end": 23,
+                        "name": "x",
+                        "start": 22,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 22,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "+",
                     "right": {
@@ -111,10 +118,17 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 40,
-              "name": "add",
+              "name": {
+                "end": 40,
+                "name": "add",
+                "start": 37,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 37,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 47,
             "start": 37,

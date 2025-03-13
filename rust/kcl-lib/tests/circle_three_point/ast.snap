@@ -28,10 +28,17 @@ description: Result of parsing circle_three_point.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 25,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 25,
+                    "name": "startSketchOn",
+                    "start": 12,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 31,
                 "start": 12,
@@ -159,10 +166,17 @@ description: Result of parsing circle_three_point.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 53,
-                  "name": "circleThreePoint",
+                  "name": {
+                    "end": 53,
+                    "name": "circleThreePoint",
+                    "start": 37,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 37,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 98,
                 "start": 37,
@@ -194,10 +208,17 @@ description: Result of parsing circle_three_point.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 111,
-                  "name": "extrude",
+                  "name": {
+                    "end": 111,
+                    "name": "extrude",
+                    "start": 104,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 104,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 124,
                 "start": 104,

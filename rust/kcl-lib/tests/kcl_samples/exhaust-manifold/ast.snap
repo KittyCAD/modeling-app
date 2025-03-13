@@ -145,11 +145,18 @@ description: Result of parsing exhaust-manifold.kcl
                     "init": {
                       "end": 432,
                       "left": {
+                        "abs_path": false,
                         "end": 428,
-                        "name": "n",
+                        "name": {
+                          "end": 428,
+                          "name": "n",
+                          "start": 427,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 427,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "*",
                       "right": {
@@ -214,11 +221,18 @@ description: Result of parsing exhaust-manifold.kcl
                                 "value": {
                                   "elements": [
                                     {
+                                      "abs_path": false,
                                       "end": 547,
-                                      "name": "pos001",
+                                      "name": {
+                                        "end": 547,
+                                        "name": "pos001",
+                                        "start": 541,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 541,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     {
                                       "end": 552,
@@ -267,11 +281,18 @@ description: Result of parsing exhaust-manifold.kcl
                                           "arguments": [
                                             {
                                               "argument": {
+                                                "abs_path": false,
                                                 "end": 605,
-                                                "name": "angle001",
+                                                "name": {
+                                                  "end": 605,
+                                                  "name": "angle001",
+                                                  "start": 597,
+                                                  "type": "Identifier"
+                                                },
+                                                "path": [],
                                                 "start": 597,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
+                                                "type": "Name",
+                                                "type": "Name"
                                               },
                                               "end": 605,
                                               "operator": "-",
@@ -281,10 +302,17 @@ description: Result of parsing exhaust-manifold.kcl
                                             }
                                           ],
                                           "callee": {
+                                            "abs_path": false,
                                             "end": 595,
-                                            "name": "toRadians",
+                                            "name": {
+                                              "end": 595,
+                                              "name": "toRadians",
+                                              "start": 586,
+                                              "type": "Identifier"
+                                            },
+                                            "path": [],
                                             "start": 586,
-                                            "type": "Identifier"
+                                            "type": "Name"
                                           },
                                           "end": 606,
                                           "start": 586,
@@ -293,10 +321,17 @@ description: Result of parsing exhaust-manifold.kcl
                                         }
                                       ],
                                       "callee": {
+                                        "abs_path": false,
                                         "end": 585,
-                                        "name": "sin",
+                                        "name": {
+                                          "end": 585,
+                                          "name": "sin",
+                                          "start": 582,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 582,
-                                        "type": "Identifier"
+                                        "type": "Name"
                                       },
                                       "end": 607,
                                       "start": 582,
@@ -309,11 +344,18 @@ description: Result of parsing exhaust-manifold.kcl
                                           "arguments": [
                                             {
                                               "argument": {
+                                                "abs_path": false,
                                                 "end": 640,
-                                                "name": "angle001",
+                                                "name": {
+                                                  "end": 640,
+                                                  "name": "angle001",
+                                                  "start": 632,
+                                                  "type": "Identifier"
+                                                },
+                                                "path": [],
                                                 "start": 632,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
+                                                "type": "Name",
+                                                "type": "Name"
                                               },
                                               "end": 640,
                                               "operator": "-",
@@ -323,10 +365,17 @@ description: Result of parsing exhaust-manifold.kcl
                                             }
                                           ],
                                           "callee": {
+                                            "abs_path": false,
                                             "end": 630,
-                                            "name": "toRadians",
+                                            "name": {
+                                              "end": 630,
+                                              "name": "toRadians",
+                                              "start": 621,
+                                              "type": "Identifier"
+                                            },
+                                            "path": [],
                                             "start": 621,
-                                            "type": "Identifier"
+                                            "type": "Name"
                                           },
                                           "end": 641,
                                           "start": 621,
@@ -335,10 +384,17 @@ description: Result of parsing exhaust-manifold.kcl
                                         }
                                       ],
                                       "callee": {
+                                        "abs_path": false,
                                         "end": 620,
-                                        "name": "cos",
+                                        "name": {
+                                          "end": 620,
+                                          "name": "cos",
+                                          "start": 617,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 617,
-                                        "type": "Identifier"
+                                        "type": "Name"
                                       },
                                       "end": 642,
                                       "start": 617,
@@ -501,18 +557,32 @@ description: Result of parsing exhaust-manifold.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 807,
-                              "name": "sweepPlane",
+                              "name": {
+                                "end": 807,
+                                "name": "sweepPlane",
+                                "start": 797,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 797,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 796,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 796,
+                              "name": "startSketchOn",
+                              "start": 783,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 783,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 808,
                           "start": 783,
@@ -535,11 +605,18 @@ description: Result of parsing exhaust-manifold.kcl
                                   }
                                 },
                                 {
+                                  "abs_path": false,
                                   "end": 846,
-                                  "name": "plateHeight",
+                                  "name": {
+                                    "end": 846,
+                                    "name": "plateHeight",
+                                    "start": 835,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 835,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 }
                               ],
                               "end": 847,
@@ -555,10 +632,17 @@ description: Result of parsing exhaust-manifold.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 830,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 830,
+                              "name": "startProfileAt",
+                              "start": 816,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 816,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 851,
                           "start": 816,
@@ -589,11 +673,18 @@ description: Result of parsing exhaust-manifold.kcl
                                     }
                                   },
                                   {
+                                    "abs_path": false,
                                     "end": 883,
-                                    "name": "length001",
+                                    "name": {
+                                      "end": 883,
+                                      "name": "length001",
+                                      "start": 874,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 874,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 ],
                                 "end": 884,
@@ -604,10 +695,17 @@ description: Result of parsing exhaust-manifold.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 863,
-                            "name": "line",
+                            "name": {
+                              "end": 863,
+                              "name": "line",
+                              "start": 859,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 859,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 885,
                           "start": 859,
@@ -660,11 +758,18 @@ description: Result of parsing exhaust-manifold.kcl
                                   "start": 923,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 942,
-                                    "name": "bendRadius",
+                                    "name": {
+                                      "end": 942,
+                                      "name": "bendRadius",
+                                      "start": 932,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 932,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -687,10 +792,17 @@ description: Result of parsing exhaust-manifold.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 906,
-                            "name": "tangentialArc",
+                            "name": {
+                              "end": 906,
+                              "name": "tangentialArc",
+                              "start": 893,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 893,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 956,
                           "start": 893,
@@ -715,18 +827,32 @@ description: Result of parsing exhaust-manifold.kcl
                                   "value": {
                                     "arguments": [
                                       {
+                                        "abs_path": false,
                                         "end": 1012,
-                                        "name": "arc01",
+                                        "name": {
+                                          "end": 1012,
+                                          "name": "arc01",
+                                          "start": 1007,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 1007,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 1006,
-                                      "name": "tangentToEnd",
+                                      "name": {
+                                        "end": 1006,
+                                        "name": "tangentToEnd",
+                                        "start": 994,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 994,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 1013,
                                     "start": 994,
@@ -745,11 +871,18 @@ description: Result of parsing exhaust-manifold.kcl
                                   "start": 1024,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1042,
-                                    "name": "length002",
+                                    "name": {
+                                      "end": 1042,
+                                      "name": "length002",
+                                      "start": 1033,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1033,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -765,10 +898,17 @@ description: Result of parsing exhaust-manifold.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 974,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 974,
+                              "name": "angledLine",
+                              "start": 964,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 964,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1055,
                           "start": 964,
@@ -813,11 +953,18 @@ description: Result of parsing exhaust-manifold.kcl
                                   "start": 1092,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1111,
-                                    "name": "bendRadius",
+                                    "name": {
+                                      "end": 1111,
+                                      "name": "bendRadius",
+                                      "start": 1101,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1101,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -840,10 +987,17 @@ description: Result of parsing exhaust-manifold.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1076,
-                            "name": "tangentialArc",
+                            "name": {
+                              "end": 1076,
+                              "name": "tangentialArc",
+                              "start": 1063,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1063,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1125,
                           "start": 1063,
@@ -868,18 +1022,32 @@ description: Result of parsing exhaust-manifold.kcl
                                   "value": {
                                     "arguments": [
                                       {
+                                        "abs_path": false,
                                         "end": 1181,
-                                        "name": "arc02",
+                                        "name": {
+                                          "end": 1181,
+                                          "name": "arc02",
+                                          "start": 1176,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 1176,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       }
                                     ],
                                     "callee": {
+                                      "abs_path": false,
                                       "end": 1175,
-                                      "name": "tangentToEnd",
+                                      "name": {
+                                        "end": 1175,
+                                        "name": "tangentToEnd",
+                                        "start": 1163,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1163,
-                                      "type": "Identifier"
+                                      "type": "Name"
                                     },
                                     "end": 1182,
                                     "start": 1163,
@@ -898,11 +1066,18 @@ description: Result of parsing exhaust-manifold.kcl
                                   "start": 1193,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1211,
-                                    "name": "length003",
+                                    "name": {
+                                      "end": 1211,
+                                      "name": "length003",
+                                      "start": 1202,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1202,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -918,10 +1093,17 @@ description: Result of parsing exhaust-manifold.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1143,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 1143,
+                              "name": "angledLine",
+                              "start": 1133,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1133,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1224,
                           "start": 1133,
@@ -983,10 +1165,17 @@ description: Result of parsing exhaust-manifold.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1314,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 1314,
+                              "name": "startSketchOn",
+                              "start": 1301,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1301,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1320,
                           "start": 1301,
@@ -1006,11 +1195,18 @@ description: Result of parsing exhaust-manifold.kcl
                               "arg": {
                                 "elements": [
                                   {
+                                    "abs_path": false,
                                     "end": 1361,
-                                    "name": "pos001",
+                                    "name": {
+                                      "end": 1361,
+                                      "name": "pos001",
+                                      "start": 1355,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1355,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   {
                                     "end": 1364,
@@ -1041,11 +1237,18 @@ description: Result of parsing exhaust-manifold.kcl
                               "arg": {
                                 "end": 1408,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 1404,
-                                  "name": "primaryTubeDiameter",
+                                  "name": {
+                                    "end": 1404,
+                                    "name": "primaryTubeDiameter",
+                                    "start": 1385,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1385,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "/",
                                 "right": {
@@ -1066,10 +1269,17 @@ description: Result of parsing exhaust-manifold.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1334,
-                            "name": "circle",
+                            "name": {
+                              "end": 1334,
+                              "name": "circle",
+                              "start": 1328,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1328,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1417,
                           "start": 1328,
@@ -1092,11 +1302,18 @@ description: Result of parsing exhaust-manifold.kcl
                                   "arg": {
                                     "elements": [
                                       {
+                                        "abs_path": false,
                                         "end": 1463,
-                                        "name": "pos001",
+                                        "name": {
+                                          "end": 1463,
+                                          "name": "pos001",
+                                          "start": 1457,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 1457,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       {
                                         "end": 1466,
@@ -1129,11 +1346,18 @@ description: Result of parsing exhaust-manifold.kcl
                                     "left": {
                                       "end": 1510,
                                       "left": {
+                                        "abs_path": false,
                                         "end": 1506,
-                                        "name": "primaryTubeDiameter",
+                                        "name": {
+                                          "end": 1506,
+                                          "name": "primaryTubeDiameter",
+                                          "start": 1487,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 1487,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "operator": "/",
                                       "right": {
@@ -1153,11 +1377,18 @@ description: Result of parsing exhaust-manifold.kcl
                                     },
                                     "operator": "-",
                                     "right": {
+                                      "abs_path": false,
                                       "end": 1526,
-                                      "name": "wallThickness",
+                                      "name": {
+                                        "end": 1526,
+                                        "name": "wallThickness",
+                                        "start": 1513,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1513,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "start": 1487,
                                     "type": "BinaryExpression",
@@ -1166,10 +1397,17 @@ description: Result of parsing exhaust-manifold.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 1436,
-                                "name": "circle",
+                                "name": {
+                                  "end": 1436,
+                                  "name": "circle",
+                                  "start": 1430,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1430,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1535,
                               "start": 1430,
@@ -1185,10 +1423,17 @@ description: Result of parsing exhaust-manifold.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1429,
-                            "name": "hole",
+                            "name": {
+                              "end": 1429,
+                              "name": "hole",
+                              "start": 1425,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1425,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1539,
                           "start": 1425,
@@ -1206,19 +1451,33 @@ description: Result of parsing exhaust-manifold.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "end": 1569,
-                                "name": "sweepPath",
+                                "name": {
+                                  "end": 1569,
+                                  "name": "sweepPath",
+                                  "start": 1560,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1560,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1552,
-                            "name": "sweep",
+                            "name": {
+                              "end": 1552,
+                              "name": "sweep",
+                              "start": 1547,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1547,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1570,
                           "start": 1547,
@@ -1430,10 +1689,17 @@ description: Result of parsing exhaust-manifold.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1675,
-            "name": "primaryTube",
+            "name": {
+              "end": 1675,
+              "name": "primaryTube",
+              "start": 1664,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1664,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1690,
           "start": 1664,
@@ -1505,10 +1771,17 @@ description: Result of parsing exhaust-manifold.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1702,
-            "name": "primaryTube",
+            "name": {
+              "end": 1702,
+              "name": "primaryTube",
+              "start": 1691,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1691,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1717,
           "start": 1691,
@@ -1580,10 +1853,17 @@ description: Result of parsing exhaust-manifold.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1729,
-            "name": "primaryTube",
+            "name": {
+              "end": 1729,
+              "name": "primaryTube",
+              "start": 1718,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1718,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1747,
           "start": 1718,
@@ -1655,10 +1935,17 @@ description: Result of parsing exhaust-manifold.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1759,
-            "name": "primaryTube",
+            "name": {
+              "end": 1759,
+              "name": "primaryTube",
+              "start": 1748,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1748,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1777,
           "start": 1748,
@@ -1692,10 +1979,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1852,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1852,
+                    "name": "startSketchOn",
+                    "start": 1839,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1839,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1858,
                 "start": 1839,
@@ -1767,10 +2061,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1878,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1878,
+                    "name": "startProfileAt",
+                    "start": 1864,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1864,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1899,
                 "start": 1864,
@@ -1824,10 +2125,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1910,
-                  "name": "xLine",
+                  "name": {
+                    "end": 1910,
+                    "name": "xLine",
+                    "start": 1905,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1905,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1939,
                 "start": 1905,
@@ -1904,10 +2212,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1958,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 1958,
+                    "name": "tangentialArc",
+                    "start": 1945,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1945,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1992,
                 "start": 1945,
@@ -1976,10 +2291,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2011,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 2011,
+                    "name": "tangentialArc",
+                    "start": 1998,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1998,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2044,
                 "start": 1998,
@@ -2055,10 +2377,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2063,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 2063,
+                    "name": "tangentialArc",
+                    "start": 2050,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2050,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2097,
                 "start": 2050,
@@ -2112,10 +2441,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2108,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2108,
+                    "name": "xLine",
+                    "start": 2103,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2103,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2137,
                 "start": 2103,
@@ -2136,18 +2472,32 @@ description: Result of parsing exhaust-manifold.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "abs_path": false,
                           "end": 2170,
-                          "name": "seg01",
+                          "name": {
+                            "end": 2170,
+                            "name": "seg01",
+                            "start": 2165,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2165,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 2164,
-                        "name": "segLen",
+                        "name": {
+                          "end": 2164,
+                          "name": "segLen",
+                          "start": 2158,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2158,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 2171,
                       "start": 2158,
@@ -2173,10 +2523,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2148,
-                  "name": "yLine",
+                  "name": {
+                    "end": 2148,
+                    "name": "yLine",
+                    "start": 2143,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2143,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2186,
                 "start": 2143,
@@ -2224,10 +2581,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2197,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2197,
+                    "name": "xLine",
+                    "start": 2192,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2192,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2225,
                 "start": 2192,
@@ -2304,10 +2668,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2244,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 2244,
+                    "name": "tangentialArc",
+                    "start": 2231,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2231,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2278,
                 "start": 2231,
@@ -2376,10 +2747,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2297,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 2297,
+                    "name": "tangentialArc",
+                    "start": 2284,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2284,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2331,
                 "start": 2284,
@@ -2455,10 +2833,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2350,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 2350,
+                    "name": "tangentialArc",
+                    "start": 2337,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2337,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2384,
                 "start": 2337,
@@ -2478,18 +2863,32 @@ description: Result of parsing exhaust-manifold.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "abs_path": false,
                           "end": 2417,
-                          "name": "seg05",
+                          "name": {
+                            "end": 2417,
+                            "name": "seg05",
+                            "start": 2412,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2412,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 2411,
-                        "name": "segLen",
+                        "name": {
+                          "end": 2411,
+                          "name": "segLen",
+                          "start": 2405,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2405,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 2418,
                       "start": 2405,
@@ -2515,10 +2914,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2395,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2395,
+                    "name": "xLine",
+                    "start": 2390,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2390,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2433,
                 "start": 2390,
@@ -2546,10 +2952,17 @@ description: Result of parsing exhaust-manifold.kcl
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 2472,
-                        "name": "profileStartY",
+                        "name": {
+                          "end": 2472,
+                          "name": "profileStartY",
+                          "start": 2459,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2459,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 2475,
                       "start": 2459,
@@ -2575,10 +2988,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2444,
-                  "name": "yLine",
+                  "name": {
+                    "end": 2444,
+                    "name": "yLine",
+                    "start": 2439,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2439,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2490,
                 "start": 2439,
@@ -2600,18 +3020,32 @@ description: Result of parsing exhaust-manifold.kcl
                       "argument": {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 2524,
-                            "name": "seg03",
+                            "name": {
+                              "end": 2524,
+                              "name": "seg03",
+                              "start": 2519,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2519,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 2518,
-                          "name": "segLen",
+                          "name": {
+                            "end": 2518,
+                            "name": "segLen",
+                            "start": 2512,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2512,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 2525,
                         "start": 2512,
@@ -2643,10 +3077,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2501,
-                  "name": "xLine",
+                  "name": {
+                    "end": 2501,
+                    "name": "xLine",
+                    "start": 2496,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2496,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2540,
                 "start": 2496,
@@ -2723,10 +3164,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2559,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 2559,
+                    "name": "tangentialArc",
+                    "start": 2546,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2546,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2593,
                 "start": 2546,
@@ -2795,10 +3243,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2612,
-                  "name": "tangentialArc",
+                  "name": {
+                    "end": 2612,
+                    "name": "tangentialArc",
+                    "start": 2599,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2599,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2645,
                 "start": 2599,
@@ -2819,10 +3274,17 @@ description: Result of parsing exhaust-manifold.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 2681,
-                          "name": "profileStartX",
+                          "name": {
+                            "end": 2681,
+                            "name": "profileStartX",
+                            "start": 2668,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2668,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 2684,
                         "start": 2668,
@@ -2839,10 +3301,17 @@ description: Result of parsing exhaust-manifold.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 2699,
-                          "name": "profileStartY",
+                          "name": {
+                            "end": 2699,
+                            "name": "profileStartY",
+                            "start": 2686,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2686,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 2702,
                         "start": 2686,
@@ -2863,10 +3332,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2666,
-                  "name": "tangentialArcTo",
+                  "name": {
+                    "end": 2666,
+                    "name": "tangentialArcTo",
+                    "start": 2651,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2651,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2707,
                 "start": 2651,
@@ -2876,10 +3352,17 @@ description: Result of parsing exhaust-manifold.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2718,
-                  "name": "close",
+                  "name": {
+                    "end": 2718,
+                    "name": "close",
+                    "start": 2713,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2713,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2720,
                 "start": 2713,
@@ -2942,11 +3425,18 @@ description: Result of parsing exhaust-manifold.kcl
                           "left": {
                             "end": 2863,
                             "left": {
+                              "abs_path": false,
                               "end": 2859,
-                              "name": "primaryTubeDiameter",
+                              "name": {
+                                "end": 2859,
+                                "name": "primaryTubeDiameter",
+                                "start": 2840,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2840,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -2966,11 +3456,18 @@ description: Result of parsing exhaust-manifold.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 2879,
-                            "name": "wallThickness",
+                            "name": {
+                              "end": 2879,
+                              "name": "wallThickness",
+                              "start": 2866,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2866,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 2840,
                           "type": "BinaryExpression",
@@ -2979,10 +3476,17 @@ description: Result of parsing exhaust-manifold.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2798,
-                      "name": "circle",
+                      "name": {
+                        "end": 2798,
+                        "name": "circle",
+                        "start": 2792,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2792,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2886,
                     "start": 2792,
@@ -2998,10 +3502,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2791,
-                  "name": "hole",
+                  "name": {
+                    "end": 2791,
+                    "name": "hole",
+                    "start": 2787,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2787,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2890,
                 "start": 2787,
@@ -3064,11 +3575,18 @@ description: Result of parsing exhaust-manifold.kcl
                           "left": {
                             "end": 2972,
                             "left": {
+                              "abs_path": false,
                               "end": 2968,
-                              "name": "primaryTubeDiameter",
+                              "name": {
+                                "end": 2968,
+                                "name": "primaryTubeDiameter",
+                                "start": 2949,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2949,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -3088,11 +3606,18 @@ description: Result of parsing exhaust-manifold.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 2988,
-                            "name": "wallThickness",
+                            "name": {
+                              "end": 2988,
+                              "name": "wallThickness",
+                              "start": 2975,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2975,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 2949,
                           "type": "BinaryExpression",
@@ -3101,10 +3626,17 @@ description: Result of parsing exhaust-manifold.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2907,
-                      "name": "circle",
+                      "name": {
+                        "end": 2907,
+                        "name": "circle",
+                        "start": 2901,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2901,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2995,
                     "start": 2901,
@@ -3120,10 +3652,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2900,
-                  "name": "hole",
+                  "name": {
+                    "end": 2900,
+                    "name": "hole",
+                    "start": 2896,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2896,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2999,
                 "start": 2896,
@@ -3186,11 +3725,18 @@ description: Result of parsing exhaust-manifold.kcl
                           "left": {
                             "end": 3081,
                             "left": {
+                              "abs_path": false,
                               "end": 3077,
-                              "name": "primaryTubeDiameter",
+                              "name": {
+                                "end": 3077,
+                                "name": "primaryTubeDiameter",
+                                "start": 3058,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3058,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -3210,11 +3756,18 @@ description: Result of parsing exhaust-manifold.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 3097,
-                            "name": "wallThickness",
+                            "name": {
+                              "end": 3097,
+                              "name": "wallThickness",
+                              "start": 3084,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3084,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 3058,
                           "type": "BinaryExpression",
@@ -3223,10 +3776,17 @@ description: Result of parsing exhaust-manifold.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3016,
-                      "name": "circle",
+                      "name": {
+                        "end": 3016,
+                        "name": "circle",
+                        "start": 3010,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3010,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3104,
                     "start": 3010,
@@ -3242,10 +3802,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3009,
-                  "name": "hole",
+                  "name": {
+                    "end": 3009,
+                    "name": "hole",
+                    "start": 3005,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3005,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3108,
                 "start": 3005,
@@ -3308,11 +3875,18 @@ description: Result of parsing exhaust-manifold.kcl
                           "left": {
                             "end": 3190,
                             "left": {
+                              "abs_path": false,
                               "end": 3186,
-                              "name": "primaryTubeDiameter",
+                              "name": {
+                                "end": 3186,
+                                "name": "primaryTubeDiameter",
+                                "start": 3167,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3167,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -3332,11 +3906,18 @@ description: Result of parsing exhaust-manifold.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 3206,
-                            "name": "wallThickness",
+                            "name": {
+                              "end": 3206,
+                              "name": "wallThickness",
+                              "start": 3193,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3193,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 3167,
                           "type": "BinaryExpression",
@@ -3345,10 +3926,17 @@ description: Result of parsing exhaust-manifold.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3125,
-                      "name": "circle",
+                      "name": {
+                        "end": 3125,
+                        "name": "circle",
+                        "start": 3119,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3119,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3213,
                     "start": 3119,
@@ -3364,10 +3952,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3118,
-                  "name": "hole",
+                  "name": {
+                    "end": 3118,
+                    "name": "hole",
+                    "start": 3114,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3114,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3217,
                 "start": 3114,
@@ -3392,11 +3987,18 @@ description: Result of parsing exhaust-manifold.kcl
                               "end": 3327,
                               "left": {
                                 "argument": {
+                                  "abs_path": false,
                                   "end": 3322,
-                                  "name": "primaryTubeDiameter",
+                                  "name": {
+                                    "end": 3322,
+                                    "name": "primaryTubeDiameter",
+                                    "start": 3303,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3303,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "end": 3322,
                                 "operator": "-",
@@ -3424,11 +4026,18 @@ description: Result of parsing exhaust-manifold.kcl
                               "end": 3363,
                               "left": {
                                 "argument": {
+                                  "abs_path": false,
                                   "end": 3358,
-                                  "name": "primaryTubeDiameter",
+                                  "name": {
+                                    "end": 3358,
+                                    "name": "primaryTubeDiameter",
+                                    "start": 3339,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3339,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "end": 3358,
                                 "operator": "-",
@@ -3499,10 +4108,17 @@ description: Result of parsing exhaust-manifold.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3273,
-                      "name": "circle",
+                      "name": {
+                        "end": 3273,
+                        "name": "circle",
+                        "start": 3267,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3267,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3405,
                     "start": 3267,
@@ -3518,10 +4134,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3266,
-                  "name": "hole",
+                  "name": {
+                    "end": 3266,
+                    "name": "hole",
+                    "start": 3262,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3262,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3409,
                 "start": 3262,
@@ -3545,11 +4168,18 @@ description: Result of parsing exhaust-manifold.kcl
                             {
                               "end": 3479,
                               "left": {
+                                "abs_path": false,
                                 "end": 3474,
-                                "name": "primaryTubeDiameter",
+                                "name": {
+                                  "end": 3474,
+                                  "name": "primaryTubeDiameter",
+                                  "start": 3455,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3455,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "*",
                               "right": {
@@ -3570,11 +4200,18 @@ description: Result of parsing exhaust-manifold.kcl
                             {
                               "end": 3514,
                               "left": {
+                                "abs_path": false,
                                 "end": 3509,
-                                "name": "primaryTubeDiameter",
+                                "name": {
+                                  "end": 3509,
+                                  "name": "primaryTubeDiameter",
+                                  "start": 3490,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3490,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "*",
                               "right": {
@@ -3639,10 +4276,17 @@ description: Result of parsing exhaust-manifold.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3426,
-                      "name": "circle",
+                      "name": {
+                        "end": 3426,
+                        "name": "circle",
+                        "start": 3420,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3420,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3556,
                     "start": 3420,
@@ -3658,10 +4302,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3419,
-                  "name": "hole",
+                  "name": {
+                    "end": 3419,
+                    "name": "hole",
+                    "start": 3415,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3415,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3560,
                 "start": 3415,
@@ -3717,11 +4368,18 @@ description: Result of parsing exhaust-manifold.kcl
                               "right": {
                                 "end": 3639,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 3634,
-                                  "name": "primaryTubeDiameter",
+                                  "name": {
+                                    "end": 3634,
+                                    "name": "primaryTubeDiameter",
+                                    "start": 3615,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3615,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
@@ -3746,11 +4404,18 @@ description: Result of parsing exhaust-manifold.kcl
                             {
                               "end": 3675,
                               "left": {
+                                "abs_path": false,
                                 "end": 3670,
-                                "name": "primaryTubeDiameter",
+                                "name": {
+                                  "end": 3670,
+                                  "name": "primaryTubeDiameter",
+                                  "start": 3651,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3651,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "*",
                               "right": {
@@ -3815,10 +4480,17 @@ description: Result of parsing exhaust-manifold.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3577,
-                      "name": "circle",
+                      "name": {
+                        "end": 3577,
+                        "name": "circle",
+                        "start": 3571,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3571,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3717,
                     "start": 3571,
@@ -3834,10 +4506,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3570,
-                  "name": "hole",
+                  "name": {
+                    "end": 3570,
+                    "name": "hole",
+                    "start": 3566,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3566,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3721,
                 "start": 3566,
@@ -3893,11 +4572,18 @@ description: Result of parsing exhaust-manifold.kcl
                               "right": {
                                 "end": 3799,
                                 "left": {
+                                  "abs_path": false,
                                   "end": 3794,
-                                  "name": "primaryTubeDiameter",
+                                  "name": {
+                                    "end": 3794,
+                                    "name": "primaryTubeDiameter",
+                                    "start": 3775,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3775,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "operator": "*",
                                 "right": {
@@ -3923,11 +4609,18 @@ description: Result of parsing exhaust-manifold.kcl
                               "end": 3835,
                               "left": {
                                 "argument": {
+                                  "abs_path": false,
                                   "end": 3830,
-                                  "name": "primaryTubeDiameter",
+                                  "name": {
+                                    "end": 3830,
+                                    "name": "primaryTubeDiameter",
+                                    "start": 3811,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 3811,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "end": 3830,
                                 "operator": "-",
@@ -3998,10 +4691,17 @@ description: Result of parsing exhaust-manifold.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3738,
-                      "name": "circle",
+                      "name": {
+                        "end": 3738,
+                        "name": "circle",
+                        "start": 3732,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3732,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3877,
                     "start": 3732,
@@ -4017,10 +4717,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3731,
-                  "name": "hole",
+                  "name": {
+                    "end": 3731,
+                    "name": "hole",
+                    "start": 3727,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3727,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3881,
                 "start": 3727,
@@ -4038,19 +4745,33 @@ description: Result of parsing exhaust-manifold.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3961,
-                      "name": "plateHeight",
+                      "name": {
+                        "end": 3961,
+                        "name": "plateHeight",
+                        "start": 3950,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3950,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3940,
-                  "name": "extrude",
+                  "name": {
+                    "end": 3940,
+                    "name": "extrude",
+                    "start": 3933,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3933,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3962,
                 "start": 3933,
@@ -4093,18 +4814,32 @@ description: Result of parsing exhaust-manifold.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 4047,
-                              "name": "seg04",
+                              "name": {
+                                "end": 4047,
+                                "name": "seg04",
+                                "start": 4042,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 4042,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4041,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 4041,
+                              "name": "getNextAdjacentEdge",
+                              "start": 4022,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4022,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4048,
                           "start": 4022,
@@ -4114,18 +4849,32 @@ description: Result of parsing exhaust-manifold.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 4084,
-                              "name": "seg07",
+                              "name": {
+                                "end": 4084,
+                                "name": "seg07",
+                                "start": 4079,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 4079,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4078,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 4078,
+                              "name": "getNextAdjacentEdge",
+                              "start": 4059,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4059,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4085,
                           "start": 4059,
@@ -4141,10 +4890,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3974,
-                  "name": "fillet",
+                  "name": {
+                    "end": 3974,
+                    "name": "fillet",
+                    "start": 3968,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3968,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4101,
                 "start": 3968,
@@ -4187,18 +4943,32 @@ description: Result of parsing exhaust-manifold.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 4186,
-                              "name": "seg03",
+                              "name": {
+                                "end": 4186,
+                                "name": "seg03",
+                                "start": 4181,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 4181,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4180,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 4180,
+                              "name": "getNextAdjacentEdge",
+                              "start": 4161,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4161,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4187,
                           "start": 4161,
@@ -4208,18 +4978,32 @@ description: Result of parsing exhaust-manifold.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 4223,
-                              "name": "seg08",
+                              "name": {
+                                "end": 4223,
+                                "name": "seg08",
+                                "start": 4218,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 4218,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 4217,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 4217,
+                              "name": "getNextAdjacentEdge",
+                              "start": 4198,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4198,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 4224,
                           "start": 4198,
@@ -4235,10 +5019,17 @@ description: Result of parsing exhaust-manifold.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4113,
-                  "name": "fillet",
+                  "name": {
+                    "end": 4113,
+                    "name": "fillet",
+                    "start": 4107,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4107,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4240,
                 "start": 4107,
@@ -4325,11 +5116,18 @@ description: Result of parsing exhaust-manifold.kcl
             "start": 103,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 125,
-              "name": "in",
+              "name": {
+                "end": 125,
+                "name": "in",
+                "start": 123,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 123,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

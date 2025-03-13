@@ -193,19 +193,33 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             "left": {
               "end": 662,
               "left": {
+                "abs_path": false,
                 "end": 658,
-                "name": "L",
+                "name": {
+                  "end": 658,
+                  "name": "L",
+                  "start": 657,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 657,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "*",
               "right": {
+                "abs_path": false,
                 "end": 662,
-                "name": "p",
+                "name": {
+                  "end": 662,
+                  "name": "p",
+                  "start": 661,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 661,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 657,
               "type": "BinaryExpression",
@@ -295,11 +309,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                     },
                     "operator": "*",
                     "right": {
+                      "abs_path": false,
                       "end": 860,
-                      "name": "M",
+                      "name": {
+                        "end": 860,
+                        "name": "M",
+                        "start": 859,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 859,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 855,
                     "type": "BinaryExpression",
@@ -307,11 +328,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   },
                   "operator": "*",
                   "right": {
+                    "abs_path": false,
                     "end": 866,
-                    "name": "FOS",
+                    "name": {
+                      "end": 866,
+                      "name": "FOS",
+                      "start": 863,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 863,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 855,
                   "type": "BinaryExpression",
@@ -321,19 +349,33 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                 "right": {
                   "end": 888,
                   "left": {
+                    "abs_path": false,
                     "end": 875,
-                    "name": "width",
+                    "name": {
+                      "end": 875,
+                      "name": "width",
+                      "start": 870,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 870,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "*",
                   "right": {
+                    "abs_path": false,
                     "end": 888,
-                    "name": "sigmaAllow",
+                    "name": {
+                      "end": 888,
+                      "name": "sigmaAllow",
+                      "start": 878,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 878,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 870,
                   "type": "BinaryExpression",
@@ -345,10 +387,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 854,
-              "name": "sqrt",
+              "name": {
+                "end": 854,
+                "name": "sqrt",
+                "start": 850,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 850,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 890,
             "start": 850,
@@ -416,10 +465,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1005,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1005,
+                    "name": "startSketchOn",
+                    "start": 992,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 992,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1011,
                 "start": 992,
@@ -466,10 +522,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1031,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1031,
+                    "name": "startProfileAt",
+                    "start": 1017,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1017,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1042,
                 "start": 1017,
@@ -500,11 +563,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 1073,
-                          "name": "wallMountL",
+                          "name": {
+                            "end": 1073,
+                            "name": "wallMountL",
+                            "start": 1063,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1063,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 1074,
@@ -531,10 +601,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1052,
-                  "name": "line",
+                  "name": {
+                    "end": 1052,
+                    "name": "line",
+                    "start": 1048,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1048,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1093,
                 "start": 1048,
@@ -556,11 +633,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                       "elements": [
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 1123,
-                            "name": "shelfMountL",
+                            "name": {
+                              "end": 1123,
+                              "name": "shelfMountL",
+                              "start": 1112,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1112,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 1123,
                           "operator": "-",
@@ -604,10 +688,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1103,
-                  "name": "line",
+                  "name": {
+                    "end": 1103,
+                    "name": "line",
+                    "start": 1099,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1099,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1142,
                 "start": 1099,
@@ -640,11 +731,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 1173,
-                            "name": "thickness",
+                            "name": {
+                              "end": 1173,
+                              "name": "thickness",
+                              "start": 1164,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1164,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 1173,
                           "operator": "-",
@@ -661,10 +759,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1152,
-                  "name": "line",
+                  "name": {
+                    "end": 1152,
+                    "name": "line",
+                    "start": 1148,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1148,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1175,
                 "start": 1148,
@@ -687,19 +792,33 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         {
                           "end": 1216,
                           "left": {
+                            "abs_path": false,
                             "end": 1204,
-                            "name": "shelfMountL",
+                            "name": {
+                              "end": 1204,
+                              "name": "shelfMountL",
+                              "start": 1193,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1193,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 1216,
-                            "name": "thickness",
+                            "name": {
+                              "end": 1216,
+                              "name": "thickness",
+                              "start": 1207,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1207,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 1193,
                           "type": "BinaryExpression",
@@ -741,10 +860,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1185,
-                  "name": "line",
+                  "name": {
+                    "end": 1185,
+                    "name": "line",
+                    "start": 1181,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1181,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1239,
                 "start": 1181,
@@ -779,11 +905,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           "end": 1283,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 1271,
-                              "name": "wallMountL",
+                              "name": {
+                                "end": 1271,
+                                "name": "wallMountL",
+                                "start": 1261,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1261,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 1271,
                             "operator": "-",
@@ -793,11 +926,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 1283,
-                            "name": "thickness",
+                            "name": {
+                              "end": 1283,
+                              "name": "thickness",
+                              "start": 1274,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1274,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 1260,
                           "type": "BinaryExpression",
@@ -812,10 +952,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1249,
-                  "name": "line",
+                  "name": {
+                    "end": 1249,
+                    "name": "line",
+                    "start": 1245,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1245,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1285,
                 "start": 1245,
@@ -833,10 +980,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1296,
-                  "name": "close",
+                  "name": {
+                    "end": 1296,
+                    "name": "close",
+                    "start": 1291,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1291,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1299,
                 "start": 1291,
@@ -854,19 +1008,33 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1327,
-                      "name": "width",
+                      "name": {
+                        "end": 1327,
+                        "name": "width",
+                        "start": 1322,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1322,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1312,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1312,
+                    "name": "extrude",
+                    "start": 1305,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1305,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1328,
                 "start": 1305,
@@ -885,11 +1053,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1357,
-                      "name": "filletR",
+                      "name": {
+                        "end": 1357,
+                        "name": "filletR",
+                        "start": 1350,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1350,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -905,18 +1080,32 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1396,
-                              "name": "innerEdge",
+                              "name": {
+                                "end": 1396,
+                                "name": "innerEdge",
+                                "start": 1387,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1387,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1386,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1386,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1367,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1367,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1397,
                           "start": 1367,
@@ -932,10 +1121,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1340,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1340,
+                    "name": "fillet",
+                    "start": 1334,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1334,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1399,
                 "start": 1334,
@@ -956,19 +1152,33 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                     "arg": {
                       "end": 1440,
                       "left": {
+                        "abs_path": false,
                         "end": 1428,
-                        "name": "filletR",
+                        "name": {
+                          "end": 1428,
+                          "name": "filletR",
+                          "start": 1421,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1421,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "+",
                       "right": {
+                        "abs_path": false,
                         "end": 1440,
-                        "name": "thickness",
+                        "name": {
+                          "end": 1440,
+                          "name": "thickness",
+                          "start": 1431,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1431,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 1421,
                       "type": "BinaryExpression",
@@ -988,18 +1198,32 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1479,
-                              "name": "outerEdge",
+                              "name": {
+                                "end": 1479,
+                                "name": "outerEdge",
+                                "start": 1470,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1470,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1469,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1469,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1450,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1450,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1480,
                           "start": 1450,
@@ -1015,10 +1239,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1411,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1411,
+                    "name": "fillet",
+                    "start": 1405,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1405,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1482,
                 "start": 1405,
@@ -1055,25 +1286,46 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 1517,
-                    "name": "bracket",
+                    "name": {
+                      "end": 1517,
+                      "name": "bracket",
+                      "start": 1510,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1510,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "end": 1524,
-                    "name": "seg01",
+                    "name": {
+                      "end": 1524,
+                      "name": "seg01",
+                      "start": 1519,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1519,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1509,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1509,
+                    "name": "startSketchOn",
+                    "start": 1496,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1496,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1525,
                 "start": 1496,
@@ -1120,10 +1372,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1545,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1545,
+                    "name": "startProfileAt",
+                    "start": 1531,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1531,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1562,
                 "start": 1531,
@@ -1180,10 +1439,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1572,
-                  "name": "line",
+                  "name": {
+                    "end": 1572,
+                    "name": "line",
+                    "start": 1568,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1568,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1593,
                 "start": 1568,
@@ -1248,10 +1514,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1603,
-                  "name": "line",
+                  "name": {
+                    "end": 1603,
+                    "name": "line",
+                    "start": 1599,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1599,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1624,
                 "start": 1599,
@@ -1309,10 +1582,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1634,
-                  "name": "line",
+                  "name": {
+                    "end": 1634,
+                    "name": "line",
+                    "start": 1630,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1630,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1655,
                 "start": 1630,
@@ -1342,10 +1622,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1694,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 1694,
+                              "name": "profileStartX",
+                              "start": 1681,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1681,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1697,
                           "start": 1681,
@@ -1362,10 +1649,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1712,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 1712,
+                              "name": "profileStartY",
+                              "start": 1699,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1699,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1715,
                           "start": 1699,
@@ -1381,10 +1675,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1665,
-                  "name": "line",
+                  "name": {
+                    "end": 1665,
+                    "name": "line",
+                    "start": 1661,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1661,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1717,
                 "start": 1661,
@@ -1402,10 +1703,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1728,
-                  "name": "close",
+                  "name": {
+                    "end": 1728,
+                    "name": "close",
+                    "start": 1723,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1723,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1731,
                 "start": 1723,
@@ -1436,10 +1744,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1744,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1744,
+                    "name": "extrude",
+                    "start": 1737,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1737,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1757,
                 "start": 1737,

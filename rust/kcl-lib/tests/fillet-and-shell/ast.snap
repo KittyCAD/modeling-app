@@ -162,21 +162,35 @@ description: Result of parsing fillet-and-shell.kcl
           "init": {
             "end": 114,
             "left": {
+              "abs_path": false,
               "end": 101,
-              "name": "rpizWidth",
+              "name": {
+                "end": 101,
+                "name": "rpizWidth",
+                "start": 92,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 92,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "+",
             "right": {
               "end": 114,
               "left": {
+                "abs_path": false,
                 "end": 110,
-                "name": "border",
+                "name": {
+                  "end": 110,
+                  "name": "border",
+                  "start": 104,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 104,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "*",
               "right": {
@@ -219,21 +233,35 @@ description: Result of parsing fillet-and-shell.kcl
           "init": {
             "end": 151,
             "left": {
+              "abs_path": false,
               "end": 138,
-              "name": "rpizLength",
+              "name": {
+                "end": 138,
+                "name": "rpizLength",
+                "start": 128,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 128,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "+",
             "right": {
               "end": 151,
               "left": {
+                "abs_path": false,
                 "end": 147,
-                "name": "border",
+                "name": {
+                  "end": 147,
+                  "name": "border",
+                  "start": 141,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 141,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "*",
               "right": {
@@ -557,18 +585,32 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 389,
-                    "name": "XY",
+                    "name": {
+                      "end": 389,
+                      "name": "XY",
+                      "start": 387,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 387,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 386,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 386,
+                    "name": "startSketchOn",
+                    "start": 373,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 373,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 390,
                 "start": 373,
@@ -595,19 +637,33 @@ description: Result of parsing fillet-and-shell.kcl
                         "left": {
                           "end": 455,
                           "left": {
+                            "abs_path": false,
                             "end": 436,
-                            "name": "border",
+                            "name": {
+                              "end": 436,
+                              "name": "border",
+                              "start": 430,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 430,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 455,
-                            "name": "miniHdmiDistance",
+                            "name": {
+                              "end": 455,
+                              "name": "miniHdmiDistance",
+                              "start": 439,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 439,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 430,
                           "type": "BinaryExpression",
@@ -617,11 +673,18 @@ description: Result of parsing fillet-and-shell.kcl
                         "right": {
                           "end": 476,
                           "left": {
+                            "abs_path": false,
                             "end": 472,
-                            "name": "miniHdmiWidth",
+                            "name": {
+                              "end": 472,
+                              "name": "miniHdmiWidth",
+                              "start": 459,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 459,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -657,10 +720,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 410,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 410,
+                    "name": "startProfileAt",
+                    "start": 396,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 396,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 488,
                 "start": 396,
@@ -695,19 +765,33 @@ description: Result of parsing fillet-and-shell.kcl
                           "left": {
                             "end": 557,
                             "left": {
+                              "abs_path": false,
                               "end": 538,
-                              "name": "border",
+                              "name": {
+                                "end": 538,
+                                "name": "border",
+                                "start": 532,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 532,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "end": 557,
-                              "name": "miniHdmiDistance",
+                              "name": {
+                                "end": 557,
+                                "name": "miniHdmiDistance",
+                                "start": 541,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 541,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 532,
                             "type": "BinaryExpression",
@@ -717,11 +801,18 @@ description: Result of parsing fillet-and-shell.kcl
                           "right": {
                             "end": 577,
                             "left": {
+                              "abs_path": false,
                               "end": 573,
-                              "name": "miniHdmiWidth",
+                              "name": {
+                                "end": 573,
+                                "name": "miniHdmiWidth",
+                                "start": 560,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 560,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -752,10 +843,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 498,
-                  "name": "line",
+                  "name": {
+                    "end": 498,
+                    "name": "line",
+                    "start": 494,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 494,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 585,
                 "start": 494,
@@ -791,19 +889,33 @@ description: Result of parsing fillet-and-shell.kcl
                           "left": {
                             "end": 654,
                             "left": {
+                              "abs_path": false,
                               "end": 635,
-                              "name": "border",
+                              "name": {
+                                "end": 635,
+                                "name": "border",
+                                "start": 629,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 629,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "end": 654,
-                              "name": "miniHdmiDistance",
+                              "name": {
+                                "end": 654,
+                                "name": "miniHdmiDistance",
+                                "start": 638,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 638,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 629,
                             "type": "BinaryExpression",
@@ -813,11 +925,18 @@ description: Result of parsing fillet-and-shell.kcl
                           "right": {
                             "end": 674,
                             "left": {
+                              "abs_path": false,
                               "end": 670,
-                              "name": "miniHdmiWidth",
+                              "name": {
+                                "end": 670,
+                                "name": "miniHdmiWidth",
+                                "start": 657,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 657,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -848,10 +967,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 595,
-                  "name": "line",
+                  "name": {
+                    "end": 595,
+                    "name": "line",
+                    "start": 591,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 591,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 682,
                 "start": 591,
@@ -887,19 +1013,33 @@ description: Result of parsing fillet-and-shell.kcl
                           "left": {
                             "end": 751,
                             "left": {
+                              "abs_path": false,
                               "end": 732,
-                              "name": "border",
+                              "name": {
+                                "end": 732,
+                                "name": "border",
+                                "start": 726,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 726,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "end": 751,
-                              "name": "miniHdmiDistance",
+                              "name": {
+                                "end": 751,
+                                "name": "miniHdmiDistance",
+                                "start": 735,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 735,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 726,
                             "type": "BinaryExpression",
@@ -909,11 +1049,18 @@ description: Result of parsing fillet-and-shell.kcl
                           "right": {
                             "end": 772,
                             "left": {
+                              "abs_path": false,
                               "end": 768,
-                              "name": "miniHdmiWidth",
+                              "name": {
+                                "end": 768,
+                                "name": "miniHdmiWidth",
+                                "start": 755,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 755,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -944,10 +1091,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 692,
-                  "name": "line",
+                  "name": {
+                    "end": 692,
+                    "name": "line",
+                    "start": 688,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 688,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 781,
                 "start": 688,
@@ -965,10 +1119,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 792,
-                  "name": "close",
+                  "name": {
+                    "end": 792,
+                    "name": "close",
+                    "start": 787,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 787,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 795,
                 "start": 787,
@@ -1013,10 +1174,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 817,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 817,
+                    "name": "startSketchOn",
+                    "start": 804,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 804,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 823,
                 "start": 804,
@@ -1063,10 +1231,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 843,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 843,
+                    "name": "startProfileAt",
+                    "start": 829,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 829,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 854,
                 "start": 829,
@@ -1086,11 +1261,18 @@ description: Result of parsing fillet-and-shell.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 889,
-                          "name": "caseWidth",
+                          "name": {
+                            "end": 889,
+                            "name": "caseWidth",
+                            "start": 880,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 880,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 892,
@@ -1128,10 +1310,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 864,
-                  "name": "line",
+                  "name": {
+                    "end": 864,
+                    "name": "line",
+                    "start": 860,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 860,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 908,
                 "start": 860,
@@ -1152,18 +1341,32 @@ description: Result of parsing fillet-and-shell.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 943,
-                          "name": "caseWidth",
+                          "name": {
+                            "end": 943,
+                            "name": "caseWidth",
+                            "start": 934,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 934,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
+                          "abs_path": false,
                           "end": 955,
-                          "name": "caseLength",
+                          "name": {
+                            "end": 955,
+                            "name": "caseLength",
+                            "start": 945,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 945,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 956,
@@ -1190,10 +1393,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 918,
-                  "name": "line",
+                  "name": {
+                    "end": 918,
+                    "name": "line",
+                    "start": 914,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 914,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 971,
                 "start": 914,
@@ -1225,11 +1435,18 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 1010,
-                          "name": "caseLength",
+                          "name": {
+                            "end": 1010,
+                            "name": "caseLength",
+                            "start": 1000,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1000,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 1011,
@@ -1256,10 +1473,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 981,
-                  "name": "line",
+                  "name": {
+                    "end": 981,
+                    "name": "line",
+                    "start": 977,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 977,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1026,
                 "start": 977,
@@ -1287,10 +1511,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1037,
-                  "name": "close",
+                  "name": {
+                    "end": 1037,
+                    "name": "close",
+                    "start": 1032,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1032,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1051,
                 "start": 1032,
@@ -1309,19 +1540,33 @@ description: Result of parsing fillet-and-shell.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1084,
-                      "name": "caseHeight",
+                      "name": {
+                        "end": 1084,
+                        "name": "caseHeight",
+                        "start": 1074,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1074,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1064,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1064,
+                    "name": "extrude",
+                    "start": 1057,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1057,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1085,
                 "start": 1057,
@@ -1364,18 +1609,32 @@ description: Result of parsing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1168,
-                              "name": "edge1",
+                              "name": {
+                                "end": 1168,
+                                "name": "edge1",
+                                "start": 1163,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1163,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1162,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1162,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1143,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1143,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1169,
                           "start": 1143,
@@ -1385,18 +1644,32 @@ description: Result of parsing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1205,
-                              "name": "edge2",
+                              "name": {
+                                "end": 1205,
+                                "name": "edge2",
+                                "start": 1200,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1200,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1199,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1199,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1180,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1180,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1206,
                           "start": 1180,
@@ -1406,18 +1679,32 @@ description: Result of parsing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1242,
-                              "name": "edge3",
+                              "name": {
+                                "end": 1242,
+                                "name": "edge3",
+                                "start": 1237,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1237,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1236,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1236,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1217,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1217,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1243,
                           "start": 1217,
@@ -1427,18 +1714,32 @@ description: Result of parsing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1279,
-                              "name": "edge4",
+                              "name": {
+                                "end": 1279,
+                                "name": "edge4",
+                                "start": 1274,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1274,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1273,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1273,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1254,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1254,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1280,
                           "start": 1254,
@@ -1454,10 +1755,17 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1097,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1097,
+                    "name": "fillet",
+                    "start": 1091,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1091,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1297,
                 "start": 1091,
@@ -1515,10 +1823,17 @@ description: Result of parsing fillet-and-shell.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1350,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 1350,
+                              "name": "startSketchOn",
+                              "start": 1337,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1337,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1356,
                           "start": 1337,
@@ -1565,10 +1880,17 @@ description: Result of parsing fillet-and-shell.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1378,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 1378,
+                              "name": "startProfileAt",
+                              "start": 1364,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1364,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1389,
                           "start": 1364,
@@ -1588,18 +1910,32 @@ description: Result of parsing fillet-and-shell.kcl
                               "arg": {
                                 "elements": [
                                   {
+                                    "abs_path": false,
                                     "end": 1415,
-                                    "name": "x",
+                                    "name": {
+                                      "end": 1415,
+                                      "name": "x",
+                                      "start": 1414,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1414,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   {
+                                    "abs_path": false,
                                     "end": 1418,
-                                    "name": "y",
+                                    "name": {
+                                      "end": 1418,
+                                      "name": "y",
+                                      "start": 1417,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1417,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 ],
                                 "end": 1419,
@@ -1630,10 +1966,17 @@ description: Result of parsing fillet-and-shell.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1403,
-                            "name": "circle",
+                            "name": {
+                              "end": 1403,
+                              "name": "circle",
+                              "start": 1397,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1397,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1434,
                           "start": 1397,
@@ -1656,18 +1999,32 @@ description: Result of parsing fillet-and-shell.kcl
                                   "arg": {
                                     "elements": [
                                       {
+                                        "abs_path": false,
                                         "end": 1465,
-                                        "name": "x",
+                                        "name": {
+                                          "end": 1465,
+                                          "name": "x",
+                                          "start": 1464,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 1464,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       {
+                                        "abs_path": false,
                                         "end": 1468,
-                                        "name": "y",
+                                        "name": {
+                                          "end": 1468,
+                                          "name": "y",
+                                          "start": 1467,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 1467,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       }
                                     ],
                                     "end": 1469,
@@ -1698,10 +2055,17 @@ description: Result of parsing fillet-and-shell.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 1453,
-                                "name": "circle",
+                                "name": {
+                                  "end": 1453,
+                                  "name": "circle",
+                                  "start": 1447,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1447,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1485,
                               "start": 1447,
@@ -1717,10 +2081,17 @@ description: Result of parsing fillet-and-shell.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1446,
-                            "name": "hole",
+                            "name": {
+                              "end": 1446,
+                              "name": "hole",
+                              "start": 1442,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1442,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1489,
                           "start": 1442,
@@ -1738,19 +2109,33 @@ description: Result of parsing fillet-and-shell.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "end": 1520,
-                                "name": "height",
+                                "name": {
+                                  "end": 1520,
+                                  "name": "height",
+                                  "start": 1514,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1514,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1504,
-                            "name": "extrude",
+                            "name": {
+                              "end": 1504,
+                              "name": "extrude",
+                              "start": 1497,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1497,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1521,
                           "start": 1497,
@@ -1775,11 +2160,18 @@ description: Result of parsing fillet-and-shell.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 1536,
-                    "name": "screw",
+                    "name": {
+                      "end": 1536,
+                      "name": "screw",
+                      "start": 1531,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1531,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 1536,
                   "start": 1524,
@@ -1842,21 +2234,35 @@ description: Result of parsing fillet-and-shell.kcl
               "left": {
                 "end": 1571,
                 "left": {
+                  "abs_path": false,
                   "end": 1555,
-                  "name": "border",
+                  "name": {
+                    "end": 1555,
+                    "name": "border",
+                    "start": 1549,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1549,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "+",
                 "right": {
                   "end": 1571,
                   "left": {
+                    "abs_path": false,
                     "end": 1567,
-                    "name": "rpizWidth",
+                    "name": {
+                      "end": 1567,
+                      "name": "rpizWidth",
+                      "start": 1558,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1558,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -1882,11 +2288,18 @@ description: Result of parsing fillet-and-shell.kcl
               "right": {
                 "end": 1597,
                 "left": {
+                  "abs_path": false,
                   "end": 1593,
-                  "name": "widthBetweenScrews",
+                  "name": {
+                    "end": 1593,
+                    "name": "widthBetweenScrews",
+                    "start": 1575,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1575,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
@@ -1927,11 +2340,18 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 1610,
-                    "name": "border",
+                    "name": {
+                      "end": 1610,
+                      "name": "border",
+                      "start": 1604,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1604,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 1600,
                   "type": "BinaryExpression",
@@ -1941,11 +2361,18 @@ description: Result of parsing fillet-and-shell.kcl
                 "right": {
                   "end": 1627,
                   "left": {
+                    "abs_path": false,
                     "end": 1623,
-                    "name": "rpizLength",
+                    "name": {
+                      "end": 1623,
+                      "name": "rpizLength",
+                      "start": 1613,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1613,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -1971,11 +2398,18 @@ description: Result of parsing fillet-and-shell.kcl
               "right": {
                 "end": 1654,
                 "left": {
+                  "abs_path": false,
                   "end": 1650,
-                  "name": "lengthBetweenScrews",
+                  "name": {
+                    "end": 1650,
+                    "name": "lengthBetweenScrews",
+                    "start": 1631,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1631,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
@@ -1998,18 +2432,32 @@ description: Result of parsing fillet-and-shell.kcl
               "type": "BinaryExpression"
             },
             {
+              "abs_path": false,
               "end": 1668,
-              "name": "screwHeight",
+              "name": {
+                "end": 1668,
+                "name": "screwHeight",
+                "start": 1657,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1657,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1548,
-            "name": "m25Screw",
+            "name": {
+              "end": 1548,
+              "name": "m25Screw",
+              "start": 1540,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1540,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1669,
           "start": 1540,
@@ -2029,21 +2477,35 @@ description: Result of parsing fillet-and-shell.kcl
               "left": {
                 "end": 1702,
                 "left": {
+                  "abs_path": false,
                   "end": 1686,
-                  "name": "border",
+                  "name": {
+                    "end": 1686,
+                    "name": "border",
+                    "start": 1680,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1680,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "+",
                 "right": {
                   "end": 1702,
                   "left": {
+                    "abs_path": false,
                     "end": 1698,
-                    "name": "rpizWidth",
+                    "name": {
+                      "end": 1698,
+                      "name": "rpizWidth",
+                      "start": 1689,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1689,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -2069,11 +2531,18 @@ description: Result of parsing fillet-and-shell.kcl
               "right": {
                 "end": 1728,
                 "left": {
+                  "abs_path": false,
                   "end": 1724,
-                  "name": "widthBetweenScrews",
+                  "name": {
+                    "end": 1724,
+                    "name": "widthBetweenScrews",
+                    "start": 1706,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1706,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
@@ -2114,11 +2583,18 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 1741,
-                    "name": "border",
+                    "name": {
+                      "end": 1741,
+                      "name": "border",
+                      "start": 1735,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1735,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 1731,
                   "type": "BinaryExpression",
@@ -2128,11 +2604,18 @@ description: Result of parsing fillet-and-shell.kcl
                 "right": {
                   "end": 1758,
                   "left": {
+                    "abs_path": false,
                     "end": 1754,
-                    "name": "rpizLength",
+                    "name": {
+                      "end": 1754,
+                      "name": "rpizLength",
+                      "start": 1744,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1744,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -2158,11 +2641,18 @@ description: Result of parsing fillet-and-shell.kcl
               "right": {
                 "end": 1784,
                 "left": {
+                  "abs_path": false,
                   "end": 1780,
-                  "name": "lengthBetweenScrews",
+                  "name": {
+                    "end": 1780,
+                    "name": "lengthBetweenScrews",
+                    "start": 1761,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1761,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
@@ -2185,18 +2675,32 @@ description: Result of parsing fillet-and-shell.kcl
               "type": "BinaryExpression"
             },
             {
+              "abs_path": false,
               "end": 1797,
-              "name": "screwHeight",
+              "name": {
+                "end": 1797,
+                "name": "screwHeight",
+                "start": 1786,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1786,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1679,
-            "name": "m25Screw",
+            "name": {
+              "end": 1679,
+              "name": "m25Screw",
+              "start": 1671,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1671,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1798,
           "start": 1671,
@@ -2216,21 +2720,35 @@ description: Result of parsing fillet-and-shell.kcl
               "left": {
                 "end": 1831,
                 "left": {
+                  "abs_path": false,
                   "end": 1815,
-                  "name": "border",
+                  "name": {
+                    "end": 1815,
+                    "name": "border",
+                    "start": 1809,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1809,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "+",
                 "right": {
                   "end": 1831,
                   "left": {
+                    "abs_path": false,
                     "end": 1827,
-                    "name": "rpizWidth",
+                    "name": {
+                      "end": 1827,
+                      "name": "rpizWidth",
+                      "start": 1818,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1818,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -2256,11 +2774,18 @@ description: Result of parsing fillet-and-shell.kcl
               "right": {
                 "end": 1856,
                 "left": {
+                  "abs_path": false,
                   "end": 1852,
-                  "name": "widthBetweenScrews",
+                  "name": {
+                    "end": 1852,
+                    "name": "widthBetweenScrews",
+                    "start": 1834,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1834,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
@@ -2301,11 +2826,18 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 1868,
-                    "name": "border",
+                    "name": {
+                      "end": 1868,
+                      "name": "border",
+                      "start": 1862,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1862,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 1858,
                   "type": "BinaryExpression",
@@ -2315,11 +2847,18 @@ description: Result of parsing fillet-and-shell.kcl
                 "right": {
                   "end": 1885,
                   "left": {
+                    "abs_path": false,
                     "end": 1881,
-                    "name": "rpizLength",
+                    "name": {
+                      "end": 1881,
+                      "name": "rpizLength",
+                      "start": 1871,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1871,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -2345,11 +2884,18 @@ description: Result of parsing fillet-and-shell.kcl
               "right": {
                 "end": 1911,
                 "left": {
+                  "abs_path": false,
                   "end": 1907,
-                  "name": "lengthBetweenScrews",
+                  "name": {
+                    "end": 1907,
+                    "name": "lengthBetweenScrews",
+                    "start": 1888,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1888,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
@@ -2372,18 +2918,32 @@ description: Result of parsing fillet-and-shell.kcl
               "type": "BinaryExpression"
             },
             {
+              "abs_path": false,
               "end": 1924,
-              "name": "screwHeight",
+              "name": {
+                "end": 1924,
+                "name": "screwHeight",
+                "start": 1913,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1913,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1808,
-            "name": "m25Screw",
+            "name": {
+              "end": 1808,
+              "name": "m25Screw",
+              "start": 1800,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1800,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1925,
           "start": 1800,
@@ -2403,21 +2963,35 @@ description: Result of parsing fillet-and-shell.kcl
               "left": {
                 "end": 1958,
                 "left": {
+                  "abs_path": false,
                   "end": 1942,
-                  "name": "border",
+                  "name": {
+                    "end": 1942,
+                    "name": "border",
+                    "start": 1936,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1936,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "+",
                 "right": {
                   "end": 1958,
                   "left": {
+                    "abs_path": false,
                     "end": 1954,
-                    "name": "rpizWidth",
+                    "name": {
+                      "end": 1954,
+                      "name": "rpizWidth",
+                      "start": 1945,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1945,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -2443,11 +3017,18 @@ description: Result of parsing fillet-and-shell.kcl
               "right": {
                 "end": 1983,
                 "left": {
+                  "abs_path": false,
                   "end": 1979,
-                  "name": "widthBetweenScrews",
+                  "name": {
+                    "end": 1979,
+                    "name": "widthBetweenScrews",
+                    "start": 1961,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1961,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
@@ -2488,11 +3069,18 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 1995,
-                    "name": "border",
+                    "name": {
+                      "end": 1995,
+                      "name": "border",
+                      "start": 1989,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1989,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 1985,
                   "type": "BinaryExpression",
@@ -2502,11 +3090,18 @@ description: Result of parsing fillet-and-shell.kcl
                 "right": {
                   "end": 2012,
                   "left": {
+                    "abs_path": false,
                     "end": 2008,
-                    "name": "rpizLength",
+                    "name": {
+                      "end": 2008,
+                      "name": "rpizLength",
+                      "start": 1998,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1998,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -2532,11 +3127,18 @@ description: Result of parsing fillet-and-shell.kcl
               "right": {
                 "end": 2039,
                 "left": {
+                  "abs_path": false,
                   "end": 2035,
-                  "name": "lengthBetweenScrews",
+                  "name": {
+                    "end": 2035,
+                    "name": "lengthBetweenScrews",
+                    "start": 2016,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2016,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "operator": "/",
                 "right": {
@@ -2559,18 +3161,32 @@ description: Result of parsing fillet-and-shell.kcl
               "type": "BinaryExpression"
             },
             {
+              "abs_path": false,
               "end": 2053,
-              "name": "screwHeight",
+              "name": {
+                "end": 2053,
+                "name": "screwHeight",
+                "start": 2042,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2042,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1935,
-            "name": "m25Screw",
+            "name": {
+              "end": 1935,
+              "name": "m25Screw",
+              "start": 1927,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1927,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 2054,
           "start": 1927,
@@ -2619,30 +3235,51 @@ description: Result of parsing fillet-and-shell.kcl
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
                 "end": 2110,
-                "name": "caseThickness",
+                "name": {
+                  "end": 2110,
+                  "name": "caseThickness",
+                  "start": 2097,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 2097,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 2061,
-            "name": "shell",
+            "name": {
+              "end": 2061,
+              "name": "shell",
+              "start": 2056,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 2056,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 2111,
           "start": 2056,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
+            "abs_path": false,
             "end": 2066,
-            "name": "case",
+            "name": {
+              "end": 2066,
+              "name": "case",
+              "start": 2062,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 2062,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           }
         },
         "start": 2056,

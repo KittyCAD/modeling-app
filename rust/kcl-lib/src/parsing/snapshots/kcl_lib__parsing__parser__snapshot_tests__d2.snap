@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -17,11 +17,18 @@ expression: actual
           "end": 21,
           "left": {
             "argument": {
+              "abs_path": false,
               "end": 9,
-              "name": "leg2",
+              "name": {
+                "end": 9,
+                "name": "leg2",
+                "start": 5,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 5,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "end": 9,
             "operator": "-",
@@ -31,11 +38,18 @@ expression: actual
           },
           "operator": "+",
           "right": {
+            "abs_path": false,
             "end": 21,
-            "name": "thickness",
+            "name": {
+              "end": 21,
+              "name": "thickness",
+              "start": 12,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 12,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           },
           "start": 4,
           "type": "BinaryExpression",

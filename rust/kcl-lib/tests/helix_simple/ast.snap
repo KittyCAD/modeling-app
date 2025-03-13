@@ -28,10 +28,17 @@ description: Result of parsing helix_simple.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 59,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 59,
+                    "name": "startSketchOn",
+                    "start": 46,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 46,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 65,
                 "start": 46,
@@ -78,10 +85,17 @@ description: Result of parsing helix_simple.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 85,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 85,
+                    "name": "startProfileAt",
+                    "start": 71,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 71,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 96,
                 "start": 71,
@@ -147,10 +161,17 @@ description: Result of parsing helix_simple.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 106,
-                  "name": "line",
+                  "name": {
+                    "end": 106,
+                    "name": "line",
+                    "start": 102,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 102,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 137,
                 "start": 102,
@@ -290,19 +311,33 @@ description: Result of parsing helix_simple.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "end": 254,
-                  "name": "edge001",
+                  "name": {
+                    "end": 254,
+                    "name": "edge001",
+                    "start": 247,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 247,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 156,
-              "name": "helix",
+              "name": {
+                "end": 156,
+                "name": "helix",
+                "start": 151,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 151,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 257,
             "start": 151,

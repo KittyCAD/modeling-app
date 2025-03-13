@@ -11,16 +11,16 @@ description: Operations executed import_whole.kcl
           "value": "XY"
         },
         "sourceRange": [
-          50,
-          54,
+          74,
+          78,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      36,
-      55,
+      60,
+      79,
       3
     ],
     "type": "StdLibCall",
@@ -43,16 +43,83 @@ description: Operations executed import_whole.kcl
           }
         },
         "sourceRange": [
-          120,
-          122,
+          144,
+          146,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      103,
-      123,
+      127,
+      147,
+      3
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": [
+          74,
+          78,
+          3
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      60,
+      79,
+      3
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          144,
+          146,
+          3
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      127,
+      147,
       3
     ],
     "type": "StdLibCall",
@@ -91,11 +158,11 @@ description: Operations executed import_whole.kcl
       "thickness": {
         "value": {
           "type": "Number",
-          "value": 0.25,
+          "value": 42.0,
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"
@@ -104,7 +171,7 @@ description: Operations executed import_whole.kcl
         },
         "sourceRange": [
           118,
-          122,
+          132,
           0
         ]
       }
@@ -112,7 +179,7 @@ description: Operations executed import_whole.kcl
     "name": "shell",
     "sourceRange": [
       83,
-      123,
+      133,
       0
     ],
     "type": "StdLibCall",

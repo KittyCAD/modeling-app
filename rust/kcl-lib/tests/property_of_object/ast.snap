@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing property_of_object.kcl
 ---
 {
@@ -120,11 +120,18 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 160,
-              "name": "one_a",
+              "name": {
+                "end": 160,
+                "name": "one_a",
+                "start": 155,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 155,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 163,
@@ -147,10 +154,17 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 154,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "end": 154,
+              "name": "assertLessThanOrEq",
+              "start": 136,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 136,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 191,
           "start": 136,
@@ -166,11 +180,18 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 219,
-              "name": "one_a",
+              "name": {
+                "end": 219,
+                "name": "one_a",
+                "start": 214,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 214,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 222,
@@ -193,10 +214,17 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 213,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "end": 213,
+              "name": "assertGreaterThanOrEq",
+              "start": 192,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 192,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 250,
           "start": 192,
@@ -277,11 +305,18 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 390,
-              "name": "one_b",
+              "name": {
+                "end": 390,
+                "name": "one_b",
+                "start": 385,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 385,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 393,
@@ -304,10 +339,17 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 384,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "end": 384,
+              "name": "assertLessThanOrEq",
+              "start": 366,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 366,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 422,
           "start": 366,
@@ -323,11 +365,18 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 450,
-              "name": "one_b",
+              "name": {
+                "end": 450,
+                "name": "one_b",
+                "start": 445,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 445,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 453,
@@ -350,10 +399,17 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 444,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "end": 444,
+              "name": "assertGreaterThanOrEq",
+              "start": 423,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 423,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 482,
           "start": 423,
@@ -387,11 +443,18 @@ description: Result of parsing property_of_object.kcl
                 "start": 533,
                 "type": "ObjectProperty",
                 "value": {
+                  "abs_path": false,
                   "end": 544,
-                  "name": "obj",
+                  "name": {
+                    "end": 544,
+                    "name": "obj",
+                    "start": 541,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 541,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
@@ -467,11 +530,18 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 599,
-              "name": "one_c",
+              "name": {
+                "end": 599,
+                "name": "one_c",
+                "start": 594,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 594,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 602,
@@ -494,10 +564,17 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 593,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "end": 593,
+              "name": "assertLessThanOrEq",
+              "start": 575,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 575,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 630,
           "start": 575,
@@ -513,11 +590,18 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 658,
-              "name": "one_c",
+              "name": {
+                "end": 658,
+                "name": "one_c",
+                "start": 653,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 653,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 661,
@@ -540,10 +624,17 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 652,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "end": 652,
+              "name": "assertGreaterThanOrEq",
+              "start": 631,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 631,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 689,
           "start": 631,
@@ -612,11 +703,18 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 799,
-              "name": "one_d",
+              "name": {
+                "end": 799,
+                "name": "one_d",
+                "start": 794,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 794,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 802,
@@ -639,10 +737,17 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 793,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "end": 793,
+              "name": "assertLessThanOrEq",
+              "start": 775,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 775,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 831,
           "start": 775,
@@ -658,11 +763,18 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 859,
-              "name": "one_d",
+              "name": {
+                "end": 859,
+                "name": "one_d",
+                "start": 854,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 854,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 862,
@@ -685,10 +797,17 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 853,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "end": 853,
+              "name": "assertGreaterThanOrEq",
+              "start": 832,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 832,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 891,
           "start": 832,

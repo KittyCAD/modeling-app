@@ -307,29 +307,50 @@ description: Result of parsing flange-xy.kcl
           "init": {
             "end": 669,
             "left": {
+              "abs_path": false,
               "end": 634,
-              "name": "totalThickness",
+              "name": {
+                "end": 634,
+                "name": "totalThickness",
+                "start": 620,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 620,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "-",
             "right": {
               "end": 669,
               "left": {
+                "abs_path": false,
                 "end": 653,
-                "name": "bottomThickness",
+                "name": {
+                  "end": 653,
+                  "name": "bottomThickness",
+                  "start": 638,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 638,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "+",
               "right": {
+                "abs_path": false,
                 "end": 669,
-                "name": "baseThickness",
+                "name": {
+                  "end": 669,
+                  "name": "baseThickness",
+                  "start": 656,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 656,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 638,
               "type": "BinaryExpression",
@@ -360,11 +381,18 @@ description: Result of parsing flange-xy.kcl
           "init": {
             "end": 696,
             "left": {
+              "abs_path": false,
               "end": 692,
-              "name": "baseDia",
+              "name": {
+                "end": 692,
+                "name": "baseDia",
+                "start": 685,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 685,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "-",
             "right": {
@@ -425,11 +453,18 @@ description: Result of parsing flange-xy.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 786,
-              "name": "nHoles",
+              "name": {
+                "end": 786,
+                "name": "nHoles",
+                "start": 780,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 780,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 789,
@@ -452,10 +487,17 @@ description: Result of parsing flange-xy.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 779,
-            "name": "assertGreaterThan",
+            "name": {
+              "end": 779,
+              "name": "assertGreaterThan",
+              "start": 762,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 762,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 823,
           "start": 762,
@@ -489,10 +531,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 904,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 904,
+                    "name": "startSketchOn",
+                    "start": 891,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 891,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 910,
                 "start": 891,
@@ -551,11 +600,18 @@ description: Result of parsing flange-xy.kcl
                     "arg": {
                       "end": 975,
                       "left": {
+                        "abs_path": false,
                         "end": 971,
-                        "name": "baseDia",
+                        "name": {
+                          "end": 971,
+                          "name": "baseDia",
+                          "start": 964,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 964,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -576,10 +632,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 922,
-                  "name": "circle",
+                  "name": {
+                    "end": 922,
+                    "name": "circle",
+                    "start": 916,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 916,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 982,
                 "start": 916,
@@ -604,11 +667,18 @@ description: Result of parsing flange-xy.kcl
                             {
                               "end": 1051,
                               "left": {
+                                "abs_path": false,
                                 "end": 1047,
-                                "name": "mountingHolePlacementDiameter",
+                                "name": {
+                                  "end": 1047,
+                                  "name": "mountingHolePlacementDiameter",
+                                  "start": 1018,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1018,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -655,11 +725,18 @@ description: Result of parsing flange-xy.kcl
                         "arg": {
                           "end": 1092,
                           "left": {
+                            "abs_path": false,
                             "end": 1088,
-                            "name": "mountingHoleDia",
+                            "name": {
+                              "end": 1088,
+                              "name": "mountingHoleDia",
+                              "start": 1073,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1073,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -680,10 +757,17 @@ description: Result of parsing flange-xy.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 999,
-                      "name": "circle",
+                      "name": {
+                        "end": 999,
+                        "name": "circle",
+                        "start": 993,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 993,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1099,
                     "start": 993,
@@ -699,10 +783,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 992,
-                  "name": "hole",
+                  "name": {
+                    "end": 992,
+                    "name": "hole",
+                    "start": 988,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 988,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1103,
                 "start": 988,
@@ -737,11 +828,18 @@ description: Result of parsing flange-xy.kcl
                             {
                               "end": 1175,
                               "left": {
+                                "abs_path": false,
                                 "end": 1171,
-                                "name": "mountingHolePlacementDiameter",
+                                "name": {
+                                  "end": 1171,
+                                  "name": "mountingHolePlacementDiameter",
+                                  "start": 1142,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1142,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -777,11 +875,18 @@ description: Result of parsing flange-xy.kcl
                         "arg": {
                           "end": 1213,
                           "left": {
+                            "abs_path": false,
                             "end": 1209,
-                            "name": "mountingHoleDia",
+                            "name": {
+                              "end": 1209,
+                              "name": "mountingHoleDia",
+                              "start": 1194,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1194,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -802,10 +907,17 @@ description: Result of parsing flange-xy.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1120,
-                      "name": "circle",
+                      "name": {
+                        "end": 1120,
+                        "name": "circle",
+                        "start": 1114,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1114,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1220,
                     "start": 1114,
@@ -821,10 +933,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1113,
-                  "name": "hole",
+                  "name": {
+                    "end": 1113,
+                    "name": "hole",
+                    "start": 1109,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1109,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1224,
                 "start": 1109,
@@ -849,11 +968,18 @@ description: Result of parsing flange-xy.kcl
                               "end": 1294,
                               "left": {
                                 "argument": {
+                                  "abs_path": false,
                                   "end": 1290,
-                                  "name": "mountingHolePlacementDiameter",
+                                  "name": {
+                                    "end": 1290,
+                                    "name": "mountingHolePlacementDiameter",
+                                    "start": 1261,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1261,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "end": 1290,
                                 "operator": "-",
@@ -906,11 +1032,18 @@ description: Result of parsing flange-xy.kcl
                         "arg": {
                           "end": 1335,
                           "left": {
+                            "abs_path": false,
                             "end": 1331,
-                            "name": "mountingHoleDia",
+                            "name": {
+                              "end": 1331,
+                              "name": "mountingHoleDia",
+                              "start": 1316,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1316,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -931,10 +1064,17 @@ description: Result of parsing flange-xy.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1241,
-                      "name": "circle",
+                      "name": {
+                        "end": 1241,
+                        "name": "circle",
+                        "start": 1235,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1235,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1342,
                     "start": 1235,
@@ -950,10 +1090,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1234,
-                  "name": "hole",
+                  "name": {
+                    "end": 1234,
+                    "name": "hole",
+                    "start": 1230,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1230,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1346,
                 "start": 1230,
@@ -989,11 +1136,18 @@ description: Result of parsing flange-xy.kcl
                               "end": 1419,
                               "left": {
                                 "argument": {
+                                  "abs_path": false,
                                   "end": 1415,
-                                  "name": "mountingHolePlacementDiameter",
+                                  "name": {
+                                    "end": 1415,
+                                    "name": "mountingHolePlacementDiameter",
+                                    "start": 1386,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1386,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "end": 1415,
                                 "operator": "-",
@@ -1035,11 +1189,18 @@ description: Result of parsing flange-xy.kcl
                         "arg": {
                           "end": 1457,
                           "left": {
+                            "abs_path": false,
                             "end": 1453,
-                            "name": "mountingHoleDia",
+                            "name": {
+                              "end": 1453,
+                              "name": "mountingHoleDia",
+                              "start": 1438,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1438,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1060,10 +1221,17 @@ description: Result of parsing flange-xy.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1363,
-                      "name": "circle",
+                      "name": {
+                        "end": 1363,
+                        "name": "circle",
+                        "start": 1357,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1357,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1464,
                     "start": 1357,
@@ -1079,10 +1247,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1356,
-                  "name": "hole",
+                  "name": {
+                    "end": 1356,
+                    "name": "hole",
+                    "start": 1352,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1352,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1468,
                 "start": 1352,
@@ -1143,11 +1318,18 @@ description: Result of parsing flange-xy.kcl
                         "arg": {
                           "end": 1538,
                           "left": {
+                            "abs_path": false,
                             "end": 1534,
-                            "name": "pipeDia",
+                            "name": {
+                              "end": 1534,
+                              "name": "pipeDia",
+                              "start": 1527,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1527,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1168,10 +1350,17 @@ description: Result of parsing flange-xy.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1485,
-                      "name": "circle",
+                      "name": {
+                        "end": 1485,
+                        "name": "circle",
+                        "start": 1479,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1479,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1545,
                     "start": 1479,
@@ -1187,10 +1376,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1478,
-                  "name": "hole",
+                  "name": {
+                    "end": 1478,
+                    "name": "hole",
+                    "start": 1474,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1474,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1549,
                 "start": 1474,
@@ -1208,19 +1404,33 @@ description: Result of parsing flange-xy.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1585,
-                      "name": "baseThickness",
+                      "name": {
+                        "end": 1585,
+                        "name": "baseThickness",
+                        "start": 1572,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1572,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1562,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1562,
+                    "name": "extrude",
+                    "start": 1555,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1555,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1586,
                 "start": 1555,
@@ -1353,11 +1563,18 @@ description: Result of parsing flange-xy.kcl
                             "start": 1668,
                             "type": "ObjectProperty",
                             "value": {
+                              "abs_path": false,
                               "end": 1685,
-                              "name": "baseThickness",
+                              "name": {
+                                "end": 1685,
+                                "name": "baseThickness",
+                                "start": 1672,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1672,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
@@ -1655,11 +1872,18 @@ description: Result of parsing flange-xy.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 1901,
-                    "name": "topFacePlane",
+                    "name": {
+                      "end": 1901,
+                      "name": "topFacePlane",
+                      "start": 1889,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1889,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 1908,
@@ -1671,10 +1895,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1888,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1888,
+                    "name": "startSketchOn",
+                    "start": 1875,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1875,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1909,
                 "start": 1875,
@@ -1733,11 +1964,18 @@ description: Result of parsing flange-xy.kcl
                     "arg": {
                       "end": 1983,
                       "left": {
+                        "abs_path": false,
                         "end": 1979,
-                        "name": "topTotalDiameter",
+                        "name": {
+                          "end": 1979,
+                          "name": "topTotalDiameter",
+                          "start": 1963,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 1963,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -1758,10 +1996,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1921,
-                  "name": "circle",
+                  "name": {
+                    "end": 1921,
+                    "name": "circle",
+                    "start": 1915,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1915,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1990,
                 "start": 1915,
@@ -1823,11 +2068,18 @@ description: Result of parsing flange-xy.kcl
                         "arg": {
                           "end": 2060,
                           "left": {
+                            "abs_path": false,
                             "end": 2056,
-                            "name": "pipeDia",
+                            "name": {
+                              "end": 2056,
+                              "name": "pipeDia",
+                              "start": 2049,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2049,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1848,10 +2100,17 @@ description: Result of parsing flange-xy.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2007,
-                      "name": "circle",
+                      "name": {
+                        "end": 2007,
+                        "name": "circle",
+                        "start": 2001,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2001,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2067,
                     "start": 2001,
@@ -1867,10 +2126,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2000,
-                  "name": "hole",
+                  "name": {
+                    "end": 2000,
+                    "name": "hole",
+                    "start": 1996,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1996,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2071,
                 "start": 1996,
@@ -1888,19 +2154,33 @@ description: Result of parsing flange-xy.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2111,
-                      "name": "topTotalThickness",
+                      "name": {
+                        "end": 2111,
+                        "name": "topTotalThickness",
+                        "start": 2094,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2094,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2084,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2084,
+                    "name": "extrude",
+                    "start": 2077,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2077,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2112,
                 "start": 2077,
@@ -1963,10 +2243,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2202,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2202,
+                    "name": "startSketchOn",
+                    "start": 2189,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2189,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2208,
                 "start": 2189,
@@ -2025,11 +2312,18 @@ description: Result of parsing flange-xy.kcl
                     "arg": {
                       "end": 2285,
                       "left": {
+                        "abs_path": false,
                         "end": 2281,
-                        "name": "bottomTotalDiameter",
+                        "name": {
+                          "end": 2281,
+                          "name": "bottomTotalDiameter",
+                          "start": 2262,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2262,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -2050,10 +2344,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2220,
-                  "name": "circle",
+                  "name": {
+                    "end": 2220,
+                    "name": "circle",
+                    "start": 2214,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2214,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2292,
                 "start": 2214,
@@ -2115,11 +2416,18 @@ description: Result of parsing flange-xy.kcl
                         "arg": {
                           "end": 2362,
                           "left": {
+                            "abs_path": false,
                             "end": 2358,
-                            "name": "pipeDia",
+                            "name": {
+                              "end": 2358,
+                              "name": "pipeDia",
+                              "start": 2351,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2351,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -2140,10 +2448,17 @@ description: Result of parsing flange-xy.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2309,
-                      "name": "circle",
+                      "name": {
+                        "end": 2309,
+                        "name": "circle",
+                        "start": 2303,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2303,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2369,
                     "start": 2303,
@@ -2159,10 +2474,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2302,
-                  "name": "hole",
+                  "name": {
+                    "end": 2302,
+                    "name": "hole",
+                    "start": 2298,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2298,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2373,
                 "start": 2298,
@@ -2181,11 +2503,18 @@ description: Result of parsing flange-xy.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 2412,
-                        "name": "bottomThickness",
+                        "name": {
+                          "end": 2412,
+                          "name": "bottomThickness",
+                          "start": 2397,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2397,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 2412,
                       "operator": "-",
@@ -2196,10 +2525,17 @@ description: Result of parsing flange-xy.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2386,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2386,
+                    "name": "extrude",
+                    "start": 2379,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2379,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2413,
                 "start": 2379,
@@ -2262,11 +2598,18 @@ description: Result of parsing flange-xy.kcl
             "start": 330,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 352,
-              "name": "in",
+              "name": {
+                "end": 352,
+                "name": "in",
+                "start": 350,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 350,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

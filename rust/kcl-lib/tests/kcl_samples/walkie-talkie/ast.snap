@@ -209,11 +209,18 @@ description: Result of parsing walkie-talkie.kcl
       {
         "end": 691,
         "expression": {
+          "abs_path": false,
           "end": 691,
-          "name": "body",
+          "name": {
+            "end": 691,
+            "name": "body",
+            "start": 687,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 687,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 687,
         "type": "ExpressionStatement",
@@ -222,11 +229,18 @@ description: Result of parsing walkie-talkie.kcl
       {
         "end": 716,
         "expression": {
+          "abs_path": false,
           "end": 716,
-          "name": "case",
+          "name": {
+            "end": 716,
+            "name": "case",
+            "start": 712,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 712,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 712,
         "type": "ExpressionStatement",
@@ -235,11 +249,18 @@ description: Result of parsing walkie-talkie.kcl
       {
         "end": 747,
         "expression": {
+          "abs_path": false,
           "end": 747,
-          "name": "antenna",
+          "name": {
+            "end": 747,
+            "name": "antenna",
+            "start": 740,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 740,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 740,
         "type": "ExpressionStatement",
@@ -257,11 +278,18 @@ description: Result of parsing walkie-talkie.kcl
                     "left": {
                       "end": 799,
                       "left": {
+                        "abs_path": false,
                         "end": 795,
-                        "name": "screenWidth",
+                        "name": {
+                          "end": 795,
+                          "name": "screenWidth",
+                          "start": 784,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 784,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -281,11 +309,18 @@ description: Result of parsing walkie-talkie.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "end": 811,
-                      "name": "tolerance",
+                      "name": {
+                        "end": 811,
+                        "name": "tolerance",
+                        "start": 802,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 802,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 784,
                     "type": "BinaryExpression",
@@ -298,11 +333,18 @@ description: Result of parsing walkie-talkie.kcl
                   "type": "UnaryExpression"
                 },
                 {
+                  "abs_path": false,
                   "end": 831,
-                  "name": "screenYPosition",
+                  "name": {
+                    "end": 831,
+                    "name": "screenYPosition",
+                    "start": 816,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 816,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "end": 833,
@@ -332,19 +374,33 @@ description: Result of parsing walkie-talkie.kcl
                     "type": "Identifier"
                   },
                   "arg": {
+                    "abs_path": false,
                     "end": 874,
-                    "name": "thickness",
+                    "name": {
+                      "end": 874,
+                      "name": "thickness",
+                      "start": 865,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 865,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 849,
-                "name": "offsetPlane",
+                "name": {
+                  "end": 849,
+                  "name": "offsetPlane",
+                  "start": 838,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 838,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 875,
               "start": 838,
@@ -361,10 +417,17 @@ description: Result of parsing walkie-talkie.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 777,
-            "name": "button",
+            "name": {
+              "end": 777,
+              "name": "button",
+              "start": 771,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 771,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 876,
           "start": 771,
@@ -387,11 +450,18 @@ description: Result of parsing walkie-talkie.kcl
                     "left": {
                       "end": 905,
                       "left": {
+                        "abs_path": false,
                         "end": 901,
-                        "name": "screenWidth",
+                        "name": {
+                          "end": 901,
+                          "name": "screenWidth",
+                          "start": 890,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 890,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -411,11 +481,18 @@ description: Result of parsing walkie-talkie.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "abs_path": false,
                       "end": 917,
-                      "name": "tolerance",
+                      "name": {
+                        "end": 917,
+                        "name": "tolerance",
+                        "start": 908,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 908,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 890,
                     "type": "BinaryExpression",
@@ -430,21 +507,35 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "end": 957,
                   "left": {
+                    "abs_path": false,
                     "end": 937,
-                    "name": "screenYPosition",
+                    "name": {
+                      "end": 937,
+                      "name": "screenYPosition",
+                      "start": 922,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 922,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "-",
                   "right": {
                     "end": 957,
                     "left": {
+                      "abs_path": false,
                       "end": 953,
-                      "name": "screenHeight",
+                      "name": {
+                        "end": 953,
+                        "name": "screenHeight",
+                        "start": 941,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 941,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "/",
                     "right": {
@@ -494,19 +585,33 @@ description: Result of parsing walkie-talkie.kcl
                     "type": "Identifier"
                   },
                   "arg": {
+                    "abs_path": false,
                     "end": 1001,
-                    "name": "thickness",
+                    "name": {
+                      "end": 1001,
+                      "name": "thickness",
+                      "start": 992,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 992,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 976,
-                "name": "offsetPlane",
+                "name": {
+                  "end": 976,
+                  "name": "offsetPlane",
+                  "start": 965,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 965,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 1002,
               "start": 965,
@@ -523,10 +628,17 @@ description: Result of parsing walkie-talkie.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 883,
-            "name": "button",
+            "name": {
+              "end": 883,
+              "name": "button",
+              "start": 877,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 877,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1003,
           "start": 877,
@@ -548,11 +660,18 @@ description: Result of parsing walkie-talkie.kcl
                   "left": {
                     "end": 1030,
                     "left": {
+                      "abs_path": false,
                       "end": 1026,
-                      "name": "screenWidth",
+                      "name": {
+                        "end": 1026,
+                        "name": "screenWidth",
+                        "start": 1015,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1015,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "/",
                     "right": {
@@ -572,11 +691,18 @@ description: Result of parsing walkie-talkie.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 1042,
-                    "name": "tolerance",
+                    "name": {
+                      "end": 1042,
+                      "name": "tolerance",
+                      "start": 1033,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1033,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 1015,
                   "type": "BinaryExpression",
@@ -585,19 +711,33 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "end": 1076,
                   "left": {
+                    "abs_path": false,
                     "end": 1061,
-                    "name": "screenYPosition",
+                    "name": {
+                      "end": 1061,
+                      "name": "screenYPosition",
+                      "start": 1046,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1046,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "-",
                   "right": {
+                    "abs_path": false,
                     "end": 1076,
-                    "name": "screenHeight",
+                    "name": {
+                      "end": 1076,
+                      "name": "screenHeight",
+                      "start": 1064,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1064,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 1046,
                   "type": "BinaryExpression",
@@ -631,19 +771,33 @@ description: Result of parsing walkie-talkie.kcl
                     "type": "Identifier"
                   },
                   "arg": {
+                    "abs_path": false,
                     "end": 1121,
-                    "name": "thickness",
+                    "name": {
+                      "end": 1121,
+                      "name": "thickness",
+                      "start": 1112,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1112,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 1096,
-                "name": "offsetPlane",
+                "name": {
+                  "end": 1096,
+                  "name": "offsetPlane",
+                  "start": 1085,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1085,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 1122,
               "start": 1085,
@@ -660,10 +814,17 @@ description: Result of parsing walkie-talkie.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1010,
-            "name": "button",
+            "name": {
+              "end": 1010,
+              "name": "button",
+              "start": 1004,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1004,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1123,
           "start": 1004,
@@ -685,11 +846,18 @@ description: Result of parsing walkie-talkie.kcl
                   "left": {
                     "end": 1150,
                     "left": {
+                      "abs_path": false,
                       "end": 1146,
-                      "name": "screenWidth",
+                      "name": {
+                        "end": 1146,
+                        "name": "screenWidth",
+                        "start": 1135,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1135,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "/",
                     "right": {
@@ -709,11 +877,18 @@ description: Result of parsing walkie-talkie.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "abs_path": false,
                     "end": 1162,
-                    "name": "tolerance",
+                    "name": {
+                      "end": 1162,
+                      "name": "tolerance",
+                      "start": 1153,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1153,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 1135,
                   "type": "BinaryExpression",
@@ -722,21 +897,35 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "end": 1201,
                   "left": {
+                    "abs_path": false,
                     "end": 1181,
-                    "name": "screenYPosition",
+                    "name": {
+                      "end": 1181,
+                      "name": "screenYPosition",
+                      "start": 1166,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1166,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "-",
                   "right": {
                     "end": 1201,
                     "left": {
+                      "abs_path": false,
                       "end": 1197,
-                      "name": "screenHeight",
+                      "name": {
+                        "end": 1197,
+                        "name": "screenHeight",
+                        "start": 1185,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1185,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "/",
                     "right": {
@@ -786,19 +975,33 @@ description: Result of parsing walkie-talkie.kcl
                     "type": "Identifier"
                   },
                   "arg": {
+                    "abs_path": false,
                     "end": 1247,
-                    "name": "thickness",
+                    "name": {
+                      "end": 1247,
+                      "name": "thickness",
+                      "start": 1238,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1238,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 1222,
-                "name": "offsetPlane",
+                "name": {
+                  "end": 1222,
+                  "name": "offsetPlane",
+                  "start": 1211,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1211,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 1248,
               "start": 1211,
@@ -815,10 +1018,17 @@ description: Result of parsing walkie-talkie.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 1130,
-            "name": "button",
+            "name": {
+              "end": 1130,
+              "name": "button",
+              "start": 1124,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 1124,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 1249,
           "start": 1124,
@@ -832,11 +1042,18 @@ description: Result of parsing walkie-talkie.kcl
       {
         "end": 1287,
         "expression": {
+          "abs_path": false,
           "end": 1287,
-          "name": "talkButton",
+          "name": {
+            "end": 1287,
+            "name": "talkButton",
+            "start": 1277,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 1277,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 1277,
         "type": "ExpressionStatement",
@@ -845,11 +1062,18 @@ description: Result of parsing walkie-talkie.kcl
       {
         "end": 1324,
         "expression": {
+          "abs_path": false,
           "end": 1324,
-          "name": "knob",
+          "name": {
+            "end": 1324,
+            "name": "knob",
+            "start": 1320,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 1320,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 1320,
         "type": "ExpressionStatement",
@@ -878,11 +1102,18 @@ description: Result of parsing walkie-talkie.kcl
             "start": 360,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 382,
-              "name": "in",
+              "name": {
+                "end": 382,
+                "name": "in",
+                "start": 380,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 380,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

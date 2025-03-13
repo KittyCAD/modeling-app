@@ -29,11 +29,18 @@ description: Result of parsing pipe_as_arg.kcl
                     "init": {
                       "end": 42,
                       "left": {
+                        "abs_path": false,
                         "end": 38,
-                        "name": "length",
+                        "name": {
+                          "end": 38,
+                          "name": "length",
+                          "start": 32,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 32,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -161,11 +168,18 @@ description: Result of parsing pipe_as_arg.kcl
                           "end": 89,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 85,
-                              "name": "l",
+                              "name": {
+                                "end": 85,
+                                "name": "l",
+                                "start": 84,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 84,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 85,
                             "operator": "-",
@@ -175,11 +189,18 @@ description: Result of parsing pipe_as_arg.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 89,
-                            "name": "x",
+                            "name": {
+                              "end": 89,
+                              "name": "x",
+                              "start": 88,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 88,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 83,
                           "type": "BinaryExpression",
@@ -189,11 +210,18 @@ description: Result of parsing pipe_as_arg.kcl
                           "end": 97,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 93,
-                              "name": "l",
+                              "name": {
+                                "end": 93,
+                                "name": "l",
+                                "start": 92,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 92,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 93,
                             "operator": "-",
@@ -203,11 +231,18 @@ description: Result of parsing pipe_as_arg.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 97,
-                            "name": "y",
+                            "name": {
+                              "end": 97,
+                              "name": "y",
+                              "start": 96,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 96,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 91,
                           "type": "BinaryExpression",
@@ -243,11 +278,18 @@ description: Result of parsing pipe_as_arg.kcl
                           "end": 113,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 109,
-                              "name": "l",
+                              "name": {
+                                "end": 109,
+                                "name": "l",
+                                "start": 108,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 108,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 109,
                             "operator": "-",
@@ -257,11 +299,18 @@ description: Result of parsing pipe_as_arg.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 113,
-                            "name": "x",
+                            "name": {
+                              "end": 113,
+                              "name": "x",
+                              "start": 112,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 112,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 107,
                           "type": "BinaryExpression",
@@ -270,19 +319,33 @@ description: Result of parsing pipe_as_arg.kcl
                         {
                           "end": 120,
                           "left": {
+                            "abs_path": false,
                             "end": 116,
-                            "name": "l",
+                            "name": {
+                              "end": 116,
+                              "name": "l",
+                              "start": 115,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 115,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 120,
-                            "name": "y",
+                            "name": {
+                              "end": 120,
+                              "name": "y",
+                              "start": 119,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 119,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 115,
                           "type": "BinaryExpression",
@@ -317,19 +380,33 @@ description: Result of parsing pipe_as_arg.kcl
                         {
                           "end": 135,
                           "left": {
+                            "abs_path": false,
                             "end": 131,
-                            "name": "l",
+                            "name": {
+                              "end": 131,
+                              "name": "l",
+                              "start": 130,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 130,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 135,
-                            "name": "x",
+                            "name": {
+                              "end": 135,
+                              "name": "x",
+                              "start": 134,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 134,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 130,
                           "type": "BinaryExpression",
@@ -338,19 +415,33 @@ description: Result of parsing pipe_as_arg.kcl
                         {
                           "end": 142,
                           "left": {
+                            "abs_path": false,
                             "end": 138,
-                            "name": "l",
+                            "name": {
+                              "end": 138,
+                              "name": "l",
+                              "start": 137,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 137,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 142,
-                            "name": "y",
+                            "name": {
+                              "end": 142,
+                              "name": "y",
+                              "start": 141,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 141,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 137,
                           "type": "BinaryExpression",
@@ -385,19 +476,33 @@ description: Result of parsing pipe_as_arg.kcl
                         {
                           "end": 157,
                           "left": {
+                            "abs_path": false,
                             "end": 153,
-                            "name": "l",
+                            "name": {
+                              "end": 153,
+                              "name": "l",
+                              "start": 152,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 152,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 157,
-                            "name": "x",
+                            "name": {
+                              "end": 157,
+                              "name": "x",
+                              "start": 156,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 156,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 152,
                           "type": "BinaryExpression",
@@ -407,11 +512,18 @@ description: Result of parsing pipe_as_arg.kcl
                           "end": 165,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 161,
-                              "name": "l",
+                              "name": {
+                                "end": 161,
+                                "name": "l",
+                                "start": 160,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 160,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 161,
                             "operator": "-",
@@ -421,11 +533,18 @@ description: Result of parsing pipe_as_arg.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 165,
-                            "name": "y",
+                            "name": {
+                              "end": 165,
+                              "name": "y",
+                              "start": 164,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 164,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 159,
                           "type": "BinaryExpression",
@@ -452,18 +571,32 @@ description: Result of parsing pipe_as_arg.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 193,
-                            "name": "XY",
+                            "name": {
+                              "end": 193,
+                              "name": "XY",
+                              "start": 191,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 191,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 190,
-                          "name": "startSketchOn",
+                          "name": {
+                            "end": 190,
+                            "name": "startSketchOn",
+                            "start": 177,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 177,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 194,
                         "start": 177,
@@ -473,11 +606,18 @@ description: Result of parsing pipe_as_arg.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 219,
-                            "name": "p0",
+                            "name": {
+                              "end": 219,
+                              "name": "p0",
+                              "start": 217,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 217,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           {
                             "end": 222,
@@ -487,10 +627,17 @@ description: Result of parsing pipe_as_arg.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 216,
-                          "name": "startProfileAt",
+                          "name": {
+                            "end": 216,
+                            "name": "startProfileAt",
+                            "start": 202,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 202,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 223,
                         "start": 202,
@@ -508,19 +655,33 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "end": 252,
-                              "name": "p1",
+                              "name": {
+                                "end": 252,
+                                "name": "p1",
+                                "start": 250,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 250,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 235,
-                          "name": "line",
+                          "name": {
+                            "end": 235,
+                            "name": "line",
+                            "start": 231,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 231,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 253,
                         "start": 231,
@@ -539,19 +700,33 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "end": 282,
-                              "name": "p2",
+                              "name": {
+                                "end": 282,
+                                "name": "p2",
+                                "start": 280,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 280,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 265,
-                          "name": "line",
+                          "name": {
+                            "end": 265,
+                            "name": "line",
+                            "start": 261,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 261,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 283,
                         "start": 261,
@@ -570,19 +745,33 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "end": 312,
-                              "name": "p3",
+                              "name": {
+                                "end": 312,
+                                "name": "p3",
+                                "start": 310,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 310,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 295,
-                          "name": "line",
+                          "name": {
+                            "end": 295,
+                            "name": "line",
+                            "start": 291,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 291,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 313,
                         "start": 291,
@@ -601,19 +790,33 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "end": 342,
-                              "name": "p0",
+                              "name": {
+                                "end": 342,
+                                "name": "p0",
+                                "start": 340,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 340,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 325,
-                          "name": "line",
+                          "name": {
+                            "end": 325,
+                            "name": "line",
+                            "start": 321,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 321,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 343,
                         "start": 321,
@@ -631,10 +834,17 @@ description: Result of parsing pipe_as_arg.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 356,
-                          "name": "close",
+                          "name": {
+                            "end": 356,
+                            "name": "close",
+                            "start": 351,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 351,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 359,
                         "start": 351,
@@ -652,19 +862,33 @@ description: Result of parsing pipe_as_arg.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "end": 390,
-                              "name": "length",
+                              "name": {
+                                "end": 390,
+                                "name": "length",
+                                "start": 384,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 384,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 374,
-                          "name": "extrude",
+                          "name": {
+                            "end": 374,
+                            "name": "extrude",
+                            "start": 367,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 367,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 391,
                         "start": 367,
@@ -752,11 +976,18 @@ description: Result of parsing pipe_as_arg.kcl
                   "argument": {
                     "end": 424,
                     "left": {
+                      "abs_path": false,
                       "end": 420,
-                      "name": "x",
+                      "name": {
+                        "end": 420,
+                        "name": "x",
+                        "start": 419,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 419,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "*",
                     "right": {
@@ -890,10 +1121,17 @@ description: Result of parsing pipe_as_arg.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 485,
-                      "name": "double",
+                      "name": {
+                        "end": 485,
+                        "name": "double",
+                        "start": 479,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 479,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 488,
                     "start": 479,
@@ -938,10 +1176,17 @@ description: Result of parsing pipe_as_arg.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 469,
-              "name": "cube",
+              "name": {
+                "end": 469,
+                "name": "cube",
+                "start": 465,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 465,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 497,
             "start": 465,

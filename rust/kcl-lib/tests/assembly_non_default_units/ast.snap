@@ -36,11 +36,18 @@ description: Result of parsing assembly_non_default_units.kcl
       {
         "end": 200,
         "expression": {
+          "abs_path": false,
           "end": 200,
-          "name": "other1",
+          "name": {
+            "end": 200,
+            "name": "other1",
+            "start": 194,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 194,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 194,
         "type": "ExpressionStatement",
@@ -49,11 +56,18 @@ description: Result of parsing assembly_non_default_units.kcl
       {
         "end": 207,
         "expression": {
+          "abs_path": false,
           "end": 207,
-          "name": "other2",
+          "name": {
+            "end": 207,
+            "name": "other2",
+            "start": 201,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 201,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 201,
         "type": "ExpressionStatement",
@@ -82,11 +96,18 @@ description: Result of parsing assembly_non_default_units.kcl
             "start": 10,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 32,
-              "name": "in",
+              "name": {
+                "end": 32,
+                "name": "in",
+                "start": 30,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 30,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

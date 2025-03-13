@@ -573,10 +573,17 @@ description: Result of parsing food-service-spatula.kcl
                                             }
                                           ],
                                           "callee": {
+                                            "abs_path": false,
                                             "end": 759,
-                                            "name": "atan",
+                                            "name": {
+                                              "end": 759,
+                                              "name": "atan",
+                                              "start": 755,
+                                              "type": "Identifier"
+                                            },
+                                            "path": [],
                                             "start": 755,
-                                            "type": "Identifier"
+                                            "type": "Name"
                                           },
                                           "end": 802,
                                           "start": 755,
@@ -585,10 +592,17 @@ description: Result of parsing food-service-spatula.kcl
                                         }
                                       ],
                                       "callee": {
+                                        "abs_path": false,
                                         "end": 748,
-                                        "name": "toDegrees",
+                                        "name": {
+                                          "end": 748,
+                                          "name": "toDegrees",
+                                          "start": 739,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 739,
-                                        "type": "Identifier"
+                                        "type": "Name"
                                       },
                                       "end": 803,
                                       "start": 739,
@@ -737,10 +751,17 @@ description: Result of parsing food-service-spatula.kcl
                                               }
                                             ],
                                             "callee": {
+                                              "abs_path": false,
                                               "end": 669,
-                                              "name": "atan",
+                                              "name": {
+                                                "end": 669,
+                                                "name": "atan",
+                                                "start": 665,
+                                                "type": "Identifier"
+                                              },
+                                              "path": [],
                                               "start": 665,
-                                              "type": "Identifier"
+                                              "type": "Name"
                                             },
                                             "end": 712,
                                             "start": 665,
@@ -749,10 +770,17 @@ description: Result of parsing food-service-spatula.kcl
                                           }
                                         ],
                                         "callee": {
+                                          "abs_path": false,
                                           "end": 664,
-                                          "name": "toDegrees",
+                                          "name": {
+                                            "end": 664,
+                                            "name": "toDegrees",
+                                            "start": 655,
+                                            "type": "Identifier"
+                                          },
+                                          "path": [],
                                           "start": 655,
-                                          "type": "Identifier"
+                                          "type": "Name"
                                         },
                                         "end": 713,
                                         "start": 655,
@@ -1015,10 +1043,17 @@ description: Result of parsing food-service-spatula.kcl
                               }
                             ],
                             "callee": {
+                              "abs_path": false,
                               "end": 831,
-                              "name": "pow",
+                              "name": {
+                                "end": 831,
+                                "name": "pow",
+                                "start": 828,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 828,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
                             "end": 853,
                             "start": 828,
@@ -1098,10 +1133,17 @@ description: Result of parsing food-service-spatula.kcl
                               }
                             ],
                             "callee": {
+                              "abs_path": false,
                               "end": 859,
-                              "name": "pow",
+                              "name": {
+                                "end": 859,
+                                "name": "pow",
+                                "start": 856,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 856,
-                              "type": "Identifier"
+                              "type": "Name"
                             },
                             "end": 881,
                             "start": 856,
@@ -1114,10 +1156,17 @@ description: Result of parsing food-service-spatula.kcl
                         }
                       ],
                       "callee": {
+                        "abs_path": false,
                         "end": 827,
-                        "name": "sqrt",
+                        "name": {
+                          "end": 827,
+                          "name": "sqrt",
+                          "start": 823,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 823,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "end": 882,
                       "start": 823,
@@ -1149,11 +1198,18 @@ description: Result of parsing food-service-spatula.kcl
                         "left": {
                           "end": 903,
                           "left": {
+                            "abs_path": false,
                             "end": 899,
-                            "name": "width",
+                            "name": {
+                              "end": 899,
+                              "name": "width",
+                              "start": 894,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 894,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1179,11 +1235,18 @@ description: Result of parsing food-service-spatula.kcl
                                 {
                                   "end": 930,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 925,
-                                    "name": "angle",
+                                    "name": {
+                                      "end": 925,
+                                      "name": "angle",
+                                      "start": 920,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 920,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "-",
                                   "right": {
@@ -1203,10 +1266,17 @@ description: Result of parsing food-service-spatula.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 919,
-                                "name": "toRadians",
+                                "name": {
+                                  "end": 919,
+                                  "name": "toRadians",
+                                  "start": 910,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 910,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 931,
                               "start": 910,
@@ -1215,10 +1285,17 @@ description: Result of parsing food-service-spatula.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 909,
-                            "name": "cos",
+                            "name": {
+                              "end": 909,
+                              "name": "cos",
+                              "start": 906,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 906,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 932,
                           "start": 906,
@@ -1284,11 +1361,18 @@ description: Result of parsing food-service-spatula.kcl
                         "left": {
                           "end": 964,
                           "left": {
+                            "abs_path": false,
                             "end": 960,
-                            "name": "width",
+                            "name": {
+                              "end": 960,
+                              "name": "width",
+                              "start": 955,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 955,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1314,11 +1398,18 @@ description: Result of parsing food-service-spatula.kcl
                                 {
                                   "end": 991,
                                   "left": {
+                                    "abs_path": false,
                                     "end": 986,
-                                    "name": "angle",
+                                    "name": {
+                                      "end": 986,
+                                      "name": "angle",
+                                      "start": 981,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 981,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "operator": "-",
                                   "right": {
@@ -1338,10 +1429,17 @@ description: Result of parsing food-service-spatula.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 980,
-                                "name": "toRadians",
+                                "name": {
+                                  "end": 980,
+                                  "name": "toRadians",
+                                  "start": 971,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 971,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 992,
                               "start": 971,
@@ -1350,10 +1448,17 @@ description: Result of parsing food-service-spatula.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 970,
-                            "name": "sin",
+                            "name": {
+                              "end": 970,
+                              "name": "sin",
+                              "start": 967,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 967,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 993,
                           "start": 967,
@@ -1419,18 +1524,32 @@ description: Result of parsing food-service-spatula.kcl
                             {
                               "elements": [
                                 {
+                                  "abs_path": false,
                                   "end": 1042,
-                                  "name": "xstart",
+                                  "name": {
+                                    "end": 1042,
+                                    "name": "xstart",
+                                    "start": 1036,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1036,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 {
+                                  "abs_path": false,
                                   "end": 1050,
-                                  "name": "ystart",
+                                  "name": {
+                                    "end": 1050,
+                                    "name": "ystart",
+                                    "start": 1044,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 1044,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 }
                               ],
                               "end": 1051,
@@ -1439,18 +1558,32 @@ description: Result of parsing food-service-spatula.kcl
                               "type": "ArrayExpression"
                             },
                             {
+                              "abs_path": false,
                               "end": 1060,
-                              "name": "sketch1",
+                              "name": {
+                                "end": 1060,
+                                "name": "sketch1",
+                                "start": 1053,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1053,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1034,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 1034,
+                              "name": "startProfileAt",
+                              "start": 1020,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1020,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1061,
                           "start": 1020,
@@ -1473,11 +1606,18 @@ description: Result of parsing food-service-spatula.kcl
                                   "start": 1082,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1095,
-                                    "name": "angle",
+                                    "name": {
+                                      "end": 1095,
+                                      "name": "angle",
+                                      "start": 1090,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1090,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 },
                                 {
@@ -1491,11 +1631,18 @@ description: Result of parsing food-service-spatula.kcl
                                   "start": 1097,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1110,
-                                    "name": "dist",
+                                    "name": {
+                                      "end": 1110,
+                                      "name": "dist",
+                                      "start": 1106,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1106,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 }
                               ],
@@ -1518,10 +1665,17 @@ description: Result of parsing food-service-spatula.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1079,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 1079,
+                              "name": "angledLine",
+                              "start": 1069,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1069,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1126,
                           "start": 1069,
@@ -1546,11 +1700,18 @@ description: Result of parsing food-service-spatula.kcl
                                   "value": {
                                     "end": 1168,
                                     "left": {
+                                      "abs_path": false,
                                       "end": 1164,
-                                      "name": "width",
+                                      "name": {
+                                        "end": 1164,
+                                        "name": "width",
+                                        "start": 1159,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1159,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "operator": "/",
                                     "right": {
@@ -1611,10 +1772,17 @@ description: Result of parsing food-service-spatula.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1147,
-                            "name": "tangentialArc",
+                            "name": {
+                              "end": 1147,
+                              "name": "tangentialArc",
+                              "start": 1134,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1134,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1197,
                           "start": 1134,
@@ -1637,11 +1805,18 @@ description: Result of parsing food-service-spatula.kcl
                                   "start": 1218,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "abs_path": false,
                                     "end": 1231,
-                                    "name": "angle",
+                                    "name": {
+                                      "end": 1231,
+                                      "name": "angle",
+                                      "start": 1226,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1226,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   }
                                 },
                                 {
@@ -1656,11 +1831,18 @@ description: Result of parsing food-service-spatula.kcl
                                   "type": "ObjectProperty",
                                   "value": {
                                     "argument": {
+                                      "abs_path": false,
                                       "end": 1247,
-                                      "name": "dist",
+                                      "name": {
+                                        "end": 1247,
+                                        "name": "dist",
+                                        "start": 1243,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 1243,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "end": 1247,
                                     "operator": "-",
@@ -1689,10 +1871,17 @@ description: Result of parsing food-service-spatula.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1215,
-                            "name": "angledLine",
+                            "name": {
+                              "end": 1215,
+                              "name": "angledLine",
+                              "start": 1205,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1205,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1263,
                           "start": 1205,
@@ -1713,10 +1902,17 @@ description: Result of parsing food-service-spatula.kcl
                                     }
                                   ],
                                   "callee": {
+                                    "abs_path": false,
                                     "end": 1301,
-                                    "name": "profileStartX",
+                                    "name": {
+                                      "end": 1301,
+                                      "name": "profileStartX",
+                                      "start": 1288,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1288,
-                                    "type": "Identifier"
+                                    "type": "Name"
                                   },
                                   "end": 1304,
                                   "start": 1288,
@@ -1733,10 +1929,17 @@ description: Result of parsing food-service-spatula.kcl
                                     }
                                   ],
                                   "callee": {
+                                    "abs_path": false,
                                     "end": 1319,
-                                    "name": "profileStartY",
+                                    "name": {
+                                      "end": 1319,
+                                      "name": "profileStartY",
+                                      "start": 1306,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 1306,
-                                    "type": "Identifier"
+                                    "type": "Name"
                                   },
                                   "end": 1322,
                                   "start": 1306,
@@ -1764,10 +1967,17 @@ description: Result of parsing food-service-spatula.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1286,
-                            "name": "tangentialArcTo",
+                            "name": {
+                              "end": 1286,
+                              "name": "tangentialArcTo",
+                              "start": 1271,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1271,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1336,
                           "start": 1271,
@@ -1777,10 +1987,17 @@ description: Result of parsing food-service-spatula.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "abs_path": false,
                             "end": 1349,
-                            "name": "close",
+                            "name": {
+                              "end": 1349,
+                              "name": "close",
+                              "start": 1344,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1344,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1351,
                           "start": 1344,
@@ -1804,11 +2021,18 @@ description: Result of parsing food-service-spatula.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 1371,
-                    "name": "slotSketch",
+                    "name": {
+                      "end": 1371,
+                      "name": "slotSketch",
+                      "start": 1361,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1361,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 1371,
                   "start": 1354,
@@ -1892,10 +2116,17 @@ description: Result of parsing food-service-spatula.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1437,
-              "name": "startSketchOn",
+              "name": {
+                "end": 1437,
+                "name": "startSketchOn",
+                "start": 1424,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1424,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1443,
             "start": 1424,
@@ -1928,11 +2159,18 @@ description: Result of parsing food-service-spatula.kcl
                     "elements": [
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 1527,
-                          "name": "flipperLength",
+                          "name": {
+                            "end": 1527,
+                            "name": "flipperLength",
+                            "start": 1514,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1514,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 1527,
                         "operator": "-",
@@ -1965,18 +2203,32 @@ description: Result of parsing food-service-spatula.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "abs_path": false,
                     "end": 1546,
-                    "name": "sketch000",
+                    "name": {
+                      "end": 1546,
+                      "name": "sketch000",
+                      "start": 1537,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1537,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1511,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1511,
+                    "name": "startProfileAt",
+                    "start": 1497,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1497,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1547,
                 "start": 1497,
@@ -1996,11 +2248,18 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 1578,
-                          "name": "flipperLength",
+                          "name": {
+                            "end": 1578,
+                            "name": "flipperLength",
+                            "start": 1565,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1565,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 1583,
@@ -2022,10 +2281,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1557,
-                  "name": "line",
+                  "name": {
+                    "end": 1557,
+                    "name": "line",
+                    "start": 1553,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1553,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1585,
                 "start": 1553,
@@ -2073,10 +2339,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1596,
-                  "name": "yLine",
+                  "name": {
+                    "end": 1596,
+                    "name": "yLine",
+                    "start": 1591,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1591,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1628,
                 "start": 1591,
@@ -2098,11 +2371,18 @@ description: Result of parsing food-service-spatula.kcl
                       "elements": [
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 1660,
-                            "name": "flipperLength",
+                            "name": {
+                              "end": 1660,
+                              "name": "flipperLength",
+                              "start": 1647,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1647,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 1660,
                           "operator": "-",
@@ -2130,10 +2410,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1638,
-                  "name": "line",
+                  "name": {
+                    "end": 1638,
+                    "name": "line",
+                    "start": 1634,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1634,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1667,
                 "start": 1634,
@@ -2225,10 +2512,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1676,
-                  "name": "arc",
+                  "name": {
+                    "end": 1676,
+                    "name": "arc",
+                    "start": 1673,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1673,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1773,
                 "start": 1673,
@@ -2238,10 +2532,17 @@ description: Result of parsing food-service-spatula.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 1784,
-                  "name": "close",
+                  "name": {
+                    "end": 1784,
+                    "name": "close",
+                    "start": 1779,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1779,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1786,
                 "start": 1779,
@@ -2292,11 +2593,18 @@ description: Result of parsing food-service-spatula.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 1853,
-                "name": "sketch000",
+                "name": {
+                  "end": 1853,
+                  "name": "sketch000",
+                  "start": 1844,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1844,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "elements": [
@@ -2373,18 +2681,32 @@ description: Result of parsing food-service-spatula.kcl
                 "type": "ArrayExpression"
               },
               {
+                "abs_path": false,
                 "end": 1891,
-                "name": "flipperSlotWidth",
+                "name": {
+                  "end": 1891,
+                  "name": "flipperSlotWidth",
+                  "start": 1875,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1875,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1843,
-              "name": "slot",
+              "name": {
+                "end": 1843,
+                "name": "slot",
+                "start": 1839,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1839,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1892,
             "start": 1839,
@@ -2412,11 +2734,18 @@ description: Result of parsing food-service-spatula.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 1961,
-                "name": "sketch000",
+                "name": {
+                  "end": 1961,
+                  "name": "sketch000",
+                  "start": 1952,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1952,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "elements": [
@@ -2493,18 +2822,32 @@ description: Result of parsing food-service-spatula.kcl
                 "type": "ArrayExpression"
               },
               {
+                "abs_path": false,
                 "end": 2001,
-                "name": "flipperSlotWidth",
+                "name": {
+                  "end": 2001,
+                  "name": "flipperSlotWidth",
+                  "start": 1985,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1985,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1951,
-              "name": "slot",
+              "name": {
+                "end": 1951,
+                "name": "slot",
+                "start": 1947,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1947,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 2002,
             "start": 1947,
@@ -2532,11 +2875,18 @@ description: Result of parsing food-service-spatula.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 2074,
-                "name": "sketch000",
+                "name": {
+                  "end": 2074,
+                  "name": "sketch000",
+                  "start": 2065,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 2065,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "elements": [
@@ -2627,18 +2977,32 @@ description: Result of parsing food-service-spatula.kcl
                 "type": "ArrayExpression"
               },
               {
+                "abs_path": false,
                 "end": 2116,
-                "name": "flipperSlotWidth",
+                "name": {
+                  "end": 2116,
+                  "name": "flipperSlotWidth",
+                  "start": 2100,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 2100,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 2064,
-              "name": "slot",
+              "name": {
+                "end": 2064,
+                "name": "slot",
+                "start": 2060,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2060,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 2117,
             "start": 2060,
@@ -2666,20 +3030,34 @@ description: Result of parsing food-service-spatula.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "end": 2197,
-                "name": "flipperProfile",
+                "name": {
+                  "end": 2197,
+                  "name": "flipperProfile",
+                  "start": 2183,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 2183,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2222,
-                    "name": "slotProfile000",
+                    "name": {
+                      "end": 2222,
+                      "name": "slotProfile000",
+                      "start": 2208,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2208,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 2225,
@@ -2689,10 +3067,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2207,
-                  "name": "hole",
+                  "name": {
+                    "end": 2207,
+                    "name": "hole",
+                    "start": 2203,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2203,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2226,
                 "start": 2203,
@@ -2702,11 +3087,18 @@ description: Result of parsing food-service-spatula.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2251,
-                    "name": "slotProfile001",
+                    "name": {
+                      "end": 2251,
+                      "name": "slotProfile001",
+                      "start": 2237,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2237,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 2254,
@@ -2716,10 +3108,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2236,
-                  "name": "hole",
+                  "name": {
+                    "end": 2236,
+                    "name": "hole",
+                    "start": 2232,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2232,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2255,
                 "start": 2232,
@@ -2729,11 +3128,18 @@ description: Result of parsing food-service-spatula.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2280,
-                    "name": "slotProfile002",
+                    "name": {
+                      "end": 2280,
+                      "name": "slotProfile002",
+                      "start": 2266,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2266,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 2283,
@@ -2743,10 +3149,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2265,
-                  "name": "hole",
+                  "name": {
+                    "end": 2265,
+                    "name": "hole",
+                    "start": 2261,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2261,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2284,
                 "start": 2261,
@@ -2805,30 +3218,51 @@ description: Result of parsing food-service-spatula.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "end": 2398,
-                  "name": "flipperThickness",
+                  "name": {
+                    "end": 2398,
+                    "name": "flipperThickness",
+                    "start": 2382,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2382,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 2356,
-              "name": "extrude",
+              "name": {
+                "end": 2356,
+                "name": "extrude",
+                "start": 2349,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2349,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 2399,
             "start": 2349,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 2371,
-              "name": "spatulaProfile",
+              "name": {
+                "end": 2371,
+                "name": "spatulaProfile",
+                "start": 2357,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2357,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 2339,
@@ -2853,11 +3287,18 @@ description: Result of parsing food-service-spatula.kcl
                 "type": "Identifier"
               },
               "arg": {
+                "abs_path": false,
                 "end": 2485,
-                "name": "flipperFilletRadius",
+                "name": {
+                  "end": 2485,
+                  "name": "flipperFilletRadius",
+                  "start": 2466,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 2466,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             },
             {
@@ -2873,18 +3314,32 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "arguments": [
                       {
+                        "abs_path": false,
                         "end": 2530,
-                        "name": "backEdge",
+                        "name": {
+                          "end": 2530,
+                          "name": "backEdge",
+                          "start": 2522,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2522,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2521,
-                      "name": "getNextAdjacentEdge",
+                      "name": {
+                        "end": 2521,
+                        "name": "getNextAdjacentEdge",
+                        "start": 2502,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2502,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2531,
                     "start": 2502,
@@ -2894,18 +3349,32 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "arguments": [
                       {
+                        "abs_path": false,
                         "end": 2569,
-                        "name": "backEdge",
+                        "name": {
+                          "end": 2569,
+                          "name": "backEdge",
+                          "start": 2561,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2561,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 2560,
-                      "name": "getPreviousAdjacentEdge",
+                      "name": {
+                        "end": 2560,
+                        "name": "getPreviousAdjacentEdge",
+                        "start": 2537,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2537,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 2570,
                     "start": 2537,
@@ -2921,21 +3390,35 @@ description: Result of parsing food-service-spatula.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 2442,
-            "name": "fillet",
+            "name": {
+              "end": 2442,
+              "name": "fillet",
+              "start": 2436,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 2436,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 2576,
           "start": 2436,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
+            "abs_path": false,
             "end": 2453,
-            "name": "flipper",
+            "name": {
+              "end": 2453,
+              "name": "flipper",
+              "start": 2446,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 2446,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           }
         },
         "start": 2436,
@@ -2967,11 +3450,18 @@ description: Result of parsing food-service-spatula.kcl
                       "end": 2713,
                       "left": {
                         "argument": {
+                          "abs_path": false,
                           "end": 2709,
-                          "name": "handleWidth",
+                          "name": {
+                            "end": 2709,
+                            "name": "handleWidth",
+                            "start": 2698,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2698,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 2709,
                         "operator": "-",
@@ -2998,10 +3488,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2681,
-                  "name": "offsetPlane",
+                  "name": {
+                    "end": 2681,
+                    "name": "offsetPlane",
+                    "start": 2670,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2670,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2714,
                 "start": 2670,
@@ -3018,10 +3515,17 @@ description: Result of parsing food-service-spatula.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 2669,
-              "name": "startSketchOn",
+              "name": {
+                "end": 2669,
+                "name": "startSketchOn",
+                "start": 2656,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2656,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 2715,
             "start": 2656,
@@ -3064,11 +3568,18 @@ description: Result of parsing food-service-spatula.kcl
                         }
                       },
                       {
+                        "abs_path": false,
                         "end": 2812,
-                        "name": "flipperThickness",
+                        "name": {
+                          "end": 2812,
+                          "name": "flipperThickness",
+                          "start": 2796,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2796,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "end": 2813,
@@ -3077,18 +3588,32 @@ description: Result of parsing food-service-spatula.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "abs_path": false,
                     "end": 2824,
-                    "name": "sketch001",
+                    "name": {
+                      "end": 2824,
+                      "name": "sketch001",
+                      "start": 2815,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2815,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2789,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2789,
+                    "name": "startProfileAt",
+                    "start": 2775,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2775,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2825,
                 "start": 2775,
@@ -3154,10 +3679,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2835,
-                  "name": "line",
+                  "name": {
+                    "end": 2835,
+                    "name": "line",
+                    "start": 2831,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2831,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2890,
                 "start": 2831,
@@ -3208,10 +3740,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2900,
-                  "name": "line",
+                  "name": {
+                    "end": 2900,
+                    "name": "line",
+                    "start": 2896,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2896,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2931,
                 "start": 2896,
@@ -3269,10 +3808,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2941,
-                  "name": "line",
+                  "name": {
+                    "end": 2941,
+                    "name": "line",
+                    "start": 2937,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2937,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2970,
                 "start": 2937,
@@ -3353,10 +3899,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2980,
-                  "name": "line",
+                  "name": {
+                    "end": 2980,
+                    "name": "line",
+                    "start": 2976,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2976,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3035,
                 "start": 2976,
@@ -3421,10 +3974,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3045,
-                  "name": "line",
+                  "name": {
+                    "end": 3045,
+                    "name": "line",
+                    "start": 3041,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3041,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3077,
                 "start": 3041,
@@ -3456,10 +4016,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3088,
-                  "name": "xLine",
+                  "name": {
+                    "end": 3088,
+                    "name": "xLine",
+                    "start": 3083,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3083,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3107,
                 "start": 3083,
@@ -3470,10 +4037,17 @@ description: Result of parsing food-service-spatula.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 3118,
-                  "name": "close",
+                  "name": {
+                    "end": 3118,
+                    "name": "close",
+                    "start": 3113,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3113,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3120,
                 "start": 3113,
@@ -3532,30 +4106,51 @@ description: Result of parsing food-service-spatula.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "end": 3208,
-                  "name": "handleWidth",
+                  "name": {
+                    "end": 3208,
+                    "name": "handleWidth",
+                    "start": 3197,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3197,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 3172,
-              "name": "extrude",
+              "name": {
+                "end": 3172,
+                "name": "extrude",
+                "start": 3165,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 3165,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 3209,
             "start": 3165,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 3186,
-              "name": "handleProfile",
+              "name": {
+                "end": 3186,
+                "name": "handleProfile",
+                "start": 3173,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 3173,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 3156,
@@ -3604,18 +4199,32 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "arguments": [
                       {
+                        "abs_path": false,
                         "end": 3335,
-                        "name": "handleBottomEdge",
+                        "name": {
+                          "end": 3335,
+                          "name": "handleBottomEdge",
+                          "start": 3319,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3319,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3318,
-                      "name": "getNextAdjacentEdge",
+                      "name": {
+                        "end": 3318,
+                        "name": "getNextAdjacentEdge",
+                        "start": 3299,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3299,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3336,
                     "start": 3299,
@@ -3625,18 +4234,32 @@ description: Result of parsing food-service-spatula.kcl
                   {
                     "arguments": [
                       {
+                        "abs_path": false,
                         "end": 3375,
-                        "name": "handleTopEdge",
+                        "name": {
+                          "end": 3375,
+                          "name": "handleTopEdge",
+                          "start": 3362,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3362,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3361,
-                      "name": "getNextAdjacentEdge",
+                      "name": {
+                        "end": 3361,
+                        "name": "getNextAdjacentEdge",
+                        "start": 3342,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3342,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3376,
                     "start": 3342,
@@ -3652,21 +4275,35 @@ description: Result of parsing food-service-spatula.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 3258,
-            "name": "fillet",
+            "name": {
+              "end": 3258,
+              "name": "fillet",
+              "start": 3252,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 3252,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 3382,
           "start": 3252,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
+            "abs_path": false,
             "end": 3268,
-            "name": "handle",
+            "name": {
+              "end": 3268,
+              "name": "handle",
+              "start": 3262,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 3262,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           }
         },
         "start": 3252,
@@ -3959,18 +4596,32 @@ description: Result of parsing food-service-spatula.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 3699,
-                "name": "handlePlane",
+                "name": {
+                  "end": 3699,
+                  "name": "handlePlane",
+                  "start": 3688,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 3688,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 3687,
-              "name": "startSketchOn",
+              "name": {
+                "end": 3687,
+                "name": "startSketchOn",
+                "start": 3674,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 3674,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 3700,
             "start": 3674,
@@ -4044,18 +4695,32 @@ description: Result of parsing food-service-spatula.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "abs_path": false,
                     "end": 3793,
-                    "name": "sketch002",
+                    "name": {
+                      "end": 3793,
+                      "name": "sketch002",
+                      "start": 3784,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 3784,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3762,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 3762,
+                    "name": "startProfileAt",
+                    "start": 3748,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3748,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3794,
                 "start": 3748,
@@ -4075,11 +4740,18 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "end": 3848,
                       "left": {
+                        "abs_path": false,
                         "end": 3824,
-                        "name": "gripWidth",
+                        "name": {
+                          "end": 3824,
+                          "name": "gripWidth",
+                          "start": 3815,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3815,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
@@ -4097,11 +4769,18 @@ description: Result of parsing food-service-spatula.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "abs_path": false,
                           "end": 3848,
-                          "name": "gripFilletRadius",
+                          "name": {
+                            "end": 3848,
+                            "name": "gripFilletRadius",
+                            "start": 3832,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3832,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 3828,
                         "type": "BinaryExpression",
@@ -4114,10 +4793,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3805,
-                  "name": "xLine",
+                  "name": {
+                    "end": 3805,
+                    "name": "xLine",
+                    "start": 3800,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3800,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3850,
                 "start": 3800,
@@ -4192,11 +4878,18 @@ description: Result of parsing food-service-spatula.kcl
                         "start": 3919,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 3944,
-                          "name": "gripFilletRadius",
+                          "name": {
+                            "end": 3944,
+                            "name": "gripFilletRadius",
+                            "start": 3928,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3928,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -4212,10 +4905,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3859,
-                  "name": "arc",
+                  "name": {
+                    "end": 3859,
+                    "name": "arc",
+                    "start": 3856,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3856,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3955,
                 "start": 3856,
@@ -4235,11 +4935,18 @@ description: Result of parsing food-service-spatula.kcl
                     "arg": {
                       "end": 4010,
                       "left": {
+                        "abs_path": false,
                         "end": 3986,
-                        "name": "gripHeight",
+                        "name": {
+                          "end": 3986,
+                          "name": "gripHeight",
+                          "start": 3976,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3976,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "-",
                       "right": {
@@ -4257,11 +4964,18 @@ description: Result of parsing food-service-spatula.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "abs_path": false,
                           "end": 4010,
-                          "name": "gripFilletRadius",
+                          "name": {
+                            "end": 4010,
+                            "name": "gripFilletRadius",
+                            "start": 3994,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 3994,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 3990,
                         "type": "BinaryExpression",
@@ -4274,10 +4988,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3966,
-                  "name": "yLine",
+                  "name": {
+                    "end": 3966,
+                    "name": "yLine",
+                    "start": 3961,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3961,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4012,
                 "start": 3961,
@@ -4345,11 +5066,18 @@ description: Result of parsing food-service-spatula.kcl
                         "start": 4080,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 4105,
-                          "name": "gripFilletRadius",
+                          "name": {
+                            "end": 4105,
+                            "name": "gripFilletRadius",
+                            "start": 4089,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4089,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -4365,10 +5093,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4021,
-                  "name": "arc",
+                  "name": {
+                    "end": 4021,
+                    "name": "arc",
+                    "start": 4018,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4018,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4116,
                 "start": 4018,
@@ -4389,11 +5124,18 @@ description: Result of parsing food-service-spatula.kcl
                       "argument": {
                         "end": 4172,
                         "left": {
+                          "abs_path": false,
                           "end": 4148,
-                          "name": "gripWidth",
+                          "name": {
+                            "end": 4148,
+                            "name": "gripWidth",
+                            "start": 4139,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4139,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
@@ -4411,11 +5153,18 @@ description: Result of parsing food-service-spatula.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "abs_path": false,
                             "end": 4172,
-                            "name": "gripFilletRadius",
+                            "name": {
+                              "end": 4172,
+                              "name": "gripFilletRadius",
+                              "start": 4156,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4156,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 4152,
                           "type": "BinaryExpression",
@@ -4434,10 +5183,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4127,
-                  "name": "xLine",
+                  "name": {
+                    "end": 4127,
+                    "name": "xLine",
+                    "start": 4122,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4122,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4175,
                 "start": 4122,
@@ -4505,11 +5261,18 @@ description: Result of parsing food-service-spatula.kcl
                         "start": 4245,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 4270,
-                          "name": "gripFilletRadius",
+                          "name": {
+                            "end": 4270,
+                            "name": "gripFilletRadius",
+                            "start": 4254,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4254,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -4525,10 +5288,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4184,
-                  "name": "arc",
+                  "name": {
+                    "end": 4184,
+                    "name": "arc",
+                    "start": 4181,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4181,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4281,
                 "start": 4181,
@@ -4549,11 +5319,18 @@ description: Result of parsing food-service-spatula.kcl
                       "argument": {
                         "end": 4338,
                         "left": {
+                          "abs_path": false,
                           "end": 4314,
-                          "name": "gripHeight",
+                          "name": {
+                            "end": 4314,
+                            "name": "gripHeight",
+                            "start": 4304,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4304,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
@@ -4571,11 +5348,18 @@ description: Result of parsing food-service-spatula.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "abs_path": false,
                             "end": 4338,
-                            "name": "gripFilletRadius",
+                            "name": {
+                              "end": 4338,
+                              "name": "gripFilletRadius",
+                              "start": 4322,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 4322,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 4318,
                           "type": "BinaryExpression",
@@ -4610,10 +5394,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4292,
-                  "name": "yLine",
+                  "name": {
+                    "end": 4292,
+                    "name": "yLine",
+                    "start": 4287,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4287,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4361,
                 "start": 4287,
@@ -4681,11 +5472,18 @@ description: Result of parsing food-service-spatula.kcl
                         "start": 4432,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 4457,
-                          "name": "gripFilletRadius",
+                          "name": {
+                            "end": 4457,
+                            "name": "gripFilletRadius",
+                            "start": 4441,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 4441,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -4701,10 +5499,17 @@ description: Result of parsing food-service-spatula.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 4370,
-                  "name": "arc",
+                  "name": {
+                    "end": 4370,
+                    "name": "arc",
+                    "start": 4367,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4367,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4468,
                 "start": 4367,
@@ -4714,10 +5519,17 @@ description: Result of parsing food-service-spatula.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 4479,
-                  "name": "close",
+                  "name": {
+                    "end": 4479,
+                    "name": "close",
+                    "start": 4474,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 4474,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 4481,
                 "start": 4474,
@@ -4777,11 +5589,18 @@ description: Result of parsing food-service-spatula.kcl
                 },
                 "arg": {
                   "argument": {
+                    "abs_path": false,
                     "end": 4578,
-                    "name": "gripLength",
+                    "name": {
+                      "end": 4578,
+                      "name": "gripLength",
+                      "start": 4568,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 4568,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 4578,
                   "operator": "-",
@@ -4792,21 +5611,35 @@ description: Result of parsing food-service-spatula.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 4544,
-              "name": "extrude",
+              "name": {
+                "end": 4544,
+                "name": "extrude",
+                "start": 4537,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 4537,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 4579,
             "start": 4537,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 4556,
-              "name": "gripProfile",
+              "name": {
+                "end": 4556,
+                "name": "gripProfile",
+                "start": 4545,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 4545,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 4530,
@@ -4830,25 +5663,46 @@ description: Result of parsing food-service-spatula.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 4655,
-                "name": "grip",
+                "name": {
+                  "end": 4655,
+                  "name": "grip",
+                  "start": 4651,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 4651,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
+                "abs_path": false,
                 "end": 4668,
-                "name": "gripEdgeTop",
+                "name": {
+                  "end": 4668,
+                  "name": "gripEdgeTop",
+                  "start": 4657,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 4657,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 4650,
-              "name": "startSketchOn",
+              "name": {
+                "end": 4650,
+                "name": "startSketchOn",
+                "start": 4637,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 4637,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 4669,
             "start": 4637,
@@ -4876,11 +5730,18 @@ description: Result of parsing food-service-spatula.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 4741,
-                "name": "sketch003",
+                "name": {
+                  "end": 4741,
+                  "name": "sketch003",
+                  "start": 4732,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 4732,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "elements": [
@@ -4943,18 +5804,32 @@ description: Result of parsing food-service-spatula.kcl
                 "type": "ArrayExpression"
               },
               {
+                "abs_path": false,
                 "end": 4776,
-                "name": "gripSlotWidth",
+                "name": {
+                  "end": 4776,
+                  "name": "gripSlotWidth",
+                  "start": 4763,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 4763,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 4731,
-              "name": "slot",
+              "name": {
+                "end": 4731,
+                "name": "slot",
+                "start": 4727,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 4727,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 4777,
             "start": 4727,
@@ -4986,11 +5861,18 @@ description: Result of parsing food-service-spatula.kcl
                 "end": 4852,
                 "left": {
                   "argument": {
+                    "abs_path": false,
                     "end": 4849,
-                    "name": "gripWidth",
+                    "name": {
+                      "end": 4849,
+                      "name": "gripWidth",
+                      "start": 4840,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 4840,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 4849,
                   "operator": "-",
@@ -5017,21 +5899,35 @@ description: Result of parsing food-service-spatula.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 4812,
-            "name": "extrude",
+            "name": {
+              "end": 4812,
+              "name": "extrude",
+              "start": 4805,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 4805,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 4853,
           "start": 4805,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
+            "abs_path": false,
             "end": 4828,
-            "name": "gripHoleProfile",
+            "name": {
+              "end": 4828,
+              "name": "gripHoleProfile",
+              "start": 4813,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 4813,
-            "type": "Identifier",
-            "type": "Identifier"
+            "type": "Name",
+            "type": "Name"
           }
         },
         "start": 4805,
@@ -5061,11 +5957,18 @@ description: Result of parsing food-service-spatula.kcl
             "start": 106,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 128,
-              "name": "mm",
+              "name": {
+                "end": 128,
+                "name": "mm",
+                "start": 126,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 126,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

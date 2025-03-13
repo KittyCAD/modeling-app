@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing array_elem_pop_fail.kcl
 ---
 {
@@ -76,18 +76,32 @@ description: Result of parsing array_elem_pop_fail.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 35,
-                "name": "arr",
+                "name": {
+                  "end": 35,
+                  "name": "arr",
+                  "start": 32,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 32,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 31,
-              "name": "pop",
+              "name": {
+                "end": 31,
+                "name": "pop",
+                "start": 28,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 28,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 36,
             "start": 28,

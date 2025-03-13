@@ -173,10 +173,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 574,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 574,
+                    "name": "startSketchOn",
+                    "start": 561,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 561,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 580,
                 "start": 561,
@@ -191,11 +198,18 @@ description: Result of parsing gear-rack.kcl
                         "end": 613,
                         "left": {
                           "argument": {
+                            "abs_path": false,
                             "end": 609,
-                            "name": "length",
+                            "name": {
+                              "end": 609,
+                              "name": "length",
+                              "start": 603,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 603,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 609,
                           "operator": "-",
@@ -244,10 +258,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 600,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 600,
+                    "name": "startProfileAt",
+                    "start": 586,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 586,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 621,
                 "start": 586,
@@ -267,11 +288,18 @@ description: Result of parsing gear-rack.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 645,
-                          "name": "length",
+                          "name": {
+                            "end": 645,
+                            "name": "length",
+                            "start": 639,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 639,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 648,
@@ -293,10 +321,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 631,
-                  "name": "line",
+                  "name": {
+                    "end": 631,
+                    "name": "line",
+                    "start": 627,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 627,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 650,
                 "start": 627,
@@ -328,11 +363,18 @@ description: Result of parsing gear-rack.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 680,
-                          "name": "minHeight",
+                          "name": {
+                            "end": 680,
+                            "name": "minHeight",
+                            "start": 671,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 671,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 681,
@@ -343,10 +385,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 660,
-                  "name": "line",
+                  "name": {
+                    "end": 660,
+                    "name": "line",
+                    "start": 656,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 656,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 682,
                 "start": 656,
@@ -368,11 +417,18 @@ description: Result of parsing gear-rack.kcl
                       "elements": [
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 707,
-                            "name": "length",
+                            "name": {
+                              "end": 707,
+                              "name": "length",
+                              "start": 701,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 701,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 707,
                           "operator": "-",
@@ -400,10 +456,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 692,
-                  "name": "line",
+                  "name": {
+                    "end": 692,
+                    "name": "line",
+                    "start": 688,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 688,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 712,
                 "start": 688,
@@ -414,10 +477,17 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 723,
-                  "name": "close",
+                  "name": {
+                    "end": 723,
+                    "name": "close",
+                    "start": 718,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 718,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 725,
                 "start": 718,
@@ -435,19 +505,33 @@ description: Result of parsing gear-rack.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 753,
-                      "name": "width",
+                      "name": {
+                        "end": 753,
+                        "name": "width",
+                        "start": 748,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 748,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 738,
-                  "name": "extrude",
+                  "name": {
+                    "end": 738,
+                    "name": "extrude",
+                    "start": 731,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 731,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 754,
                 "start": 731,
@@ -522,10 +606,17 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 848,
-                            "name": "startSketchOn",
+                            "name": {
+                              "end": 848,
+                              "name": "startSketchOn",
+                              "start": 835,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 835,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 854,
                           "start": 835,
@@ -542,11 +633,18 @@ description: Result of parsing gear-rack.kcl
                                     "end": 889,
                                     "left": {
                                       "argument": {
+                                        "abs_path": false,
                                         "end": 885,
-                                        "name": "length",
+                                        "name": {
+                                          "end": 885,
+                                          "name": "length",
+                                          "start": 879,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 879,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
+                                        "type": "Name",
+                                        "type": "Name"
                                       },
                                       "end": 885,
                                       "operator": "-",
@@ -587,11 +685,18 @@ description: Result of parsing gear-rack.kcl
                                   "type": "BinaryExpression"
                                 },
                                 {
+                                  "abs_path": false,
                                   "end": 911,
-                                  "name": "minHeight",
+                                  "name": {
+                                    "end": 911,
+                                    "name": "minHeight",
+                                    "start": 902,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 902,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 }
                               ],
                               "end": 912,
@@ -607,10 +712,17 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 876,
-                            "name": "startProfileAt",
+                            "name": {
+                              "end": 876,
+                              "name": "startProfileAt",
+                              "start": 862,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 862,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 916,
                           "start": 862,
@@ -657,10 +769,17 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 947,
-                            "name": "tangentialArcToRelative",
+                            "name": {
+                              "end": 947,
+                              "name": "tangentialArcToRelative",
+                              "start": 924,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 924,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 972,
                           "start": 924,
@@ -710,10 +829,17 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 984,
-                            "name": "line",
+                            "name": {
+                              "end": 984,
+                              "name": "line",
+                              "start": 980,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 980,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1012,
                           "start": 980,
@@ -761,10 +887,17 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1043,
-                            "name": "tangentialArcToRelative",
+                            "name": {
+                              "end": 1043,
+                              "name": "tangentialArcToRelative",
+                              "start": 1020,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1020,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1068,
                           "start": 1020,
@@ -814,10 +947,17 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1080,
-                            "name": "line",
+                            "name": {
+                              "end": 1080,
+                              "name": "line",
+                              "start": 1076,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1076,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1101,
                           "start": 1076,
@@ -872,10 +1012,17 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1132,
-                            "name": "tangentialArcToRelative",
+                            "name": {
+                              "end": 1132,
+                              "name": "tangentialArcToRelative",
+                              "start": 1109,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1109,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1158,
                           "start": 1109,
@@ -932,10 +1079,17 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1170,
-                            "name": "line",
+                            "name": {
+                              "end": 1170,
+                              "name": "line",
+                              "start": 1166,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1166,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1199,
                           "start": 1166,
@@ -990,10 +1144,17 @@ description: Result of parsing gear-rack.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1230,
-                            "name": "tangentialArcToRelative",
+                            "name": {
+                              "end": 1230,
+                              "name": "tangentialArcToRelative",
+                              "start": 1207,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1207,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1256,
                           "start": 1207,
@@ -1003,10 +1164,17 @@ description: Result of parsing gear-rack.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "abs_path": false,
                             "end": 1269,
-                            "name": "close",
+                            "name": {
+                              "end": 1269,
+                              "name": "close",
+                              "start": 1264,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1264,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1271,
                           "start": 1264,
@@ -1024,19 +1192,33 @@ description: Result of parsing gear-rack.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "abs_path": false,
                                 "end": 1301,
-                                "name": "width",
+                                "name": {
+                                  "end": 1301,
+                                  "name": "width",
+                                  "start": 1296,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1296,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               }
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1286,
-                            "name": "extrude",
+                            "name": {
+                              "end": 1286,
+                              "name": "extrude",
+                              "start": 1279,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1279,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1302,
                           "start": 1279,
@@ -1061,11 +1243,18 @@ description: Result of parsing gear-rack.kcl
                 },
                 {
                   "argument": {
+                    "abs_path": false,
                     "end": 1323,
-                    "name": "toothSketch",
+                    "name": {
+                      "end": 1323,
+                      "name": "toothSketch",
+                      "start": 1312,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1312,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 1323,
                   "start": 1305,
@@ -1105,10 +1294,17 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 1401,
-                  "name": "tooth",
+                  "name": {
+                    "end": 1401,
+                    "name": "tooth",
+                    "start": 1396,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1396,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1403,
                 "start": 1396,
@@ -1209,10 +1405,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1424,
-                  "name": "patternLinear3d",
+                  "name": {
+                    "end": 1424,
+                    "name": "patternLinear3d",
+                    "start": 1409,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1409,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1508,
                 "start": 1409,
@@ -1275,10 +1478,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1602,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1602,
+                    "name": "startSketchOn",
+                    "start": 1589,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1589,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1608,
                 "start": 1589,
@@ -1293,11 +1503,18 @@ description: Result of parsing gear-rack.kcl
                         "end": 1641,
                         "left": {
                           "argument": {
+                            "abs_path": false,
                             "end": 1637,
-                            "name": "length",
+                            "name": {
+                              "end": 1637,
+                              "name": "length",
+                              "start": 1631,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1631,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 1637,
                           "operator": "-",
@@ -1346,10 +1563,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1628,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1628,
+                    "name": "startProfileAt",
+                    "start": 1614,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1614,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1657,
                 "start": 1614,
@@ -1406,10 +1630,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1667,
-                  "name": "line",
+                  "name": {
+                    "end": 1667,
+                    "name": "line",
+                    "start": 1663,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1663,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1696,
                 "start": 1663,
@@ -1464,10 +1695,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1725,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 1725,
+                    "name": "tangentialArcToRelative",
+                    "start": 1702,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1702,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1751,
                 "start": 1702,
@@ -1490,11 +1728,18 @@ description: Result of parsing gear-rack.kcl
                           "end": 1788,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 1784,
-                              "name": "length",
+                              "name": {
+                                "end": 1784,
+                                "name": "length",
+                                "start": 1778,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1778,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 1784,
                             "operator": "-",
@@ -1519,11 +1764,18 @@ description: Result of parsing gear-rack.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "abs_path": false,
                           "end": 1799,
-                          "name": "minHeight",
+                          "name": {
+                            "end": 1799,
+                            "name": "minHeight",
+                            "start": 1790,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1790,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 1800,
@@ -1534,10 +1786,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1761,
-                  "name": "line",
+                  "name": {
+                    "end": 1761,
+                    "name": "line",
+                    "start": 1757,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1757,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1801,
                 "start": 1757,
@@ -1548,10 +1807,17 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 1812,
-                  "name": "close",
+                  "name": {
+                    "end": 1812,
+                    "name": "close",
+                    "start": 1807,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1807,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1814,
                 "start": 1807,
@@ -1569,19 +1835,33 @@ description: Result of parsing gear-rack.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1842,
-                      "name": "width",
+                      "name": {
+                        "end": 1842,
+                        "name": "width",
+                        "start": 1837,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1837,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1827,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1827,
+                    "name": "extrude",
+                    "start": 1820,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1820,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1843,
                 "start": 1820,
@@ -1644,10 +1924,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1939,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1939,
+                    "name": "startSketchOn",
+                    "start": 1926,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1926,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1945,
                 "start": 1926,
@@ -1661,11 +1948,18 @@ description: Result of parsing gear-rack.kcl
                       {
                         "end": 1977,
                         "left": {
+                          "abs_path": false,
                           "end": 1973,
-                          "name": "length",
+                          "name": {
+                            "end": 1973,
+                            "name": "length",
+                            "start": 1967,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1967,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -1708,10 +2002,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1965,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1965,
+                    "name": "startProfileAt",
+                    "start": 1951,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1951,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1993,
                 "start": 1951,
@@ -1775,10 +2076,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2003,
-                  "name": "line",
+                  "name": {
+                    "end": 2003,
+                    "name": "line",
+                    "start": 1999,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1999,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2033,
                 "start": 1999,
@@ -1840,10 +2148,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2062,
-                  "name": "tangentialArcToRelative",
+                  "name": {
+                    "end": 2062,
+                    "name": "tangentialArcToRelative",
+                    "start": 2039,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2039,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2089,
                 "start": 2039,
@@ -1865,11 +2180,18 @@ description: Result of parsing gear-rack.kcl
                         {
                           "end": 2125,
                           "left": {
+                            "abs_path": false,
                             "end": 2121,
-                            "name": "length",
+                            "name": {
+                              "end": 2121,
+                              "name": "length",
+                              "start": 2115,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2115,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1888,11 +2210,18 @@ description: Result of parsing gear-rack.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "abs_path": false,
                           "end": 2136,
-                          "name": "minHeight",
+                          "name": {
+                            "end": 2136,
+                            "name": "minHeight",
+                            "start": 2127,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2127,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 2137,
@@ -1903,10 +2232,17 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2099,
-                  "name": "line",
+                  "name": {
+                    "end": 2099,
+                    "name": "line",
+                    "start": 2095,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2095,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2138,
                 "start": 2095,
@@ -1917,10 +2253,17 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2149,
-                  "name": "close",
+                  "name": {
+                    "end": 2149,
+                    "name": "close",
+                    "start": 2144,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2144,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2151,
                 "start": 2144,
@@ -1938,19 +2281,33 @@ description: Result of parsing gear-rack.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2179,
-                      "name": "width",
+                      "name": {
+                        "end": 2179,
+                        "name": "width",
+                        "start": 2174,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2174,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2164,
-                  "name": "extrude",
+                  "name": {
+                    "end": 2164,
+                    "name": "extrude",
+                    "start": 2157,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2157,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2180,
                 "start": 2157,
@@ -1996,11 +2353,18 @@ description: Result of parsing gear-rack.kcl
             "start": 400,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 422,
-              "name": "mm",
+              "name": {
+                "end": 422,
+                "name": "mm",
+                "start": 420,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 420,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

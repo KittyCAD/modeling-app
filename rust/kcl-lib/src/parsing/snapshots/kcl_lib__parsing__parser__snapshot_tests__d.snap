@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -65,10 +65,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 23,
-                "name": "myFunc",
+                "name": {
+                  "end": 23,
+                  "name": "myFunc",
+                  "start": 17,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 17,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 30,
               "start": 17,

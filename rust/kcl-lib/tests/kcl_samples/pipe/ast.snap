@@ -222,19 +222,33 @@ description: Result of parsing pipe.kcl
             "left": {
               "end": 430,
               "left": {
+                "abs_path": false,
                 "end": 407,
-                "name": "pipeTotalLength",
+                "name": {
+                  "end": 407,
+                  "name": "pipeTotalLength",
+                  "start": 392,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 392,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "-",
               "right": {
+                "abs_path": false,
                 "end": 430,
-                "name": "pipeTransitionLength",
+                "name": {
+                  "end": 430,
+                  "name": "pipeTransitionLength",
+                  "start": 410,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 410,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 392,
               "type": "BinaryExpression",
@@ -242,11 +256,18 @@ description: Result of parsing pipe.kcl
             },
             "operator": "-",
             "right": {
+              "abs_path": false,
               "end": 451,
-              "name": "pipeLargeDiaLength",
+              "name": {
+                "end": 451,
+                "name": "pipeLargeDiaLength",
+                "start": 433,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 433,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 392,
             "type": "BinaryExpression",
@@ -284,10 +305,17 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 618,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 618,
+                    "name": "startSketchOn",
+                    "start": 605,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 605,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 624,
                 "start": 605,
@@ -301,21 +329,35 @@ description: Result of parsing pipe.kcl
                       {
                         "end": 675,
                         "left": {
+                          "abs_path": false,
                           "end": 658,
-                          "name": "pipeSmallDia",
+                          "name": {
+                            "end": 658,
+                            "name": "pipeSmallDia",
+                            "start": 646,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 646,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "-",
                         "right": {
                           "end": 675,
                           "left": {
+                            "abs_path": false,
                             "end": 671,
-                            "name": "thickness",
+                            "name": {
+                              "end": 671,
+                              "name": "thickness",
+                              "start": 662,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 662,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -362,10 +404,17 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 644,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 644,
+                    "name": "startProfileAt",
+                    "start": 630,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 630,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 685,
                 "start": 630,
@@ -385,11 +434,18 @@ description: Result of parsing pipe.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 712,
-                          "name": "thickness",
+                          "name": {
+                            "end": 712,
+                            "name": "thickness",
+                            "start": 703,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 703,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 715,
@@ -411,10 +467,17 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 695,
-                  "name": "line",
+                  "name": {
+                    "end": 695,
+                    "name": "line",
+                    "start": 691,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 691,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 717,
                 "start": 691,
@@ -447,11 +510,18 @@ description: Result of parsing pipe.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 757,
-                            "name": "pipeSmallDiaLength",
+                            "name": {
+                              "end": 757,
+                              "name": "pipeSmallDiaLength",
+                              "start": 739,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 739,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 757,
                           "operator": "-",
@@ -468,10 +538,17 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 727,
-                  "name": "line",
+                  "name": {
+                    "end": 727,
+                    "name": "line",
+                    "start": 723,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 723,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 759,
                 "start": 723,
@@ -524,11 +601,18 @@ description: Result of parsing pipe.kcl
                         "start": 814,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 843,
-                          "name": "pipeTransitionLength",
+                          "name": {
+                            "end": 843,
+                            "name": "pipeTransitionLength",
+                            "start": 823,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 823,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -544,10 +628,17 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 784,
-                  "name": "angledLineOfYLength",
+                  "name": {
+                    "end": 784,
+                    "name": "angledLineOfYLength",
+                    "start": 765,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 765,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 854,
                 "start": 765,
@@ -579,11 +670,18 @@ description: Result of parsing pipe.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 894,
-                            "name": "pipeLargeDiaLength",
+                            "name": {
+                              "end": 894,
+                              "name": "pipeLargeDiaLength",
+                              "start": 876,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 876,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 894,
                           "operator": "-",
@@ -600,10 +698,17 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 864,
-                  "name": "line",
+                  "name": {
+                    "end": 864,
+                    "name": "line",
+                    "start": 860,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 860,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 896,
                 "start": 860,
@@ -623,11 +728,18 @@ description: Result of parsing pipe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 927,
-                        "name": "thickness",
+                        "name": {
+                          "end": 927,
+                          "name": "thickness",
+                          "start": 918,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 918,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 927,
                       "operator": "-",
@@ -638,10 +750,17 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 907,
-                  "name": "xLine",
+                  "name": {
+                    "end": 907,
+                    "name": "xLine",
+                    "start": 902,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 902,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 928,
                 "start": 902,
@@ -673,11 +792,18 @@ description: Result of parsing pipe.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 967,
-                          "name": "pipeLargeDiaLength",
+                          "name": {
+                            "end": 967,
+                            "name": "pipeLargeDiaLength",
+                            "start": 949,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 949,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 968,
@@ -688,10 +814,17 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 938,
-                  "name": "line",
+                  "name": {
+                    "end": 938,
+                    "name": "line",
+                    "start": 934,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 934,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 969,
                 "start": 934,
@@ -718,11 +851,18 @@ description: Result of parsing pipe.kcl
                           "end": 1032,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 1026,
-                              "name": "pipeTransitionAngle",
+                              "name": {
+                                "end": 1026,
+                                "name": "pipeTransitionAngle",
+                                "start": 1007,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1007,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 1026,
                             "operator": "-",
@@ -760,21 +900,35 @@ description: Result of parsing pipe.kcl
                         "value": {
                           "end": 1075,
                           "left": {
+                            "abs_path": false,
                             "end": 1058,
-                            "name": "pipeSmallDia",
+                            "name": {
+                              "end": 1058,
+                              "name": "pipeSmallDia",
+                              "start": 1046,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1046,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
                             "end": 1075,
                             "left": {
+                              "abs_path": false,
                               "end": 1071,
-                              "name": "thickness",
+                              "name": {
+                                "end": 1071,
+                                "name": "thickness",
+                                "start": 1062,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1062,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -810,10 +964,17 @@ description: Result of parsing pipe.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 988,
-                  "name": "angledLineToX",
+                  "name": {
+                    "end": 988,
+                    "name": "angledLineToX",
+                    "start": 975,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 975,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1087,
                 "start": 975,
@@ -823,10 +984,17 @@ description: Result of parsing pipe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 1098,
-                  "name": "close",
+                  "name": {
+                    "end": 1098,
+                    "name": "close",
+                    "start": 1093,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1093,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1100,
                 "start": 1093,
@@ -904,18 +1072,32 @@ description: Result of parsing pipe.kcl
                 "type": "ObjectExpression"
               },
               {
+                "abs_path": false,
                 "end": 1184,
-                "name": "pipeSketch",
+                "name": {
+                  "end": 1184,
+                  "name": "pipeSketch",
+                  "start": 1174,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 1174,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1157,
-              "name": "revolve",
+              "name": {
+                "end": 1157,
+                "name": "revolve",
+                "start": 1150,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1150,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1185,
             "start": 1150,
@@ -954,11 +1136,18 @@ description: Result of parsing pipe.kcl
             "start": 176,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 198,
-              "name": "in",
+              "name": {
+                "end": 198,
+                "name": "in",
+                "start": 196,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 196,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

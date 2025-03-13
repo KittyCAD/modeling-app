@@ -327,6 +327,8 @@ pub enum TokenType {
     Comma,
     /// A colon.
     Colon,
+    /// A double colon: `::`
+    DoubleColon,
     /// A period.
     Period,
     /// A double period: `..`.
@@ -367,6 +369,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::Brace
             | TokenType::Comma
             | TokenType::Colon
+            | TokenType::DoubleColon
             | TokenType::Period
             | TokenType::DoublePeriod
             | TokenType::Hash

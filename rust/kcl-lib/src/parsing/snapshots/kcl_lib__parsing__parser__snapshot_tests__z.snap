@@ -18,18 +18,32 @@ expression: actual
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "end": 21,
-                  "name": "XY",
+                  "name": {
+                    "end": 21,
+                    "name": "XY",
+                    "start": 19,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 19,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 18,
-                "name": "startSketchOn",
+                "name": {
+                  "end": 18,
+                  "name": "startSketchOn",
+                  "start": 5,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 5,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 22,
               "start": 5,
@@ -39,18 +53,32 @@ expression: actual
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "end": 48,
-                  "name": "pos",
+                  "name": {
+                    "end": 48,
+                    "name": "pos",
+                    "start": 45,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 45,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 44,
-                "name": "startProfileAt",
+                "name": {
+                  "end": 44,
+                  "name": "startProfileAt",
+                  "start": 30,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 30,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 49,
               "start": 30,
@@ -74,11 +102,18 @@ expression: actual
                     },
                     {
                       "argument": {
+                        "abs_path": false,
                         "end": 68,
-                        "name": "scale",
+                        "name": {
+                          "end": 68,
+                          "name": "scale",
+                          "start": 63,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 63,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 68,
                       "operator": "-",
@@ -100,10 +135,17 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "end": 57,
-                "name": "line",
+                "name": {
+                  "end": 57,
+                  "name": "line",
+                  "start": 53,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 53,
-                "type": "Identifier"
+                "type": "Name"
               },
               "end": 73,
               "start": 53,

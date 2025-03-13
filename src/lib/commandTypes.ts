@@ -8,6 +8,7 @@ import { MachineManager } from 'components/MachineManagerProvider'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Artifact } from 'lang/std/artifactGraph'
 import { CommandBarContext } from 'machines/commandBarMachine'
+import { Name } from '@rust/kcl-lib/bindings/Name'
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
 const INPUT_TYPES = [
@@ -27,7 +28,7 @@ export interface KclExpression {
 export interface KclExpressionWithVariable extends KclExpression {
   variableName: string
   variableDeclarationAst: Node<VariableDeclaration>
-  variableIdentifierAst: Node<Identifier>
+  variableIdentifierAst: Node<Name>
   insertIndex: number
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable

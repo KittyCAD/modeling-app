@@ -220,11 +220,18 @@ description: Result of parsing ball-bearing.kcl
           "init": {
             "end": 547,
             "left": {
+              "abs_path": false,
               "end": 543,
-              "name": "sphereDia",
+              "name": {
+                "end": 543,
+                "name": "sphereDia",
+                "start": 534,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 534,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
@@ -263,11 +270,18 @@ description: Result of parsing ball-bearing.kcl
           "init": {
             "end": 578,
             "left": {
+              "abs_path": false,
               "end": 574,
-              "name": "sphereDia",
+              "name": {
+                "end": 574,
+                "name": "sphereDia",
+                "start": 565,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 565,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
@@ -306,11 +320,18 @@ description: Result of parsing ball-bearing.kcl
           "init": {
             "end": 607,
             "left": {
+              "abs_path": false,
               "end": 603,
-              "name": "sphereDia",
+              "name": {
+                "end": 603,
+                "name": "sphereDia",
+                "start": 594,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 594,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "/",
             "right": {
@@ -433,11 +454,18 @@ description: Result of parsing ball-bearing.kcl
                               "end": 709,
                               "left": {
                                 "argument": {
+                                  "abs_path": false,
                                   "end": 705,
-                                  "name": "overallThickness",
+                                  "name": {
+                                    "end": 705,
+                                    "name": "overallThickness",
+                                    "start": 689,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 689,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "end": 705,
                                 "operator": "-",
@@ -757,18 +785,32 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 913,
-                    "name": "customPlane",
+                    "name": {
+                      "end": 913,
+                      "name": "customPlane",
+                      "start": 902,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 902,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 901,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 901,
+                    "name": "startSketchOn",
+                    "start": 888,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 888,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 914,
                 "start": 888,
@@ -829,11 +871,18 @@ description: Result of parsing ball-bearing.kcl
                       "left": {
                         "end": 980,
                         "left": {
+                          "abs_path": false,
                           "end": 976,
-                          "name": "shaftDia",
+                          "name": {
+                            "end": 976,
+                            "name": "shaftDia",
+                            "start": 968,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 968,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "operator": "/",
                         "right": {
@@ -853,11 +902,18 @@ description: Result of parsing ball-bearing.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "abs_path": false,
                         "end": 996,
-                        "name": "wallThickness",
+                        "name": {
+                          "end": 996,
+                          "name": "wallThickness",
+                          "start": 983,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 983,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 968,
                       "type": "BinaryExpression",
@@ -866,10 +922,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 926,
-                  "name": "circle",
+                  "name": {
+                    "end": 926,
+                    "name": "circle",
+                    "start": 920,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 920,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1003,
                 "start": 920,
@@ -931,11 +994,18 @@ description: Result of parsing ball-bearing.kcl
                         "arg": {
                           "end": 1074,
                           "left": {
+                            "abs_path": false,
                             "end": 1070,
-                            "name": "shaftDia",
+                            "name": {
+                              "end": 1070,
+                              "name": "shaftDia",
+                              "start": 1062,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1062,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -956,10 +1026,17 @@ description: Result of parsing ball-bearing.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1020,
-                      "name": "circle",
+                      "name": {
+                        "end": 1020,
+                        "name": "circle",
+                        "start": 1014,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1014,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1081,
                     "start": 1014,
@@ -975,10 +1052,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1013,
-                  "name": "hole",
+                  "name": {
+                    "end": 1013,
+                    "name": "hole",
+                    "start": 1009,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1009,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1085,
                 "start": 1009,
@@ -1037,30 +1121,51 @@ description: Result of parsing ball-bearing.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "end": 1187,
-                  "name": "overallThickness",
+                  "name": {
+                    "end": 1187,
+                    "name": "overallThickness",
+                    "start": 1171,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1171,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1143,
-              "name": "extrude",
+              "name": {
+                "end": 1143,
+                "name": "extrude",
+                "start": 1136,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1136,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1188,
             "start": 1136,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 1160,
-              "name": "insideWallSketch",
+              "name": {
+                "end": 1160,
+                "name": "insideWallSketch",
+                "start": 1144,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1144,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 1123,
@@ -1095,10 +1200,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1258,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1258,
+                    "name": "startSketchOn",
+                    "start": 1245,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1245,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1264,
                 "start": 1245,
@@ -1114,11 +1226,18 @@ description: Result of parsing ball-bearing.kcl
                         "left": {
                           "end": 1298,
                           "left": {
+                            "abs_path": false,
                             "end": 1294,
-                            "name": "shaftDia",
+                            "name": {
+                              "end": 1294,
+                              "name": "shaftDia",
+                              "start": 1286,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1286,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1138,11 +1257,18 @@ description: Result of parsing ball-bearing.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "abs_path": false,
                           "end": 1314,
-                          "name": "wallThickness",
+                          "name": {
+                            "end": 1314,
+                            "name": "wallThickness",
+                            "start": 1301,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1301,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 1286,
                         "type": "BinaryExpression",
@@ -1173,10 +1299,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1284,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1284,
+                    "name": "startProfileAt",
+                    "start": 1270,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1270,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1326,
                 "start": 1270,
@@ -1245,11 +1378,18 @@ description: Result of parsing ball-bearing.kcl
                         "value": {
                           "end": 1413,
                           "left": {
+                            "abs_path": false,
                             "end": 1409,
-                            "name": "sphereDia",
+                            "name": {
+                              "end": 1409,
+                              "name": "sphereDia",
+                              "start": 1400,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1400,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1281,10 +1421,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1335,
-                  "name": "arc",
+                  "name": {
+                    "end": 1335,
+                    "name": "arc",
+                    "start": 1332,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1332,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1424,
                 "start": 1332,
@@ -1294,10 +1441,17 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 1435,
-                  "name": "close",
+                  "name": {
+                    "end": 1435,
+                    "name": "close",
+                    "start": 1430,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1430,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1437,
                 "start": 1430,
@@ -1377,18 +1531,32 @@ description: Result of parsing ball-bearing.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "abs_path": false,
                     "end": 1554,
-                    "name": "ballsSketch",
+                    "name": {
+                      "end": 1554,
+                      "name": "ballsSketch",
+                      "start": 1543,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1543,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1526,
-                  "name": "revolve",
+                  "name": {
+                    "end": 1526,
+                    "name": "revolve",
+                    "start": 1519,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1519,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1555,
                 "start": 1519,
@@ -1526,11 +1694,18 @@ description: Result of parsing ball-bearing.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1682,
-                      "name": "nBalls",
+                      "name": {
+                        "end": 1682,
+                        "name": "nBalls",
+                        "start": 1676,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1676,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1552,10 +1727,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1578,
-                  "name": "patternCircular3d",
+                  "name": {
+                    "end": 1578,
+                    "name": "patternCircular3d",
+                    "start": 1561,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1561,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1721,
                 "start": 1561,
@@ -1618,10 +1800,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1802,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1802,
+                    "name": "startSketchOn",
+                    "start": 1789,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1789,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1808,
                 "start": 1789,
@@ -1641,11 +1830,18 @@ description: Result of parsing ball-bearing.kcl
                             "left": {
                               "end": 1850,
                               "left": {
+                                "abs_path": false,
                                 "end": 1846,
-                                "name": "shaftDia",
+                                "name": {
+                                  "end": 1846,
+                                  "name": "shaftDia",
+                                  "start": 1838,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1838,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -1665,11 +1861,18 @@ description: Result of parsing ball-bearing.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "end": 1866,
-                              "name": "wallThickness",
+                              "name": {
+                                "end": 1866,
+                                "name": "wallThickness",
+                                "start": 1853,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1853,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 1838,
                             "type": "BinaryExpression",
@@ -1679,11 +1882,18 @@ description: Result of parsing ball-bearing.kcl
                           "right": {
                             "end": 1882,
                             "left": {
+                              "abs_path": false,
                               "end": 1878,
-                              "name": "sphereDia",
+                              "name": {
+                                "end": 1878,
+                                "name": "sphereDia",
+                                "start": 1869,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1869,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -1709,11 +1919,18 @@ description: Result of parsing ball-bearing.kcl
                         "right": {
                           "end": 1900,
                           "left": {
+                            "abs_path": false,
                             "end": 1896,
-                            "name": "chainWidth",
+                            "name": {
+                              "end": 1896,
+                              "name": "chainWidth",
+                              "start": 1886,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1886,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1766,10 +1983,17 @@ description: Result of parsing ball-bearing.kcl
                                 }
                               ],
                               "callee": {
+                                "abs_path": false,
                                 "end": 1931,
-                                "name": "toRadians",
+                                "name": {
+                                  "end": 1931,
+                                  "name": "toRadians",
+                                  "start": 1922,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1922,
-                                "type": "Identifier"
+                                "type": "Name"
                               },
                               "end": 1935,
                               "start": 1922,
@@ -1778,10 +2002,17 @@ description: Result of parsing ball-bearing.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1921,
-                            "name": "sin",
+                            "name": {
+                              "end": 1921,
+                              "name": "sin",
+                              "start": 1918,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1918,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1936,
                           "start": 1918,
@@ -1806,10 +2037,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1828,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1828,
+                    "name": "startProfileAt",
+                    "start": 1814,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1814,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1947,
                 "start": 1814,
@@ -1878,11 +2116,18 @@ description: Result of parsing ball-bearing.kcl
                         "value": {
                           "end": 2035,
                           "left": {
+                            "abs_path": false,
                             "end": 2031,
-                            "name": "sphereDia",
+                            "name": {
+                              "end": 2031,
+                              "name": "sphereDia",
+                              "start": 2022,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2022,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1914,10 +2159,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1956,
-                  "name": "arc",
+                  "name": {
+                    "end": 1956,
+                    "name": "arc",
+                    "start": 1953,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1953,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2046,
                 "start": 1953,
@@ -1948,11 +2200,18 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 2081,
-                          "name": "chainThickness",
+                          "name": {
+                            "end": 2081,
+                            "name": "chainThickness",
+                            "start": 2067,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2067,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 2082,
@@ -1963,10 +2222,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2056,
-                  "name": "line",
+                  "name": {
+                    "end": 2056,
+                    "name": "line",
+                    "start": 2052,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2052,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2083,
                 "start": 2052,
@@ -1988,11 +2254,18 @@ description: Result of parsing ball-bearing.kcl
                       "elements": [
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 2112,
-                            "name": "chainWidth",
+                            "name": {
+                              "end": 2112,
+                              "name": "chainWidth",
+                              "start": 2102,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2102,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 2112,
                           "operator": "-",
@@ -2020,10 +2293,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2093,
-                  "name": "line",
+                  "name": {
+                    "end": 2093,
+                    "name": "line",
+                    "start": 2089,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2089,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2117,
                 "start": 2089,
@@ -2034,10 +2314,17 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 2128,
-                  "name": "close",
+                  "name": {
+                    "end": 2128,
+                    "name": "close",
+                    "start": 2123,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2123,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2130,
                 "start": 2123,
@@ -2117,18 +2404,32 @@ description: Result of parsing ball-bearing.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "abs_path": false,
                     "end": 2207,
-                    "name": "chainSketch",
+                    "name": {
+                      "end": 2207,
+                      "name": "chainSketch",
+                      "start": 2196,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2196,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2179,
-                  "name": "revolve",
+                  "name": {
+                    "end": 2179,
+                    "name": "revolve",
+                    "start": 2172,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2172,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2208,
                 "start": 2172,
@@ -2266,11 +2567,18 @@ description: Result of parsing ball-bearing.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2335,
-                      "name": "nBalls",
+                      "name": {
+                        "end": 2335,
+                        "name": "nBalls",
+                        "start": 2329,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2329,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -2292,10 +2600,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2231,
-                  "name": "patternCircular3d",
+                  "name": {
+                    "end": 2231,
+                    "name": "patternCircular3d",
+                    "start": 2214,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2214,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2374,
                 "start": 2214,
@@ -2358,10 +2673,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2459,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2459,
+                    "name": "startSketchOn",
+                    "start": 2446,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2446,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2465,
                 "start": 2446,
@@ -2387,11 +2709,18 @@ description: Result of parsing ball-bearing.kcl
                             "left": {
                               "end": 2518,
                               "left": {
+                                "abs_path": false,
                                 "end": 2514,
-                                "name": "shaftDia",
+                                "name": {
+                                  "end": 2514,
+                                  "name": "shaftDia",
+                                  "start": 2506,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2506,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -2411,11 +2740,18 @@ description: Result of parsing ball-bearing.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "end": 2534,
-                              "name": "wallThickness",
+                              "name": {
+                                "end": 2534,
+                                "name": "wallThickness",
+                                "start": 2521,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2521,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 2506,
                             "type": "BinaryExpression",
@@ -2425,11 +2761,18 @@ description: Result of parsing ball-bearing.kcl
                           "right": {
                             "end": 2550,
                             "left": {
+                              "abs_path": false,
                               "end": 2546,
-                              "name": "sphereDia",
+                              "name": {
+                                "end": 2546,
+                                "name": "sphereDia",
+                                "start": 2537,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2537,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "operator": "/",
                             "right": {
@@ -2480,11 +2823,18 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "end": 2605,
                       "left": {
+                        "abs_path": false,
                         "end": 2601,
-                        "name": "linkDiameter",
+                        "name": {
+                          "end": 2601,
+                          "name": "linkDiameter",
+                          "start": 2589,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 2589,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -2505,10 +2855,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2477,
-                  "name": "circle",
+                  "name": {
+                    "end": 2477,
+                    "name": "circle",
+                    "start": 2471,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2471,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2612,
                 "start": 2471,
@@ -2608,11 +2965,18 @@ description: Result of parsing ball-bearing.kcl
                           },
                           "operator": "/",
                           "right": {
+                            "abs_path": false,
                             "end": 2697,
-                            "name": "nBalls",
+                            "name": {
+                              "end": 2697,
+                              "name": "nBalls",
+                              "start": 2691,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2691,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 2685,
                           "type": "BinaryExpression",
@@ -2625,18 +2989,32 @@ description: Result of parsing ball-bearing.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "abs_path": false,
                     "end": 2711,
-                    "name": "linkSketch",
+                    "name": {
+                      "end": 2711,
+                      "name": "linkSketch",
+                      "start": 2701,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2701,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2662,
-                  "name": "revolve",
+                  "name": {
+                    "end": 2662,
+                    "name": "revolve",
+                    "start": 2655,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2655,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2712,
                 "start": 2655,
@@ -2774,11 +3152,18 @@ description: Result of parsing ball-bearing.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 2839,
-                      "name": "nBalls",
+                      "name": {
+                        "end": 2839,
+                        "name": "nBalls",
+                        "start": 2833,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 2833,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -2800,10 +3185,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2735,
-                  "name": "patternCircular3d",
+                  "name": {
+                    "end": 2735,
+                    "name": "patternCircular3d",
+                    "start": 2718,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2718,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2878,
                 "start": 2718,
@@ -2857,18 +3249,32 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2968,
-                    "name": "customPlane",
+                    "name": {
+                      "end": 2968,
+                      "name": "customPlane",
+                      "start": 2957,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2957,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2956,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2956,
+                    "name": "startSketchOn",
+                    "start": 2943,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2943,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2969,
                 "start": 2943,
@@ -2927,11 +3333,18 @@ description: Result of parsing ball-bearing.kcl
                     "arg": {
                       "end": 3042,
                       "left": {
+                        "abs_path": false,
                         "end": 3038,
-                        "name": "outsideDiameter",
+                        "name": {
+                          "end": 3038,
+                          "name": "outsideDiameter",
+                          "start": 3023,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3023,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -2952,10 +3365,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2981,
-                  "name": "circle",
+                  "name": {
+                    "end": 2981,
+                    "name": "circle",
+                    "start": 2975,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2975,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3049,
                 "start": 2975,
@@ -3021,11 +3441,18 @@ description: Result of parsing ball-bearing.kcl
                             "left": {
                               "end": 3120,
                               "left": {
+                                "abs_path": false,
                                 "end": 3116,
-                                "name": "shaftDia",
+                                "name": {
+                                  "end": 3116,
+                                  "name": "shaftDia",
+                                  "start": 3108,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 3108,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "/",
                               "right": {
@@ -3045,11 +3472,18 @@ description: Result of parsing ball-bearing.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "abs_path": false,
                               "end": 3136,
-                              "name": "wallThickness",
+                              "name": {
+                                "end": 3136,
+                                "name": "wallThickness",
+                                "start": 3123,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3123,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "start": 3108,
                             "type": "BinaryExpression",
@@ -3057,11 +3491,18 @@ description: Result of parsing ball-bearing.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 3148,
-                            "name": "sphereDia",
+                            "name": {
+                              "end": 3148,
+                              "name": "sphereDia",
+                              "start": 3139,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3139,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 3108,
                           "type": "BinaryExpression",
@@ -3070,10 +3511,17 @@ description: Result of parsing ball-bearing.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3066,
-                      "name": "circle",
+                      "name": {
+                        "end": 3066,
+                        "name": "circle",
+                        "start": 3060,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3060,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3155,
                     "start": 3060,
@@ -3089,10 +3537,17 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3059,
-                  "name": "hole",
+                  "name": {
+                    "end": 3059,
+                    "name": "hole",
+                    "start": 3055,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3055,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3159,
                 "start": 3055,
@@ -3134,30 +3589,51 @@ description: Result of parsing ball-bearing.kcl
                   "type": "Identifier"
                 },
                 "arg": {
+                  "abs_path": false,
                   "end": 3227,
-                  "name": "overallThickness",
+                  "name": {
+                    "end": 3227,
+                    "name": "overallThickness",
+                    "start": 3211,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3211,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 3182,
-              "name": "extrude",
+              "name": {
+                "end": 3182,
+                "name": "extrude",
+                "start": 3175,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 3175,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 3228,
             "start": 3175,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 3200,
-              "name": "outsideWallSketch",
+              "name": {
+                "end": 3200,
+                "name": "outsideWallSketch",
+                "start": 3183,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 3183,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 3161,
@@ -3192,11 +3668,18 @@ description: Result of parsing ball-bearing.kcl
             "start": 272,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 294,
-              "name": "in",
+              "name": {
+                "end": 294,
+                "name": "in",
+                "start": 292,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 292,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

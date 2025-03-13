@@ -29,11 +29,18 @@ description: Result of parsing cube.kcl
                     "init": {
                       "end": 50,
                       "left": {
+                        "abs_path": false,
                         "end": 46,
-                        "name": "sideLength",
+                        "name": {
+                          "end": 46,
+                          "name": "sideLength",
+                          "start": 36,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 36,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -161,11 +168,18 @@ description: Result of parsing cube.kcl
                           "end": 97,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 93,
-                              "name": "l",
+                              "name": {
+                                "end": 93,
+                                "name": "l",
+                                "start": 92,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 92,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 93,
                             "operator": "-",
@@ -175,11 +189,18 @@ description: Result of parsing cube.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 97,
-                            "name": "x",
+                            "name": {
+                              "end": 97,
+                              "name": "x",
+                              "start": 96,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 96,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 91,
                           "type": "BinaryExpression",
@@ -189,11 +210,18 @@ description: Result of parsing cube.kcl
                           "end": 105,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 101,
-                              "name": "l",
+                              "name": {
+                                "end": 101,
+                                "name": "l",
+                                "start": 100,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 100,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 101,
                             "operator": "-",
@@ -203,11 +231,18 @@ description: Result of parsing cube.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 105,
-                            "name": "y",
+                            "name": {
+                              "end": 105,
+                              "name": "y",
+                              "start": 104,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 104,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 99,
                           "type": "BinaryExpression",
@@ -243,11 +278,18 @@ description: Result of parsing cube.kcl
                           "end": 121,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 117,
-                              "name": "l",
+                              "name": {
+                                "end": 117,
+                                "name": "l",
+                                "start": 116,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 116,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 117,
                             "operator": "-",
@@ -257,11 +299,18 @@ description: Result of parsing cube.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 121,
-                            "name": "x",
+                            "name": {
+                              "end": 121,
+                              "name": "x",
+                              "start": 120,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 120,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 115,
                           "type": "BinaryExpression",
@@ -270,19 +319,33 @@ description: Result of parsing cube.kcl
                         {
                           "end": 128,
                           "left": {
+                            "abs_path": false,
                             "end": 124,
-                            "name": "l",
+                            "name": {
+                              "end": 124,
+                              "name": "l",
+                              "start": 123,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 123,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 128,
-                            "name": "y",
+                            "name": {
+                              "end": 128,
+                              "name": "y",
+                              "start": 127,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 127,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 123,
                           "type": "BinaryExpression",
@@ -317,19 +380,33 @@ description: Result of parsing cube.kcl
                         {
                           "end": 143,
                           "left": {
+                            "abs_path": false,
                             "end": 139,
-                            "name": "l",
+                            "name": {
+                              "end": 139,
+                              "name": "l",
+                              "start": 138,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 138,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 143,
-                            "name": "x",
+                            "name": {
+                              "end": 143,
+                              "name": "x",
+                              "start": 142,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 142,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 138,
                           "type": "BinaryExpression",
@@ -338,19 +415,33 @@ description: Result of parsing cube.kcl
                         {
                           "end": 150,
                           "left": {
+                            "abs_path": false,
                             "end": 146,
-                            "name": "l",
+                            "name": {
+                              "end": 146,
+                              "name": "l",
+                              "start": 145,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 145,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 150,
-                            "name": "y",
+                            "name": {
+                              "end": 150,
+                              "name": "y",
+                              "start": 149,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 149,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 145,
                           "type": "BinaryExpression",
@@ -385,19 +476,33 @@ description: Result of parsing cube.kcl
                         {
                           "end": 165,
                           "left": {
+                            "abs_path": false,
                             "end": 161,
-                            "name": "l",
+                            "name": {
+                              "end": 161,
+                              "name": "l",
+                              "start": 160,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 160,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 165,
-                            "name": "x",
+                            "name": {
+                              "end": 165,
+                              "name": "x",
+                              "start": 164,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 164,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 160,
                           "type": "BinaryExpression",
@@ -407,11 +512,18 @@ description: Result of parsing cube.kcl
                           "end": 173,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 169,
-                              "name": "l",
+                              "name": {
+                                "end": 169,
+                                "name": "l",
+                                "start": 168,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 168,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 169,
                             "operator": "-",
@@ -421,11 +533,18 @@ description: Result of parsing cube.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 173,
-                            "name": "y",
+                            "name": {
+                              "end": 173,
+                              "name": "y",
+                              "start": 172,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 172,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 167,
                           "type": "BinaryExpression",
@@ -452,18 +571,32 @@ description: Result of parsing cube.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 201,
-                            "name": "XY",
+                            "name": {
+                              "end": 201,
+                              "name": "XY",
+                              "start": 199,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 199,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 198,
-                          "name": "startSketchOn",
+                          "name": {
+                            "end": 198,
+                            "name": "startSketchOn",
+                            "start": 185,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 185,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 202,
                         "start": 185,
@@ -473,11 +606,18 @@ description: Result of parsing cube.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 227,
-                            "name": "p0",
+                            "name": {
+                              "end": 227,
+                              "name": "p0",
+                              "start": 225,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 225,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           {
                             "end": 230,
@@ -487,10 +627,17 @@ description: Result of parsing cube.kcl
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 224,
-                          "name": "startProfileAt",
+                          "name": {
+                            "end": 224,
+                            "name": "startProfileAt",
+                            "start": 210,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 210,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 231,
                         "start": 210,
@@ -508,19 +655,33 @@ description: Result of parsing cube.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "end": 260,
-                              "name": "p1",
+                              "name": {
+                                "end": 260,
+                                "name": "p1",
+                                "start": 258,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 258,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 243,
-                          "name": "line",
+                          "name": {
+                            "end": 243,
+                            "name": "line",
+                            "start": 239,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 239,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 261,
                         "start": 239,
@@ -539,19 +700,33 @@ description: Result of parsing cube.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "end": 290,
-                              "name": "p2",
+                              "name": {
+                                "end": 290,
+                                "name": "p2",
+                                "start": 288,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 288,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 273,
-                          "name": "line",
+                          "name": {
+                            "end": 273,
+                            "name": "line",
+                            "start": 269,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 269,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 291,
                         "start": 269,
@@ -570,19 +745,33 @@ description: Result of parsing cube.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "end": 320,
-                              "name": "p3",
+                              "name": {
+                                "end": 320,
+                                "name": "p3",
+                                "start": 318,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 318,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 303,
-                          "name": "line",
+                          "name": {
+                            "end": 303,
+                            "name": "line",
+                            "start": 299,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 299,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 321,
                         "start": 299,
@@ -601,19 +790,33 @@ description: Result of parsing cube.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "end": 350,
-                              "name": "p0",
+                              "name": {
+                                "end": 350,
+                                "name": "p0",
+                                "start": 348,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 348,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 333,
-                          "name": "line",
+                          "name": {
+                            "end": 333,
+                            "name": "line",
+                            "start": 329,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 329,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 351,
                         "start": 329,
@@ -624,10 +827,17 @@ description: Result of parsing cube.kcl
                       {
                         "arguments": [],
                         "callee": {
+                          "abs_path": false,
                           "end": 364,
-                          "name": "close",
+                          "name": {
+                            "end": 364,
+                            "name": "close",
+                            "start": 359,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 359,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 366,
                         "start": 359,
@@ -645,19 +855,33 @@ description: Result of parsing cube.kcl
                               "type": "Identifier"
                             },
                             "arg": {
+                              "abs_path": false,
                               "end": 401,
-                              "name": "sideLength",
+                              "name": {
+                                "end": 401,
+                                "name": "sideLength",
+                                "start": 391,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 391,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 381,
-                          "name": "extrude",
+                          "name": {
+                            "end": 381,
+                            "name": "extrude",
+                            "start": 374,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 374,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 402,
                         "start": 374,
@@ -801,10 +1025,17 @@ description: Result of parsing cube.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 419,
-              "name": "cube",
+              "name": {
+                "end": 419,
+                "name": "cube",
+                "start": 415,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 415,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 453,
             "start": 415,

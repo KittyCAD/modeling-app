@@ -38,10 +38,17 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 28,
-              "name": "offsetPlane",
+              "name": {
+                "end": 28,
+                "name": "offsetPlane",
+                "start": 17,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 17,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 47,
             "start": 17,
@@ -105,10 +112,17 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 76,
-              "name": "offsetPlane",
+              "name": {
+                "end": 76,
+                "name": "offsetPlane",
+                "start": 65,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 65,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 96,
             "start": 65,
@@ -165,10 +179,17 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 125,
-              "name": "offsetPlane",
+              "name": {
+                "end": 125,
+                "name": "offsetPlane",
+                "start": 114,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 114,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 144,
             "start": 114,
@@ -206,18 +227,32 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 186,
-                    "name": "offsetPlane001",
+                    "name": {
+                      "end": 186,
+                      "name": "offsetPlane001",
+                      "start": 172,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 172,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 171,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 171,
+                    "name": "startSketchOn",
+                    "start": 158,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 158,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 187,
                 "start": 158,
@@ -264,10 +299,17 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 207,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 207,
+                    "name": "startProfileAt",
+                    "start": 193,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 193,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 218,
                 "start": 193,
@@ -317,10 +359,17 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 228,
-                  "name": "line",
+                  "name": {
+                    "end": 228,
+                    "name": "line",
+                    "start": 224,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 224,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 249,
                 "start": 224,

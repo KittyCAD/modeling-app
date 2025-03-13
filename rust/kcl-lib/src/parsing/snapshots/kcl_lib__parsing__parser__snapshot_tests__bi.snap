@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -56,11 +56,18 @@ expression: actual
               "start": 22,
               "type": "ObjectProperty",
               "value": {
+                "abs_path": false,
                 "end": 23,
-                "name": "x",
+                "name": {
+                  "end": 23,
+                  "name": "x",
+                  "start": 22,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 22,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             },
             {

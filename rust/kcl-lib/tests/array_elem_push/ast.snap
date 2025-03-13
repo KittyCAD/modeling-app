@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing array_elem_push.kcl
 ---
 {
@@ -76,11 +76,18 @@ description: Result of parsing array_elem_push.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 35,
-                "name": "arr",
+                "name": {
+                  "end": 35,
+                  "name": "arr",
+                  "start": 32,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 32,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "end": 38,
@@ -95,10 +102,17 @@ description: Result of parsing array_elem_push.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 31,
-              "name": "push",
+              "name": {
+                "end": 31,
+                "name": "push",
+                "start": 27,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 27,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 39,
             "start": 27,
@@ -126,11 +140,18 @@ description: Result of parsing array_elem_push.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 64,
-                "name": "new_arr1",
+                "name": {
+                  "end": 64,
+                  "name": "new_arr1",
+                  "start": 56,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 56,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "end": 67,
@@ -145,10 +166,17 @@ description: Result of parsing array_elem_push.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 55,
-              "name": "push",
+              "name": {
+                "end": 55,
+                "name": "push",
+                "start": 51,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 51,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 68,
             "start": 51,
@@ -225,10 +253,17 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 80,
-            "name": "assertEqual",
+            "name": {
+              "end": 80,
+              "name": "assertEqual",
+              "start": 69,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 69,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 142,
           "start": 69,
@@ -300,10 +335,17 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 154,
-            "name": "assertEqual",
+            "name": {
+              "end": 154,
+              "name": "assertEqual",
+              "start": 143,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 143,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 216,
           "start": 143,
@@ -375,10 +417,17 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 228,
-            "name": "assertEqual",
+            "name": {
+              "end": 228,
+              "name": "assertEqual",
+              "start": 217,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 217,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 290,
           "start": 217,
@@ -450,10 +499,17 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 302,
-            "name": "assertEqual",
+            "name": {
+              "end": 302,
+              "name": "assertEqual",
+              "start": 291,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 291,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 366,
           "start": 291,
@@ -525,10 +581,17 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 378,
-            "name": "assertEqual",
+            "name": {
+              "end": 378,
+              "name": "assertEqual",
+              "start": 367,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 367,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 440,
           "start": 367,
@@ -600,10 +663,17 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 452,
-            "name": "assertEqual",
+            "name": {
+              "end": 452,
+              "name": "assertEqual",
+              "start": 441,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 441,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 514,
           "start": 441,
@@ -675,10 +745,17 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 526,
-            "name": "assertEqual",
+            "name": {
+              "end": 526,
+              "name": "assertEqual",
+              "start": 515,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 515,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 588,
           "start": 515,
@@ -750,10 +827,17 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 600,
-            "name": "assertEqual",
+            "name": {
+              "end": 600,
+              "name": "assertEqual",
+              "start": 589,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 589,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 664,
           "start": 589,
@@ -825,10 +909,17 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 676,
-            "name": "assertEqual",
+            "name": {
+              "end": 676,
+              "name": "assertEqual",
+              "start": 665,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 665,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 740,
           "start": 665,

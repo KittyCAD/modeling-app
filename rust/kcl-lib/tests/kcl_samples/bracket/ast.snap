@@ -220,19 +220,33 @@ description: Result of parsing bracket.kcl
           "init": {
             "end": 708,
             "left": {
+              "abs_path": false,
               "end": 704,
-              "name": "shelfDepth",
+              "name": {
+                "end": 704,
+                "name": "shelfDepth",
+                "start": 694,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 694,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "*",
             "right": {
+              "abs_path": false,
               "end": 708,
-              "name": "p",
+              "name": {
+                "end": 708,
+                "name": "p",
+                "start": 707,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 707,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "start": 694,
             "type": "BinaryExpression",
@@ -352,19 +366,33 @@ description: Result of parsing bracket.kcl
                   "left": {
                     "end": 946,
                     "left": {
+                      "abs_path": false,
                       "end": 929,
-                      "name": "moment",
+                      "name": {
+                        "end": 929,
+                        "name": "moment",
+                        "start": 923,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 923,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "operator": "*",
                     "right": {
+                      "abs_path": false,
                       "end": 946,
-                      "name": "factorOfSafety",
+                      "name": {
+                        "end": 946,
+                        "name": "factorOfSafety",
+                        "start": 932,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 932,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     "start": 923,
                     "type": "BinaryExpression",
@@ -390,19 +418,33 @@ description: Result of parsing bracket.kcl
                 "right": {
                   "end": 972,
                   "left": {
+                    "abs_path": false,
                     "end": 964,
-                    "name": "sigmaAllow",
+                    "name": {
+                      "end": 964,
+                      "name": "sigmaAllow",
+                      "start": 954,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 954,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "*",
                   "right": {
+                    "abs_path": false,
                     "end": 972,
-                    "name": "width",
+                    "name": {
+                      "end": 972,
+                      "name": "width",
+                      "start": 967,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 967,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "start": 954,
                   "type": "BinaryExpression",
@@ -414,10 +456,17 @@ description: Result of parsing bracket.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 922,
-              "name": "sqrt",
+              "name": {
+                "end": 922,
+                "name": "sqrt",
+                "start": 918,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 918,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 974,
             "start": 918,
@@ -456,10 +505,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1159,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1159,
+                    "name": "startSketchOn",
+                    "start": 1146,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1146,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1165,
                 "start": 1146,
@@ -506,10 +562,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1185,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1185,
+                    "name": "startProfileAt",
+                    "start": 1171,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1171,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1196,
                 "start": 1171,
@@ -531,19 +594,33 @@ description: Result of parsing bracket.kcl
                         {
                           "end": 1240,
                           "left": {
+                            "abs_path": false,
                             "end": 1225,
-                            "name": "shelfMountL",
+                            "name": {
+                              "end": 1225,
+                              "name": "shelfMountL",
+                              "start": 1214,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1214,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "-",
                           "right": {
+                            "abs_path": false,
                             "end": 1240,
-                            "name": "filletRadius",
+                            "name": {
+                              "end": 1240,
+                              "name": "filletRadius",
+                              "start": 1228,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1228,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 1214,
                           "type": "BinaryExpression",
@@ -585,10 +662,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1206,
-                  "name": "line",
+                  "name": {
+                    "end": 1206,
+                    "name": "line",
+                    "start": 1202,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1202,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1261,
                 "start": 1202,
@@ -620,11 +704,18 @@ description: Result of parsing bracket.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 1287,
-                          "name": "width",
+                          "name": {
+                            "end": 1287,
+                            "name": "width",
+                            "start": 1282,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1282,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 1288,
@@ -651,10 +742,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1271,
-                  "name": "line",
+                  "name": {
+                    "end": 1271,
+                    "name": "line",
+                    "start": 1267,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1267,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1305,
                 "start": 1267,
@@ -678,11 +776,18 @@ description: Result of parsing bracket.kcl
                           "end": 1350,
                           "left": {
                             "argument": {
+                              "abs_path": false,
                               "end": 1335,
-                              "name": "shelfMountL",
+                              "name": {
+                                "end": 1335,
+                                "name": "shelfMountL",
+                                "start": 1324,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1324,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
                             "end": 1335,
                             "operator": "-",
@@ -692,11 +797,18 @@ description: Result of parsing bracket.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 1350,
-                            "name": "filletRadius",
+                            "name": {
+                              "end": 1350,
+                              "name": "filletRadius",
+                              "start": 1338,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1338,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 1323,
                           "type": "BinaryExpression",
@@ -722,10 +834,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1315,
-                  "name": "line",
+                  "name": {
+                    "end": 1315,
+                    "name": "line",
+                    "start": 1311,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1311,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1355,
                 "start": 1311,
@@ -736,10 +855,17 @@ description: Result of parsing bracket.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 1366,
-                  "name": "close",
+                  "name": {
+                    "end": 1366,
+                    "name": "close",
+                    "start": 1361,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1361,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1368,
                 "start": 1361,
@@ -800,11 +926,18 @@ description: Result of parsing bracket.kcl
                         "arg": {
                           "end": 1451,
                           "left": {
+                            "abs_path": false,
                             "end": 1447,
-                            "name": "mountingHoleDiameter",
+                            "name": {
+                              "end": 1447,
+                              "name": "mountingHoleDiameter",
+                              "start": 1427,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1427,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -825,10 +958,17 @@ description: Result of parsing bracket.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1385,
-                      "name": "circle",
+                      "name": {
+                        "end": 1385,
+                        "name": "circle",
+                        "start": 1379,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1379,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1458,
                     "start": 1379,
@@ -844,10 +984,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1378,
-                  "name": "hole",
+                  "name": {
+                    "end": 1378,
+                    "name": "hole",
+                    "start": 1374,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1374,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1462,
                 "start": 1374,
@@ -871,11 +1018,18 @@ description: Result of parsing bracket.kcl
                             {
                               "end": 1515,
                               "left": {
+                                "abs_path": false,
                                 "end": 1509,
-                                "name": "shelfMountL",
+                                "name": {
+                                  "end": 1509,
+                                  "name": "shelfMountL",
+                                  "start": 1498,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1498,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "-",
                               "right": {
@@ -896,11 +1050,18 @@ description: Result of parsing bracket.kcl
                             {
                               "end": 1526,
                               "left": {
+                                "abs_path": false,
                                 "end": 1522,
-                                "name": "width",
+                                "name": {
+                                  "end": 1522,
+                                  "name": "width",
+                                  "start": 1517,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1517,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "-",
                               "right": {
@@ -936,11 +1097,18 @@ description: Result of parsing bracket.kcl
                         "arg": {
                           "end": 1569,
                           "left": {
+                            "abs_path": false,
                             "end": 1565,
-                            "name": "mountingHoleDiameter",
+                            "name": {
+                              "end": 1565,
+                              "name": "mountingHoleDiameter",
+                              "start": 1545,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1545,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -961,10 +1129,17 @@ description: Result of parsing bracket.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1479,
-                      "name": "circle",
+                      "name": {
+                        "end": 1479,
+                        "name": "circle",
+                        "start": 1473,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1473,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1576,
                     "start": 1473,
@@ -980,10 +1155,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1472,
-                  "name": "hole",
+                  "name": {
+                    "end": 1472,
+                    "name": "hole",
+                    "start": 1468,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1468,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1580,
                 "start": 1468,
@@ -1018,11 +1200,18 @@ description: Result of parsing bracket.kcl
                             {
                               "end": 1628,
                               "left": {
+                                "abs_path": false,
                                 "end": 1624,
-                                "name": "width",
+                                "name": {
+                                  "end": 1624,
+                                  "name": "width",
+                                  "start": 1619,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1619,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "-",
                               "right": {
@@ -1058,11 +1247,18 @@ description: Result of parsing bracket.kcl
                         "arg": {
                           "end": 1671,
                           "left": {
+                            "abs_path": false,
                             "end": 1667,
-                            "name": "mountingHoleDiameter",
+                            "name": {
+                              "end": 1667,
+                              "name": "mountingHoleDiameter",
+                              "start": 1647,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1647,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1083,10 +1279,17 @@ description: Result of parsing bracket.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1597,
-                      "name": "circle",
+                      "name": {
+                        "end": 1597,
+                        "name": "circle",
+                        "start": 1591,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1591,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1678,
                     "start": 1591,
@@ -1102,10 +1305,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1590,
-                  "name": "hole",
+                  "name": {
+                    "end": 1590,
+                    "name": "hole",
+                    "start": 1586,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1586,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1682,
                 "start": 1586,
@@ -1129,11 +1339,18 @@ description: Result of parsing bracket.kcl
                             {
                               "end": 1735,
                               "left": {
+                                "abs_path": false,
                                 "end": 1729,
-                                "name": "shelfMountL",
+                                "name": {
+                                  "end": 1729,
+                                  "name": "shelfMountL",
+                                  "start": 1718,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 1718,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "operator": "-",
                               "right": {
@@ -1180,11 +1397,18 @@ description: Result of parsing bracket.kcl
                         "arg": {
                           "end": 1781,
                           "left": {
+                            "abs_path": false,
                             "end": 1777,
-                            "name": "mountingHoleDiameter",
+                            "name": {
+                              "end": 1777,
+                              "name": "mountingHoleDiameter",
+                              "start": 1757,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1757,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -1205,10 +1429,17 @@ description: Result of parsing bracket.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 1699,
-                      "name": "circle",
+                      "name": {
+                        "end": 1699,
+                        "name": "circle",
+                        "start": 1693,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1693,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 1788,
                     "start": 1693,
@@ -1224,10 +1455,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1692,
-                  "name": "hole",
+                  "name": {
+                    "end": 1692,
+                    "name": "hole",
+                    "start": 1688,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1688,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1792,
                 "start": 1688,
@@ -1288,30 +1526,51 @@ description: Result of parsing bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1896,
-                      "name": "thickness",
+                      "name": {
+                        "end": 1896,
+                        "name": "thickness",
+                        "start": 1887,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1887,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1858,
-                  "name": "extrude",
+                  "name": {
+                    "end": 1858,
+                    "name": "extrude",
+                    "start": 1851,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1851,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1897,
                 "start": 1851,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 1876,
-                  "name": "bracketLeg1Sketch",
+                  "name": {
+                    "end": 1876,
+                    "name": "bracketLeg1Sketch",
+                    "start": 1859,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1859,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -1325,11 +1584,18 @@ description: Result of parsing bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 1942,
-                      "name": "extFilletRadius",
+                      "name": {
+                        "end": 1942,
+                        "name": "extFilletRadius",
+                        "start": 1927,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 1927,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -1345,18 +1611,32 @@ description: Result of parsing bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1996,
-                              "name": "fillet1",
+                              "name": {
+                                "end": 1996,
+                                "name": "fillet1",
+                                "start": 1989,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1989,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1988,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 1988,
+                              "name": "getNextAdjacentEdge",
+                              "start": 1969,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1969,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1997,
                           "start": 1969,
@@ -1366,18 +1646,32 @@ description: Result of parsing bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 2035,
-                              "name": "fillet2",
+                              "name": {
+                                "end": 2035,
+                                "name": "fillet2",
+                                "start": 2028,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 2028,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 2027,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 2027,
+                              "name": "getNextAdjacentEdge",
+                              "start": 2008,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2008,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 2036,
                           "start": 2008,
@@ -1393,10 +1687,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1909,
-                  "name": "fillet",
+                  "name": {
+                    "end": 1909,
+                    "name": "fillet",
+                    "start": 1903,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1903,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2052,
                 "start": 1903,
@@ -1459,10 +1760,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2107,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2107,
+                    "name": "startSketchOn",
+                    "start": 2094,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2094,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2113,
                 "start": 2094,
@@ -1509,10 +1817,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2133,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2133,
+                    "name": "startProfileAt",
+                    "start": 2119,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2119,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2144,
                 "start": 2119,
@@ -1543,11 +1858,18 @@ description: Result of parsing bracket.kcl
                           }
                         },
                         {
+                          "abs_path": false,
                           "end": 2174,
-                          "name": "thickness",
+                          "name": {
+                            "end": 2174,
+                            "name": "thickness",
+                            "start": 2165,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2165,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 2175,
@@ -1558,10 +1880,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2154,
-                  "name": "line",
+                  "name": {
+                    "end": 2154,
+                    "name": "line",
+                    "start": 2150,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2150,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2176,
                 "start": 2150,
@@ -1631,19 +1960,33 @@ description: Result of parsing bracket.kcl
                         "value": {
                           "end": 2275,
                           "left": {
+                            "abs_path": false,
                             "end": 2263,
-                            "name": "filletRadius",
+                            "name": {
+                              "end": 2263,
+                              "name": "filletRadius",
+                              "start": 2251,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2251,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "end": 2275,
-                            "name": "thickness",
+                            "name": {
+                              "end": 2275,
+                              "name": "thickness",
+                              "start": 2266,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2266,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 2251,
                           "type": "BinaryExpression",
@@ -1663,10 +2006,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2185,
-                  "name": "arc",
+                  "name": {
+                    "end": 2185,
+                    "name": "arc",
+                    "start": 2182,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2182,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2286,
                 "start": 2182,
@@ -1686,11 +2036,18 @@ description: Result of parsing bracket.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 2313,
-                          "name": "thickness",
+                          "name": {
+                            "end": 2313,
+                            "name": "thickness",
+                            "start": 2304,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2304,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 2316,
@@ -1712,10 +2069,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2296,
-                  "name": "line",
+                  "name": {
+                    "end": 2296,
+                    "name": "line",
+                    "start": 2292,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2292,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2318,
                 "start": 2292,
@@ -1783,11 +2147,18 @@ description: Result of parsing bracket.kcl
                         "start": 2384,
                         "type": "ObjectProperty",
                         "value": {
+                          "abs_path": false,
                           "end": 2405,
-                          "name": "filletRadius",
+                          "name": {
+                            "end": 2405,
+                            "name": "filletRadius",
+                            "start": 2393,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2393,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       }
                     ],
@@ -1803,10 +2174,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2327,
-                  "name": "arc",
+                  "name": {
+                    "end": 2327,
+                    "name": "arc",
+                    "start": 2324,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2324,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2416,
                 "start": 2324,
@@ -1866,11 +2244,18 @@ description: Result of parsing bracket.kcl
                 },
                 "arg": {
                   "argument": {
+                    "abs_path": false,
                     "end": 2490,
-                    "name": "width",
+                    "name": {
+                      "end": 2490,
+                      "name": "width",
+                      "start": 2485,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2485,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "end": 2490,
                   "operator": "-",
@@ -1881,21 +2266,35 @@ description: Result of parsing bracket.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 2460,
-              "name": "extrude",
+              "name": {
+                "end": 2460,
+                "name": "extrude",
+                "start": 2453,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2453,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 2491,
             "start": 2453,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 2473,
-              "name": "filletSketch",
+              "name": {
+                "end": 2473,
+                "name": "filletSketch",
+                "start": 2461,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 2461,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 2437,
@@ -1957,11 +2356,18 @@ description: Result of parsing bracket.kcl
                             "type": "ObjectProperty",
                             "value": {
                               "argument": {
+                                "abs_path": false,
                                 "end": 2612,
-                                "name": "filletRadius",
+                                "name": {
+                                  "end": 2612,
+                                  "name": "filletRadius",
+                                  "start": 2600,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
                                 "start": 2600,
-                                "type": "Identifier",
-                                "type": "Identifier"
+                                "type": "Name",
+                                "type": "Name"
                               },
                               "end": 2612,
                               "operator": "-",
@@ -2309,18 +2715,32 @@ description: Result of parsing bracket.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 2830,
-                    "name": "customPlane",
+                    "name": {
+                      "end": 2830,
+                      "name": "customPlane",
+                      "start": 2819,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 2819,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2818,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 2818,
+                    "name": "startSketchOn",
+                    "start": 2805,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2805,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2831,
                 "start": 2805,
@@ -2344,11 +2764,18 @@ description: Result of parsing bracket.kcl
                       },
                       {
                         "argument": {
+                          "abs_path": false,
                           "end": 2869,
-                          "name": "filletRadius",
+                          "name": {
+                            "end": 2869,
+                            "name": "filletRadius",
+                            "start": 2857,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2857,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "end": 2869,
                         "operator": "-",
@@ -2370,10 +2797,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2851,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 2851,
+                    "name": "startProfileAt",
+                    "start": 2837,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2837,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2874,
                 "start": 2837,
@@ -2393,11 +2827,18 @@ description: Result of parsing bracket.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 2897,
-                          "name": "width",
+                          "name": {
+                            "end": 2897,
+                            "name": "width",
+                            "start": 2892,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 2892,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         {
                           "end": 2900,
@@ -2419,10 +2860,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2884,
-                  "name": "line",
+                  "name": {
+                    "end": 2884,
+                    "name": "line",
+                    "start": 2880,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2880,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2902,
                 "start": 2880,
@@ -2455,11 +2903,18 @@ description: Result of parsing bracket.kcl
                         },
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 2934,
-                            "name": "wallMountL",
+                            "name": {
+                              "end": 2934,
+                              "name": "wallMountL",
+                              "start": 2924,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2924,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 2934,
                           "operator": "-",
@@ -2492,10 +2947,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2912,
-                  "name": "line",
+                  "name": {
+                    "end": 2912,
+                    "name": "line",
+                    "start": 2908,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2908,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2952,
                 "start": 2908,
@@ -2517,11 +2979,18 @@ description: Result of parsing bracket.kcl
                       "elements": [
                         {
                           "argument": {
+                            "abs_path": false,
                             "end": 2976,
-                            "name": "width",
+                            "name": {
+                              "end": 2976,
+                              "name": "width",
+                              "start": 2971,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 2971,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "end": 2976,
                           "operator": "-",
@@ -2565,10 +3034,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 2962,
-                  "name": "line",
+                  "name": {
+                    "end": 2962,
+                    "name": "line",
+                    "start": 2958,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 2958,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 2997,
                 "start": 2958,
@@ -2579,10 +3055,17 @@ description: Result of parsing bracket.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "end": 3008,
-                  "name": "close",
+                  "name": {
+                    "end": 3008,
+                    "name": "close",
+                    "start": 3003,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3003,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3010,
                 "start": 3003,
@@ -2650,11 +3133,18 @@ description: Result of parsing bracket.kcl
                         "arg": {
                           "end": 3096,
                           "left": {
+                            "abs_path": false,
                             "end": 3092,
-                            "name": "mountingHoleDiameter",
+                            "name": {
+                              "end": 3092,
+                              "name": "mountingHoleDiameter",
+                              "start": 3072,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3072,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -2675,10 +3165,17 @@ description: Result of parsing bracket.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3027,
-                      "name": "circle",
+                      "name": {
+                        "end": 3027,
+                        "name": "circle",
+                        "start": 3021,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3021,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3103,
                     "start": 3021,
@@ -2694,10 +3191,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3020,
-                  "name": "hole",
+                  "name": {
+                    "end": 3020,
+                    "name": "hole",
+                    "start": 3016,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3016,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3107,
                 "start": 3016,
@@ -2765,11 +3269,18 @@ description: Result of parsing bracket.kcl
                         "arg": {
                           "end": 3193,
                           "left": {
+                            "abs_path": false,
                             "end": 3189,
-                            "name": "mountingHoleDiameter",
+                            "name": {
+                              "end": 3189,
+                              "name": "mountingHoleDiameter",
+                              "start": 3169,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3169,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -2790,10 +3301,17 @@ description: Result of parsing bracket.kcl
                       }
                     ],
                     "callee": {
+                      "abs_path": false,
                       "end": 3124,
-                      "name": "circle",
+                      "name": {
+                        "end": 3124,
+                        "name": "circle",
+                        "start": 3118,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3118,
-                      "type": "Identifier"
+                      "type": "Name"
                     },
                     "end": 3200,
                     "start": 3118,
@@ -2809,10 +3327,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3117,
-                  "name": "hole",
+                  "name": {
+                    "end": 3117,
+                    "name": "hole",
+                    "start": 3113,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3113,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3204,
                 "start": 3113,
@@ -2874,11 +3399,18 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "argument": {
+                        "abs_path": false,
                         "end": 3299,
-                        "name": "thickness",
+                        "name": {
+                          "end": 3299,
+                          "name": "thickness",
+                          "start": 3290,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 3290,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "end": 3299,
                       "operator": "-",
@@ -2889,21 +3421,35 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3260,
-                  "name": "extrude",
+                  "name": {
+                    "end": 3260,
+                    "name": "extrude",
+                    "start": 3253,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3253,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3300,
                 "start": 3253,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 3278,
-                  "name": "bracketLeg2Sketch",
+                  "name": {
+                    "end": 3278,
+                    "name": "bracketLeg2Sketch",
+                    "start": 3261,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3261,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -2917,11 +3463,18 @@ description: Result of parsing bracket.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "end": 3345,
-                      "name": "extFilletRadius",
+                      "name": {
+                        "end": 3345,
+                        "name": "extFilletRadius",
+                        "start": 3330,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 3330,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -2937,18 +3490,32 @@ description: Result of parsing bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 3399,
-                              "name": "fillet3",
+                              "name": {
+                                "end": 3399,
+                                "name": "fillet3",
+                                "start": 3392,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3392,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3391,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 3391,
+                              "name": "getNextAdjacentEdge",
+                              "start": 3372,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3372,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3400,
                           "start": 3372,
@@ -2958,18 +3525,32 @@ description: Result of parsing bracket.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 3438,
-                              "name": "fillet4",
+                              "name": {
+                                "end": 3438,
+                                "name": "fillet4",
+                                "start": 3431,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 3431,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 3430,
-                            "name": "getNextAdjacentEdge",
+                            "name": {
+                              "end": 3430,
+                              "name": "getNextAdjacentEdge",
+                              "start": 3411,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 3411,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 3439,
                           "start": 3411,
@@ -2985,10 +3566,17 @@ description: Result of parsing bracket.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 3312,
-                  "name": "fillet",
+                  "name": {
+                    "end": 3312,
+                    "name": "fillet",
+                    "start": 3306,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 3306,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 3455,
                 "start": 3306,
@@ -3034,11 +3622,18 @@ description: Result of parsing bracket.kcl
             "start": 426,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 448,
-              "name": "in",
+              "name": {
+                "end": 448,
+                "name": "in",
+                "start": 446,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 446,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

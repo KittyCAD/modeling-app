@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -57,10 +57,17 @@ expression: actual
       "expression": {
         "arguments": [],
         "callee": {
+          "abs_path": false,
           "end": 78,
-          "name": "firstPrimeNumber",
+          "name": {
+            "end": 78,
+            "name": "firstPrimeNumber",
+            "start": 62,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 62,
-          "type": "Identifier"
+          "type": "Name"
         },
         "end": 80,
         "start": 62,

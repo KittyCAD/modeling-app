@@ -28,10 +28,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 25,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 25,
+                    "name": "startSketchOn",
+                    "start": 12,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 12,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 31,
                 "start": 12,
@@ -78,10 +85,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 51,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 51,
+                    "name": "startProfileAt",
+                    "start": 37,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 37,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 69,
                 "start": 37,
@@ -135,10 +149,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 115,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 115,
+                    "name": "angledLine",
+                    "start": 105,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 105,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 154,
                 "start": 105,
@@ -154,18 +175,32 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                         "left": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 207,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 207,
+                                "name": "rectangleSegmentA001",
+                                "start": 187,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 187,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 186,
-                            "name": "segAng",
+                            "name": {
+                              "end": 186,
+                              "name": "segAng",
+                              "start": 180,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 180,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 208,
                           "start": 180,
@@ -220,10 +255,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 170,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 170,
+                    "name": "angledLine",
+                    "start": 160,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 160,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 247,
                 "start": 160,
@@ -237,18 +279,32 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 300,
-                            "name": "rectangleSegmentA001",
+                            "name": {
+                              "end": 300,
+                              "name": "rectangleSegmentA001",
+                              "start": 280,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 280,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 279,
-                          "name": "segAng",
+                          "name": {
+                            "end": 279,
+                            "name": "segAng",
+                            "start": 273,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 273,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 301,
                         "start": 273,
@@ -259,18 +315,32 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 338,
-                              "name": "rectangleSegmentA001",
+                              "name": {
+                                "end": 338,
+                                "name": "rectangleSegmentA001",
+                                "start": 318,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 318,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 317,
-                            "name": "segLen",
+                            "name": {
+                              "end": 317,
+                              "name": "segLen",
+                              "start": 311,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 311,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 339,
                           "start": 311,
@@ -297,10 +367,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 263,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 263,
+                    "name": "angledLine",
+                    "start": 253,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 253,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 350,
                 "start": 253,
@@ -329,10 +406,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 389,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 389,
+                              "name": "profileStartX",
+                              "start": 376,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 376,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 392,
                           "start": 376,
@@ -349,10 +433,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 407,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 407,
+                              "name": "profileStartY",
+                              "start": 394,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 394,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 410,
                           "start": 394,
@@ -384,10 +475,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 360,
-                  "name": "line",
+                  "name": {
+                    "end": 360,
+                    "name": "line",
+                    "start": 356,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 356,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 426,
                 "start": 356,
@@ -405,10 +503,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 437,
-                  "name": "close",
+                  "name": {
+                    "end": 437,
+                    "name": "close",
+                    "start": 432,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 432,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 440,
                 "start": 432,
@@ -482,21 +587,35 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 461,
-                  "name": "extrude",
+                  "name": {
+                    "end": 461,
+                    "name": "extrude",
+                    "start": 454,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 454,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 486,
                 "start": 454,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "abs_path": false,
                   "end": 471,
-                  "name": "sketch001",
+                  "name": {
+                    "end": 471,
+                    "name": "sketch001",
+                    "start": 462,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 462,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               },
               {
@@ -532,11 +651,18 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 525,
-                          "name": "seg01",
+                          "name": {
+                            "end": 525,
+                            "name": "seg01",
+                            "start": 520,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 520,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 526,
@@ -547,10 +673,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 498,
-                  "name": "fillet",
+                  "name": {
+                    "end": 498,
+                    "name": "fillet",
+                    "start": 492,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 492,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 527,
                 "start": 492,
@@ -593,18 +726,32 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                         {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 583,
-                              "name": "seg01",
+                              "name": {
+                                "end": 583,
+                                "name": "seg01",
+                                "start": 578,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 578,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 577,
-                            "name": "getOppositeEdge",
+                            "name": {
+                              "end": 577,
+                              "name": "getOppositeEdge",
+                              "start": 562,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 562,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 584,
                           "start": 562,
@@ -636,10 +783,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 540,
-                  "name": "chamfer",
+                  "name": {
+                    "end": 540,
+                    "name": "chamfer",
+                    "start": 533,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 533,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 600,
                 "start": 533,
@@ -680,11 +834,18 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                     "arg": {
                       "elements": [
                         {
+                          "abs_path": false,
                           "end": 640,
-                          "name": "seg02",
+                          "name": {
+                            "end": 640,
+                            "name": "seg02",
+                            "start": 635,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 635,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 641,
@@ -711,10 +872,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 613,
-                  "name": "chamfer",
+                  "name": {
+                    "end": 613,
+                    "name": "chamfer",
+                    "start": 606,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 606,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 656,
                 "start": 606,
@@ -751,25 +919,46 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 694,
-                    "name": "extrude001",
+                    "name": {
+                      "end": 694,
+                      "name": "extrude001",
+                      "start": 684,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 684,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "end": 701,
-                    "name": "seg04",
+                    "name": {
+                      "end": 701,
+                      "name": "seg04",
+                      "start": 696,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 696,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 683,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 683,
+                    "name": "startSketchOn",
+                    "start": 670,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 670,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 702,
                 "start": 670,
@@ -823,10 +1012,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 722,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 722,
+                    "name": "startProfileAt",
+                    "start": 708,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 708,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 742,
                 "start": 708,
@@ -880,10 +1076,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 758,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 758,
+                    "name": "angledLine",
+                    "start": 748,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 748,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 796,
                 "start": 748,
@@ -899,18 +1102,32 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                         "left": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 849,
-                              "name": "rectangleSegmentA003",
+                              "name": {
+                                "end": 849,
+                                "name": "rectangleSegmentA003",
+                                "start": 829,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 829,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 828,
-                            "name": "segAng",
+                            "name": {
+                              "end": 828,
+                              "name": "segAng",
+                              "start": 822,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 822,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 850,
                           "start": 822,
@@ -965,10 +1182,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 812,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 812,
+                    "name": "angledLine",
+                    "start": 802,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 802,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 903,
                 "start": 802,
@@ -982,18 +1206,32 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 956,
-                            "name": "rectangleSegmentA003",
+                            "name": {
+                              "end": 956,
+                              "name": "rectangleSegmentA003",
+                              "start": 936,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 936,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 935,
-                          "name": "segAng",
+                          "name": {
+                            "end": 935,
+                            "name": "segAng",
+                            "start": 929,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 929,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 957,
                         "start": 929,
@@ -1004,18 +1242,32 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 994,
-                              "name": "rectangleSegmentA003",
+                              "name": {
+                                "end": 994,
+                                "name": "rectangleSegmentA003",
+                                "start": 974,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 974,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 973,
-                            "name": "segLen",
+                            "name": {
+                              "end": 973,
+                              "name": "segLen",
+                              "start": 967,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 967,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 995,
                           "start": 967,
@@ -1049,10 +1301,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 919,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 919,
+                    "name": "angledLine",
+                    "start": 909,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 909,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1029,
                 "start": 909,
@@ -1081,10 +1340,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1068,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 1068,
+                              "name": "profileStartX",
+                              "start": 1055,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1055,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1071,
                           "start": 1055,
@@ -1101,10 +1367,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1086,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 1086,
+                              "name": "profileStartY",
+                              "start": 1073,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1073,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1089,
                           "start": 1073,
@@ -1120,10 +1393,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1039,
-                  "name": "line",
+                  "name": {
+                    "end": 1039,
+                    "name": "line",
+                    "start": 1035,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1035,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1091,
                 "start": 1035,
@@ -1141,10 +1421,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1102,
-                  "name": "close",
+                  "name": {
+                    "end": 1102,
+                    "name": "close",
+                    "start": 1097,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1097,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1105,
                 "start": 1097,
@@ -1180,25 +1467,46 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 1142,
-                    "name": "extrude001",
+                    "name": {
+                      "end": 1142,
+                      "name": "extrude001",
+                      "start": 1132,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1132,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "end": 1149,
-                    "name": "seg03",
+                    "name": {
+                      "end": 1149,
+                      "name": "seg03",
+                      "start": 1144,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 1144,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1131,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 1131,
+                    "name": "startSketchOn",
+                    "start": 1118,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1118,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1150,
                 "start": 1118,
@@ -1245,10 +1553,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1170,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 1170,
+                    "name": "startProfileAt",
+                    "start": 1156,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1156,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1191,
                 "start": 1156,
@@ -1302,10 +1617,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1207,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 1207,
+                    "name": "angledLine",
+                    "start": 1197,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1197,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1245,
                 "start": 1197,
@@ -1321,18 +1643,32 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                         "left": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1298,
-                              "name": "rectangleSegmentA002",
+                              "name": {
+                                "end": 1298,
+                                "name": "rectangleSegmentA002",
+                                "start": 1278,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1278,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1277,
-                            "name": "segAng",
+                            "name": {
+                              "end": 1277,
+                              "name": "segAng",
+                              "start": 1271,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1271,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1299,
                           "start": 1271,
@@ -1387,10 +1723,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1261,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 1261,
+                    "name": "angledLine",
+                    "start": 1251,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1251,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1353,
                 "start": 1251,
@@ -1404,18 +1747,32 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "end": 1406,
-                            "name": "rectangleSegmentA002",
+                            "name": {
+                              "end": 1406,
+                              "name": "rectangleSegmentA002",
+                              "start": 1386,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1386,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
+                          "abs_path": false,
                           "end": 1385,
-                          "name": "segAng",
+                          "name": {
+                            "end": 1385,
+                            "name": "segAng",
+                            "start": 1379,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 1379,
-                          "type": "Identifier"
+                          "type": "Name"
                         },
                         "end": 1407,
                         "start": 1379,
@@ -1426,18 +1783,32 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "abs_path": false,
                               "end": 1444,
-                              "name": "rectangleSegmentA002",
+                              "name": {
+                                "end": 1444,
+                                "name": "rectangleSegmentA002",
+                                "start": 1424,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 1424,
-                              "type": "Identifier",
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1423,
-                            "name": "segLen",
+                            "name": {
+                              "end": 1423,
+                              "name": "segLen",
+                              "start": 1417,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1417,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1445,
                           "start": 1417,
@@ -1471,10 +1842,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1369,
-                  "name": "angledLine",
+                  "name": {
+                    "end": 1369,
+                    "name": "angledLine",
+                    "start": 1359,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1359,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1479,
                 "start": 1359,
@@ -1503,10 +1881,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1518,
-                            "name": "profileStartX",
+                            "name": {
+                              "end": 1518,
+                              "name": "profileStartX",
+                              "start": 1505,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1505,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1521,
                           "start": 1505,
@@ -1523,10 +1908,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "end": 1536,
-                            "name": "profileStartY",
+                            "name": {
+                              "end": 1536,
+                              "name": "profileStartY",
+                              "start": 1523,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 1523,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "end": 1539,
                           "start": 1523,
@@ -1542,10 +1934,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1489,
-                  "name": "line",
+                  "name": {
+                    "end": 1489,
+                    "name": "line",
+                    "start": 1485,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1485,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1541,
                 "start": 1485,
@@ -1563,10 +1962,17 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 1552,
-                  "name": "close",
+                  "name": {
+                    "end": 1552,
+                    "name": "close",
+                    "start": 1547,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 1547,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 1555,
                 "start": 1547,
@@ -1621,21 +2027,35 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 1576,
-              "name": "extrude",
+              "name": {
+                "end": 1576,
+                "name": "extrude",
+                "start": 1569,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1569,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 1600,
             "start": 1569,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 1586,
-              "name": "sketch002",
+              "name": {
+                "end": 1586,
+                "name": "sketch002",
+                "start": 1577,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 1577,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 1556,

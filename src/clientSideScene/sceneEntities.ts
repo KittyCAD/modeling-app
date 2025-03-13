@@ -80,12 +80,11 @@ import { isArray, isOverlap, roundOff } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
-  createIdentifier,
+  createLocalName,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
   createNodeFromExprSnippet,
-  createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
   createVariableDeclaration,
@@ -679,7 +678,7 @@ export class SceneEntities {
           ['CallExpression', 'CallExpressionKw']
         )
         if (err(_node1)) return
-        const callExpName = _node1.node?.callee?.name
+        const callExpName = _node1.node?.callee?.name.name
 
         const initSegment =
           segment.type === 'TangentialArcTo'
@@ -1059,7 +1058,7 @@ export class SceneEntities {
           createLiteral(roundOff(rectangleOrigin[0])),
           createLiteral(roundOff(rectangleOrigin[1])),
         ]),
-        createIdentifier(varDec.node.id.name),
+        createLocalName(varDec.node.id.name),
       ])
     )
 
@@ -1241,7 +1240,7 @@ export class SceneEntities {
           createLiteral(roundOff(rectangleOrigin[0])),
           createLiteral(roundOff(rectangleOrigin[1])),
         ]),
-        createIdentifier(varDec.node.id.name),
+        createLocalName(varDec.node.id.name),
       ])
     )
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
@@ -1607,16 +1606,20 @@ export class SceneEntities {
     const varName = findUniqueName(_ast, 'profile')
     const newExpression = createVariableDeclaration(
       varName,
-      createCallExpressionStdLibKw('circle', varDec.node.id, [
-        createLabeledArg(
-          'center',
-          createArrayExpression([
-            createLiteral(roundOff(circleCenter[0])),
-            createLiteral(roundOff(circleCenter[1])),
-          ])
-        ),
-        createLabeledArg('radius', createLiteral(1)),
-      ])
+      createCallExpressionStdLibKw(
+        'circle',
+        createLocalName(varDec.node.id.name),
+        [
+          createLabeledArg(
+            'center',
+            createArrayExpression([
+              createLiteral(roundOff(circleCenter[0])),
+              createLiteral(roundOff(circleCenter[1])),
+            ])
+          ),
+          createLabeledArg('radius', createLiteral(1)),
+        ]
+      )
     )
 
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')

@@ -142,10 +142,17 @@ description: Result of parsing pipe-with-bend.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 363,
-              "name": "startSketchOn",
+              "name": {
+                "end": 363,
+                "name": "startSketchOn",
+                "start": 350,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 350,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 369,
             "start": 350,
@@ -183,11 +190,18 @@ description: Result of parsing pipe-with-bend.kcl
                 "arg": {
                   "elements": [
                     {
+                      "abs_path": false,
                       "end": 472,
-                      "name": "bendRadius",
+                      "name": {
+                        "end": 472,
+                        "name": "bendRadius",
+                        "start": 462,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 462,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     {
                       "end": 475,
@@ -218,11 +232,18 @@ description: Result of parsing pipe-with-bend.kcl
                 "arg": {
                   "end": 506,
                   "left": {
+                    "abs_path": false,
                     "end": 502,
-                    "name": "outerDiameter",
+                    "name": {
+                      "end": 502,
+                      "name": "outerDiameter",
+                      "start": 489,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 489,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -243,21 +264,35 @@ description: Result of parsing pipe-with-bend.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 435,
-              "name": "circle",
+              "name": {
+                "end": 435,
+                "name": "circle",
+                "start": 429,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 429,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 508,
             "start": 429,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 448,
-              "name": "sketch000",
+              "name": {
+                "end": 448,
+                "name": "sketch000",
+                "start": 439,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 439,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 414,
@@ -291,11 +326,18 @@ description: Result of parsing pipe-with-bend.kcl
                 "arg": {
                   "elements": [
                     {
+                      "abs_path": false,
                       "end": 611,
-                      "name": "bendRadius",
+                      "name": {
+                        "end": 611,
+                        "name": "bendRadius",
+                        "start": 601,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 601,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     },
                     {
                       "end": 614,
@@ -326,11 +368,18 @@ description: Result of parsing pipe-with-bend.kcl
                 "arg": {
                   "end": 645,
                   "left": {
+                    "abs_path": false,
                     "end": 641,
-                    "name": "innerDiameter",
+                    "name": {
+                      "end": 641,
+                      "name": "innerDiameter",
+                      "start": 628,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 628,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   "operator": "/",
                   "right": {
@@ -351,21 +400,35 @@ description: Result of parsing pipe-with-bend.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 574,
-              "name": "circle",
+              "name": {
+                "end": 574,
+                "name": "circle",
+                "start": 568,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 568,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 647,
             "start": 568,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 587,
-              "name": "sketch000",
+              "name": {
+                "end": 587,
+                "name": "sketch000",
+                "start": 578,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 578,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 553,
@@ -389,20 +452,34 @@ description: Result of parsing pipe-with-bend.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "end": 709,
-                "name": "outerProfile",
+                "name": {
+                  "end": 709,
+                  "name": "outerProfile",
+                  "start": 697,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 697,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "end": 732,
-                    "name": "innerProfile",
+                    "name": {
+                      "end": 732,
+                      "name": "innerProfile",
+                      "start": 720,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 720,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "end": 735,
@@ -412,10 +489,17 @@ description: Result of parsing pipe-with-bend.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 719,
-                  "name": "hole",
+                  "name": {
+                    "end": 719,
+                    "name": "hole",
+                    "start": 715,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 715,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 736,
                 "start": 715,
@@ -498,11 +582,18 @@ description: Result of parsing pipe-with-bend.kcl
                     "start": 816,
                     "type": "ObjectProperty",
                     "value": {
+                      "abs_path": false,
                       "end": 833,
-                      "name": "bendAngle",
+                      "name": {
+                        "end": 833,
+                        "name": "bendAngle",
+                        "start": 824,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 824,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
@@ -511,18 +602,32 @@ description: Result of parsing pipe-with-bend.kcl
                 "type": "ObjectExpression"
               },
               {
+                "abs_path": false,
                 "end": 848,
-                "name": "pipeProfile",
+                "name": {
+                  "end": 848,
+                  "name": "pipeProfile",
+                  "start": 837,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 837,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 801,
-              "name": "revolve",
+              "name": {
+                "end": 801,
+                "name": "revolve",
+                "start": 794,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 794,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 849,
             "start": 794,
@@ -561,11 +666,18 @@ description: Result of parsing pipe-with-bend.kcl
             "start": 186,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "end": 208,
-              "name": "in",
+              "name": {
+                "end": 208,
+                "name": "in",
+                "start": 206,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 206,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

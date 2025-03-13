@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing computed_var.kcl
 ---
 {
@@ -148,11 +148,18 @@ description: Result of parsing computed_var.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 92,
-              "name": "ten",
+              "name": {
+                "end": 92,
+                "name": "ten",
+                "start": 89,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 89,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 96,
@@ -186,10 +193,17 @@ description: Result of parsing computed_var.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 88,
-            "name": "assertEqual",
+            "name": {
+              "end": 88,
+              "name": "assertEqual",
+              "start": 77,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 77,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 115,
           "start": 77,
@@ -340,11 +354,18 @@ description: Result of parsing computed_var.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 183,
-              "name": "one",
+              "name": {
+                "end": 183,
+                "name": "one",
+                "start": 180,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 180,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 186,
@@ -378,10 +399,17 @@ description: Result of parsing computed_var.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 179,
-            "name": "assertEqual",
+            "name": {
+              "end": 179,
+              "name": "assertEqual",
+              "start": 168,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 168,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 206,
           "start": 168,
@@ -397,11 +425,18 @@ description: Result of parsing computed_var.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 222,
-              "name": "PI",
+              "name": {
+                "end": 222,
+                "name": "PI",
+                "start": 220,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 220,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 225,
@@ -435,10 +470,17 @@ description: Result of parsing computed_var.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 219,
-            "name": "assertEqual",
+            "name": {
+              "end": 219,
+              "name": "assertEqual",
+              "start": 208,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 208,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 242,
           "start": 208,
@@ -475,11 +517,18 @@ description: Result of parsing computed_var.kcl
                 },
                 "operator": "*",
                 "right": {
+                  "abs_path": false,
                   "end": 257,
-                  "name": "PI",
+                  "name": {
+                    "end": 257,
+                    "name": "PI",
+                    "start": 255,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 255,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "start": 251,
                 "type": "BinaryExpression",
@@ -487,10 +536,17 @@ description: Result of parsing computed_var.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 250,
-              "name": "cos",
+              "name": {
+                "end": 250,
+                "name": "cos",
+                "start": 247,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 247,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 258,
             "start": 247,
@@ -511,11 +567,18 @@ description: Result of parsing computed_var.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "end": 272,
-              "name": "x",
+              "name": {
+                "end": 272,
+                "name": "x",
+                "start": 271,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 271,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "end": 275,
@@ -549,10 +612,17 @@ description: Result of parsing computed_var.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 270,
-            "name": "assertEqual",
+            "name": {
+              "end": 270,
+              "name": "assertEqual",
+              "start": 259,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 259,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 298,
           "start": 259,

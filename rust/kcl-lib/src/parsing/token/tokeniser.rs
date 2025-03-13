@@ -87,7 +87,7 @@ pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
         '?' => question_mark,
         '@' => at,
         '0'..='9' => number,
-        ':' => colon,
+        ':' => alt((double_colon, colon)),
         '.' => alt((number, double_period, period)),
         '#' => hash,
         '$' => dollar,
@@ -282,6 +282,15 @@ fn colon(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
+fn double_colon(i: &mut Input<'_>) -> PResult<Token> {
+    let (value, range) = "::".with_span().parse_next(i)?;
+    Ok(Token::from_range(
+        range,
+        i.state.module_id,
+        TokenType::DoubleColon,
+        value.to_string(),
+    ))
+}
 fn period(i: &mut Input<'_>) -> PResult<Token> {
     let (value, range) = '.'.with_span().parse_next(i)?;
     Ok(Token::from_range(

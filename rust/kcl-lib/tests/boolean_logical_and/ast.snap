@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing boolean_logical_and.kcl
 ---
 {
@@ -57,11 +57,18 @@ description: Result of parsing boolean_logical_and.kcl
           },
           "init": {
             "cond": {
+              "abs_path": false,
               "end": 27,
-              "name": "aa",
+              "name": {
+                "end": 27,
+                "name": "aa",
+                "start": 25,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 25,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
@@ -132,11 +139,18 @@ description: Result of parsing boolean_logical_and.kcl
             {
               "end": 62,
               "left": {
+                "abs_path": false,
                 "end": 57,
-                "name": "a",
+                "name": {
+                  "end": 57,
+                  "name": "a",
+                  "start": 56,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 56,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
@@ -164,10 +178,17 @@ description: Result of parsing boolean_logical_and.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 55,
-            "name": "assert",
+            "name": {
+              "end": 55,
+              "name": "assert",
+              "start": 49,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 49,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 128,
           "start": 49,
@@ -230,11 +251,18 @@ description: Result of parsing boolean_logical_and.kcl
           },
           "init": {
             "cond": {
+              "abs_path": false,
               "end": 157,
-              "name": "bb",
+              "name": {
+                "end": 157,
+                "name": "bb",
+                "start": 155,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 155,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
@@ -305,11 +333,18 @@ description: Result of parsing boolean_logical_and.kcl
             {
               "end": 192,
               "left": {
+                "abs_path": false,
                 "end": 187,
-                "name": "b",
+                "name": {
+                  "end": 187,
+                  "name": "b",
+                  "start": 186,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 186,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
@@ -337,10 +372,17 @@ description: Result of parsing boolean_logical_and.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 185,
-            "name": "assert",
+            "name": {
+              "end": 185,
+              "name": "assert",
+              "start": 179,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 179,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 257,
           "start": 179,
@@ -403,11 +445,18 @@ description: Result of parsing boolean_logical_and.kcl
           },
           "init": {
             "cond": {
+              "abs_path": false,
               "end": 285,
-              "name": "cc",
+              "name": {
+                "end": 285,
+                "name": "cc",
+                "start": 283,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 283,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
@@ -478,11 +527,18 @@ description: Result of parsing boolean_logical_and.kcl
             {
               "end": 320,
               "left": {
+                "abs_path": false,
                 "end": 315,
-                "name": "c",
+                "name": {
+                  "end": 315,
+                  "name": "c",
+                  "start": 314,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 314,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
@@ -510,10 +566,17 @@ description: Result of parsing boolean_logical_and.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 313,
-            "name": "assert",
+            "name": {
+              "end": 313,
+              "name": "assert",
+              "start": 307,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 307,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 386,
           "start": 307,
@@ -576,11 +639,18 @@ description: Result of parsing boolean_logical_and.kcl
           },
           "init": {
             "cond": {
+              "abs_path": false,
               "end": 416,
-              "name": "dd",
+              "name": {
+                "end": 416,
+                "name": "dd",
+                "start": 414,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 414,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "digest": null,
             "else_ifs": [],
@@ -651,11 +721,18 @@ description: Result of parsing boolean_logical_and.kcl
             {
               "end": 451,
               "left": {
+                "abs_path": false,
                 "end": 446,
-                "name": "d",
+                "name": {
+                  "end": 446,
+                  "name": "d",
+                  "start": 445,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 445,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "==",
               "right": {
@@ -683,10 +760,17 @@ description: Result of parsing boolean_logical_and.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 444,
-            "name": "assert",
+            "name": {
+              "end": 444,
+              "name": "assert",
+              "start": 438,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 438,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 519,
           "start": 438,

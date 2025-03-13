@@ -28,10 +28,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 29,
-                  "name": "startSketchOn",
+                  "name": {
+                    "end": 29,
+                    "name": "startSketchOn",
+                    "start": 16,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 16,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 35,
                 "start": 16,
@@ -78,10 +85,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 55,
-                  "name": "startProfileAt",
+                  "name": {
+                    "end": 55,
+                    "name": "startProfileAt",
+                    "start": 41,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 41,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 66,
                 "start": 41,
@@ -131,10 +145,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 76,
-                  "name": "line",
+                  "name": {
+                    "end": 76,
+                    "name": "line",
+                    "start": 72,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 72,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 90,
                 "start": 72,
@@ -185,10 +206,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 100,
-                  "name": "line",
+                  "name": {
+                    "end": 100,
+                    "name": "line",
+                    "start": 96,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 96,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 114,
                 "start": 96,
@@ -246,10 +274,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 124,
-                  "name": "line",
+                  "name": {
+                    "end": 124,
+                    "name": "line",
+                    "start": 120,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 120,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 139,
                 "start": 120,
@@ -267,10 +302,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 150,
-                  "name": "close",
+                  "name": {
+                    "end": 150,
+                    "name": "close",
+                    "start": 145,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 145,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 153,
                 "start": 145,
@@ -301,10 +343,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "end": 166,
-                  "name": "extrude",
+                  "name": {
+                    "end": 166,
+                    "name": "extrude",
+                    "start": 159,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 159,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "end": 178,
                 "start": 159,
@@ -430,21 +479,35 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 204,
-              "name": "patternLinear3d",
+              "name": {
+                "end": 204,
+                "name": "patternLinear3d",
+                "start": 189,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 189,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 277,
             "start": 189,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 221,
-              "name": "exampleSketch",
+              "name": {
+                "end": 221,
+                "name": "exampleSketch",
+                "start": 208,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 208,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 180,
@@ -647,21 +710,35 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 305,
-              "name": "patternCircular3d",
+              "name": {
+                "end": 305,
+                "name": "patternCircular3d",
+                "start": 288,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 288,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 432,
             "start": 288,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "end": 315,
-              "name": "pattn1",
+              "name": {
+                "end": 315,
+                "name": "pattn1",
+                "start": 309,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 309,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 279,

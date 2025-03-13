@@ -76,18 +76,32 @@ description: Result of parsing array_elem_pop.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 34,
-                "name": "arr",
+                "name": {
+                  "end": 34,
+                  "name": "arr",
+                  "start": 31,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 31,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 30,
-              "name": "pop",
+              "name": {
+                "end": 30,
+                "name": "pop",
+                "start": 27,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 27,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 35,
             "start": 27,
@@ -115,18 +129,32 @@ description: Result of parsing array_elem_pop.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 59,
-                "name": "new_arr1",
+                "name": {
+                  "end": 59,
+                  "name": "new_arr1",
+                  "start": 51,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 51,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 50,
-              "name": "pop",
+              "name": {
+                "end": 50,
+                "name": "pop",
+                "start": 47,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 47,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 60,
             "start": 47,
@@ -154,18 +182,32 @@ description: Result of parsing array_elem_pop.kcl
           "init": {
             "arguments": [
               {
+                "abs_path": false,
                 "end": 84,
-                "name": "new_arr2",
+                "name": {
+                  "end": 84,
+                  "name": "new_arr2",
+                  "start": 76,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 76,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               }
             ],
             "callee": {
+              "abs_path": false,
               "end": 75,
-              "name": "pop",
+              "name": {
+                "end": 75,
+                "name": "pop",
+                "start": 72,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 72,
-              "type": "Identifier"
+              "type": "Name"
             },
             "end": 85,
             "start": 72,
@@ -242,10 +284,17 @@ description: Result of parsing array_elem_pop.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 97,
-            "name": "assertEqual",
+            "name": {
+              "end": 97,
+              "name": "assertEqual",
+              "start": 86,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 86,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 159,
           "start": 86,
@@ -317,10 +366,17 @@ description: Result of parsing array_elem_pop.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 171,
-            "name": "assertEqual",
+            "name": {
+              "end": 171,
+              "name": "assertEqual",
+              "start": 160,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 160,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 233,
           "start": 160,
@@ -392,10 +448,17 @@ description: Result of parsing array_elem_pop.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "end": 245,
-            "name": "assertEqual",
+            "name": {
+              "end": 245,
+              "name": "assertEqual",
+              "start": 234,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 234,
-            "type": "Identifier"
+            "type": "Name"
           },
           "end": 307,
           "start": 234,
