@@ -1510,9 +1510,9 @@ description: Operations executed car-wheel-assembly.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        529,
+        562,
+        3
       ]
     }
   },
@@ -1622,9 +1622,9 @@ description: Operations executed car-wheel-assembly.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        859,
+        892,
+        3
       ]
     }
   },
@@ -1710,9 +1710,9 @@ description: Operations executed car-wheel-assembly.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        1214,
+        1248,
+        3
       ]
     }
   },
@@ -1798,9 +1798,9 @@ description: Operations executed car-wheel-assembly.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        1572,
+        1606,
+        3
       ]
     }
   },
@@ -2362,9 +2362,9 @@ description: Operations executed car-wheel-assembly.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        4067,
+        4247,
+        3
       ]
     }
   },
@@ -2801,9 +2801,9 @@ description: Operations executed car-wheel-assembly.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        4067,
+        4247,
+        3
       ]
     }
   },
@@ -3298,8 +3298,8 @@ description: Operations executed car-wheel-assembly.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        373,
+        524,
         0
       ]
     }

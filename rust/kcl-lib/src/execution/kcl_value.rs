@@ -659,7 +659,11 @@ impl KclValue {
                     args,
                     source_range,
                     ctx.clone(),
-                    exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+                    exec_state
+                        .mod_local
+                        .pipe_value
+                        .clone()
+                        .map(|v| Arg::new(v, source_range)),
                 );
                 let result = func(exec_state, args).await.map(Some);
                 exec_state.mut_stack().pop_env();

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed neg_xz_plane.kcl
 ---
 [
@@ -64,8 +64,8 @@ description: Operations executed neg_xz_plane.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        151,
+        174,
         0
       ]
     }

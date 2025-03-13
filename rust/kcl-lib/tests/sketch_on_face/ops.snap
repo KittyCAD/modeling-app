@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed sketch_on_face.kcl
 ---
 [
@@ -64,8 +64,8 @@ description: Operations executed sketch_on_face.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        200,
+        219,
         0
       ]
     }
@@ -145,8 +145,8 @@ description: Operations executed sketch_on_face.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        386,
+        405,
         0
       ]
     }

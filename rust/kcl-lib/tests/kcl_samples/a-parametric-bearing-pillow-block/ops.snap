@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed a-parametric-bearing-pillow-block.kcl
 ---
 [
@@ -254,8 +254,8 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1902,
+        1936,
         0
       ]
     }
@@ -693,8 +693,8 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        3383,
+        3408,
         0
       ]
     }

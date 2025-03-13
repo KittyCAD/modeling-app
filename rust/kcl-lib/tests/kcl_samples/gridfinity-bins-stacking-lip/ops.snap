@@ -722,8 +722,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2875,
+        2899,
         0
       ]
     }
@@ -794,8 +794,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2905,
+        3134,
         0
       ]
     }
@@ -885,8 +885,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        3580,
+        3607,
         0
       ]
     }
@@ -1137,8 +1137,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        3813,
+        3943,
         0
       ]
     }
@@ -1389,8 +1389,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        4174,
+        4304,
         0
       ]
     }
@@ -1612,8 +1612,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        4529,
+        4659,
         0
       ]
     }
@@ -1715,8 +1715,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        5002,
+        5046,
         0
       ]
     }
@@ -1787,8 +1787,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        5052,
+        5284,
         0
       ]
     }
@@ -1847,8 +1847,8 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        5290,
+        5332,
         0
       ]
     }

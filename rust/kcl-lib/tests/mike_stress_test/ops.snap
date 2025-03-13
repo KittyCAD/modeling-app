@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed mike_stress_test.kcl
 ---
 [
@@ -64,8 +64,8 @@ description: Operations executed mike_stress_test.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        77102,
+        77121,
         0
       ]
     }

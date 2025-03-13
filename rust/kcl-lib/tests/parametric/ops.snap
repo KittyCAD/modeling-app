@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed parametric.kcl
 ---
 [
@@ -64,8 +64,8 @@ description: Operations executed parametric.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        465,
+        488,
         0
       ]
     }
