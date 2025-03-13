@@ -797,7 +797,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
             let ctx = crate::ExecutorContext {
                 engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
                 fs: std::sync::Arc::new(crate::fs::FileManager::new()),
-                stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+                stdlib: std::sync::Arc::new(tokio::sync::RwLock::new(crate::std::StdLib::new())),
                 settings: Default::default(),
                 context_type: crate::execution::ContextType::Mock,
             };
