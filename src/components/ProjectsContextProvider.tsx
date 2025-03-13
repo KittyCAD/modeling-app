@@ -32,6 +32,8 @@ import {
 } from 'lib/constants'
 import { codeManager, kclManager } from 'lib/singletons'
 import { Project } from 'lib/project'
+import { newKclFile } from 'lang/project'
+import { err } from 'lib/trap'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
@@ -120,7 +122,13 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
         createFile: fromPromise(async ({ input }) => {
           // Browser version doesn't navigate, just overwrites the current file
           clearImportSearchParams()
-          codeManager.updateCodeStateEditor(input.code || '')
+
+          const codeToWrite = newKclFile(
+            input.code ?? '',
+            settings.modeling.defaultUnit.current
+          )
+          if (err(codeToWrite)) return Promise.reject(codeToWrite)
+          codeManager.updateCodeStateEditor(codeToWrite)
           await codeManager.writeToFile()
           await kclManager.executeCode(true)
 
@@ -412,7 +420,12 @@ const ProjectsContextDesktop = ({
           })
 
           fileName = name
-          await window.electron.writeFile(path, input.code || '')
+          const codeToWrite = newKclFile(
+            input.code ?? '',
+            settings.modeling.defaultUnit.current
+          )
+          if (err(codeToWrite)) return Promise.reject(codeToWrite)
+          await window.electron.writeFile(path, codeToWrite)
 
           return {
             message,
