@@ -166,9 +166,9 @@ export class ElectronZoo {
       this.electron = await electron.launch(options)
 
       // Mac takes quite a long time to create the first window in CI.
-      this.page = this.electron.windows()[0]
+      this.page = this.electron.windows()[0];
       if (!this.page) {
-        this.page = await this.electron.waitForEvent('window', { timeout: 0 })
+        this.page = await this.electron.firstWindow('window',  { timeout: 0 });
       }
 
       this.context = this.electron.context()
