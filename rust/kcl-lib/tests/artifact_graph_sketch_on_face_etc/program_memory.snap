@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing artifact_graph_sketch_on_face_etc.kcl
 ---
 {
@@ -178,8 +178,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -255,48 +254,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  118,
-                  124,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              37,
-              62,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            62,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude002": {
@@ -630,8 +602,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -707,61 +678,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        118,
-                        124,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    62,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 6.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  62,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                257,
-                289,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -789,32 +724,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              295,
-              325,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            295,
-            325,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude003": {
@@ -1314,8 +1231,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -1391,61 +1307,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              118,
-                              124,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          37,
-                          62,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 6.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        37,
-                        62,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      257,
-                      289,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -1473,45 +1353,18 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    295,
-                    325,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 5.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  295,
-                  325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                506,
-                538,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -1587,48 +1440,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  604,
-                  610,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              544,
-              571,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 4.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            544,
-            571,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude004": {
@@ -2284,8 +2110,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -2361,61 +2186,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    118,
-                                    124,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                37,
-                                62,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 6.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              37,
-                              62,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            257,
-                            289,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -2443,45 +2232,18 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          295,
-                          325,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 5.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        295,
-                        325,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      506,
-                      538,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -2557,61 +2319,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        604,
-                        610,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    544,
-                    571,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 4.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  544,
-                  571,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                768,
-                800,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -2639,32 +2365,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              806,
-              833,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            806,
-            833,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "seg01": {
@@ -2719,16 +2427,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          118,
-          124,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg02": {
     "type": "TagIdentifier",
@@ -2782,16 +2481,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          604,
-          610,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch001": {
     "type": "Sketch",
@@ -2924,8 +2614,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -3001,32 +2690,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                118,
-                124,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            62,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -3321,8 +2992,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -3398,61 +3068,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      118,
-                      124,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  62,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 6.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                37,
-                62,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              257,
-              289,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -3480,16 +3114,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            295,
-            325,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch003": {
@@ -3945,8 +3570,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     },
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": []
+                    }
                   },
                   "start": {
                     "from": [
@@ -4022,61 +3646,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           },
                           "type": "extrudePlane"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            118,
-                            124,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     }
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        37,
-                        62,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "height": 6.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      62,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    257,
-                    289,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "start": {
               "from": [
@@ -4104,45 +3692,18 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  295,
-                  325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 5.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                295,
-                325,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              506,
-              538,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -4218,32 +3779,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                604,
-                610,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            544,
-            571,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch004": {
@@ -4860,8 +4403,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           },
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": []
+                          }
                         },
                         "start": {
                           "from": [
@@ -4937,61 +4479,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                                 },
                                 "type": "extrudePlane"
                               }
-                            },
-                            "__meta": [
-                              {
-                                "sourceRange": [
-                                  118,
-                                  124,
-                                  0
-                                ]
-                              }
-                            ]
+                            }
                           }
                         },
                         "artifactId": "[uuid]",
                         "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              37,
-                              62,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "height": 6.0,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            37,
-                            62,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          257,
-                          289,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "start": {
                     "from": [
@@ -5019,45 +4525,18 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        295,
-                        325,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "height": 5.0,
                 "startCapId": null,
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      295,
-                      325,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    506,
-                    538,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "start": {
               "from": [
@@ -5133,61 +4612,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      604,
-                      610,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  544,
-                  571,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 4.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                544,
-                571,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              768,
-              800,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -5215,16 +4658,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            806,
-            833,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

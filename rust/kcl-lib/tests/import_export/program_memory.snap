@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_export.kcl
 ---
 {
@@ -14,15 +14,6 @@ description: Variables in memory after executing import_export.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          15,
-          16,
-          4
-        ]
-      }
-    ]
+    }
   }
 }

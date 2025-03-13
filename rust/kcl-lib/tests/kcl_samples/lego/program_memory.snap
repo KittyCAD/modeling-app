@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing lego.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing lego.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          402,
-          405,
-          0
-        ]
-      }
-    ]
+    }
   },
   "bumpHeight": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing lego.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          419,
-          422,
-          0
-        ]
-      }
-    ]
+    }
   },
   "clearance": {
     "type": "Number",
@@ -58,16 +40,7 @@ description: Variables in memory after executing lego.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          387,
-          390,
-          0
-        ]
-      }
-    ]
+    }
   },
   "height": {
     "type": "Number",
@@ -80,60 +53,14 @@ description: Variables in memory after executing lego.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          432,
-          435,
-          0
-        ]
-      }
-    ]
+    }
   },
   "lSegments": {
     "type": "Number",
     "value": 7.96,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          302,
-          303,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          371,
-          374,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          556,
-          559,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          387,
-          390,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          302,
-          303,
-          0
-        ]
-      }
-    ]
+    }
   },
   "lbumps": {
     "type": "Number",
@@ -146,16 +73,7 @@ description: Variables in memory after executing lego.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          302,
-          303,
-          0
-        ]
-      }
-    ]
+    }
   },
   "peg": {
     "type": "Solids",
@@ -405,8 +323,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -434,45 +351,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -500,32 +390,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -772,8 +644,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -801,45 +672,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -867,32 +711,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1139,8 +965,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -1168,45 +993,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -1234,32 +1032,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1506,8 +1286,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -1535,45 +1314,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -1601,32 +1353,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1873,8 +1607,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -1902,45 +1635,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -1968,32 +1674,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2240,8 +1928,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -2269,45 +1956,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -2335,32 +1995,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2607,8 +2249,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -2636,45 +2277,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -2702,32 +2316,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2974,8 +2570,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -3003,45 +2598,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -3069,32 +2637,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3341,8 +2891,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -3370,45 +2919,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -3436,32 +2958,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3708,8 +3212,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -3737,45 +3240,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -3803,32 +3279,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4075,8 +3533,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -4104,45 +3561,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -4170,32 +3600,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4442,8 +3854,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -4471,45 +3882,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -4537,32 +3921,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4809,8 +4175,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -4838,45 +4203,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -4904,32 +4242,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5176,8 +4496,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -5205,45 +4524,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -5271,32 +4563,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5543,8 +4817,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -5572,45 +4845,18 @@ description: Variables in memory after executing lego.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1606,
-                      1660,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 3.2,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2302,
-                  2325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -5638,32 +4884,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2331,
-                2477,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.8,
         "startCapId": null,
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2331,
-              2477,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -5687,16 +4915,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1104,
-                      1105,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -5709,16 +4928,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1111,
-                      1112,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -5731,27 +4941,9 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      432,
-                      435,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1098,
-                  1126,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -5767,16 +4959,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1146,
-                      1147,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -5789,16 +4972,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1153,
-                      1154,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -5811,27 +4985,9 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1160,
-                      1161,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1140,
-                  1163,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -5847,16 +5003,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1183,
-                      1184,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -5869,16 +5016,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1190,
-                      1191,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -5891,27 +5029,9 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1197,
-                      1198,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1177,
-                  1200,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -5927,16 +5047,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1220,
-                      1221,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -5949,16 +5060,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1227,
-                      1228,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -5971,49 +5073,13 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1234,
-                      1235,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1214,
-                  1237,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1083,
-              1241,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1071,
-          1243,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pitch": {
     "type": "Number",
@@ -6026,67 +5092,14 @@ description: Variables in memory after executing lego.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          371,
-          374,
-          0
-        ]
-      }
-    ]
+    }
   },
   "postDiam": {
     "type": "Number",
     "value": 6.5,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          371,
-          374,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          371,
-          374,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          450,
-          451,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          387,
-          390,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          402,
-          405,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          479,
-          482,
-          0
-        ]
-      }
-    ]
+    }
   },
   "s": {
     "type": "Solid",
@@ -6264,8 +5277,7 @@ description: Variables in memory after executing lego.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -6293,32 +5305,14 @@ description: Variables in memory after executing lego.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1606,
-              1660,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.2,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1606,
-            1660,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "shellExtrude": {
@@ -6664,8 +5658,7 @@ description: Variables in memory after executing lego.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -6693,45 +5686,18 @@ description: Variables in memory after executing lego.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1606,
-                    1660,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.2,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1606,
-                  1660,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1951,
-                1976,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -6759,32 +5725,14 @@ description: Variables in memory after executing lego.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1982,
-              2069,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -1.7000000000000002,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1982,
-            2069,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "t": {
@@ -6792,118 +5740,21 @@ description: Variables in memory after executing lego.kcl
     "value": 1.5,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          371,
-          374,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          450,
-          451,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          387,
-          390,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          402,
-          405,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          479,
-          482,
-          0
-        ]
-      }
-    ]
+    }
   },
   "totalLength": {
     "type": "Number",
     "value": 39.8,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          302,
-          303,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          371,
-          374,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          556,
-          559,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          387,
-          390,
-          0
-        ]
-      }
-    ]
+    }
   },
   "totalWidth": {
     "type": "Number",
     "value": 23.8,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          337,
-          338,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          371,
-          374,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          604,
-          607,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          387,
-          390,
-          0
-        ]
-      }
-    ]
+    }
   },
   "tubeFace": {
     "type": "Object",
@@ -6925,16 +5776,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1415,
-                      1416,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -6947,78 +5789,16 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1422,
-                      1423,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
                 "value": 1.7000000000000002,
                 "ty": {
                   "type": "Unknown"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      432,
-                      435,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      371,
-                      374,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      450,
-                      451,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      387,
-                      390,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      402,
-                      405,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      479,
-                      482,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1409,
-                  1441,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -7034,16 +5814,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1461,
-                      1462,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -7056,16 +5827,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1468,
-                      1469,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -7078,27 +5840,9 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1475,
-                      1476,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1455,
-                  1478,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -7114,16 +5858,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1498,
-                      1499,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -7136,16 +5871,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1505,
-                      1506,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -7158,27 +5884,9 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1512,
-                      1513,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1492,
-                  1515,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -7194,16 +5902,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1535,
-                      1536,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -7216,16 +5915,7 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1542,
-                      1543,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -7238,49 +5928,13 @@ description: Variables in memory after executing lego.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1549,
-                      1550,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1529,
-                  1552,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1394,
-              1556,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1382,
-          1558,
-          0
-        ]
-      }
-    ]
+    }
   },
   "tubePattern": {
     "type": "Solids",
@@ -7363,8 +6017,7 @@ description: Variables in memory after executing lego.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7392,32 +6045,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2805,
-                2979,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.8,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2805,
-              2979,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7485,8 +6120,7 @@ description: Variables in memory after executing lego.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7514,32 +6148,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2805,
-                2979,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.8,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2805,
-              2979,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7607,8 +6223,7 @@ description: Variables in memory after executing lego.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7636,32 +6251,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2805,
-                2979,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.8,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2805,
-              2979,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7729,8 +6326,7 @@ description: Variables in memory after executing lego.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7758,32 +6354,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2805,
-                2979,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.8,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2805,
-              2979,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7851,8 +6429,7 @@ description: Variables in memory after executing lego.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7880,32 +6457,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2805,
-                2979,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.8,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2805,
-              2979,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7973,8 +6532,7 @@ description: Variables in memory after executing lego.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8002,32 +6560,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2805,
-                2979,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.8,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2805,
-              2979,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8095,8 +6635,7 @@ description: Variables in memory after executing lego.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8124,32 +6663,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2805,
-                2979,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.8,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2805,
-              2979,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8217,8 +6738,7 @@ description: Variables in memory after executing lego.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8246,32 +6766,14 @@ description: Variables in memory after executing lego.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2805,
-                2979,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.8,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2805,
-              2979,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -8280,44 +6782,7 @@ description: Variables in memory after executing lego.kcl
     "value": 7.9333,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          337,
-          338,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          371,
-          374,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          604,
-          607,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          387,
-          390,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          337,
-          338,
-          0
-        ]
-      }
-    ]
+    }
   },
   "wbumps": {
     "type": "Number",
@@ -8330,15 +6795,6 @@ description: Variables in memory after executing lego.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          337,
-          338,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

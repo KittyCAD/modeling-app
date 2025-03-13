@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing parametric.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing parametric.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          105,
-          106,
-          0
-        ]
-      }
-    ]
+    }
   },
   "bracket": {
     "type": "Solid",
@@ -269,8 +260,7 @@ description: Variables in memory after executing parametric.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -298,32 +288,14 @@ description: Variables in memory after executing parametric.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              253,
-              278,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 9.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            253,
-            278,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "distance": {
@@ -337,16 +309,7 @@ description: Variables in memory after executing parametric.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          87,
-          88,
-          0
-        ]
-      }
-    ]
+    }
   },
   "leg1": {
     "type": "Number",
@@ -359,16 +322,7 @@ description: Variables in memory after executing parametric.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          115,
-          116,
-          0
-        ]
-      }
-    ]
+    }
   },
   "leg2": {
     "type": "Number",
@@ -381,16 +335,7 @@ description: Variables in memory after executing parametric.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          134,
-          135,
-          0
-        ]
-      }
-    ]
+    }
   },
   "p": {
     "type": "Number",
@@ -403,16 +348,7 @@ description: Variables in memory after executing parametric.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          48,
-          51,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sigmaAllow": {
     "type": "Number",
@@ -425,32 +361,14 @@ description: Variables in memory after executing parametric.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          13,
-          18,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thickness": {
     "type": "Number",
     "value": 0.1852,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          158,
-          207,
-          0
-        ]
-      }
-    ]
+    }
   },
   "width": {
     "type": "Number",
@@ -463,15 +381,6 @@ description: Variables in memory after executing parametric.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          34,
-          35,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

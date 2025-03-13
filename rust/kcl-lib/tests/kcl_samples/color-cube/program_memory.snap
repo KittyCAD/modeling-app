@@ -31,8 +31,7 @@ description: Variables in memory after executing color-cube.kcl
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "extrudeLength": {
@@ -46,16 +45,7 @@ description: Variables in memory after executing color-cube.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          252,
-          255,
-          0
-        ]
-      }
-    ]
+    }
   },
   "greenPlane": {
     "type": "Plane",
@@ -85,8 +75,7 @@ description: Variables in memory after executing color-cube.kcl
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "halfSize": {
@@ -94,23 +83,7 @@ description: Variables in memory after executing color-cube.kcl
     "value": 50.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          214,
-          217,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          234,
-          235,
-          0
-        ]
-      }
-    ]
+    }
   },
   "metalConstant": {
     "type": "Number",
@@ -123,16 +96,7 @@ description: Variables in memory after executing color-cube.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          272,
-          274,
-          0
-        ]
-      }
-    ]
+    }
   },
   "purplePlane": {
     "type": "Plane",
@@ -162,8 +126,7 @@ description: Variables in memory after executing color-cube.kcl
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "redPlane": {
@@ -194,8 +157,7 @@ description: Variables in memory after executing color-cube.kcl
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "roughnessConstant": {
@@ -209,16 +171,7 @@ description: Variables in memory after executing color-cube.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          295,
-          297,
-          0
-        ]
-      }
-    ]
+    }
   },
   "size": {
     "type": "Number",
@@ -231,28 +184,10 @@ description: Variables in memory after executing color-cube.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          214,
-          217,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketchRectangle": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          737,
-          1309,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "tealPlane": {
     "type": "Plane",
@@ -282,8 +217,7 @@ description: Variables in memory after executing color-cube.kcl
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "yellowPlane": {
@@ -314,8 +248,7 @@ description: Variables in memory after executing color-cube.kcl
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   }
 }

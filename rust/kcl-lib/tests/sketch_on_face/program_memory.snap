@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_on_face.kcl
 ---
 {
@@ -55,16 +55,7 @@ description: Variables in memory after executing sketch_on_face.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          108,
-          113,
-          0
-        ]
-      }
-    ]
+    }
   },
   "part001": {
     "type": "Solid",
@@ -252,8 +243,7 @@ description: Variables in memory after executing sketch_on_face.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -329,48 +319,21 @@ description: Variables in memory after executing sketch_on_face.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  108,
-                  113,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              35,
-              68,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            35,
-            68,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "part002": {
@@ -726,8 +689,7 @@ description: Variables in memory after executing sketch_on_face.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -803,61 +765,25 @@ description: Variables in memory after executing sketch_on_face.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        108,
-                        113,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    35,
-                    68,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  35,
-                  68,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                231,
-                259,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -885,32 +811,14 @@ description: Variables in memory after executing sketch_on_face.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              265,
-              290,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            265,
-            290,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

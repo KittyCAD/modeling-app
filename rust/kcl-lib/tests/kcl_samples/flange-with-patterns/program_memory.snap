@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing flange-with-patterns.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          388,
-          393,
-          0
-        ]
-      }
-    ]
+    }
   },
   "baseThickness": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          575,
-          579,
-          0
-        ]
-      }
-    ]
+    }
   },
   "bottomExtrusion": {
     "type": "Solid",
@@ -127,8 +109,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -156,32 +137,14 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2065,
-              2143,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -0.06,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2065,
-            2143,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "bottomThickness": {
@@ -195,16 +158,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          492,
-          496,
-          0
-        ]
-      }
-    ]
+    }
   },
   "bottomTotalDiameter": {
     "type": "Number",
@@ -217,16 +171,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          519,
-          522,
-          0
-        ]
-      }
-    ]
+    }
   },
   "circles": {
     "type": "Sketches",
@@ -292,8 +237,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -321,16 +265,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              894,
-              1000,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -393,8 +328,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -422,16 +356,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              894,
-              1000,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -494,8 +419,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -523,16 +447,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              894,
-              1000,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -595,8 +510,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -624,16 +538,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              894,
-              1000,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -717,8 +622,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -746,32 +650,14 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1238,
-              1304,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.625,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1238,
-            1304,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "holeLocator": {
@@ -785,23 +671,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          388,
-          393,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          675,
-          676,
-          0
-        ]
-      }
-    ]
+    }
   },
   "mountingHoleDia": {
     "type": "Number",
@@ -814,16 +684,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          373,
-          377,
-          0
-        ]
-      }
-    ]
+    }
   },
   "mountingHolePlacementDiameter": {
     "type": "Number",
@@ -836,16 +697,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          555,
-          558,
-          0
-        ]
-      }
-    ]
+    }
   },
   "nHoles": {
     "type": "Number",
@@ -858,16 +710,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          686,
-          687,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeDia": {
     "type": "Number",
@@ -880,16 +723,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          404,
-          408,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thickness": {
     "type": "Number",
@@ -902,16 +736,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          421,
-          425,
-          0
-        ]
-      }
-    ]
+    }
   },
   "topExtrusion": {
     "type": "Solid",
@@ -993,8 +818,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1022,32 +846,14 @@ description: Variables in memory after executing flange-with-patterns.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1766,
-              1841,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.1279999999999999,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1766,
-            1841,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "topFacePlane": {
@@ -1070,16 +876,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1516,
-                      1517,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -1092,16 +889,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1523,
-                      1524,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -1114,27 +902,9 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      575,
-                      579,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1510,
-                  1545,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -1150,16 +920,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1565,
-                      1566,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -1172,16 +933,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1572,
-                      1573,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -1194,27 +946,9 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1579,
-                      1580,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1559,
-                  1582,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -1230,16 +964,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1602,
-                      1603,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -1252,16 +977,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1609,
-                      1610,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -1274,27 +990,9 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1616,
-                      1617,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1596,
-                  1619,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -1310,16 +1008,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1639,
-                      1640,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -1332,16 +1021,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1646,
-                      1647,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -1354,49 +1034,13 @@ description: Variables in memory after executing flange-with-patterns.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1653,
-                      1654,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1633,
-                  1656,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1495,
-              1660,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1483,
-          1662,
-          0
-        ]
-      }
-    ]
+    }
   },
   "topTotalDiameter": {
     "type": "Number",
@@ -1409,16 +1053,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          468,
-          473,
-          0
-        ]
-      }
-    ]
+    }
   },
   "topTotalThickness": {
     "type": "Number",
@@ -1431,30 +1066,7 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          443,
-          448,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          492,
-          496,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          575,
-          579,
-          0
-        ]
-      }
-    ]
+    }
   },
   "totalThickness": {
     "type": "Number",
@@ -1467,15 +1079,6 @@ description: Variables in memory after executing flange-with-patterns.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          443,
-          448,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

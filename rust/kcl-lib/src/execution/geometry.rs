@@ -219,7 +219,7 @@ pub struct ImportedGeometry {
     pub id: uuid::Uuid,
     /// The original file paths.
     pub value: Vec<String>,
-    #[serde(rename = "__meta")]
+    #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -266,7 +266,7 @@ pub struct Helix {
     /// Is the helix rotation counter clockwise?
     pub ccw: bool,
     pub units: UnitLen,
-    #[serde(rename = "__meta")]
+    #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -289,7 +289,7 @@ pub struct Plane {
     /// The z-axis (normal).
     pub z_axis: Point3d,
     pub units: UnitLen,
-    #[serde(rename = "__meta")]
+    #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -480,7 +480,7 @@ pub struct Face {
     /// The solid the face is on.
     pub solid: Box<Solid>,
     pub units: UnitLen,
-    #[serde(rename = "__meta")]
+    #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -528,7 +528,7 @@ pub struct Sketch {
     pub original_id: uuid::Uuid,
     pub units: UnitLen,
     /// Metadata.
-    #[serde(rename = "__meta")]
+    #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 
@@ -659,7 +659,7 @@ pub struct Solid {
     pub edge_cuts: Vec<EdgeCut>,
     pub units: UnitLen,
     /// Metadata.
-    #[serde(rename = "__meta")]
+    #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
 

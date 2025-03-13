@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing boolean_logical_multiple.kcl
 ---
 {
@@ -14,43 +14,11 @@ description: Variables in memory after executing boolean_logical_multiple.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          40,
-          41,
-          0
-        ]
-      }
-    ]
+    }
   },
   "ii": {
     "type": "Bool",
-    "value": true,
-    "__meta": [
-      {
-        "sourceRange": [
-          5,
-          9,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          12,
-          17,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          20,
-          25,
-          0
-        ]
-      }
-    ]
+    "value": true
   },
   "j": {
     "type": "Number",
@@ -63,56 +31,10 @@ description: Variables in memory after executing boolean_logical_multiple.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          166,
-          167,
-          0
-        ]
-      }
-    ]
+    }
   },
   "jj": {
     "type": "Bool",
-    "value": true,
-    "__meta": [
-      {
-        "sourceRange": [
-          115,
-          120,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          123,
-          127,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          130,
-          136,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          139,
-          144,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          147,
-          151,
-          0
-        ]
-      }
-    ]
+    "value": true
   }
 }

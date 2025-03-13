@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing gear-rack.kcl
 ---
 {
@@ -184,8 +184,7 @@ description: Variables in memory after executing gear-rack.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -213,32 +212,14 @@ description: Variables in memory after executing gear-rack.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1614,
-              1657,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1614,
-            1657,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "endCapTooth2": {
@@ -422,8 +403,7 @@ description: Variables in memory after executing gear-rack.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -451,32 +431,14 @@ description: Variables in memory after executing gear-rack.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1951,
-              1993,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1951,
-            1993,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "height": {
@@ -490,16 +452,7 @@ description: Variables in memory after executing gear-rack.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          496,
-          498,
-          0
-        ]
-      }
-    ]
+    }
   },
   "length": {
     "type": "Number",
@@ -512,16 +465,7 @@ description: Variables in memory after executing gear-rack.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          454,
-          457,
-          0
-        ]
-      }
-    ]
+    }
   },
   "minHeight": {
     "type": "Number",
@@ -534,16 +478,7 @@ description: Variables in memory after executing gear-rack.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          511,
-          517,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pitchHeight": {
     "type": "Number",
@@ -556,16 +491,7 @@ description: Variables in memory after executing gear-rack.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          472,
-          476,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rackBody": {
     "type": "Solid",
@@ -743,8 +669,7 @@ description: Variables in memory after executing gear-rack.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -772,32 +697,14 @@ description: Variables in memory after executing gear-rack.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              586,
-              621,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            586,
-            621,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "teeth": {
@@ -1133,8 +1040,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1162,32 +1068,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1519,8 +1407,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1548,32 +1435,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1905,8 +1774,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1934,32 +1802,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2291,8 +2141,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2320,32 +2169,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2677,8 +2508,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2706,32 +2536,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3063,8 +2875,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3092,32 +2903,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3449,8 +3242,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3478,32 +3270,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3835,8 +3609,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3864,32 +3637,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4221,8 +3976,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4250,32 +4004,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4607,8 +4343,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4636,32 +4371,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4993,8 +4710,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5022,32 +4738,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5379,8 +5077,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5408,32 +5105,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5765,8 +5444,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5794,32 +5472,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6151,8 +5811,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6180,32 +5839,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6537,8 +6178,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6566,32 +6206,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6923,8 +6545,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6952,32 +6573,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7309,8 +6912,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7338,32 +6940,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7695,8 +7279,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7724,32 +7307,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8081,8 +7646,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8110,32 +7674,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8467,8 +8013,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8496,32 +8041,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8853,8 +8380,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8882,32 +8408,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9239,8 +8747,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9268,32 +8775,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9625,8 +9114,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9654,32 +9142,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10011,8 +9481,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10040,32 +9509,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10397,8 +9848,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10426,32 +9876,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10783,8 +10215,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10812,32 +10243,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11169,8 +10582,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11198,32 +10610,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11555,8 +10949,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11584,32 +10977,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11941,8 +11316,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11970,32 +11344,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12327,8 +11683,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12356,32 +11711,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12713,8 +12050,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12742,32 +12078,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13099,8 +12417,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13128,32 +12445,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13485,8 +12784,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13514,32 +12812,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13871,8 +13151,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13900,32 +13179,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -14257,8 +13518,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -14286,32 +13546,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -14643,8 +13885,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -14672,32 +13913,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -15029,8 +14252,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -15058,32 +14280,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -15415,8 +14619,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -15444,32 +14647,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -15801,8 +14986,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -15830,32 +15014,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -16187,8 +15353,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -16216,32 +15381,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -16573,8 +15720,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -16602,32 +15748,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -16959,8 +16087,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -16988,32 +16115,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -17345,8 +16454,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -17374,32 +16482,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -17731,8 +16821,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -17760,32 +16849,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -18117,8 +17188,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -18146,32 +17216,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -18503,8 +17555,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -18532,32 +17583,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -18889,8 +17922,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -18918,32 +17950,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -19275,8 +18289,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -19304,32 +18317,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -19661,8 +18656,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -19690,32 +18684,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -20047,8 +19023,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -20076,32 +19051,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -20433,8 +19390,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -20462,32 +19418,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -20819,8 +19757,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -20848,32 +19785,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -21205,8 +20124,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -21234,32 +20152,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -21591,8 +20491,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -21620,32 +20519,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -21977,8 +20858,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -22006,32 +20886,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -22363,8 +21225,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -22392,32 +21253,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -22749,8 +21592,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -22778,32 +21620,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -23135,8 +21959,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -23164,32 +21987,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -23521,8 +22326,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -23550,32 +22354,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -23907,8 +22693,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -23936,32 +22721,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -24293,8 +23060,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -24322,32 +23088,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -24679,8 +23427,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -24708,32 +23455,14 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -25065,8 +23794,7 @@ description: Variables in memory after executing gear-rack.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -25094,46 +23822,19 @@ description: Variables in memory after executing gear-rack.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                862,
-                916,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 5.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              862,
-              916,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
   "tooth": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          814,
-          1325,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "width": {
     "type": "Number",
@@ -25146,15 +23847,6 @@ description: Variables in memory after executing gear-rack.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          485,
-          486,
-          0
-        ]
-      }
-    ]
+    }
   }
 }
