@@ -41,8 +41,8 @@ description: Variables in memory after executing tan_arc_x_line.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            191,
-            252,
+            185,
+            246,
             0
           ]
         },
@@ -56,8 +56,8 @@ description: Variables in memory after executing tan_arc_x_line.kcl
           0.0
         ],
         "tag": {
-          "end": 251,
-          "start": 246,
+          "end": 245,
+          "start": 240,
           "type": "TagDeclarator",
           "value": "arc1"
         },
@@ -85,8 +85,8 @@ description: Variables in memory after executing tan_arc_x_line.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            258,
-            344,
+            252,
+            338,
             0
           ]
         },
@@ -100,8 +100,8 @@ description: Variables in memory after executing tan_arc_x_line.kcl
           0.0806
         ],
         "tag": {
-          "end": 343,
-          "start": 338,
+          "end": 337,
+          "start": 332,
           "type": "TagDeclarator",
           "value": "arc2"
         },
@@ -129,8 +129,8 @@ description: Variables in memory after executing tan_arc_x_line.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            350,
-            437,
+            344,
+            431,
             0
           ]
         },
@@ -144,8 +144,8 @@ description: Variables in memory after executing tan_arc_x_line.kcl
           -0.6006
         ],
         "tag": {
-          "end": 436,
-          "start": 431,
+          "end": 430,
+          "start": 425,
           "type": "TagDeclarator",
           "value": "arc3"
         },

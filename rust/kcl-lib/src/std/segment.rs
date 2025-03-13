@@ -438,9 +438,9 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 10], tag = $seg01)
 ///   |> line(end = [-10, 0])
-///   |> angledLine([segAng(seg01), 10], %)
+///   |> angledLine(angle = segAng(seg01), length = 10)
 ///   |> line(end = [-10, 0])
-///   |> angledLine([segAng(seg01), -15], %)
+///   |> angledLine(angle = segAng(seg01), length = -15)
 ///   |> close()
 ///
 /// example = extrude(exampleSketch, length = 4)
@@ -531,7 +531,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///        end: [10, 10],
 ///        interior: [5, 1]
 ///      }, %, $arc1)
-///   |> angledLine([tangentToEnd(arc1), 20], %)
+///   |> angledLine(angle = tangentToEnd(arc1), length = 20)
 ///   |> close()
 /// ```
 ///
@@ -541,7 +541,7 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// triangleSketch = startSketchOn("XY")
 ///   |> startProfileAt([-5, 0], %)
-///   |> angledLine([tangentToEnd(circ), 10], %)
+///   |> angledLine(angle = tangentToEnd(circ), length = 10)
 ///   |> line(end = [-15, 0])
 ///   |> close()
 /// ```
@@ -591,10 +591,10 @@ pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> 
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [2, 5], tag = $seg01)
-///   |> angledLineToX([
-///        -angleToMatchLengthX(seg01, 7, %),
-///        10
-///      ], %)
+///   |> angledLine(
+///        angle = -angleToMatchLengthX(seg01, 7, %),
+///        endAbsoluteX = 10,
+///      )
 ///   |> close()
 ///
 /// extrusion = extrude(sketch001, length = 5)

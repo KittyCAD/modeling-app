@@ -1187,9 +1187,9 @@ async fn kcl_test_plumbus_fillets() {
   sg = startSketchOn(ext, face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
   |> arc({
-       angleEnd: 360,
-       angleStart: 0,
-       radius= radius
+       angleEnd = 360,
+       angleStart = 0,
+       radius = radius
      }, %, $arc1)
   |> close()
 
@@ -1199,7 +1199,7 @@ async fn kcl_test_plumbus_fillets() {
 fn pentagon = (len) => {
   sg = startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine(angle = 0, length = len , tag = $a)
+  |> angledLine(angle = 0, length = len, tag = $a)
   |> angledLine(
        angle = segAng(a) + 180 - 108,
        length = len,
@@ -1212,12 +1212,13 @@ fn pentagon = (len) => {
      )
   |> angledLine(
        angle = segAng(c) + 180 - 108,
-       length = len
-     , %, $d)
+       length = len,
+       tag = $d,
+     )
   |> angledLine(
        angle = segAng(d) + 180 - 108,
-       length = len
-     , %)
+       length = len,
+     )
 
   return sg
 }
@@ -1706,11 +1707,9 @@ let p = triangle(200)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([311, 313, 0]), SourceRange([326, 339, 0])], message: "Cannot redefine `a`" }"#
-    );
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    assert_eq!(err.message(), "Cannot redefine `a`");
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1872,8 +1871,8 @@ example = extrude(exampleSketch, length = 10)
 async fn kcl_test_angled_line_of_x_length_90() {
     let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLine(angle = 90, lengthX = 90, tag = $edge1 )
-  |> angledLine(angle = -15, lengthX = -15, tag = $edge2 )
+  |> angledLine(angle = 90, lengthX = 90, tag = $edge1)
+  |> angledLine(angle = -15, lengthX = -15, tag = $edge2)
   |> line(end = [0, -5])
   |> close(tag = $edge3)
 
@@ -1884,7 +1883,7 @@ extrusion = extrude(sketch001, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 125, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 118, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -1904,7 +1903,7 @@ extrusion = extrude(sketch001, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 125, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 118, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -1913,9 +1912,9 @@ async fn kcl_test_angled_line_of_y_length_0() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line(end = [10, 0])
-  |> angledLineOfYLength({ angle: 0, length: 10 }, %)
+  |> angledLine(angle = 0, lengthY = 10)
   |> line(end = [0, 10])
-  |> angledLineOfYLength({ angle: 135, length: 10 }, %)
+  |> angledLine(angle = 135, lengthY = 10)
   |> line(end = [-10, 0])
   |> line(end = [0, -30])
 
@@ -1926,7 +1925,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([97, 145, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([97, 132, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
     );
 }
 
@@ -1935,9 +1934,9 @@ async fn kcl_test_angled_line_of_y_length_180() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line(end = [10, 0])
-  |> angledLineOfYLength({ angle: 180, length: 10 }, %)
+  |> angledLine(angle = 180, lengthY = 10)
   |> line(end = [0, 10])
-  |> angledLineOfYLength({ angle: 135, length: 10 }, %)
+  |> angledLine(angle = 135, lengthY = 10)
   |> line(end = [-10, 0])
   |> line(end = [0, -30])
 
@@ -1948,7 +1947,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([97, 147, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([97, 134, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -1957,9 +1956,9 @@ async fn kcl_test_angled_line_of_y_length_negative_180() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line(end = [10, 0])
-  |> angledLineOfYLength({ angle: -180, length: 10 }, %)
+  |> angledLine(angle = -180, lengthY = 10)
   |> line(end = [0, 10])
-  |> angledLineOfYLength({ angle: 135, length: 10 }, %)
+  |> angledLine(angle = 135, lengthY = 10)
   |> line(end = [-10, 0])
   |> line(end = [0, -30])
 
@@ -1970,7 +1969,7 @@ example = extrude(exampleSketch, length = 10)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([97, 148, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([97, 135, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
