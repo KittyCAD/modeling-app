@@ -90,8 +90,9 @@ export class ElectronZoo {
 
   constructor() {}
 
+  // Help remote end by signaling we're done with the connection.
+  // If it takes longer than 10s to stop, just resolve.
   async makeAvailableAgain() {
-    // Help remote end by signaling we're done with the connection.
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
         if (!window.engineCommandManager.engineConnection?.state?.type) {
@@ -99,7 +100,9 @@ export class ElectronZoo {
         }
 
         window.engineCommandManager.tearDown()
+
         // Keep polling (per js event tick) until state is Disconnected.
+        const timeA = Date.now()
         const checkDisconnected = () => {
           // It's possible we never even created an engineConnection
           // e.g. never left Projects view.
@@ -109,6 +112,11 @@ export class ElectronZoo {
           ) {
             return resolve(undefined)
           }
+
+          if (Date.now() - timeA > 10000) {
+            return resolve(undefined)
+          }
+
           setTimeout(checkDisconnected, 0)
         }
         checkDisconnected()
@@ -155,8 +163,8 @@ export class ElectronZoo {
     // Do this once and then reuse window on subsequent calls.
     if (!this.electron) {
       this.electron = await electron.launch(options)
-      this.context = this.electron.context()
       this.page = await this.electron.firstWindow()
+      this.context = this.electron.context()
       await this.context.tracing.start({ screenshots: true, snapshots: true })
     }
 
@@ -304,16 +312,13 @@ const fixturesForElectron = {
     use: FnUse,
     testInfo: TestInfo
   ) => {
-    await tronApp.createInstanceIfMissing(testInfo)
     await use(tronApp.page)
-    await tronApp?.makeAvailableAgain()
   },
   context: async (
     { tronApp }: { tronApp: ElectronZoo },
     use: FnUse,
     testInfo: TestInfo
   ) => {
-    await tronApp.createInstanceIfMissing(testInfo)
     await use(tronApp.context)
   },
 }

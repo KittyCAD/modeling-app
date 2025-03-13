@@ -45,7 +45,9 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
       return
     }
 
+    await electronZooInstance.createInstanceIfMissing(testInfo)
     await use(electronZooInstance)
+    await electronZooInstance.makeAvailableAgain()
   },
 })
 
