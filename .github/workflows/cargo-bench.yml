@@ -26,8 +26,12 @@ name: cargo bench
 jobs:
   cargo-bench:
     name: cargo bench
-    runs-on: codspeed-macro
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=32cpu-linux-x64
+      - extras=s3-cache
     steps:
+      - uses: runs-on/action@v1
       - uses: actions/checkout@v4
       - name: Use correct Rust toolchain
         shell: bash
