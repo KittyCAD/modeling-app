@@ -47,7 +47,7 @@ description: Result of parsing out_of_band_sketches.kcl
       },
       {
         "declaration": {
-          "end": 230,
+          "end": 251,
           "id": {
             "end": 42,
             "name": "profile001",
@@ -112,17 +112,17 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 151,
+                      "end": 172,
                       "name": "end",
-                      "start": 148,
+                      "start": 169,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 161,
+                          "end": 182,
                           "raw": "414.61",
-                          "start": 155,
+                          "start": 176,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -131,9 +131,9 @@ description: Result of parsing out_of_band_sketches.kcl
                           }
                         },
                         {
-                          "end": 164,
+                          "end": 185,
                           "raw": "0",
-                          "start": 163,
+                          "start": 184,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -142,21 +142,21 @@ description: Result of parsing out_of_band_sketches.kcl
                           }
                         }
                       ],
-                      "end": 165,
-                      "start": 154,
+                      "end": 186,
+                      "start": 175,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 147,
+                  "end": 168,
                   "name": "line",
-                  "start": 143,
+                  "start": 164,
                   "type": "Identifier"
                 },
-                "end": 166,
-                "start": 143,
+                "end": 187,
+                "start": 164,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -166,17 +166,17 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 195,
+                      "end": 216,
                       "name": "end",
-                      "start": 192,
+                      "start": 213,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 204,
+                          "end": 225,
                           "raw": "33.98",
-                          "start": 199,
+                          "start": 220,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -186,9 +186,9 @@ description: Result of parsing out_of_band_sketches.kcl
                         },
                         {
                           "argument": {
-                            "end": 213,
+                            "end": 234,
                             "raw": "389.36",
-                            "start": 207,
+                            "start": 228,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -196,52 +196,52 @@ description: Result of parsing out_of_band_sketches.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 213,
+                          "end": 234,
                           "operator": "-",
-                          "start": 206,
+                          "start": 227,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 214,
-                      "start": 198,
+                      "end": 235,
+                      "start": 219,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 191,
+                  "end": 212,
                   "name": "line",
-                  "start": 187,
+                  "start": 208,
                   "type": "Identifier"
                 },
-                "end": 215,
-                "start": 187,
+                "end": 236,
+                "start": 208,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 230,
+            "end": 251,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "0": [
                   {
-                    "end": 137,
+                    "end": 158,
                     "start": 90,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
-                      "value": "enter sketch mode, start path, move path pen",
+                      "value": "enter sketch mode, start path, move path pen, disable sketch mode",
                       "style": "line"
                     }
                   }
                 ],
                 "1": [
                   {
-                    "end": 181,
-                    "start": 166,
+                    "end": 202,
+                    "start": 187,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
@@ -252,8 +252,8 @@ description: Result of parsing out_of_band_sketches.kcl
                 ],
                 "2": [
                   {
-                    "end": 230,
-                    "start": 215,
+                    "end": 251,
+                    "start": 236,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
@@ -272,7 +272,7 @@ description: Result of parsing out_of_band_sketches.kcl
           "start": 32,
           "type": "VariableDeclarator"
         },
-        "end": 230,
+        "end": 251,
         "kind": "const",
         "start": 32,
         "type": "VariableDeclaration",
@@ -280,51 +280,51 @@ description: Result of parsing out_of_band_sketches.kcl
       },
       {
         "declaration": {
-          "end": 263,
+          "end": 284,
           "id": {
-            "end": 241,
+            "end": 262,
             "name": "sketch002",
-            "start": 232,
+            "start": 253,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 262,
+                "end": 283,
                 "raw": "'XY'",
-                "start": 258,
+                "start": 279,
                 "type": "Literal",
                 "type": "Literal",
                 "value": "XY"
               }
             ],
             "callee": {
-              "end": 257,
+              "end": 278,
               "name": "startSketchOn",
-              "start": 244,
+              "start": 265,
               "type": "Identifier"
             },
-            "end": 263,
-            "start": 244,
+            "end": 284,
+            "start": 265,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 232,
+          "start": 253,
           "type": "VariableDeclarator"
         },
-        "end": 263,
+        "end": 284,
         "kind": "const",
-        "start": 232,
+        "start": 253,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 462,
+          "end": 504,
           "id": {
-            "end": 274,
+            "end": 295,
             "name": "profile002",
-            "start": 264,
+            "start": 285,
             "type": "Identifier"
           },
           "init": {
@@ -334,9 +334,9 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "elements": [
                       {
-                        "end": 298,
+                        "end": 319,
                         "raw": "67.04",
-                        "start": 293,
+                        "start": 314,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -346,9 +346,9 @@ description: Result of parsing out_of_band_sketches.kcl
                       },
                       {
                         "argument": {
-                          "end": 305,
+                          "end": 326,
                           "raw": "63.5",
-                          "start": 301,
+                          "start": 322,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -356,34 +356,34 @@ description: Result of parsing out_of_band_sketches.kcl
                             "suffix": "None"
                           }
                         },
-                        "end": 305,
+                        "end": 326,
                         "operator": "-",
-                        "start": 300,
+                        "start": 321,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     ],
-                    "end": 306,
-                    "start": 292,
+                    "end": 327,
+                    "start": 313,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 317,
+                    "end": 338,
                     "name": "sketch002",
-                    "start": 308,
+                    "start": 329,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 291,
+                  "end": 312,
                   "name": "startProfileAt",
-                  "start": 277,
+                  "start": 298,
                   "type": "Identifier"
                 },
-                "end": 318,
-                "start": 277,
+                "end": 339,
+                "start": 298,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -392,17 +392,17 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 382,
+                      "end": 424,
                       "name": "end",
-                      "start": 379,
+                      "start": 421,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 392,
+                          "end": 434,
                           "raw": "282.37",
-                          "start": 386,
+                          "start": 428,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -411,9 +411,9 @@ description: Result of parsing out_of_band_sketches.kcl
                           }
                         },
                         {
-                          "end": 395,
+                          "end": 437,
                           "raw": "0",
-                          "start": 394,
+                          "start": 436,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -422,21 +422,21 @@ description: Result of parsing out_of_band_sketches.kcl
                           }
                         }
                       ],
-                      "end": 396,
-                      "start": 385,
+                      "end": 438,
+                      "start": 427,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 378,
+                  "end": 420,
                   "name": "line",
-                  "start": 374,
+                  "start": 416,
                   "type": "Identifier"
                 },
-                "end": 397,
-                "start": 374,
+                "end": 439,
+                "start": 416,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -446,18 +446,18 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 426,
+                      "end": 468,
                       "name": "end",
-                      "start": 423,
+                      "start": 465,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 436,
+                            "end": 478,
                             "raw": "12.77",
-                            "start": 431,
+                            "start": 473,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -465,17 +465,17 @@ description: Result of parsing out_of_band_sketches.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 436,
+                          "end": 478,
                           "operator": "-",
-                          "start": 430,
+                          "start": 472,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
                           "argument": {
-                            "end": 445,
+                            "end": 487,
                             "raw": "178.07",
-                            "start": 439,
+                            "start": 481,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -483,52 +483,52 @@ description: Result of parsing out_of_band_sketches.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 445,
+                          "end": 487,
                           "operator": "-",
-                          "start": 438,
+                          "start": 480,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 446,
-                      "start": 429,
+                      "end": 488,
+                      "start": 471,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 422,
+                  "end": 464,
                   "name": "line",
-                  "start": 418,
+                  "start": 460,
                   "type": "Identifier"
                 },
-                "end": 447,
-                "start": 418,
+                "end": 489,
+                "start": 460,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 462,
+            "end": 504,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "0": [
                   {
-                    "end": 368,
-                    "start": 321,
+                    "end": 410,
+                    "start": 342,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
-                      "value": "enter sketch mode, start path, move path pen",
+                      "value": "enter sketch mode, start path, move path pen, disable sketch mode",
                       "style": "line"
                     }
                   }
                 ],
                 "1": [
                   {
-                    "end": 412,
-                    "start": 397,
+                    "end": 454,
+                    "start": 439,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
@@ -539,8 +539,8 @@ description: Result of parsing out_of_band_sketches.kcl
                 ],
                 "2": [
                   {
-                    "end": 462,
-                    "start": 447,
+                    "end": 504,
+                    "start": 489,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
@@ -552,34 +552,34 @@ description: Result of parsing out_of_band_sketches.kcl
               },
               "startNodes": []
             },
-            "start": 277,
+            "start": 298,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 264,
+          "start": 285,
           "type": "VariableDeclarator"
         },
-        "end": 462,
+        "end": 504,
         "kind": "const",
-        "start": 264,
+        "start": 285,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 580,
+          "end": 604,
           "id": {
-            "end": 482,
+            "end": 524,
             "name": "profile001extended",
-            "start": 464,
+            "start": 506,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 495,
+                "end": 537,
                 "name": "profile001",
-                "start": 485,
+                "start": 527,
                 "type": "Identifier",
                 "type": "Identifier"
               },
@@ -588,18 +588,18 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 509,
+                      "end": 551,
                       "name": "end",
-                      "start": 506,
+                      "start": 548,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 520,
+                            "end": 562,
                             "raw": "455.38",
-                            "start": 514,
+                            "start": 556,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -607,16 +607,16 @@ description: Result of parsing out_of_band_sketches.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 520,
+                          "end": 562,
                           "operator": "-",
-                          "start": 513,
+                          "start": 555,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
-                          "end": 523,
+                          "end": 565,
                           "raw": "0",
-                          "start": 522,
+                          "start": 564,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -625,21 +625,21 @@ description: Result of parsing out_of_band_sketches.kcl
                           }
                         }
                       ],
-                      "end": 524,
-                      "start": 512,
+                      "end": 566,
+                      "start": 554,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 505,
+                  "end": 547,
                   "name": "line",
-                  "start": 501,
+                  "start": 543,
                   "type": "Identifier"
                 },
-                "end": 525,
-                "start": 501,
+                "end": 567,
+                "start": 543,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -647,24 +647,24 @@ description: Result of parsing out_of_band_sketches.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 551,
+                  "end": 593,
                   "name": "close",
-                  "start": 546,
+                  "start": 588,
                   "type": "Identifier"
                 },
-                "end": 553,
-                "start": 546,
+                "end": 595,
+                "start": 588,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 580,
+            "end": 604,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 540,
-                    "start": 525,
+                    "end": 582,
+                    "start": 567,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
@@ -675,12 +675,12 @@ description: Result of parsing out_of_band_sketches.kcl
                 ],
                 "2": [
                   {
-                    "end": 580,
-                    "start": 553,
+                    "end": 604,
+                    "start": 595,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "close, exit sketch mode",
+                      "value": "close",
                       "style": "line"
                     }
                   }
@@ -688,34 +688,34 @@ description: Result of parsing out_of_band_sketches.kcl
               },
               "startNodes": []
             },
-            "start": 485,
+            "start": 527,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 464,
+          "start": 506,
           "type": "VariableDeclarator"
         },
-        "end": 580,
+        "end": 604,
         "kind": "const",
-        "start": 464,
+        "start": 506,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 702,
+          "end": 708,
           "id": {
-            "end": 600,
+            "end": 624,
             "name": "profile002extended",
-            "start": 582,
+            "start": 606,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 613,
+                "end": 637,
                 "name": "profile002",
-                "start": 603,
+                "start": 627,
                 "type": "Identifier",
                 "type": "Identifier"
               },
@@ -724,18 +724,18 @@ description: Result of parsing out_of_band_sketches.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 627,
+                      "end": 651,
                       "name": "end",
-                      "start": 624,
+                      "start": 648,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 638,
+                            "end": 662,
                             "raw": "299.39",
-                            "start": 632,
+                            "start": 656,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -743,16 +743,16 @@ description: Result of parsing out_of_band_sketches.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 638,
+                          "end": 662,
                           "operator": "-",
-                          "start": 631,
+                          "start": 655,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
-                          "end": 645,
+                          "end": 669,
                           "raw": "21.28",
-                          "start": 640,
+                          "start": 664,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -761,21 +761,21 @@ description: Result of parsing out_of_band_sketches.kcl
                           }
                         }
                       ],
-                      "end": 646,
-                      "start": 630,
+                      "end": 670,
+                      "start": 654,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 623,
+                  "end": 647,
                   "name": "line",
-                  "start": 619,
+                  "start": 643,
                   "type": "Identifier"
                 },
-                "end": 647,
-                "start": 619,
+                "end": 671,
+                "start": 643,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -783,24 +783,24 @@ description: Result of parsing out_of_band_sketches.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 673,
+                  "end": 697,
                   "name": "close",
-                  "start": 668,
+                  "start": 692,
                   "type": "Identifier"
                 },
-                "end": 675,
-                "start": 668,
+                "end": 699,
+                "start": 692,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 702,
+            "end": 708,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 662,
-                    "start": 647,
+                    "end": 686,
+                    "start": 671,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
@@ -811,12 +811,12 @@ description: Result of parsing out_of_band_sketches.kcl
                 ],
                 "2": [
                   {
-                    "end": 702,
-                    "start": 675,
+                    "end": 708,
+                    "start": 699,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "inlineComment",
-                      "value": "close, exit sketch mode",
+                      "value": "close",
                       "style": "line"
                     }
                   }
@@ -824,35 +824,35 @@ description: Result of parsing out_of_band_sketches.kcl
               },
               "startNodes": []
             },
-            "start": 603,
+            "start": 627,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 582,
+          "start": 606,
           "type": "VariableDeclarator"
         },
-        "end": 702,
+        "end": 708,
         "kind": "const",
-        "start": 582,
+        "start": 606,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 769,
+        "end": 775,
         "expression": {
           "arguments": [
             {
               "type": "LabeledArg",
               "label": {
-                "end": 760,
+                "end": 766,
                 "name": "length",
-                "start": 754,
+                "start": 760,
                 "type": "Identifier"
               },
               "arg": {
-                "end": 768,
+                "end": 774,
                 "raw": "10.14",
-                "start": 763,
+                "start": 769,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -863,50 +863,50 @@ description: Result of parsing out_of_band_sketches.kcl
             }
           ],
           "callee": {
-            "end": 711,
+            "end": 717,
             "name": "extrude",
-            "start": 704,
+            "start": 710,
             "type": "Identifier"
           },
-          "end": 769,
-          "start": 704,
+          "end": 775,
+          "start": 710,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
             "elements": [
               {
-                "end": 731,
+                "end": 737,
                 "name": "profile001extended",
-                "start": 713,
+                "start": 719,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               {
-                "end": 751,
+                "end": 757,
                 "name": "profile002extended",
-                "start": 733,
+                "start": 739,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
-            "end": 752,
-            "start": 712,
+            "end": 758,
+            "start": 718,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           }
         },
-        "start": 704,
+        "start": 710,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 836,
+    "end": 842,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
-            "end": 232,
-            "start": 230,
+            "end": 253,
+            "start": 251,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -915,8 +915,8 @@ description: Result of parsing out_of_band_sketches.kcl
         ],
         "3": [
           {
-            "end": 464,
-            "start": 462,
+            "end": 506,
+            "start": 504,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -925,8 +925,8 @@ description: Result of parsing out_of_band_sketches.kcl
         ],
         "4": [
           {
-            "end": 582,
-            "start": 580,
+            "end": 606,
+            "start": 604,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -935,8 +935,8 @@ description: Result of parsing out_of_band_sketches.kcl
         ],
         "5": [
           {
-            "end": 704,
-            "start": 702,
+            "end": 710,
+            "start": 708,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -945,8 +945,8 @@ description: Result of parsing out_of_band_sketches.kcl
         ],
         "6": [
           {
-            "end": 835,
-            "start": 769,
+            "end": 841,
+            "start": 775,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",

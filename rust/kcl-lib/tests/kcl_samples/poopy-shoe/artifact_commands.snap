@@ -145,6 +145,17 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      284,
+      322,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       328,
       361,
       0
@@ -404,17 +415,6 @@ description: Artifact commands poopy-shoe.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      892,
-      899,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -914,6 +914,17 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      1085,
+      1123,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1129,
       1162,
       0
@@ -1173,17 +1184,6 @@ description: Artifact commands poopy-shoe.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1693,
-      1700,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1700,6 +1700,17 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      2032,
+      2057,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       2063,
       2113,
       0
@@ -1741,13 +1752,14 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2165,
-      2172,
+      2032,
+      2057,
       0
     ],
     "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -1758,7 +1770,8 @@ description: Artifact commands poopy-shoe.kcl
       0
     ],
     "command": {
-      "type": "sketch_mode_disable"
+      "type": "close_path",
+      "path_id": "[uuid]"
     }
   },
   {
@@ -1957,6 +1970,17 @@ description: Artifact commands poopy-shoe.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2260,
+      2285,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2684,6 +2708,17 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      3229,
+      3254,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       3260,
       3287,
       0
@@ -2700,6 +2735,19 @@ description: Artifact commands poopy-shoe.kcl
         },
         "relative": false
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3229,
+      3254,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -2796,17 +2844,6 @@ description: Artifact commands poopy-shoe.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3553,
-      3560,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -3089,6 +3126,17 @@ description: Artifact commands poopy-shoe.kcl
         "y": -0.875,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3648,
+      3698,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -3386,6 +3434,17 @@ description: Artifact commands poopy-shoe.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3898,
+      3923,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -3721,6 +3780,17 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      4397,
+      4446,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       4452,
       4484,
       0
@@ -3737,6 +3807,19 @@ description: Artifact commands poopy-shoe.kcl
         },
         "relative": false
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4397,
+      4446,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -3791,17 +3874,6 @@ description: Artifact commands poopy-shoe.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      4584,
-      4591,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -3984,45 +4056,6 @@ description: Artifact commands poopy-shoe.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2032,
-      2057,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3229,
-      3254,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      4397,
-      4446,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   }
 ]

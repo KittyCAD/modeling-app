@@ -145,6 +145,17 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      730,
+      755,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       761,
       798,
       0
@@ -383,17 +394,6 @@ description: Artifact commands sheet-metal-bracket.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1276,
-      1293,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -994,6 +994,17 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      2119,
+      2144,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       2150,
       2175,
       0
@@ -1010,6 +1021,134 @@ description: Artifact commands sheet-metal-bracket.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1331,
+      1410,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.08,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1416,
+      1502,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.16999999999999998,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1508,
+      1594,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.16999999999999998,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1600,
+      1679,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.08,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1685,
+      1771,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.16999999999999998,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1777,
+      1856,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.08,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1862,
+      1942,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.08,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1948,
+      2035,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.16999999999999998,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
     }
   },
   {
@@ -1069,17 +1208,6 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2271,
-      2278,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2289,
       2355,
       0
@@ -1123,6 +1251,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "y": 1.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2289,
+      2355,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1238,6 +1377,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "y": 4.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2370,
+      2436,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1653,6 +1803,17 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      2645,
+      2671,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       2677,
       2702,
       0
@@ -1669,6 +1830,38 @@ description: Artifact commands sheet-metal-bracket.kcl
         },
         "relative": true
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2479,
+      2608,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.5,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2479,
+      2608,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.5,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
     }
   },
   {
@@ -1728,17 +1921,6 @@ description: Artifact commands sheet-metal-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2799,
-      2806,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2817,
       2884,
       0
@@ -1782,6 +1964,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "y": 1.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2817,
+      2884,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1897,6 +2090,17 @@ description: Artifact commands sheet-metal-bracket.kcl
         "y": 4.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2899,
+      2966,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2230,166 +2434,6 @@ description: Artifact commands sheet-metal-bracket.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1331,
-      1410,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.08,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1416,
-      1502,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.16999999999999998,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1508,
-      1594,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.16999999999999998,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1600,
-      1679,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.08,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1685,
-      1771,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.16999999999999998,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1777,
-      1856,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.08,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1862,
-      1942,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.08,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1948,
-      2035,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.16999999999999998,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2479,
-      2608,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2479,
-      2608,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
     }
   },
   {

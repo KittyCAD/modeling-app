@@ -145,6 +145,17 @@ description: Artifact commands mounting-plate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      567,
+      622,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       630,
       698,
       0
@@ -220,17 +231,6 @@ description: Artifact commands mounting-plate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      856,
-      875,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1106,
       1250,
       0
@@ -274,6 +274,17 @@ description: Artifact commands mounting-plate.kcl
         "y": 4.25,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1106,
+      1250,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -389,6 +400,17 @@ description: Artifact commands mounting-plate.kcl
         "y": 4.25,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1265,
+      1408,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -514,6 +536,17 @@ description: Artifact commands mounting-plate.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1423,
+      1568,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -619,6 +652,17 @@ description: Artifact commands mounting-plate.kcl
         "y": -4.25,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1583,
+      1727,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -734,6 +778,17 @@ description: Artifact commands mounting-plate.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1742,
+      1815,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

@@ -34,16 +34,16 @@ description: Operations executed out_of_band_sketches.kcl
           "value": "XY"
         },
         "sourceRange": [
-          258,
-          262,
+          279,
+          283,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      244,
-      263,
+      265,
+      284,
       0
     ],
     "type": "StdLibCall",
@@ -66,16 +66,16 @@ description: Operations executed out_of_band_sketches.kcl
           }
         },
         "sourceRange": [
-          763,
-          768,
+          769,
+          774,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "type": "StdLibCall",
@@ -98,8 +98,8 @@ description: Operations executed out_of_band_sketches.kcl
         ]
       },
       "sourceRange": [
-        712,
-        752,
+        718,
+        758,
         0
       ]
     }

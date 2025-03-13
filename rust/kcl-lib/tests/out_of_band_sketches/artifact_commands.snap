@@ -144,8 +144,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      143,
-      166,
+      164,
+      187,
       0
     ],
     "command": {
@@ -165,8 +165,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      187,
-      215,
+      208,
+      236,
       0
     ],
     "command": {
@@ -186,8 +186,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      244,
-      263,
+      265,
+      284,
       0
     ],
     "command": {
@@ -215,8 +215,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      277,
-      318,
+      298,
+      339,
       0
     ],
     "command": {
@@ -235,8 +235,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      277,
-      318,
+      298,
+      339,
       0
     ],
     "command": {
@@ -246,8 +246,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      277,
-      318,
+      298,
+      339,
       0
     ],
     "command": {
@@ -263,8 +263,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      277,
-      318,
+      298,
+      339,
       0
     ],
     "command": {
@@ -274,8 +274,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      374,
-      397,
+      416,
+      439,
       0
     ],
     "command": {
@@ -295,8 +295,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      418,
-      447,
+      460,
+      489,
       0
     ],
     "command": {
@@ -316,8 +316,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      501,
-      525,
+      543,
+      567,
       0
     ],
     "command": {
@@ -337,8 +337,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      546,
-      553,
+      588,
+      595,
       0
     ],
     "command": {
@@ -349,8 +349,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      619,
-      647,
+      643,
+      671,
       0
     ],
     "command": {
@@ -370,8 +370,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      668,
-      675,
+      692,
+      699,
       0
     ],
     "command": {
@@ -382,8 +382,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -402,8 +402,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -416,8 +416,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -427,8 +427,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -439,8 +439,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -452,8 +452,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -466,8 +466,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -480,8 +480,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -494,8 +494,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -508,8 +508,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -522,8 +522,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -536,8 +536,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -550,8 +550,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -564,8 +564,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -584,8 +584,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -598,8 +598,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -609,8 +609,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -621,8 +621,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -634,8 +634,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -648,8 +648,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -662,8 +662,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -676,8 +676,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -690,8 +690,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -704,8 +704,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -718,8 +718,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
@@ -732,8 +732,8 @@ description: Artifact commands out_of_band_sketches.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      769,
+      710,
+      775,
       0
     ],
     "command": {
