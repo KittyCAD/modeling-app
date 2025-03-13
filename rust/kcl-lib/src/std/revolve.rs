@@ -28,7 +28,7 @@ pub struct RevolveData {
     pub tolerance: Option<f64>,
 }
 
-/// Revolve a sketch around an axis.
+/// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_set): (RevolveData, SketchSet) = args.get_data_and_sketch_set()?;
 
@@ -45,6 +45,9 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// dimension.
 ///
 /// Revolve occurs around a local sketch axis rather than a global axis.
+///
+/// You can provide more than one sketch to revolve, and they will all be
+/// revolved around the same axis.
 ///
 /// ```no_run
 /// part001 = startSketchOn('XY')

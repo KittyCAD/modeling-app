@@ -34,6 +34,9 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// create new 3-dimensional volume, or if extruded into an existing volume,
 /// cut into an existing solid.
 ///
+/// You can provide more than one sketch to extrude, and they will all be
+/// extruded in the same direction.
+///
 /// ```no_run
 /// example = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
@@ -82,7 +85,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     keywords = true,
     unlabeled_first = true,
     args = {
-        sketch_set = { docs = "Which sketches should be extruded"},
+        sketch_set = { docs = "Which sketch or set of sketches should be extruded"},
         length = { docs = "How far to extrude the given sketches"},
     }
 }]
