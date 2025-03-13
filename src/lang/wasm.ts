@@ -55,7 +55,10 @@ import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { isArray } from 'lib/utils'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from 'lib/settings/settingsTypes'
+import {
+  DEFAULT_DEFAULT_ANGLE_UNIT,
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+} from 'lib/constants'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
@@ -647,8 +650,6 @@ export function unitLenToUnitLength(input: UnitLen): UnitLength {
       return DEFAULT_DEFAULT_LENGTH_UNIT
   }
 }
-
-export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
 
 /**
  * Convert a `UnitAngle` (used in modeling commands) to a `UnitAng` (used in

@@ -1,4 +1,5 @@
 import { Models } from '@kittycad/lib/dist/types/src'
+import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 export const APP_NAME = 'Modeling App'
 /** Search string in new project names to increment as an index */
@@ -167,3 +168,15 @@ export const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
  * to "open in desktop app" when present in the URL
  */
 export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
+
+/**
+ * When no annotation is in the KCL file to specify the defaults, we use these
+ * default units.
+ */
+export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
+
+/**
+ * When no annotation is in the KCL file to specify the defaults, we use these
+ * default units.
+ */
+export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
