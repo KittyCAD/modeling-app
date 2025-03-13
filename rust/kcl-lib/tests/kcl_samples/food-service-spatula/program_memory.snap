@@ -7,60 +7,6 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc000",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1134,
-            1197,
-            0
-          ]
-        },
-        "ccw": true,
-        "center": [
-          0.0,
-          210.0
-        ],
-        "from": [
-          4.0,
-          210.0
-        ],
-        "tag": {
-          "end": 1196,
-          "start": 1189,
-          "type": "TagDeclarator",
-          "value": "arc000"
-        },
-        "to": [
-          -4.0,
-          210.0
-        ],
-        "type": "TangentialArc",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1134,
-          1197,
-          0
-        ],
-        "tag": {
-          "end": 1196,
-          "start": 1189,
-          "type": "TagDeclarator",
-          "value": "arc000"
-        },
-        "type": "extrudeArc"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -75,60 +21,6 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1271,
-            1336,
-            0
-          ]
-        },
-        "ccw": true,
-        "center": [
-          0.0,
-          200.0
-        ],
-        "from": [
-          -4.0,
-          200.0
-        ],
-        "tag": {
-          "end": 1335,
-          "start": 1328,
-          "type": "TagDeclarator",
-          "value": "arc001"
-        },
-        "to": [
-          4.0,
-          200.0
-        ],
-        "type": "TangentialArcTo",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1271,
-          1336,
-          0
-        ],
-        "tag": {
-          "end": 1335,
-          "start": 1328,
-          "type": "TagDeclarator",
-          "value": "arc001"
-        },
-        "type": "extrudeArc"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -143,55 +35,6 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "backEdge",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1591,
-            1628,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          -30.0
-        ],
-        "tag": {
-          "end": 1627,
-          "start": 1618,
-          "type": "TagDeclarator",
-          "value": "backEdge"
-        },
-        "to": [
-          0.0,
-          30.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1591,
-          1628,
-          0
-        ],
-        "tag": {
-          "end": 1627,
-          "start": 1618,
-          "type": "TagDeclarator",
-          "value": "backEdge"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -457,55 +300,6 @@ description: Variables in memory after executing food-service-spatula.kcl
           "backEdge": {
             "type": "TagIdentifier",
             "value": "backEdge",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1591,
-                    1628,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  -30.0
-                ],
-                "tag": {
-                  "end": 1627,
-                  "start": 1618,
-                  "type": "TagDeclarator",
-                  "value": "backEdge"
-                },
-                "to": [
-                  0.0,
-                  30.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1591,
-                  1628,
-                  0
-                ],
-                "tag": {
-                  "end": 1627,
-                  "start": 1618,
-                  "type": "TagDeclarator",
-                  "value": "backEdge"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -782,55 +576,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "backEdge": {
           "type": "TagIdentifier",
           "value": "backEdge",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1591,
-                  1628,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                -30.0
-              ],
-              "tag": {
-                "end": 1627,
-                "start": 1618,
-                "type": "TagDeclarator",
-                "value": "backEdge"
-              },
-              "to": [
-                0.0,
-                30.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1591,
-                1628,
-                0
-              ],
-              "tag": {
-                "end": 1627,
-                "start": 1618,
-                "type": "TagDeclarator",
-                "value": "backEdge"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -1300,55 +1045,6 @@ description: Variables in memory after executing food-service-spatula.kcl
           "gripEdgeTop": {
             "type": "TagIdentifier",
             "value": "gripEdgeTop",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4287,
-                    4361,
-                    0
-                  ]
-                },
-                "from": [
-                  -29.8067,
-                  7.0
-                ],
-                "tag": {
-                  "end": 4360,
-                  "start": 4348,
-                  "type": "TagDeclarator",
-                  "value": "gripEdgeTop"
-                },
-                "to": [
-                  -29.8067,
-                  -7.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4287,
-                  4361,
-                  0
-                ],
-                "tag": {
-                  "end": 4360,
-                  "start": 4348,
-                  "type": "TagDeclarator",
-                  "value": "gripEdgeTop"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -1396,55 +1092,6 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "gripEdgeTop",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4287,
-            4361,
-            0
-          ]
-        },
-        "from": [
-          -29.8067,
-          7.0
-        ],
-        "tag": {
-          "end": 4360,
-          "start": 4348,
-          "type": "TagDeclarator",
-          "value": "gripEdgeTop"
-        },
-        "to": [
-          -29.8067,
-          -7.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4287,
-          4361,
-          0
-        ],
-        "tag": {
-          "end": 4360,
-          "start": 4348,
-          "type": "TagDeclarator",
-          "value": "gripEdgeTop"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -2067,55 +1714,6 @@ description: Variables in memory after executing food-service-spatula.kcl
               "gripEdgeTop": {
                 "type": "TagIdentifier",
                 "value": "gripEdgeTop",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        4287,
-                        4361,
-                        0
-                      ]
-                    },
-                    "from": [
-                      -29.8067,
-                      7.0
-                    ],
-                    "tag": {
-                      "end": 4360,
-                      "start": 4348,
-                      "type": "TagDeclarator",
-                      "value": "gripEdgeTop"
-                    },
-                    "to": [
-                      -29.8067,
-                      -7.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      4287,
-                      4361,
-                      0
-                    ],
-                    "tag": {
-                      "end": 4360,
-                      "start": 4348,
-                      "type": "TagDeclarator",
-                      "value": "gripEdgeTop"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -2197,60 +1795,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1134,
-                  1197,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                0.0,
-                210.0
-              ],
-              "from": [
-                4.0,
-                210.0
-              ],
-              "tag": {
-                "end": 1196,
-                "start": 1189,
-                "type": "TagDeclarator",
-                "value": "arc000"
-              },
-              "to": [
-                -4.0,
-                210.0
-              ],
-              "type": "TangentialArc",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1134,
-                1197,
-                0
-              ],
-              "tag": {
-                "end": 1196,
-                "start": 1189,
-                "type": "TagDeclarator",
-                "value": "arc000"
-              },
-              "type": "extrudeArc"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -2264,60 +1808,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "arc001": {
           "type": "TagIdentifier",
           "value": "arc001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1271,
-                  1336,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                0.0,
-                200.0
-              ],
-              "from": [
-                -4.0,
-                200.0
-              ],
-              "tag": {
-                "end": 1335,
-                "start": 1328,
-                "type": "TagDeclarator",
-                "value": "arc001"
-              },
-              "to": [
-                4.0,
-                200.0
-              ],
-              "type": "TangentialArcTo",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1271,
-                1336,
-                0
-              ],
-              "tag": {
-                "end": 1335,
-                "start": 1328,
-                "type": "TagDeclarator",
-                "value": "arc001"
-              },
-              "type": "extrudeArc"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -2331,55 +1821,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "line000": {
           "type": "TagIdentifier",
           "value": "line000",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1069,
-                  1126,
-                  0
-                ]
-              },
-              "from": [
-                4.0,
-                200.0
-              ],
-              "tag": {
-                "end": 1125,
-                "start": 1117,
-                "type": "TagDeclarator",
-                "value": "line000"
-              },
-              "to": [
-                4.0,
-                210.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1069,
-                1126,
-                0
-              ],
-              "tag": {
-                "end": 1125,
-                "start": 1117,
-                "type": "TagDeclarator",
-                "value": "line000"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -2393,55 +1834,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "line001": {
           "type": "TagIdentifier",
           "value": "line001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1205,
-                  1263,
-                  0
-                ]
-              },
-              "from": [
-                -4.0,
-                210.0
-              ],
-              "tag": {
-                "end": 1262,
-                "start": 1254,
-                "type": "TagDeclarator",
-                "value": "line001"
-              },
-              "to": [
-                -4.0,
-                200.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1205,
-                1263,
-                0
-              ],
-              "tag": {
-                "end": 1262,
-                "start": 1254,
-                "type": "TagDeclarator",
-                "value": "line001"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -2790,55 +2182,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "gripEdgeTop": {
           "type": "TagIdentifier",
           "value": "gripEdgeTop",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4287,
-                  4361,
-                  0
-                ]
-              },
-              "from": [
-                -29.8067,
-                7.0
-              ],
-              "tag": {
-                "end": 4360,
-                "start": 4348,
-                "type": "TagDeclarator",
-                "value": "gripEdgeTop"
-              },
-              "to": [
-                -29.8067,
-                -7.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4287,
-                4361,
-                0
-              ],
-              "tag": {
-                "end": 4360,
-                "start": 4348,
-                "type": "TagDeclarator",
-                "value": "gripEdgeTop"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -3237,55 +2580,6 @@ description: Variables in memory after executing food-service-spatula.kcl
           "handleBottomEdge": {
             "type": "TagIdentifier",
             "value": "handleBottomEdge",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2831,
-                    2890,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  3.5
-                ],
-                "tag": {
-                  "end": 2889,
-                  "start": 2872,
-                  "type": "TagDeclarator",
-                  "value": "handleBottomEdge"
-                },
-                "to": [
-                  31.8198,
-                  35.3198
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2831,
-                  2890,
-                  0
-                ],
-                "tag": {
-                  "end": 2889,
-                  "start": 2872,
-                  "type": "TagDeclarator",
-                  "value": "handleBottomEdge"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -3299,55 +2593,6 @@ description: Variables in memory after executing food-service-spatula.kcl
           "handleTopEdge": {
             "type": "TagIdentifier",
             "value": "handleTopEdge",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2976,
-                    3035,
-                    0
-                  ]
-                },
-                "from": [
-                  171.0636,
-                  91.3213
-                ],
-                "tag": {
-                  "end": 3034,
-                  "start": 3020,
-                  "type": "TagDeclarator",
-                  "value": "handleTopEdge"
-                },
-                "to": [
-                  29.0681,
-                  39.6391
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2976,
-                  3035,
-                  0
-                ],
-                "tag": {
-                  "end": 3034,
-                  "start": 3020,
-                  "type": "TagDeclarator",
-                  "value": "handleTopEdge"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -3395,55 +2640,6 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "handleBottomEdge",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2831,
-            2890,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          3.5
-        ],
-        "tag": {
-          "end": 2889,
-          "start": 2872,
-          "type": "TagDeclarator",
-          "value": "handleBottomEdge"
-        },
-        "to": [
-          31.8198,
-          35.3198
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2831,
-          2890,
-          0
-        ],
-        "tag": {
-          "end": 2889,
-          "start": 2872,
-          "type": "TagDeclarator",
-          "value": "handleBottomEdge"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -4036,55 +3232,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "handleBottomEdge": {
           "type": "TagIdentifier",
           "value": "handleBottomEdge",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2831,
-                  2890,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                3.5
-              ],
-              "tag": {
-                "end": 2889,
-                "start": 2872,
-                "type": "TagDeclarator",
-                "value": "handleBottomEdge"
-              },
-              "to": [
-                31.8198,
-                35.3198
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                2831,
-                2890,
-                0
-              ],
-              "tag": {
-                "end": 2889,
-                "start": 2872,
-                "type": "TagDeclarator",
-                "value": "handleBottomEdge"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -4098,55 +3245,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "handleTopEdge": {
           "type": "TagIdentifier",
           "value": "handleTopEdge",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2976,
-                  3035,
-                  0
-                ]
-              },
-              "from": [
-                171.0636,
-                91.3213
-              ],
-              "tag": {
-                "end": 3034,
-                "start": 3020,
-                "type": "TagDeclarator",
-                "value": "handleTopEdge"
-              },
-              "to": [
-                29.0681,
-                39.6391
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                2976,
-                3035,
-                0
-              ],
-              "tag": {
-                "end": 3034,
-                "start": 3020,
-                "type": "TagDeclarator",
-                "value": "handleTopEdge"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -4178,55 +3276,6 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "handleTopEdge",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2976,
-            3035,
-            0
-          ]
-        },
-        "from": [
-          171.0636,
-          91.3213
-        ],
-        "tag": {
-          "end": 3034,
-          "start": 3020,
-          "type": "TagDeclarator",
-          "value": "handleTopEdge"
-        },
-        "to": [
-          29.0681,
-          39.6391
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2976,
-          3035,
-          0
-        ],
-        "tag": {
-          "end": 3034,
-          "start": 3020,
-          "type": "TagDeclarator",
-          "value": "handleTopEdge"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -4263,55 +3312,6 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line000",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1069,
-            1126,
-            0
-          ]
-        },
-        "from": [
-          4.0,
-          200.0
-        ],
-        "tag": {
-          "end": 1125,
-          "start": 1117,
-          "type": "TagDeclarator",
-          "value": "line000"
-        },
-        "to": [
-          4.0,
-          210.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1069,
-          1126,
-          0
-        ],
-        "tag": {
-          "end": 1125,
-          "start": 1117,
-          "type": "TagDeclarator",
-          "value": "line000"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -4326,55 +3326,6 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1205,
-            1263,
-            0
-          ]
-        },
-        "from": [
-          -4.0,
-          210.0
-        ],
-        "tag": {
-          "end": 1262,
-          "start": 1254,
-          "type": "TagDeclarator",
-          "value": "line001"
-        },
-        "to": [
-          -4.0,
-          200.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1205,
-          1263,
-          0
-        ],
-        "tag": {
-          "end": 1262,
-          "start": 1254,
-          "type": "TagDeclarator",
-          "value": "line001"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -4898,55 +3849,6 @@ description: Variables in memory after executing food-service-spatula.kcl
             "gripEdgeTop": {
               "type": "TagIdentifier",
               "value": "gripEdgeTop",
-              "info": {
-                "type": "TagEngineInfo",
-                "id": "[uuid]",
-                "sketch": "[uuid]",
-                "path": {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      4287,
-                      4361,
-                      0
-                    ]
-                  },
-                  "from": [
-                    -29.8067,
-                    7.0
-                  ],
-                  "tag": {
-                    "end": 4360,
-                    "start": 4348,
-                    "type": "TagDeclarator",
-                    "value": "gripEdgeTop"
-                  },
-                  "to": [
-                    -29.8067,
-                    -7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "surface": {
-                  "faceId": "[uuid]",
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4287,
-                    4361,
-                    0
-                  ],
-                  "tag": {
-                    "end": 4360,
-                    "start": 4348,
-                    "type": "TagDeclarator",
-                    "value": "gripEdgeTop"
-                  },
-                  "type": "extrudePlane"
-                }
-              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5223,45 +4125,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1134,
-                  1197,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                -55.0,
-                0.0
-              ],
-              "from": [
-                -55.0,
-                5.0
-              ],
-              "tag": {
-                "end": 1196,
-                "start": 1189,
-                "type": "TagDeclarator",
-                "value": "arc000"
-              },
-              "to": [
-                -55.0,
-                -5.0
-              ],
-              "type": "TangentialArc",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -5275,45 +4138,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "arc001": {
           "type": "TagIdentifier",
           "value": "arc001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1271,
-                  1336,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                -25.0,
-                0.0
-              ],
-              "from": [
-                -25.0,
-                -5.0
-              ],
-              "tag": {
-                "end": 1335,
-                "start": 1328,
-                "type": "TagDeclarator",
-                "value": "arc001"
-              },
-              "to": [
-                -25.0,
-                5.0
-              ],
-              "type": "TangentialArcTo",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -5327,40 +4151,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "line000": {
           "type": "TagIdentifier",
           "value": "line000",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1069,
-                  1126,
-                  0
-                ]
-              },
-              "from": [
-                -25.0,
-                5.0
-              ],
-              "tag": {
-                "end": 1125,
-                "start": 1117,
-                "type": "TagDeclarator",
-                "value": "line000"
-              },
-              "to": [
-                -55.0,
-                5.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -5374,40 +4164,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "line001": {
           "type": "TagIdentifier",
           "value": "line001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1205,
-                  1263,
-                  0
-                ]
-              },
-              "from": [
-                -55.0,
-                -5.0
-              ],
-              "tag": {
-                "end": 1262,
-                "start": 1254,
-                "type": "TagDeclarator",
-                "value": "line001"
-              },
-              "to": [
-                -25.0,
-                -5.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -5643,45 +4399,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1134,
-                  1197,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                -55.0,
-                19.0
-              ],
-              "from": [
-                -54.8334,
-                23.9972
-              ],
-              "tag": {
-                "end": 1196,
-                "start": 1189,
-                "type": "TagDeclarator",
-                "value": "arc000"
-              },
-              "to": [
-                -55.1666,
-                14.0028
-              ],
-              "type": "TangentialArc",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -5695,45 +4412,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "arc001": {
           "type": "TagIdentifier",
           "value": "arc001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1271,
-                  1336,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                -25.0,
-                18.0
-              ],
-              "from": [
-                -25.1666,
-                13.0028
-              ],
-              "tag": {
-                "end": 1335,
-                "start": 1328,
-                "type": "TagDeclarator",
-                "value": "arc001"
-              },
-              "to": [
-                -24.8334,
-                22.9972
-              ],
-              "type": "TangentialArcTo",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -5747,40 +4425,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "line000": {
           "type": "TagIdentifier",
           "value": "line000",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1069,
-                  1126,
-                  0
-                ]
-              },
-              "from": [
-                -24.8334,
-                22.9972
-              ],
-              "tag": {
-                "end": 1125,
-                "start": 1117,
-                "type": "TagDeclarator",
-                "value": "line000"
-              },
-              "to": [
-                -54.8334,
-                23.9972
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -5794,40 +4438,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "line001": {
           "type": "TagIdentifier",
           "value": "line001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1205,
-                  1263,
-                  0
-                ]
-              },
-              "from": [
-                -55.1666,
-                14.0028
-              ],
-              "tag": {
-                "end": 1262,
-                "start": 1254,
-                "type": "TagDeclarator",
-                "value": "line001"
-              },
-              "to": [
-                -25.1666,
-                13.0028
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -6063,45 +4673,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1134,
-                  1197,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                -55.0,
-                -19.0
-              ],
-              "from": [
-                -55.1666,
-                -14.0028
-              ],
-              "tag": {
-                "end": 1196,
-                "start": 1189,
-                "type": "TagDeclarator",
-                "value": "arc000"
-              },
-              "to": [
-                -54.8334,
-                -23.9972
-              ],
-              "type": "TangentialArc",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -6115,45 +4686,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "arc001": {
           "type": "TagIdentifier",
           "value": "arc001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1271,
-                  1336,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                -25.0,
-                -18.0
-              ],
-              "from": [
-                -24.8334,
-                -22.9972
-              ],
-              "tag": {
-                "end": 1335,
-                "start": 1328,
-                "type": "TagDeclarator",
-                "value": "arc001"
-              },
-              "to": [
-                -25.1666,
-                -13.0028
-              ],
-              "type": "TangentialArcTo",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -6167,40 +4699,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "line000": {
           "type": "TagIdentifier",
           "value": "line000",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1069,
-                  1126,
-                  0
-                ]
-              },
-              "from": [
-                -25.1666,
-                -13.0028
-              ],
-              "tag": {
-                "end": 1125,
-                "start": 1117,
-                "type": "TagDeclarator",
-                "value": "line000"
-              },
-              "to": [
-                -55.1666,
-                -14.0028
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -6214,40 +4712,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "line001": {
           "type": "TagIdentifier",
           "value": "line001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1205,
-                  1263,
-                  0
-                ]
-              },
-              "from": [
-                -54.8334,
-                -23.9972
-              ],
-              "tag": {
-                "end": 1262,
-                "start": 1254,
-                "type": "TagDeclarator",
-                "value": "line001"
-              },
-              "to": [
-                -24.8334,
-                -22.9972
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -6464,55 +4928,6 @@ description: Variables in memory after executing food-service-spatula.kcl
         "backEdge": {
           "type": "TagIdentifier",
           "value": "backEdge",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1591,
-                  1628,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                -30.0
-              ],
-              "tag": {
-                "end": 1627,
-                "start": 1618,
-                "type": "TagDeclarator",
-                "value": "backEdge"
-              },
-              "to": [
-                0.0,
-                30.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1591,
-                1628,
-                0
-              ],
-              "tag": {
-                "end": 1627,
-                "start": 1618,
-                "type": "TagDeclarator",
-                "value": "backEdge"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [

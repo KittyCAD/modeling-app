@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing basic_fillet_cube_previous_adjacent.kcl
 ---
 {
@@ -248,55 +248,6 @@ description: Variables in memory after executing basic_fillet_cube_previous_adja
           "thing": {
             "type": "TagIdentifier",
             "value": "thing",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    66,
-                    99,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 98,
-                  "start": 92,
-                  "type": "TagDeclarator",
-                  "value": "thing"
-                },
-                "to": [
-                  0.0,
-                  10.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  66,
-                  99,
-                  0
-                ],
-                "tag": {
-                  "end": 98,
-                  "start": 92,
-                  "type": "TagDeclarator",
-                  "value": "thing"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -310,55 +261,6 @@ description: Variables in memory after executing basic_fillet_cube_previous_adja
           "thing1": {
             "type": "TagIdentifier",
             "value": "thing1",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    105,
-                    139,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  10.0
-                ],
-                "tag": {
-                  "end": 138,
-                  "start": 131,
-                  "type": "TagDeclarator",
-                  "value": "thing1"
-                },
-                "to": [
-                  10.0,
-                  10.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  105,
-                  139,
-                  0
-                ],
-                "tag": {
-                  "end": 138,
-                  "start": 131,
-                  "type": "TagDeclarator",
-                  "value": "thing1"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -372,55 +274,6 @@ description: Variables in memory after executing basic_fillet_cube_previous_adja
           "thing2": {
             "type": "TagIdentifier",
             "value": "thing2",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    180,
-                    0
-                  ]
-                },
-                "from": [
-                  10.0,
-                  10.0
-                ],
-                "tag": {
-                  "end": 179,
-                  "start": 172,
-                  "type": "TagDeclarator",
-                  "value": "thing2"
-                },
-                "to": [
-                  10.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  145,
-                  180,
-                  0
-                ],
-                "tag": {
-                  "end": 179,
-                  "start": 172,
-                  "type": "TagDeclarator",
-                  "value": "thing2"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -434,55 +287,6 @@ description: Variables in memory after executing basic_fillet_cube_previous_adja
           "thing3": {
             "type": "TagIdentifier",
             "value": "thing3",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    186,
-                    206,
-                    0
-                  ]
-                },
-                "from": [
-                  10.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 205,
-                  "start": 198,
-                  "type": "TagDeclarator",
-                  "value": "thing3"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  186,
-                  206,
-                  0
-                ],
-                "tag": {
-                  "end": 205,
-                  "start": 198,
-                  "type": "TagDeclarator",
-                  "value": "thing3"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -539,55 +343,6 @@ description: Variables in memory after executing basic_fillet_cube_previous_adja
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "thing",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            66,
-            99,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 98,
-          "start": 92,
-          "type": "TagDeclarator",
-          "value": "thing"
-        },
-        "to": [
-          0.0,
-          10.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          66,
-          99,
-          0
-        ],
-        "tag": {
-          "end": 98,
-          "start": 92,
-          "type": "TagDeclarator",
-          "value": "thing"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -602,55 +357,6 @@ description: Variables in memory after executing basic_fillet_cube_previous_adja
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "thing1",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            105,
-            139,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          10.0
-        ],
-        "tag": {
-          "end": 138,
-          "start": 131,
-          "type": "TagDeclarator",
-          "value": "thing1"
-        },
-        "to": [
-          10.0,
-          10.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          105,
-          139,
-          0
-        ],
-        "tag": {
-          "end": 138,
-          "start": 131,
-          "type": "TagDeclarator",
-          "value": "thing1"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -665,55 +371,6 @@ description: Variables in memory after executing basic_fillet_cube_previous_adja
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "thing2",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            145,
-            180,
-            0
-          ]
-        },
-        "from": [
-          10.0,
-          10.0
-        ],
-        "tag": {
-          "end": 179,
-          "start": 172,
-          "type": "TagDeclarator",
-          "value": "thing2"
-        },
-        "to": [
-          10.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          145,
-          180,
-          0
-        ],
-        "tag": {
-          "end": 179,
-          "start": 172,
-          "type": "TagDeclarator",
-          "value": "thing2"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -728,55 +385,6 @@ description: Variables in memory after executing basic_fillet_cube_previous_adja
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "thing3",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            186,
-            206,
-            0
-          ]
-        },
-        "from": [
-          10.0,
-          0.0
-        ],
-        "tag": {
-          "end": 205,
-          "start": 198,
-          "type": "TagDeclarator",
-          "value": "thing3"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          186,
-          206,
-          0
-        ],
-        "tag": {
-          "end": 205,
-          "start": 198,
-          "type": "TagDeclarator",
-          "value": "thing3"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [

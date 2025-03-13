@@ -776,55 +776,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "seg01": {
             "type": "TagIdentifier",
             "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1905,
-                    1939,
-                    0
-                  ]
-                },
-                "from": [
-                  4.3,
-                  -1.25
-                ],
-                "tag": {
-                  "end": 1938,
-                  "start": 1932,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  1.7,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1905,
-                  1939,
-                  0
-                ],
-                "tag": {
-                  "end": 1938,
-                  "start": 1932,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -838,55 +789,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "seg03": {
             "type": "TagIdentifier",
             "value": "seg03",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2103,
-                    2137,
-                    0
-                  ]
-                },
-                "from": [
-                  0.1573,
-                  -1.25
-                ],
-                "tag": {
-                  "end": 2136,
-                  "start": 2130,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "to": [
-                  -1.2427,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2103,
-                  2137,
-                  0
-                ],
-                "tag": {
-                  "end": 2136,
-                  "start": 2130,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -900,55 +802,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "seg04": {
             "type": "TagIdentifier",
             "value": "seg04",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2143,
-                    2186,
-                    0
-                  ]
-                },
-                "from": [
-                  -1.2427,
-                  -1.25
-                ],
-                "tag": {
-                  "end": 2185,
-                  "start": 2179,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "to": [
-                  -1.2427,
-                  1.35
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2143,
-                  2186,
-                  0
-                ],
-                "tag": {
-                  "end": 2185,
-                  "start": 2179,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -962,55 +815,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "seg05": {
             "type": "TagIdentifier",
             "value": "seg05",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2192,
-                    2225,
-                    0
-                  ]
-                },
-                "from": [
-                  -1.2427,
-                  1.35
-                ],
-                "tag": {
-                  "end": 2224,
-                  "start": 2218,
-                  "type": "TagDeclarator",
-                  "value": "seg05"
-                },
-                "to": [
-                  1.8573,
-                  1.35
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2192,
-                  2225,
-                  0
-                ],
-                "tag": {
-                  "end": 2224,
-                  "start": 2218,
-                  "type": "TagDeclarator",
-                  "value": "seg05"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -1024,55 +828,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "seg07": {
             "type": "TagIdentifier",
             "value": "seg07",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2390,
-                    2433,
-                    0
-                  ]
-                },
-                "from": [
-                  4.1713,
-                  1.35
-                ],
-                "tag": {
-                  "end": 2432,
-                  "start": 2426,
-                  "type": "TagDeclarator",
-                  "value": "seg07"
-                },
-                "to": [
-                  7.2713,
-                  1.35
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2390,
-                  2433,
-                  0
-                ],
-                "tag": {
-                  "end": 2432,
-                  "start": 2426,
-                  "type": "TagDeclarator",
-                  "value": "seg07"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -1086,55 +841,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "seg08": {
             "type": "TagIdentifier",
             "value": "seg08",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2439,
-                    2490,
-                    0
-                  ]
-                },
-                "from": [
-                  7.2713,
-                  1.35
-                ],
-                "tag": {
-                  "end": 2489,
-                  "start": 2483,
-                  "type": "TagDeclarator",
-                  "value": "seg08"
-                },
-                "to": [
-                  7.2713,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2439,
-                  2490,
-                  0
-                ],
-                "tag": {
-                  "end": 2489,
-                  "start": 2483,
-                  "type": "TagDeclarator",
-                  "value": "seg08"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -1148,55 +854,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "seg09": {
             "type": "TagIdentifier",
             "value": "seg09",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2496,
-                    2540,
-                    0
-                  ]
-                },
-                "from": [
-                  7.2713,
-                  -1.25
-                ],
-                "tag": {
-                  "end": 2539,
-                  "start": 2533,
-                  "type": "TagDeclarator",
-                  "value": "seg09"
-                },
-                "to": [
-                  5.8713,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2496,
-                  2540,
-                  0
-                ],
-                "tag": {
-                  "end": 2539,
-                  "start": 2533,
-                  "type": "TagDeclarator",
-                  "value": "seg09"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -1330,55 +987,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1905,
-            1939,
-            0
-          ]
-        },
-        "from": [
-          4.3,
-          -1.25
-        ],
-        "tag": {
-          "end": 1938,
-          "start": 1932,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          1.7,
-          -1.25
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1905,
-          1939,
-          0
-        ],
-        "tag": {
-          "end": 1938,
-          "start": 1932,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -1393,55 +1001,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg03",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2103,
-            2137,
-            0
-          ]
-        },
-        "from": [
-          0.1573,
-          -1.25
-        ],
-        "tag": {
-          "end": 2136,
-          "start": 2130,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "to": [
-          -1.2427,
-          -1.25
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2103,
-          2137,
-          0
-        ],
-        "tag": {
-          "end": 2136,
-          "start": 2130,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -1456,55 +1015,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg04",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2143,
-            2186,
-            0
-          ]
-        },
-        "from": [
-          -1.2427,
-          -1.25
-        ],
-        "tag": {
-          "end": 2185,
-          "start": 2179,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "to": [
-          -1.2427,
-          1.35
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2143,
-          2186,
-          0
-        ],
-        "tag": {
-          "end": 2185,
-          "start": 2179,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -1519,55 +1029,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg05",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2192,
-            2225,
-            0
-          ]
-        },
-        "from": [
-          -1.2427,
-          1.35
-        ],
-        "tag": {
-          "end": 2224,
-          "start": 2218,
-          "type": "TagDeclarator",
-          "value": "seg05"
-        },
-        "to": [
-          1.8573,
-          1.35
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2192,
-          2225,
-          0
-        ],
-        "tag": {
-          "end": 2224,
-          "start": 2218,
-          "type": "TagDeclarator",
-          "value": "seg05"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -1582,55 +1043,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg07",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2390,
-            2433,
-            0
-          ]
-        },
-        "from": [
-          4.1713,
-          1.35
-        ],
-        "tag": {
-          "end": 2432,
-          "start": 2426,
-          "type": "TagDeclarator",
-          "value": "seg07"
-        },
-        "to": [
-          7.2713,
-          1.35
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2390,
-          2433,
-          0
-        ],
-        "tag": {
-          "end": 2432,
-          "start": 2426,
-          "type": "TagDeclarator",
-          "value": "seg07"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -1645,55 +1057,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg08",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2439,
-            2490,
-            0
-          ]
-        },
-        "from": [
-          7.2713,
-          1.35
-        ],
-        "tag": {
-          "end": 2489,
-          "start": 2483,
-          "type": "TagDeclarator",
-          "value": "seg08"
-        },
-        "to": [
-          7.2713,
-          -1.25
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2439,
-          2490,
-          0
-        ],
-        "tag": {
-          "end": 2489,
-          "start": 2483,
-          "type": "TagDeclarator",
-          "value": "seg08"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -1708,55 +1071,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg09",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2496,
-            2540,
-            0
-          ]
-        },
-        "from": [
-          7.2713,
-          -1.25
-        ],
-        "tag": {
-          "end": 2539,
-          "start": 2533,
-          "type": "TagDeclarator",
-          "value": "seg09"
-        },
-        "to": [
-          5.8713,
-          -1.25
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2496,
-          2540,
-          0
-        ],
-        "tag": {
-          "end": 2539,
-          "start": 2533,
-          "type": "TagDeclarator",
-          "value": "seg09"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [

@@ -119,7 +119,7 @@ impl ExecState {
         ExecOutcome {
             variables: self
                 .stack()
-                .find_all_in_env(main_ref, |_| true)
+                .find_all_in_env(main_ref)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
             operations: self.global.operations,
@@ -141,7 +141,7 @@ impl ExecState {
         ExecOutcome {
             variables: self
                 .stack()
-                .find_all_in_env(main_ref, |_| true)
+                .find_all_in_env(main_ref)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
             operations: Default::default(),

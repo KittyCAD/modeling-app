@@ -244,7 +244,7 @@ impl From<&KclValue> for OpKclValue {
             }
             KclValue::TagIdentifier(tag_identifier) => Self::TagIdentifier {
                 value: tag_identifier.value.clone(),
-                artifact_id: tag_identifier.info.as_ref().map(|info| ArtifactId::new(info.id)),
+                artifact_id: tag_identifier.get_cur_info().map(|info| ArtifactId::new(info.id)),
             },
             KclValue::TagDeclarator(node) => Self::TagDeclarator {
                 name: node.name.clone(),
@@ -295,7 +295,6 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Module { .. } => Self::Module {},
             KclValue::KclNone { .. } => Self::KclNone {},
             KclValue::Type { .. } => Self::Type {},
-            KclValue::Tombstone { .. } => unreachable!("Tombstone OpKclValue"),
         }
     }
 }

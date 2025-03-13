@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing bracket.kcl
 ---
 {
@@ -228,55 +228,6 @@ description: Variables in memory after executing bracket.kcl
           "fillet1": {
             "type": "TagIdentifier",
             "value": "fillet1",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1202,
-                    1261,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 1260,
-                  "start": 1252,
-                  "type": "TagDeclarator",
-                  "value": "fillet1"
-                },
-                "to": [
-                  4.625,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1202,
-                  1261,
-                  0
-                ],
-                "tag": {
-                  "end": 1260,
-                  "start": 1252,
-                  "type": "TagDeclarator",
-                  "value": "fillet1"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -290,55 +241,6 @@ description: Variables in memory after executing bracket.kcl
           "fillet2": {
             "type": "TagIdentifier",
             "value": "fillet2",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1267,
-                    1305,
-                    0
-                  ]
-                },
-                "from": [
-                  4.625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 1304,
-                  "start": 1296,
-                  "type": "TagDeclarator",
-                  "value": "fillet2"
-                },
-                "to": [
-                  4.625,
-                  6.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1267,
-                  1305,
-                  0
-                ],
-                "tag": {
-                  "end": 1304,
-                  "start": 1296,
-                  "type": "TagDeclarator",
-                  "value": "fillet2"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -563,55 +465,6 @@ description: Variables in memory after executing bracket.kcl
         "fillet1": {
           "type": "TagIdentifier",
           "value": "fillet1",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1202,
-                  1261,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": {
-                "end": 1260,
-                "start": 1252,
-                "type": "TagDeclarator",
-                "value": "fillet1"
-              },
-              "to": [
-                4.625,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1202,
-                1261,
-                0
-              ],
-              "tag": {
-                "end": 1260,
-                "start": 1252,
-                "type": "TagDeclarator",
-                "value": "fillet1"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -625,55 +478,6 @@ description: Variables in memory after executing bracket.kcl
         "fillet2": {
           "type": "TagIdentifier",
           "value": "fillet2",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1267,
-                  1305,
-                  0
-                ]
-              },
-              "from": [
-                4.625,
-                0.0
-              ],
-              "tag": {
-                "end": 1304,
-                "start": 1296,
-                "type": "TagDeclarator",
-                "value": "fillet2"
-              },
-              "to": [
-                4.625,
-                6.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1267,
-                1305,
-                0
-              ],
-              "tag": {
-                "end": 1304,
-                "start": 1296,
-                "type": "TagDeclarator",
-                "value": "fillet2"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -926,55 +730,6 @@ description: Variables in memory after executing bracket.kcl
           "fillet3": {
             "type": "TagIdentifier",
             "value": "fillet3",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2908,
-                    2952,
-                    0
-                  ]
-                },
-                "from": [
-                  6.0,
-                  -0.375
-                ],
-                "tag": {
-                  "end": 2951,
-                  "start": 2943,
-                  "type": "TagDeclarator",
-                  "value": "fillet3"
-                },
-                "to": [
-                  6.0,
-                  -2.375
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2908,
-                  2952,
-                  0
-                ],
-                "tag": {
-                  "end": 2951,
-                  "start": 2943,
-                  "type": "TagDeclarator",
-                  "value": "fillet3"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -988,55 +743,6 @@ description: Variables in memory after executing bracket.kcl
           "fillet4": {
             "type": "TagIdentifier",
             "value": "fillet4",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2958,
-                    2997,
-                    0
-                  ]
-                },
-                "from": [
-                  6.0,
-                  -2.375
-                ],
-                "tag": {
-                  "end": 2996,
-                  "start": 2988,
-                  "type": "TagDeclarator",
-                  "value": "fillet4"
-                },
-                "to": [
-                  0.0,
-                  -2.375
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2958,
-                  2997,
-                  0
-                ],
-                "tag": {
-                  "end": 2996,
-                  "start": 2988,
-                  "type": "TagDeclarator",
-                  "value": "fillet4"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -1261,55 +967,6 @@ description: Variables in memory after executing bracket.kcl
         "fillet3": {
           "type": "TagIdentifier",
           "value": "fillet3",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2908,
-                  2952,
-                  0
-                ]
-              },
-              "from": [
-                6.0,
-                -0.375
-              ],
-              "tag": {
-                "end": 2951,
-                "start": 2943,
-                "type": "TagDeclarator",
-                "value": "fillet3"
-              },
-              "to": [
-                6.0,
-                -2.375
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                2908,
-                2952,
-                0
-              ],
-              "tag": {
-                "end": 2951,
-                "start": 2943,
-                "type": "TagDeclarator",
-                "value": "fillet3"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -1323,55 +980,6 @@ description: Variables in memory after executing bracket.kcl
         "fillet4": {
           "type": "TagIdentifier",
           "value": "fillet4",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2958,
-                  2997,
-                  0
-                ]
-              },
-              "from": [
-                6.0,
-                -2.375
-              ],
-              "tag": {
-                "end": 2996,
-                "start": 2988,
-                "type": "TagDeclarator",
-                "value": "fillet4"
-              },
-              "to": [
-                0.0,
-                -2.375
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                2958,
-                2997,
-                0
-              ],
-              "tag": {
-                "end": 2996,
-                "start": 2988,
-                "type": "TagDeclarator",
-                "value": "fillet4"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -1795,55 +1403,6 @@ description: Variables in memory after executing bracket.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "fillet1",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1202,
-            1261,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 1260,
-          "start": 1252,
-          "type": "TagDeclarator",
-          "value": "fillet1"
-        },
-        "to": [
-          4.625,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1202,
-          1261,
-          0
-        ],
-        "tag": {
-          "end": 1260,
-          "start": 1252,
-          "type": "TagDeclarator",
-          "value": "fillet1"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -1858,55 +1417,6 @@ description: Variables in memory after executing bracket.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "fillet2",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1267,
-            1305,
-            0
-          ]
-        },
-        "from": [
-          4.625,
-          0.0
-        ],
-        "tag": {
-          "end": 1304,
-          "start": 1296,
-          "type": "TagDeclarator",
-          "value": "fillet2"
-        },
-        "to": [
-          4.625,
-          6.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1267,
-          1305,
-          0
-        ],
-        "tag": {
-          "end": 1304,
-          "start": 1296,
-          "type": "TagDeclarator",
-          "value": "fillet2"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -1921,55 +1431,6 @@ description: Variables in memory after executing bracket.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "fillet3",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2908,
-            2952,
-            0
-          ]
-        },
-        "from": [
-          6.0,
-          -0.375
-        ],
-        "tag": {
-          "end": 2951,
-          "start": 2943,
-          "type": "TagDeclarator",
-          "value": "fillet3"
-        },
-        "to": [
-          6.0,
-          -2.375
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2908,
-          2952,
-          0
-        ],
-        "tag": {
-          "end": 2951,
-          "start": 2943,
-          "type": "TagDeclarator",
-          "value": "fillet3"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -1984,55 +1445,6 @@ description: Variables in memory after executing bracket.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "fillet4",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2958,
-            2997,
-            0
-          ]
-        },
-        "from": [
-          6.0,
-          -2.375
-        ],
-        "tag": {
-          "end": 2996,
-          "start": 2988,
-          "type": "TagDeclarator",
-          "value": "fillet4"
-        },
-        "to": [
-          0.0,
-          -2.375
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2958,
-          2997,
-          0
-        ],
-        "tag": {
-          "end": 2996,
-          "start": 2988,
-          "type": "TagDeclarator",
-          "value": "fillet4"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [

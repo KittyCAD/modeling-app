@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing angled_line.kcl
 ---
 {
@@ -286,55 +286,6 @@ description: Variables in memory after executing angled_line.kcl
           "seg01": {
             "type": "TagIdentifier",
             "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    103,
-                    142,
-                    0
-                  ]
-                },
-                "from": [
-                  19.93,
-                  15.04
-                ],
-                "tag": {
-                  "end": 141,
-                  "start": 135,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  23.08,
-                  5.19
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  103,
-                  142,
-                  0
-                ],
-                "tag": {
-                  "end": 141,
-                  "start": 135,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -382,55 +333,6 @@ description: Variables in memory after executing angled_line.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            103,
-            142,
-            0
-          ]
-        },
-        "from": [
-          19.93,
-          15.04
-        ],
-        "tag": {
-          "end": 141,
-          "start": 135,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          23.08,
-          5.19
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          103,
-          142,
-          0
-        ],
-        "tag": {
-          "end": 141,
-          "start": 135,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing kitt.kcl
 ---
 {
@@ -614,55 +614,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -676,55 +627,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -1272,55 +1174,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -1334,55 +1187,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -1930,55 +1734,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -1992,55 +1747,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -2588,55 +2294,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -2650,55 +2307,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -3246,55 +2854,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -3308,55 +2867,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -3904,55 +3414,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -3966,55 +3427,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -4562,55 +3974,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -4624,55 +3987,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -5408,55 +4722,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -5470,55 +4735,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -6066,55 +5282,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -6128,55 +5295,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -6846,55 +5964,6 @@ description: Variables in memory after executing kitt.kcl
           "seg01": {
             "type": "TagIdentifier",
             "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    725,
-                    768,
-                    0
-                  ]
-                },
-                "from": [
-                  -13.0,
-                  31.0
-                ],
-                "tag": {
-                  "end": 767,
-                  "start": 761,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  13.0,
-                  31.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  725,
-                  768,
-                  0
-                ],
-                "tag": {
-                  "end": 767,
-                  "start": 761,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -6908,55 +5977,6 @@ description: Variables in memory after executing kitt.kcl
           "seg02": {
             "type": "TagIdentifier",
             "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    774,
-                    819,
-                    0
-                  ]
-                },
-                "from": [
-                  13.0,
-                  31.0
-                ],
-                "tag": {
-                  "end": 818,
-                  "start": 812,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  13.0,
-                  6.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  774,
-                  819,
-                  0
-                ],
-                "tag": {
-                  "end": 818,
-                  "start": 812,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -7716,55 +6736,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg01": {
                         "type": "TagIdentifier",
                         "value": "seg01",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                725,
-                                768,
-                                0
-                              ]
-                            },
-                            "from": [
-                              -13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "to": [
-                              13.0,
-                              31.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              725,
-                              768,
-                              0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -7778,55 +6749,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg02": {
                         "type": "TagIdentifier",
                         "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                774,
-                                819,
-                                0
-                              ]
-                            },
-                            "from": [
-                              13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              13.0,
-                              6.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              774,
-                              819,
-                              0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -8630,55 +7552,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg01": {
                         "type": "TagIdentifier",
                         "value": "seg01",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                725,
-                                768,
-                                0
-                              ]
-                            },
-                            "from": [
-                              -13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "to": [
-                              13.0,
-                              31.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              725,
-                              768,
-                              0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -8692,55 +7565,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg02": {
                         "type": "TagIdentifier",
                         "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                774,
-                                819,
-                                0
-                              ]
-                            },
-                            "from": [
-                              13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              13.0,
-                              6.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              774,
-                              819,
-                              0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -9544,55 +8368,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg01": {
                         "type": "TagIdentifier",
                         "value": "seg01",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                725,
-                                768,
-                                0
-                              ]
-                            },
-                            "from": [
-                              -13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "to": [
-                              13.0,
-                              31.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              725,
-                              768,
-                              0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -9606,55 +8381,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg02": {
                         "type": "TagIdentifier",
                         "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                774,
-                                819,
-                                0
-                              ]
-                            },
-                            "from": [
-                              13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              13.0,
-                              6.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              774,
-                              819,
-                              0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -11062,55 +9788,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg01": {
                         "type": "TagIdentifier",
                         "value": "seg01",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                725,
-                                768,
-                                0
-                              ]
-                            },
-                            "from": [
-                              -13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "to": [
-                              13.0,
-                              31.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              725,
-                              768,
-                              0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -11124,55 +9801,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg02": {
                         "type": "TagIdentifier",
                         "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                774,
-                                819,
-                                0
-                              ]
-                            },
-                            "from": [
-                              13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              13.0,
-                              6.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              774,
-                              819,
-                              0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -12177,55 +10805,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg01": {
                         "type": "TagIdentifier",
                         "value": "seg01",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                725,
-                                768,
-                                0
-                              ]
-                            },
-                            "from": [
-                              -13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "to": [
-                              13.0,
-                              31.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              725,
-                              768,
-                              0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -12239,55 +10818,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg02": {
                         "type": "TagIdentifier",
                         "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                774,
-                                819,
-                                0
-                              ]
-                            },
-                            "from": [
-                              13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              13.0,
-                              6.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              774,
-                              819,
-                              0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -13091,55 +11621,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg01": {
                         "type": "TagIdentifier",
                         "value": "seg01",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                725,
-                                768,
-                                0
-                              ]
-                            },
-                            "from": [
-                              -13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "to": [
-                              13.0,
-                              31.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              725,
-                              768,
-                              0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -13153,55 +11634,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg02": {
                         "type": "TagIdentifier",
                         "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                774,
-                                819,
-                                0
-                              ]
-                            },
-                            "from": [
-                              13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              13.0,
-                              6.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              774,
-                              819,
-                              0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -14005,55 +12437,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg01": {
                         "type": "TagIdentifier",
                         "value": "seg01",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                725,
-                                768,
-                                0
-                              ]
-                            },
-                            "from": [
-                              -13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "to": [
-                              13.0,
-                              31.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              725,
-                              768,
-                              0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -14067,55 +12450,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg02": {
                         "type": "TagIdentifier",
                         "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                774,
-                                819,
-                                0
-                              ]
-                            },
-                            "from": [
-                              13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              13.0,
-                              6.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              774,
-                              819,
-                              0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -14875,55 +13209,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -14937,55 +13222,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -15672,55 +13908,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -15734,55 +13921,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -16982,55 +15120,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg01": {
                               "type": "TagIdentifier",
                               "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      725,
-                                      768,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    -13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    725,
-                                    768,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -17044,55 +15133,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg02": {
                               "type": "TagIdentifier",
                               "value": "seg02",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      774,
-                                      819,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    6.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    774,
-                                    819,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -18424,55 +16464,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg01": {
                               "type": "TagIdentifier",
                               "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      725,
-                                      768,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    -13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    725,
-                                    768,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -18486,55 +16477,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg02": {
                               "type": "TagIdentifier",
                               "value": "seg02",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      774,
-                                      819,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    6.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    774,
-                                    819,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -19866,55 +17808,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg01": {
                               "type": "TagIdentifier",
                               "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      725,
-                                      768,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    -13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    725,
-                                    768,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -19928,55 +17821,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg02": {
                               "type": "TagIdentifier",
                               "value": "seg02",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      774,
-                                      819,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    6.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    774,
-                                    819,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -21598,55 +19442,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg01": {
                               "type": "TagIdentifier",
                               "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      725,
-                                      768,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    -13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    725,
-                                    768,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -21660,55 +19455,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg02": {
                               "type": "TagIdentifier",
                               "value": "seg02",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      774,
-                                      819,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    6.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    774,
-                                    819,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -23040,55 +20786,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg01": {
                               "type": "TagIdentifier",
                               "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      725,
-                                      768,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    -13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    725,
-                                    768,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -23102,55 +20799,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg02": {
                               "type": "TagIdentifier",
                               "value": "seg02",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      774,
-                                      819,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    6.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    774,
-                                    819,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -24568,55 +22216,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg01": {
                               "type": "TagIdentifier",
                               "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      725,
-                                      768,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    -13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    725,
-                                    768,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -24630,55 +22229,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg02": {
                               "type": "TagIdentifier",
                               "value": "seg02",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      774,
-                                      819,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    6.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    774,
-                                    819,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -26010,55 +23560,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg01": {
                               "type": "TagIdentifier",
                               "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      725,
-                                      768,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    -13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    725,
-                                    768,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -26072,55 +23573,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg02": {
                               "type": "TagIdentifier",
                               "value": "seg02",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      774,
-                                      819,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    6.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    774,
-                                    819,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -27724,55 +25176,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg01": {
                               "type": "TagIdentifier",
                               "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      725,
-                                      768,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    -13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    725,
-                                    768,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -27786,55 +25189,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg02": {
                               "type": "TagIdentifier",
                               "value": "seg02",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      774,
-                                      819,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    6.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    774,
-                                    819,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -28578,55 +25932,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -28640,55 +25945,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -29888,55 +27144,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg01": {
                               "type": "TagIdentifier",
                               "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      725,
-                                      768,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    -13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    725,
-                                    768,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 767,
-                                    "start": 761,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -29950,55 +27157,6 @@ description: Variables in memory after executing kitt.kcl
                             "seg02": {
                               "type": "TagIdentifier",
                               "value": "seg02",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      774,
-                                      819,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    13.0,
-                                    31.0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "to": [
-                                    13.0,
-                                    6.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    774,
-                                    819,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 818,
-                                    "start": 812,
-                                    "type": "TagDeclarator",
-                                    "value": "seg02"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -31190,55 +28348,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg01": {
                         "type": "TagIdentifier",
                         "value": "seg01",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                725,
-                                768,
-                                0
-                              ]
-                            },
-                            "from": [
-                              -13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "to": [
-                              13.0,
-                              31.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              725,
-                              768,
-                              0
-                            ],
-                            "tag": {
-                              "end": 767,
-                              "start": 761,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -31252,55 +28361,6 @@ description: Variables in memory after executing kitt.kcl
                       "seg02": {
                         "type": "TagIdentifier",
                         "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                774,
-                                819,
-                                0
-                              ]
-                            },
-                            "from": [
-                              13.0,
-                              31.0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              13.0,
-                              6.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              774,
-                              819,
-                              0
-                            ],
-                            "tag": {
-                              "end": 818,
-                              "start": 812,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -32016,55 +29076,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -32078,55 +29089,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -32674,55 +29636,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -32736,55 +29649,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -33332,55 +30196,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg01": {
                   "type": "TagIdentifier",
                   "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          725,
-                          768,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        13.0,
-                        31.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        725,
-                        768,
-                        0
-                      ],
-                      "tag": {
-                        "end": 767,
-                        "start": 761,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -33394,55 +30209,6 @@ description: Variables in memory after executing kitt.kcl
                 "seg02": {
                   "type": "TagIdentifier",
                   "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          774,
-                          819,
-                          0
-                        ]
-                      },
-                      "from": [
-                        13.0,
-                        31.0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        13.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        774,
-                        819,
-                        0
-                      ],
-                      "tag": {
-                        "end": 818,
-                        "start": 812,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -33685,55 +30451,6 @@ description: Variables in memory after executing kitt.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            725,
-            768,
-            0
-          ]
-        },
-        "from": [
-          -13.0,
-          31.0
-        ],
-        "tag": {
-          "end": 767,
-          "start": 761,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          13.0,
-          31.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          725,
-          768,
-          0
-        ],
-        "tag": {
-          "end": 767,
-          "start": 761,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -33748,55 +30465,6 @@ description: Variables in memory after executing kitt.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            774,
-            819,
-            0
-          ]
-        },
-        "from": [
-          13.0,
-          31.0
-        ],
-        "tag": {
-          "end": 818,
-          "start": 812,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          13.0,
-          6.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          774,
-          819,
-          0
-        ],
-        "tag": {
-          "end": 818,
-          "start": 812,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [

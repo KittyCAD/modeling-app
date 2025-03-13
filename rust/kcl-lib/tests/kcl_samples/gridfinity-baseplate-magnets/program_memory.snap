@@ -14052,55 +14052,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4518,
-            4559,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 4558,
-          "start": 4550,
-          "type": "TagDeclarator",
-          "value": "line001"
-        },
-        "to": [
-          42.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4518,
-          4559,
-          0
-        ],
-        "tag": {
-          "end": 4558,
-          "start": 4550,
-          "type": "TagDeclarator",
-          "value": "line001"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -14115,55 +14066,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4567,
-            4608,
-            0
-          ]
-        },
-        "from": [
-          42.0,
-          0.0
-        ],
-        "tag": {
-          "end": 4607,
-          "start": 4599,
-          "type": "TagDeclarator",
-          "value": "line002"
-        },
-        "to": [
-          42.0,
-          42.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4567,
-          4608,
-          0
-        ],
-        "tag": {
-          "end": 4607,
-          "start": 4599,
-          "type": "TagDeclarator",
-          "value": "line002"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -14178,55 +14080,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line003",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4616,
-            4669,
-            0
-          ]
-        },
-        "from": [
-          42.0,
-          42.0
-        ],
-        "tag": {
-          "end": 4668,
-          "start": 4660,
-          "type": "TagDeclarator",
-          "value": "line003"
-        },
-        "to": [
-          0.0,
-          42.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4616,
-          4669,
-          0
-        ],
-        "tag": {
-          "end": 4668,
-          "start": 4660,
-          "type": "TagDeclarator",
-          "value": "line003"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -14241,55 +14094,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line004",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4677,
-            4698,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          42.0
-        ],
-        "tag": {
-          "end": 4697,
-          "start": 4689,
-          "type": "TagDeclarator",
-          "value": "line004"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4677,
-          4698,
-          0
-        ],
-        "tag": {
-          "end": 4697,
-          "start": 4689,
-          "type": "TagDeclarator",
-          "value": "line004"
-        },
-        "type": "extrudePlane"
-      }
-    },
     "__meta": [
       {
         "sourceRange": [
@@ -14635,55 +14439,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line001": {
             "type": "TagIdentifier",
             "value": "line001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4518,
-                    4559,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4558,
-                  "start": 4550,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "to": [
-                  42.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4518,
-                  4559,
-                  0
-                ],
-                "tag": {
-                  "end": 4558,
-                  "start": 4550,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -14697,55 +14452,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line002": {
             "type": "TagIdentifier",
             "value": "line002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4567,
-                    4608,
-                    0
-                  ]
-                },
-                "from": [
-                  42.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4607,
-                  "start": 4599,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "to": [
-                  42.0,
-                  42.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4567,
-                  4608,
-                  0
-                ],
-                "tag": {
-                  "end": 4607,
-                  "start": 4599,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -14759,55 +14465,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line003": {
             "type": "TagIdentifier",
             "value": "line003",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4616,
-                    4669,
-                    0
-                  ]
-                },
-                "from": [
-                  42.0,
-                  42.0
-                ],
-                "tag": {
-                  "end": 4668,
-                  "start": 4660,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "to": [
-                  0.0,
-                  42.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4616,
-                  4669,
-                  0
-                ],
-                "tag": {
-                  "end": 4668,
-                  "start": 4660,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -14821,55 +14478,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line004": {
             "type": "TagIdentifier",
             "value": "line004",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4677,
-                    4698,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  42.0
-                ],
-                "tag": {
-                  "end": 4697,
-                  "start": 4689,
-                  "type": "TagDeclarator",
-                  "value": "line004"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4677,
-                  4698,
-                  0
-                ],
-                "tag": {
-                  "end": 4697,
-                  "start": 4689,
-                  "type": "TagDeclarator",
-                  "value": "line004"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -15158,55 +14766,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line001": {
             "type": "TagIdentifier",
             "value": "line001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4518,
-                    4559,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4558,
-                  "start": 4550,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "to": [
-                  42.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4518,
-                  4559,
-                  0
-                ],
-                "tag": {
-                  "end": 4558,
-                  "start": 4550,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -15220,55 +14779,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line002": {
             "type": "TagIdentifier",
             "value": "line002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4567,
-                    4608,
-                    0
-                  ]
-                },
-                "from": [
-                  42.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4607,
-                  "start": 4599,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "to": [
-                  42.0,
-                  42.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4567,
-                  4608,
-                  0
-                ],
-                "tag": {
-                  "end": 4607,
-                  "start": 4599,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -15282,55 +14792,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line003": {
             "type": "TagIdentifier",
             "value": "line003",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4616,
-                    4669,
-                    0
-                  ]
-                },
-                "from": [
-                  42.0,
-                  42.0
-                ],
-                "tag": {
-                  "end": 4668,
-                  "start": 4660,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "to": [
-                  0.0,
-                  42.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4616,
-                  4669,
-                  0
-                ],
-                "tag": {
-                  "end": 4668,
-                  "start": 4660,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -15344,55 +14805,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line004": {
             "type": "TagIdentifier",
             "value": "line004",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4677,
-                    4698,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  42.0
-                ],
-                "tag": {
-                  "end": 4697,
-                  "start": 4689,
-                  "type": "TagDeclarator",
-                  "value": "line004"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4677,
-                  4698,
-                  0
-                ],
-                "tag": {
-                  "end": 4697,
-                  "start": 4689,
-                  "type": "TagDeclarator",
-                  "value": "line004"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -15711,55 +15123,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line001": {
             "type": "TagIdentifier",
             "value": "line001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4518,
-                    4559,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4558,
-                  "start": 4550,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "to": [
-                  42.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4518,
-                  4559,
-                  0
-                ],
-                "tag": {
-                  "end": 4558,
-                  "start": 4550,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -15773,55 +15136,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line002": {
             "type": "TagIdentifier",
             "value": "line002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4567,
-                    4608,
-                    0
-                  ]
-                },
-                "from": [
-                  42.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4607,
-                  "start": 4599,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "to": [
-                  42.0,
-                  42.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4567,
-                  4608,
-                  0
-                ],
-                "tag": {
-                  "end": 4607,
-                  "start": 4599,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -15835,55 +15149,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line003": {
             "type": "TagIdentifier",
             "value": "line003",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4616,
-                    4669,
-                    0
-                  ]
-                },
-                "from": [
-                  42.0,
-                  42.0
-                ],
-                "tag": {
-                  "end": 4668,
-                  "start": 4660,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "to": [
-                  0.0,
-                  42.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4616,
-                  4669,
-                  0
-                ],
-                "tag": {
-                  "end": 4668,
-                  "start": 4660,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -15897,55 +15162,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line004": {
             "type": "TagIdentifier",
             "value": "line004",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4677,
-                    4698,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  42.0
-                ],
-                "tag": {
-                  "end": 4697,
-                  "start": 4689,
-                  "type": "TagDeclarator",
-                  "value": "line004"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4677,
-                  4698,
-                  0
-                ],
-                "tag": {
-                  "end": 4697,
-                  "start": 4689,
-                  "type": "TagDeclarator",
-                  "value": "line004"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -16234,55 +15450,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line001": {
             "type": "TagIdentifier",
             "value": "line001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4518,
-                    4559,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4558,
-                  "start": 4550,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "to": [
-                  42.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4518,
-                  4559,
-                  0
-                ],
-                "tag": {
-                  "end": 4558,
-                  "start": 4550,
-                  "type": "TagDeclarator",
-                  "value": "line001"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -16296,55 +15463,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line002": {
             "type": "TagIdentifier",
             "value": "line002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4567,
-                    4608,
-                    0
-                  ]
-                },
-                "from": [
-                  42.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 4607,
-                  "start": 4599,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "to": [
-                  42.0,
-                  42.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4567,
-                  4608,
-                  0
-                ],
-                "tag": {
-                  "end": 4607,
-                  "start": 4599,
-                  "type": "TagDeclarator",
-                  "value": "line002"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -16358,55 +15476,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line003": {
             "type": "TagIdentifier",
             "value": "line003",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4616,
-                    4669,
-                    0
-                  ]
-                },
-                "from": [
-                  42.0,
-                  42.0
-                ],
-                "tag": {
-                  "end": 4668,
-                  "start": 4660,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "to": [
-                  0.0,
-                  42.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4616,
-                  4669,
-                  0
-                ],
-                "tag": {
-                  "end": 4668,
-                  "start": 4660,
-                  "type": "TagDeclarator",
-                  "value": "line003"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -16420,55 +15489,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "line004": {
             "type": "TagIdentifier",
             "value": "line004",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4677,
-                    4698,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  42.0
-                ],
-                "tag": {
-                  "end": 4697,
-                  "start": 4689,
-                  "type": "TagDeclarator",
-                  "value": "line004"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4677,
-                  4698,
-                  0
-                ],
-                "tag": {
-                  "end": 4697,
-                  "start": 4689,
-                  "type": "TagDeclarator",
-                  "value": "line004"
-                },
-                "type": "extrudePlane"
-              }
-            },
             "__meta": [
               {
                 "sourceRange": [
@@ -16717,55 +15737,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "line001": {
           "type": "TagIdentifier",
           "value": "line001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4518,
-                  4559,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": {
-                "end": 4558,
-                "start": 4550,
-                "type": "TagDeclarator",
-                "value": "line001"
-              },
-              "to": [
-                42.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4518,
-                4559,
-                0
-              ],
-              "tag": {
-                "end": 4558,
-                "start": 4550,
-                "type": "TagDeclarator",
-                "value": "line001"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -16779,55 +15750,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "line002": {
           "type": "TagIdentifier",
           "value": "line002",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4567,
-                  4608,
-                  0
-                ]
-              },
-              "from": [
-                42.0,
-                0.0
-              ],
-              "tag": {
-                "end": 4607,
-                "start": 4599,
-                "type": "TagDeclarator",
-                "value": "line002"
-              },
-              "to": [
-                42.0,
-                42.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4567,
-                4608,
-                0
-              ],
-              "tag": {
-                "end": 4607,
-                "start": 4599,
-                "type": "TagDeclarator",
-                "value": "line002"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -16841,55 +15763,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "line003": {
           "type": "TagIdentifier",
           "value": "line003",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4616,
-                  4669,
-                  0
-                ]
-              },
-              "from": [
-                42.0,
-                42.0
-              ],
-              "tag": {
-                "end": 4668,
-                "start": 4660,
-                "type": "TagDeclarator",
-                "value": "line003"
-              },
-              "to": [
-                0.0,
-                42.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4616,
-                4669,
-                0
-              ],
-              "tag": {
-                "end": 4668,
-                "start": 4660,
-                "type": "TagDeclarator",
-                "value": "line003"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -16903,55 +15776,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "line004": {
           "type": "TagIdentifier",
           "value": "line004",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4677,
-                  4698,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                42.0
-              ],
-              "tag": {
-                "end": 4697,
-                "start": 4689,
-                "type": "TagDeclarator",
-                "value": "line004"
-              },
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4677,
-                4698,
-                0
-              ],
-              "tag": {
-                "end": 4697,
-                "start": 4689,
-                "type": "TagDeclarator",
-                "value": "line004"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -17154,55 +15978,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "line001": {
           "type": "TagIdentifier",
           "value": "line001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4518,
-                  4559,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": {
-                "end": 4558,
-                "start": 4550,
-                "type": "TagDeclarator",
-                "value": "line001"
-              },
-              "to": [
-                42.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4518,
-                4559,
-                0
-              ],
-              "tag": {
-                "end": 4558,
-                "start": 4550,
-                "type": "TagDeclarator",
-                "value": "line001"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -17216,55 +15991,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "line002": {
           "type": "TagIdentifier",
           "value": "line002",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4567,
-                  4608,
-                  0
-                ]
-              },
-              "from": [
-                42.0,
-                0.0
-              ],
-              "tag": {
-                "end": 4607,
-                "start": 4599,
-                "type": "TagDeclarator",
-                "value": "line002"
-              },
-              "to": [
-                42.0,
-                42.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4567,
-                4608,
-                0
-              ],
-              "tag": {
-                "end": 4607,
-                "start": 4599,
-                "type": "TagDeclarator",
-                "value": "line002"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -17278,55 +16004,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "line003": {
           "type": "TagIdentifier",
           "value": "line003",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4616,
-                  4669,
-                  0
-                ]
-              },
-              "from": [
-                42.0,
-                42.0
-              ],
-              "tag": {
-                "end": 4668,
-                "start": 4660,
-                "type": "TagDeclarator",
-                "value": "line003"
-              },
-              "to": [
-                0.0,
-                42.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4616,
-                4669,
-                0
-              ],
-              "tag": {
-                "end": 4668,
-                "start": 4660,
-                "type": "TagDeclarator",
-                "value": "line003"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
@@ -17340,55 +16017,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "line004": {
           "type": "TagIdentifier",
           "value": "line004",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4677,
-                  4698,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                42.0
-              ],
-              "tag": {
-                "end": 4697,
-                "start": 4689,
-                "type": "TagDeclarator",
-                "value": "line004"
-              },
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4677,
-                4698,
-                0
-              ],
-              "tag": {
-                "end": 4697,
-                "start": 4689,
-                "type": "TagDeclarator",
-                "value": "line004"
-              },
-              "type": "extrudePlane"
-            }
-          },
           "__meta": [
             {
               "sourceRange": [
