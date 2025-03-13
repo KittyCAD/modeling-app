@@ -405,6 +405,8 @@ export const getAppSettingsFilePath = async () => {
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
+  if (isTestEnv && !testSettingsPath) return SETTINGS_FILE_NAME
+
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
     ? testSettingsPath
