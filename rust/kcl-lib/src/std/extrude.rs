@@ -105,24 +105,8 @@ async fn inner_extrude(
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        args.batch_modeling_cmds(&[
-            // Before we extrude, we need to enable the sketch mode.
-            // We do this here in case extrude is called out of order.
-            ModelingCmdReq {
-                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
-                    animated: false,
-                    ortho: false,
-                    entity_id: sketch.on.id(),
-                    adjust_camera: false,
-                    planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
-                        // We pass in the normal for the plane here.
-                        Some(plane.z_axis.into())
-                    } else {
-                        None
-                    },
-                }),
-                cmd_id: exec_state.next_uuid().into(),
-            },
+        args.batch_modeling_cmds(&sketch.build_sketch_mode_cmds(
+            exec_state,
             ModelingCmdReq {
                 cmd_id: id.into(),
                 cmd: ModelingCmd::from(mcmd::Extrude {
@@ -131,12 +115,7 @@ async fn inner_extrude(
                     faces: Default::default(),
                 }),
             },
-            // Disable the sketch mode.
-            ModelingCmdReq {
-                cmd_id: exec_state.next_uuid().into(),
-                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-            },
-        ])
+        ))
         .await?;
 
         solids.push(do_post_extrude(sketch.clone(), id.into(), length, exec_state, args.clone()).await?);

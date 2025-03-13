@@ -339,7 +339,7 @@ impl ExecutorContext {
             .modeling()
             .commands_ws(
                 None,
-                None,
+                Some("pr-3192".to_string()),
                 if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
