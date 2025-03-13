@@ -145,9 +145,15 @@ export type SaveSettingsPayload = RecursiveSettingsPayloads<typeof settings>
 
 /**
  * Annotation names for default units are defined on rust side in
- * src/wasm-lib/kcl/src/execution/annotations.rs
+ * rust/kcl-lib/src/execution/annotations.rs
  */
 export interface KclSettingsAnnotation {
   defaultLengthUnit?: UnitLength_type
   defaultAngleUnit?: UnitAngle_type
 }
+
+/**
+ * When no annotation is in the KCL file to specify the defaults, we use these
+ * defaults.
+ */
+export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength_type = 'mm'

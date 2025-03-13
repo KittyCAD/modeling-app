@@ -1,6 +1,7 @@
 import { DEFAULT_PROJECT_NAME } from 'lib/constants'
 import {
   BaseUnit,
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   SettingProps,
   SettingsLevel,
   baseUnitsUnion,
@@ -300,8 +301,8 @@ export function createSettings() {
        * The default unit to use in modeling dimensions
        */
       defaultUnit: new Setting<BaseUnit>({
-        defaultValue: 'mm',
-        description: 'The default unit to use in modeling dimensions',
+        defaultValue: DEFAULT_DEFAULT_LENGTH_UNIT,
+        description: 'The default length unit to use in modeling dimensions',
         validate: (v) => baseUnitsUnion.includes(v as BaseUnit),
         commandConfig: {
           inputType: 'options',

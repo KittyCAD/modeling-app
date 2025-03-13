@@ -1,31 +1,33 @@
 import { Popover } from '@headlessui/react'
-import { settingsActor, useSettings } from 'machines/appMachine'
-import { changeKclSettings, unitLengthToUnitLen } from 'lang/wasm'
-import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
+import {
+  changeKclSettings,
+  DEFAULT_DEFAULT_ANGLE_UNIT,
+  unitAngleToUnitAng,
+  unitLengthToUnitLen,
+} from 'lang/wasm'
+import {
+  baseUnitLabels,
+  baseUnitsUnion,
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+} from 'lib/settings/settingsTypes'
 import { codeManager, kclManager } from 'lib/singletons'
 import { err, reportRejection } from 'lib/trap'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export function UnitsMenu() {
-  const settings = useSettings()
   const [hasPerFileLengthUnit, setHasPerFileLengthUnit] = useState(
     Boolean(kclManager.fileSettings.defaultLengthUnit)
   )
   const [lengthSetting, setLengthSetting] = useState(
-    kclManager.fileSettings.defaultLengthUnit ||
-      settings.modeling.defaultUnit.current
+    kclManager.fileSettings.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
   )
   useEffect(() => {
     setHasPerFileLengthUnit(Boolean(kclManager.fileSettings.defaultLengthUnit))
     setLengthSetting(
-      kclManager.fileSettings.defaultLengthUnit ||
-        settings.modeling.defaultUnit.current
+      kclManager.fileSettings.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
     )
-  }, [
-    kclManager.fileSettings.defaultLengthUnit,
-    settings.modeling.defaultUnit.current,
-  ])
+  }, [kclManager.fileSettings.defaultLengthUnit, DEFAULT_DEFAULT_LENGTH_UNIT])
 
   return (
     <Popover className="relative pointer-events-auto">
@@ -54,35 +56,27 @@ export function UnitsMenu() {
                   <button
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
-                      if (hasPerFileLengthUnit) {
-                        const newCode = changeKclSettings(codeManager.code, {
-                          defaultLengthUnits: unitLengthToUnitLen(unit),
-                          defaultAngleUnits: { type: 'Degrees' },
-                          stdPath: null,
-                        })
-                        if (err(newCode)) {
-                          toast.error(
-                            `Failed to set per-file units: ${newCode.message}`
-                          )
-                        } else {
-                          codeManager.updateCodeStateEditor(newCode)
-                          Promise.all([
-                            codeManager.writeToFile(),
-                            kclManager.executeCode(),
-                          ])
-                            .then(() => {
-                              toast.success(`Updated per-file units to ${unit}`)
-                            })
-                            .catch(reportRejection)
-                        }
+                      const newCode = changeKclSettings(codeManager.code, {
+                        defaultLengthUnits: unitLengthToUnitLen(unit),
+                        defaultAngleUnits: unitAngleToUnitAng(
+                          DEFAULT_DEFAULT_ANGLE_UNIT
+                        ),
+                        stdPath: null,
+                      })
+                      if (err(newCode)) {
+                        toast.error(
+                          `Failed to set per-file units: ${newCode.message}`
+                        )
                       } else {
-                        settingsActor.send({
-                          type: 'set.modeling.defaultUnit',
-                          data: {
-                            level: 'project',
-                            value: unit,
-                          },
-                        })
+                        codeManager.updateCodeStateEditor(newCode)
+                        Promise.all([
+                          codeManager.writeToFile(),
+                          kclManager.executeCode(),
+                        ])
+                          .then(() => {
+                            toast.success(`Updated per-file units to ${unit}`)
+                          })
+                          .catch(reportRejection)
                       }
                       close()
                     }}
