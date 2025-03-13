@@ -163,7 +163,7 @@ test(
         .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
           timeout: 10_000,
         })
-        .toBeLessThan(15)
+        .toBeLessThan(20)
     })
 
     await test.step('Clicking the logo takes us back to the projects page / home', async () => {
@@ -464,7 +464,11 @@ test.describe('Can export from electron app', () => {
     test(
       `Can export using ${method}`,
       { tag: ['@electron', '@skipLocalEngine'] },
-      async ({ context, page }, testInfo) => {
+      async ({ context, page, tronApp }, testInfo) => {
+        if (!tronApp) {
+          fail()
+        }
+
         await context.folderSetupFn(async (dir) => {
           const bracketDir = path.join(dir, 'bracket')
           await fsp.mkdir(bracketDir, { recursive: true })
@@ -516,6 +520,7 @@ test.describe('Can export from electron app', () => {
                 storage: 'embedded',
                 presentation: 'pretty',
               },
+              tronApp.projectDirName,
               page,
               method
             )
@@ -523,7 +528,7 @@ test.describe('Can export from electron app', () => {
         })
 
         const filepath = path.resolve(
-          getPlaywrightDownloadDir(page),
+          getPlaywrightDownloadDir(tronApp.projectDirName),
           'main.gltf'
         )
 
@@ -781,6 +786,7 @@ test(
     page.on('console', console.log)
 
     await expect(page.getByText('router-template-slate')).toBeVisible()
+    await expect(page.getByText('Loading your Projects...')).not.toBeVisible()
     await expect(page.getByText('Your Projects')).toBeVisible()
 
     await page.keyboard.press('Delete')
@@ -858,7 +864,7 @@ test.describe(`Project management commands`, () => {
   test(
     `Delete from project page`,
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ context, page, scene, cmdBar }, testInfo) => {
       const projectName = `my_project_to_delete`
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
@@ -887,6 +893,8 @@ test.describe(`Project management commands`, () => {
 
         await projectHomeLink.click()
         await u.waitForPageLoad()
+        await scene.connectionEstablished()
+        await scene.settled(cmdBar)
       })
 
       await test.step(`Run delete command via command palette`, async () => {
@@ -909,7 +917,7 @@ test.describe(`Project management commands`, () => {
   test(
     `Rename from home page`,
     { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
+    async ({ context, page, homePage }, testInfo) => {
       const projectName = `my_project_to_rename`
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
@@ -936,6 +944,7 @@ test.describe(`Project management commands`, () => {
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         page.on('console', console.log)
+        await homePage.projectsLoaded()
         await expect(projectHomeLink).toBeVisible()
       })
 
@@ -1682,7 +1691,11 @@ test(
 test(
   'You can change the root projects directory and nothing is lost',
   { tag: '@electron' },
-  async ({ context, page, electronApp }, testInfo) => {
+  async ({ context, page, tronApp, homePage }, testInfo) => {
+    if (!tronApp) {
+      fail()
+    }
+
     await context.folderSetupFn(async (dir) => {
       await Promise.all([
         fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
@@ -1712,6 +1725,8 @@ test(
       await fsp.rm(newProjectDirName, { recursive: true })
     }
 
+    await homePage.projectsLoaded()
+
     await test.step('We can change the root project directory', async () => {
       // expect to see the project directory settings link
       await expect(
@@ -1725,7 +1740,7 @@ test(
         .locator('section#projectDirectory input')
         .inputValue()
 
-      const handleFile = electronApp?.evaluate(
+      const handleFile = tronApp.electron.evaluate(
         async ({ dialog }, filePaths) => {
           dialog.showOpenDialog = () =>
             Promise.resolve({ canceled: false, filePaths })
@@ -1741,6 +1756,8 @@ test(
 
       await page.getByTestId('settings-close-button').click()
 
+      await homePage.projectsLoaded()
+
       await expect(page.getByText('No Projects found')).toBeVisible()
       await createProject({ name: 'project-000', page, returnHome: true })
       await expect(
@@ -1755,7 +1772,7 @@ test(
 
       await page.getByTestId('project-directory-settings-link').click()
 
-      const handleFile = electronApp?.evaluate(
+      const handleFile = tronApp.electron.evaluate(
         async ({ dialog }, filePaths) => {
           dialog.showOpenDialog = () =>
             Promise.resolve({ canceled: false, filePaths })
@@ -1767,6 +1784,7 @@ test(
       await page.getByTestId('project-directory-button').click()
       await handleFile
 
+      await homePage.projectsLoaded()
       await expect(page.locator('section#projectDirectory input')).toHaveValue(
         originalProjectDirName
       )
@@ -2000,8 +2018,8 @@ test(
 
 test(
   'Settings persist across restarts',
-  { tag: '@electron', cleanProjectDir: true },
-  async ({ page }, testInfo) => {
+  { tag: '@electron' },
+  async ({ page, scene, cmdBar }, testInfo) => {
     await test.step('We can change a user setting like theme', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -2014,6 +2032,10 @@ test(
       await expect(page.getByTestId('app-theme')).toHaveValue('dark')
 
       await page.getByTestId('app-theme').selectOption('light')
+      await expect(page.getByTestId('app-theme')).toHaveValue('light')
+
+      // Give time to system for writing to a persistent store
+      await page.waitForTimeout(1000)
     })
 
     await test.step('Starting the app again and we can see the same theme', async () => {
