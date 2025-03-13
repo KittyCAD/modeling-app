@@ -1,15 +1,12 @@
 import { Popover } from '@headlessui/react'
 import {
   changeKclSettings,
-  DEFAULT_DEFAULT_ANGLE_UNIT,
   unitAngleToUnitAng,
   unitLengthToUnitLen,
 } from 'lang/wasm'
-import {
-  baseUnitLabels,
-  baseUnitsUnion,
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-} from 'lib/settings/settingsTypes'
+import { DEFAULT_DEFAULT_ANGLE_UNIT } from 'lib/constants'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from 'lib/constants'
+import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
 import { codeManager, kclManager } from 'lib/singletons'
 import { err, reportRejection } from 'lib/trap'
 import { useEffect, useState } from 'react'

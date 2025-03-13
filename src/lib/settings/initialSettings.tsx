@@ -1,7 +1,6 @@
 import { DEFAULT_PROJECT_NAME } from 'lib/constants'
 import {
   BaseUnit,
-  DEFAULT_DEFAULT_LENGTH_UNIT,
   SettingProps,
   SettingsLevel,
   baseUnitsUnion,
@@ -23,6 +22,7 @@ import { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionTyp
 import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from 'lib/constants'
 
 /**
  * A setting that can be set at the user or project level

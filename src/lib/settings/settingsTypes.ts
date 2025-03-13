@@ -151,9 +151,3 @@ export interface KclSettingsAnnotation {
   defaultLengthUnit?: UnitLength_type
   defaultAngleUnit?: UnitAngle_type
 }
-
-/**
- * When no annotation is in the KCL file to specify the defaults, we use these
- * defaults.
- */
-export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength_type = 'mm'
