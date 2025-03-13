@@ -114,7 +114,7 @@ export const CommandBar = () => {
           leaveTo="opacity-0 scale-95"
         >
           <WrapperComponent.Panel
-            className="relative z-50 pointer-events-auto w-full max-w-xl py-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+            className="relative z-50 pointer-events-auto w-full max-w-xl pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
             as="div"
             data-testid="command-bar"
           >
