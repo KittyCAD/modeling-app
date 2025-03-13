@@ -57,5 +57,6 @@ jobs:
           working-directory: rust
           run: cargo codspeed run
           token: ${{ secrets.CODSPEED_TOKEN }}
+          mode: walltime
         env:
           KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN }}

@@ -448,7 +448,7 @@ impl EngineManager for EngineConnection {
 
         // Wait for the response.
         let current_time = std::time::Instant::now();
-        while current_time.elapsed().as_secs() < 620 {
+        while current_time.elapsed().as_secs() < 60 {
             let guard = self.socket_health.read().await;
             if *guard == SocketHealth::Inactive {
                 // Check if we have any pending errors.
