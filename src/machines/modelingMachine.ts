@@ -465,7 +465,7 @@ export const modelingMachine = setup({
     'Selection is on face': () => false,
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
-    'no kcl errors': ()  => {
+    'no kcl errors': () => {
       // Note: kclManager.hasErrors() seems always false!
       return !kclManager.errors.length
     },
@@ -2347,8 +2347,8 @@ export const modelingMachine = setup({
           on: {
             'Artifact graph populated': {
               target: 'showPlanes',
-              guard: 'no kcl errors'
-            }
+              guard: 'no kcl errors',
+            },
           },
 
           entry: 'hide default planes',
