@@ -9,6 +9,7 @@ import {
   parseProjectSettings,
 } from 'lang/wasm'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
@@ -21,6 +22,7 @@ import {
 import { DeepPartial } from './types'
 import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { newKclFile } from 'lang/project'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -113,7 +115,18 @@ export async function createNewProjectDirectory(
   }
 
   const projectFile = window.electron.path.join(projectDir, PROJECT_ENTRYPOINT)
-  await window.electron.writeFile(projectFile, initialCode ?? '')
+  // When initialCode is present, we're loading existing code.  If it's not
+  // present, we're creating a new project, and we want to incorporate the
+  // user's settings.
+  const codeToWrite =
+    initialCode ??
+    newKclFile(
+      '',
+      configuration?.settings?.modeling?.base_unit ??
+        DEFAULT_DEFAULT_LENGTH_UNIT
+    )
+  if (err(codeToWrite)) return Promise.reject(codeToWrite)
+  await window.electron.writeFile(projectFile, codeToWrite)
   const metadata = await window.electron.stat(projectFile)
 
   return {

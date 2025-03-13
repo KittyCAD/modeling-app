@@ -402,8 +402,10 @@ const ProjectsContextDesktop = ({
           }
 
           // Create the project around the file if newProject
+          let fileLoaded = false
           if (input.method === 'newProject') {
             await createNewProjectDirectory(projectName, input.code)
+            fileLoaded = true
             message = `Project "${projectName}" created successfully with link contents`
           } else {
             message = `File "${fileName}" created successfully`
@@ -420,13 +422,16 @@ const ProjectsContextDesktop = ({
           })
 
           fileName = name
-          const codeToWrite = newKclFile(
-            input.code ?? '',
-            settings.modeling.defaultUnit.current
-          )
-          if (err(codeToWrite)) return Promise.reject(codeToWrite)
-          await window.electron.writeFile(path, codeToWrite)
+          if (!fileLoaded) {
+            const codeToWrite = newKclFile(
+              input.code ?? '',
+              settings.modeling.defaultUnit.current
+            )
+            if (err(codeToWrite)) return Promise.reject(codeToWrite)
+            await window.electron.writeFile(path, codeToWrite)
+          }
 
+          // TODO: Return the project's file name if one was created.
           return {
             message,
             fileName,
