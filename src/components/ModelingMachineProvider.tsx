@@ -1727,8 +1727,10 @@ export const ModelingMachineProvider = ({
   }, [allowOrbitInSketchMode])
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
+  // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
   const deleteKeys =
-    isDesktop() && window.electron.os.isMac
+    (isDesktop() && window.electron.os.isMac) ||
+    navigator.platform.includes('Mac')
       ? ['backspace', 'delete', 'del']
       : ['delete', 'del']
   useHotkeys(deleteKeys, () => {
