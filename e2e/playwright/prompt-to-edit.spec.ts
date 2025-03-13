@@ -233,7 +233,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       await cmdBar.openCmdBar('promptToEdit')
       await page
         .getByTestId('cmd-bar-arg-value')
-        .fill('Please rename to mySketch')
+        .fill('Please rename to mySketch001')
       await page.waitForTimeout(100)
       await cmdBar.progressCmdBar()
       await expect(submittingToast).toBeVisible()
@@ -244,7 +244,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     })
 
     await test.step('verify rename change and accept it', async () => {
-      await editor.expectEditor.toContain('mySketch = startSketchOn')
+      await editor.expectEditor.toContain('mySketch001 = startSketchOn')
       await editor.expectEditor.not.toContain('sketch002 = startSketchOn')
       await editor.expectEditor.toContain(
         'extrude002 = extrude(mySketch, length = 50)'
