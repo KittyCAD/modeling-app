@@ -494,7 +494,7 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
       // Do NOT do AI tests like this: "Expect the code to be pasted."
       // Reason: AI tests are NONDETERMINISTIC. Thus we need to be as most
       // general as we can for the assertion.
-      // We can use Kolmogorov complexity as a measurement of the 
+      // We can use Kolmogorov complexity as a measurement of the
       // "probably most minimal version of this program" to have a lower
       // bound to work with. It is completely by feel because there are
       // no proofs that any program is its smallest self.

@@ -138,6 +138,7 @@ export class ElectronZoo {
     const that = this
 
     const options = {
+      timeout: 120000,
       args: ['.', '--no-sandbox'],
       env: {
         ...process.env,
@@ -162,21 +163,14 @@ export class ElectronZoo {
 
     // Do this once and then reuse window on subsequent calls.
     if (!this.electron) {
-      const electronLaunch = async () => {
-        this.electron = await electron.launch(options)
+      this.electron = await electron.launch(options)
+
+      // Mac takes quite a long time to create the first window in CI.
+      this.page = this.electron.windows()[0]
+      if (!this.page) {
+        this.page = await this.electron.waitForEvent('window', { timeout: 0 })
       }
 
-      await new Promise((resolve) => {
-        if (process.platform === 'darwin') {
-          setTimeout(() => {
-            electronLaunch().then(resolve).catch(console.error)
-          }, 1000)
-        } else {
-          electronLaunch().then(resolve).catch(console.error)
-        }
-      })
-
-      this.page = await this.electron.firstWindow()
       this.context = this.electron.context()
       await this.context.tracing.start({ screenshots: true, snapshots: true })
     }
