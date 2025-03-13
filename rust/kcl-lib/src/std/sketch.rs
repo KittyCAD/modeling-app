@@ -1248,7 +1248,7 @@ pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine([-26.6, 50], %)
 ///  |> angledLine([90, 50], %)
-///  |> angledLineToX({ angle = 30, to = profileStartX(%) }, %)
+///  |> angledLine(angle = 30, endAbsoluteX =  profileStartX(%))
 /// ```
 #[stdlib {
     name = "profileStartX"
@@ -1272,7 +1272,7 @@ pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine(angle = -60, length = 14 )
-///  |> angledLineToY({ angle = 30, to = profileStartY(%) }, %)
+///  |> angledLine(angle = 30, endAbsoluteY =  profileStartY(%))
 /// ```
 #[stdlib {
     name = "profileStartY"
