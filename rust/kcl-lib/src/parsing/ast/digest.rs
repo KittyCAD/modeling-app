@@ -194,9 +194,21 @@ impl Type {
                 hasher.update(b"FnArgType::Primitive");
                 hasher.update(prim.compute_digest())
             }
-            Type::Array(prim) => {
+            Type::Array { ty, len } => {
                 hasher.update(b"FnArgType::Array");
-                hasher.update(prim.compute_digest())
+                hasher.update(ty.compute_digest());
+                match len {
+                    crate::execution::kcl_value::ArrayLen::None => {}
+                    crate::execution::kcl_value::ArrayLen::NonEmpty => hasher.update(usize::MAX.to_ne_bytes()),
+                    crate::execution::kcl_value::ArrayLen::Known(n) => hasher.update(n.to_ne_bytes()),
+                }
+            }
+            Type::Union { tys } => {
+                hasher.update(b"FnArgType::Union");
+                hasher.update(tys.len().to_ne_bytes());
+                for t in tys.iter_mut() {
+                    hasher.update(t.compute_digest());
+                }
             }
             Type::Object { properties } => {
                 hasher.update(b"FnArgType::Object");

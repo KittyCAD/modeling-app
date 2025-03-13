@@ -335,7 +335,7 @@ impl FnData {
             name,
             qual_name,
             args: expr.params.iter().map(ArgData::from_ast).collect(),
-            return_type: expr.return_type.as_ref().map(|t| t.recast(&Default::default(), 0)),
+            return_type: expr.return_type.as_ref().map(|t| t.to_string()),
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
@@ -496,7 +496,7 @@ impl ArgData {
     fn from_ast(arg: &crate::parsing::ast::types::Parameter) -> Self {
         ArgData {
             name: arg.identifier.name.clone(),
-            ty: arg.type_.as_ref().map(|t| t.recast(&Default::default(), 0)),
+            ty: arg.type_.as_ref().map(|t| t.to_string()),
             // Doc comments are not yet supported on parameters.
             docs: None,
             kind: if arg.labeled {

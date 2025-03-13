@@ -25,7 +25,7 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{annotations, KclValue, Metadata, TagIdentifier},
+    execution::{annotations, kcl_value::ArrayLen, KclValue, Metadata, TagIdentifier},
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
     ModuleId,
@@ -150,7 +150,7 @@ impl<T> Node<T> {
         self.start <= pos && pos <= self.end
     }
 
-    pub fn map<U>(self, f: fn(T) -> U) -> Node<U> {
+    pub fn map<U>(self, f: impl Fn(T) -> U) -> Node<U> {
         Node {
             inner: f(self.inner),
             start: self.start,
@@ -3024,7 +3024,14 @@ pub enum Type {
     /// A primitive type.
     Primitive(PrimitiveType),
     // An array of a primitive type.
-    Array(PrimitiveType),
+    Array {
+        ty: PrimitiveType,
+        len: ArrayLen,
+    },
+    // Union/enum types
+    Union {
+        tys: NodeList<PrimitiveType>,
+    },
     // An object type.
     Object {
         properties: Vec<Parameter>,
@@ -3035,7 +3042,22 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Type::Primitive(primitive_type) => primitive_type.fmt(f),
-            Type::Array(primitive_type) => write!(f, "[{primitive_type}]"),
+            Type::Array { ty, len } => {
+                write!(f, "[{ty}")?;
+                match len {
+                    ArrayLen::None => {}
+                    ArrayLen::NonEmpty => write!(f, "; 1+")?,
+                    ArrayLen::Known(n) => write!(f, "; {n}")?,
+                }
+                write!(f, "]")
+            }
+            Type::Union { tys } => {
+                write!(
+                    f,
+                    "{}",
+                    tys.iter().map(|t| t.to_string()).collect::<Vec<_>>().join(" | ")
+                )
+            }
             Type::Object { properties } => {
                 write!(f, "{{")?;
                 let mut first = true;
@@ -3624,11 +3646,17 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(params.len(), 3);
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
-            Type::Array(PrimitiveType::Number(NumericSuffix::None))
+            Type::Array {
+                ty: PrimitiveType::Number(NumericSuffix::None),
+                len: ArrayLen::None
+            }
         );
         assert_eq!(
             params[1].type_.as_ref().unwrap().inner,
-            Type::Array(PrimitiveType::String)
+            Type::Array {
+                ty: PrimitiveType::String,
+                len: ArrayLen::None
+            }
         );
         assert_eq!(
             params[2].type_.as_ref().unwrap().inner,
@@ -3656,7 +3684,10 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(params.len(), 3);
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
-            Type::Array(PrimitiveType::Number(NumericSuffix::None))
+            Type::Array {
+                ty: PrimitiveType::Number(NumericSuffix::None),
+                len: ArrayLen::None
+            }
         );
         assert_eq!(
             params[1].type_.as_ref().unwrap().inner,
@@ -3692,7 +3723,15 @@ const cylinder = startSketchOn('-XZ')
                             56,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 59, 65, module_id)),
+                        type_: Some(Node::new(
+                            Type::Array {
+                                ty: PrimitiveType::String,
+                                len: ArrayLen::None
+                            },
+                            59,
+                            65,
+                            module_id
+                        )),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3773,7 +3812,15 @@ const cylinder = startSketchOn('-XZ')
                             34,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 37, 43, module_id)),
+                        type_: Some(Node::new(
+                            Type::Array {
+                                ty: PrimitiveType::String,
+                                len: ArrayLen::None
+                            },
+                            37,
+                            43,
+                            module_id
+                        )),
                         default_value: None,
                         labeled: true,
                         digest: None

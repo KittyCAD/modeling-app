@@ -6,8 +6,7 @@ use crate::parsing::{
         CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression,
         IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-        PipeExpression, Program, TagDeclarator, Type, TypeDeclaration, UnaryExpression, VariableDeclaration,
-        VariableKind,
+        PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
     },
     token::NumericSuffix,
     PIPE_OPERATOR,
@@ -308,7 +307,7 @@ impl Expr {
             Expr::AscribedExpression(e) => {
                 let mut result = e.expr.recast(options, indentation_level, ctxt);
                 result += ": ";
-                result += &e.ty.recast(options, indentation_level);
+                result += &e.ty.to_string();
                 result
             }
             Expr::None(_) => {
@@ -812,7 +811,7 @@ impl FunctionExpression {
         let tab0 = options.get_indentation(indentation_level);
         let tab1 = options.get_indentation(indentation_level + 1);
         let return_type = match &self.return_type {
-            Some(rt) => format!(": {}", rt.recast(&new_options, indentation_level)),
+            Some(rt) => format!(": {}", rt.to_string()),
             None => String::new(),
         };
         let body = self.body.recast(&new_options, indentation_level + 1);
@@ -822,14 +821,14 @@ impl FunctionExpression {
 }
 
 impl Parameter {
-    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+    pub fn recast(&self, _options: &FormatOptions, _indentation_level: usize) -> String {
         let at_sign = if self.labeled { "" } else { "@" };
         let identifier = &self.identifier.name;
         let question_mark = if self.default_value.is_some() { "?" } else { "" };
         let mut result = format!("{at_sign}{identifier}{question_mark}");
         if let Some(ty) = &self.type_ {
             result += ": ";
-            result += &ty.recast(options, indentation_level);
+            result += &ty.to_string();
         }
         if let Some(DefaultParamVal::Literal(ref literal)) = self.default_value {
             let lit = literal.recast();
@@ -837,31 +836,6 @@ impl Parameter {
         };
 
         result
-    }
-}
-
-impl Type {
-    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        match self {
-            Type::Primitive(t) => t.to_string(),
-            Type::Array(t) => format!("[{t}]"),
-            Type::Object { properties } => {
-                let mut result = "{".to_owned();
-                for p in properties {
-                    result += " ";
-                    result += &p.recast(options, indentation_level);
-                    result += ",";
-                }
-
-                if result.ends_with(',') {
-                    result.pop();
-                    result += " ";
-                }
-                result += "}";
-
-                result
-            }
-        }
     }
 }
 
@@ -1407,6 +1381,21 @@ thing(1)
         let some_program_string = r#"fn thing(x: string, y: [bool]): number {
   return x + 1
 }
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_typed_consts() {
+        let some_program_string = r#"a = 42: number
+export b = 3.2: number(ft)
+c = "dsfds": A | B | C
+d = [1]: [number]
+e = foo: [number; 3]
+f = [1, 2, 3]: [number; 1+]
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 

@@ -939,9 +939,14 @@ impl RuntimeType {
             Type::Primitive(pt) => {
                 PrimitiveType::from_parsed(pt, exec_state, source_range)?.map(RuntimeType::Primitive)
             }
-            Type::Array(pt) => {
-                PrimitiveType::from_parsed(pt, exec_state, source_range)?.map(|t| RuntimeType::Array(t, ArrayLen::None))
+            Type::Array { ty, len } => {
+                PrimitiveType::from_parsed(ty, exec_state, source_range)?.map(|t| RuntimeType::Array(t, len))
             }
+            Type::Union { tys } => tys
+                .into_iter()
+                .map(|t| PrimitiveType::from_parsed(t.inner, exec_state, source_range))
+                .collect::<Result<Option<Vec<_>>, CompilationError>>()?
+                .map(RuntimeType::Union),
             Type::Object { properties } => properties
                 .into_iter()
                 .map(|p| {
@@ -1034,7 +1039,7 @@ impl fmt::Display for RuntimeType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
 pub enum ArrayLen {
     None,
     NonEmpty,

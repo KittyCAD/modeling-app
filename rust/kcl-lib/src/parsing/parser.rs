@@ -19,6 +19,7 @@ use super::{
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
+    execution::kcl_value::ArrayLen,
     parsing::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
@@ -2336,21 +2337,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
                 format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
             )),
 
-            TokenType::Bang
-            | TokenType::At
-            | TokenType::Hash
-            | TokenType::Colon
-            | TokenType::Period
-            | TokenType::Operator
-            | TokenType::DoublePeriod
-            | TokenType::QuestionMark
-            | TokenType::BlockComment
-            | TokenType::Function
-            | TokenType::String
-            | TokenType::Dollar
-            | TokenType::Keyword
-            | TokenType::Unknown
-            | TokenType::LineComment => Err(CompilationError::fatal(
+            _ => Err(CompilationError::fatal(
                 token.as_source_range(),
                 // this is `start with` because if most of these cases are in the middle, it ends
                 // up hitting a different error path(e.g. including a bang) or being valid(e.g. including a comment) since it will get broken up into
@@ -2617,6 +2604,14 @@ fn colon(i: &mut TokenSlice) -> PResult<Token> {
     TokenType::Colon.parse_from(i)
 }
 
+fn semi_colon(i: &mut TokenSlice) -> PResult<Token> {
+    TokenType::SemiColon.parse_from(i)
+}
+
+fn plus(i: &mut TokenSlice) -> PResult<Token> {
+    one_of((TokenType::Operator, "+")).parse_next(i)
+}
+
 fn equals(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, "="))
         .context(expected("the equals operator, ="))
@@ -2659,6 +2654,12 @@ fn comma_sep(i: &mut TokenSlice) -> PResult<()> {
     Ok(())
 }
 
+/// Parse a `|`, optionally followed by some whitespace.
+fn pipe_sep(i: &mut TokenSlice) -> PResult<()> {
+    (opt(whitespace), one_of((TokenType::Operator, "|")), opt(whitespace)).parse_next(i)?;
+    Ok(())
+}
+
 /// Arguments are passed into a function.
 fn arguments(i: &mut TokenSlice) -> PResult<Vec<Expr>> {
     separated(0.., expression, comma_sep)
@@ -2686,20 +2687,29 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         // Object types
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
         (open_brace, parameters, close_brace).map(|(open, params, close)| {
-            Ok(Node::new(
+            Node::new(
                 Type::Object { properties: params },
                 open.start,
                 close.end,
                 open.module_id,
-            ))
+            )
         }),
         // Array types
-        (open_bracket, primitive_type, close_bracket).map(|(_, t, _)| Ok(t.map(Type::Array))),
-        // Primitive types
-        primitive_type.map(|t| Ok(t.map(Type::Primitive))),
+        array_type,
+        // Primitive or union types
+        separated(1.., primitive_type, pipe_sep).map(|mut tys: Vec<_>| {
+            if tys.len() == 1 {
+                tys.pop().unwrap().map(Type::Primitive)
+            } else {
+                let start = tys[0].start;
+                let module_id = tys[0].module_id;
+                let end = tys.last().unwrap().end;
+                Node::new(Type::Union { tys }, start, end, module_id)
+            }
+        }),
     ))
-    .parse_next(i)?
-    .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
+    .parse_next(i)?;
+
     Ok(type_)
 }
 
@@ -2719,6 +2729,55 @@ fn primitive_type(i: &mut TokenSlice) -> PResult<Node<PrimitiveType>> {
     }
 
     Ok(result)
+}
+
+fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
+    fn opt_whitespace(i: &mut TokenSlice) -> PResult<()> {
+        ignore_whitespace(i);
+        Ok(())
+    }
+
+    open_bracket(i)?;
+    let ty = primitive_type(i)?;
+    let len = opt((
+        semi_colon,
+        opt_whitespace,
+        any.try_map(|token: Token| match token.token_type {
+            TokenType::Number => {
+                let value = token.uint_value().ok_or_else(|| {
+                    CompilationError::fatal(
+                        token.as_source_range(),
+                        format!("Expected unsigned integer literal, found: {}", token.value),
+                    )
+                })?;
+
+                Ok(value as usize)
+            }
+            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid array length")),
+        }),
+        opt(plus),
+    ))
+    .parse_next(i)?;
+    close_bracket(i)?;
+
+    let len = if let Some((tok, _, n, plus)) = len {
+        if plus.is_some() {
+            if n != 1 {
+                return Err(ErrMode::Cut(ContextError::from(CompilationError::fatal(
+                    tok.as_source_range(),
+                    "Non-empty arrays are specified using `1+`, for a fixed-size array use just an integer",
+                ))));
+            } else {
+                ArrayLen::NonEmpty
+            }
+        } else {
+            ArrayLen::Known(n)
+        }
+    } else {
+        ArrayLen::None
+    };
+
+    Ok(ty.map(|ty| Type::Array { ty, len }))
 }
 
 fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
