@@ -503,10 +503,13 @@ export class CameraControls {
     if (interaction === 'none') return
     event.preventDefault()
 
+    // TODO: find a better way than this clipping to +/- 100 to prevent the bug in #5120
+    const deltaY = Math.sign(event.deltaY) * Math.max(Math.abs(event.deltaY), 100)
+
     if (this.syncDirection === 'engineToClient') {
       if (interaction === 'zoom') {
         this.zoomSender.send(() => {
-          this.doZoom(event.deltaY)
+          this.doZoom(deltaY)
         })
       } else {
         // This case will get handled when we add pan and rotate using Apple trackpad.
@@ -526,7 +529,7 @@ export class CameraControls {
 
     this.handleStart()
     if (interaction === 'zoom') {
-      this.pendingZoom = 1 + (event.deltaY / window.devicePixelRatio) * 0.001
+      this.pendingZoom = 1 + (deltaY / window.devicePixelRatio) * 0.001
     } else {
       // This case will get handled when we add pan and rotate using Apple trackpad.
       console.error(
