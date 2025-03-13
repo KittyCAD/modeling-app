@@ -522,13 +522,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch<'a, T>(&'a self) -> Result<(T, Sketch), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromArgs<'a>,
-    {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_data_and_sketch_set<'a, T>(&'a self) -> Result<(T, SketchSet), KclError>
     where
         T: serde::de::DeserializeOwned + FromArgs<'a>,

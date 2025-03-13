@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed pipe-with-bend.kcl
 ---
 [
@@ -95,7 +95,7 @@ description: Operations executed pipe-with-bend.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {

@@ -125,7 +125,7 @@ description: Operations executed poop_chute.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {

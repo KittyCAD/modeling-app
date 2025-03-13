@@ -67,7 +67,7 @@ description: Operations executed pipe-flange-assembly.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
