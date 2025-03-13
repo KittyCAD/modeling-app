@@ -192,11 +192,20 @@ pub(crate) async fn do_post_extrude(
         vec![]
     };
 
+    // Face filtering attempt in order to resolve https://github.com/KittyCAD/modeling-app/issues/5328
+    // In case of a sectional sweep, empirically it seems that the first n faces that are yielded from the sweep
+    // are the ones that work with GetOppositeEdge and GetNextAdjacentEdge, aka the n sides in the sweep.
+    // So here we're figuring out that n number
+    let sketch_has_close = sketch.paths.len() > 1 && sketch.paths.last().unwrap().get_base().from == sketch.paths.last().unwrap().get_base().to;
+    let yielded_sides_count = if sketch_has_close {
+        sketch.paths.len() - 1
+    } else {
+        sketch.paths.len() // likely 1 if it's just a circle or similar
+    };
+
     for (curve_id, face_id) in face_infos
         .iter()
         .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
-        // TODO: change this hack to a filtering of internal faces for sweep
-        .filter(|_face_info| false)
         .filter_map(|face_info| {
             if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
                 Some((curve_id, face_id))
@@ -204,6 +213,7 @@ pub(crate) async fn do_post_extrude(
                 None
             }
         })
+        .take(yielded_sides_count)
     {
         // Batch these commands, because the Rust code doesn't actually care about the outcome.
         // So, there's no need to await them.
