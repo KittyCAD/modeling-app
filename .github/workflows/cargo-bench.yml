@@ -50,7 +50,7 @@ jobs:
       - name: Build the benchmark target(s)
         run: |
           cd rust
-          cargo codspeed build
+          cargo codspeed build --measurement-mode walltime
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v3
         with:
