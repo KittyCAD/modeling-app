@@ -6,7 +6,7 @@ use std::{
 use anyhow::Result;
 
 use crate::{
-    parsing::ast::types::{ImportPath, NodeRef, Program},
+    parsing::ast::types::{ImportPath, Node as AstNode, NodeRef, Program},
     walk::{Node, Visitable},
 };
 
@@ -23,7 +23,7 @@ type Graph = Vec<Dependency>;
 /// run concurrently. Each "stage" is blocking in this model, which will
 /// change in the future. Don't use this function widely, yet.
 #[allow(clippy::iter_over_hash_type)]
-pub fn import_graph(progs: HashMap<String, NodeRef<'_, Program>>) -> Result<Vec<Vec<String>>> {
+pub fn import_graph(progs: &HashMap<String, AstNode<Program>>) -> Result<Vec<Vec<String>>> {
     let mut graph = Graph::new();
 
     for (name, program) in progs.iter() {
@@ -101,7 +101,7 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>> {
     Ok(order)
 }
 
-pub(crate) fn import_dependencies(prog: NodeRef<'_, Program>) -> Result<Vec<String>> {
+pub(crate) fn import_dependencies(prog: NodeRef<Program>) -> Result<Vec<String>> {
     let ret = Arc::new(Mutex::new(vec![]));
 
     fn walk(ret: Arc<Mutex<Vec<String>>>, node: Node<'_>) {
@@ -140,16 +140,16 @@ mod tests {
         let mut modules = HashMap::new();
 
         let a = kcl!("");
-        modules.insert("a.kcl".to_owned(), &a);
+        modules.insert("a.kcl".to_owned(), a);
 
         let b = kcl!(
             "
 import \"a.kcl\"
 "
         );
-        modules.insert("b.kcl".to_owned(), &b);
+        modules.insert("b.kcl".to_owned(), b);
 
-        let order = import_graph(modules).unwrap();
+        let order = import_graph(&modules).unwrap();
         assert_eq!(vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned()]], order);
     }
 
@@ -162,16 +162,16 @@ import \"a.kcl\"
 y = 2
 "
         );
-        modules.insert("a.kcl".to_owned(), &a);
+        modules.insert("a.kcl".to_owned(), a);
 
         let b = kcl!(
             "
 x = 1
 "
         );
-        modules.insert("b.kcl".to_owned(), &b);
+        modules.insert("b.kcl".to_owned(), b);
 
-        let order = import_graph(modules).unwrap();
+        let order = import_graph(&modules).unwrap();
         assert_eq!(vec![vec!["a.kcl".to_owned(), "b.kcl".to_owned()]], order);
     }
 
@@ -180,23 +180,23 @@ x = 1
         let mut modules = HashMap::new();
 
         let a = kcl!("");
-        modules.insert("a.kcl".to_owned(), &a);
+        modules.insert("a.kcl".to_owned(), a);
 
         let b = kcl!(
             "
 import \"a.kcl\"
 "
         );
-        modules.insert("b.kcl".to_owned(), &b);
+        modules.insert("b.kcl".to_owned(), b);
 
         let c = kcl!(
             "
 import \"a.kcl\"
 "
         );
-        modules.insert("c.kcl".to_owned(), &c);
+        modules.insert("c.kcl".to_owned(), c);
 
-        let order = import_graph(modules).unwrap();
+        let order = import_graph(&modules).unwrap();
         assert_eq!(
             vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned(), "c.kcl".to_owned()]],
             order
@@ -212,15 +212,15 @@ import \"a.kcl\"
 import \"b.kcl\"
 "
         );
-        modules.insert("a.kcl".to_owned(), &a);
+        modules.insert("a.kcl".to_owned(), a);
 
         let b = kcl!(
             "
 import \"a.kcl\"
 "
         );
-        modules.insert("b.kcl".to_owned(), &b);
+        modules.insert("b.kcl".to_owned(), b);
 
-        import_graph(modules).unwrap_err();
+        import_graph(&modules).unwrap_err();
     }
 }

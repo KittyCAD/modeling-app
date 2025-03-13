@@ -144,15 +144,23 @@ impl ExecutorContext {
 
     /// Execute an AST's program.
     #[async_recursion]
-    pub(super) async fn load_all_modules<'a>(
+    pub(super) async fn preload_all_modules<'a>(
         &'a self,
-        modules: &mut HashMap<String, crate::parsing::ast::types::Program>,
-        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        modules: &mut HashMap<String, Program>,
+        program: NodeRef<'a, Program>,
         exec_state: &mut ExecState,
     ) -> Result<(), KclError> {
         for statement in &program.body {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
+                    let path_str = import_stmt.path.to_string();
+
+                    if modules.contains_key(&path_str) {
+                        // don't waste our time if we've already loaded the
+                        // module.
+                        continue;
+                    }
+
                     let source_range = SourceRange::from(import_stmt);
                     let attrs = &import_stmt.outer_attrs;
                     let module_id = self
@@ -176,7 +184,9 @@ impl ExecutorContext {
                         progn.clone()
                     };
 
-                    self.load_all_modules(modules, &progn, exec_state).await?;
+                    modules.insert(path_str, progn.clone().inner);
+
+                    self.preload_all_modules(modules, &progn, exec_state).await?;
                 }
                 _ => {}
             };
@@ -188,7 +198,7 @@ impl ExecutorContext {
     #[async_recursion]
     pub(super) async fn exec_block<'a>(
         &'a self,
-        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        program: NodeRef<'a, Program>,
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
@@ -2007,9 +2017,11 @@ impl FunctionSource {
 mod test {
     use super::*;
     use crate::{
-        execution::{memory::Stack, parse_execute},
+        execution::{memory::Stack, parse_execute, ContextType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
+    use std::sync::Arc;
+    use tokio::task::JoinSet;
 
     #[test]
     fn test_assign_args_to_params() {
@@ -2118,7 +2130,7 @@ mod test {
             // Run each test.
             let func_expr = &Node::no_src(FunctionExpression {
                 params,
-                body: crate::parsing::ast::types::Program::empty(),
+                body: Program::empty(),
                 return_type: None,
                 digest: None,
             });
@@ -2214,7 +2226,7 @@ a = foo()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn load_all_modules() {
-        let mut universe = HashMap::<String, NodeRef<'_, Program>>::new();
+        let mut universe = HashMap::<String, Node<Program>>::new();
 
         // program a.kcl
         let programa = r#"
@@ -2223,7 +2235,7 @@ a = 1
         let programa = crate::parsing::parse_str(&programa, ModuleId::default())
             .parse_errs_as_err()
             .unwrap();
-        universe.insert("a.kcl".to_owned(), (&programa).into());
+        universe.insert("a.kcl".to_owned(), programa);
 
         // program b.kcl
         let programb = r#"
@@ -2232,7 +2244,7 @@ import 'a.kcl' as x
         let programb = crate::parsing::parse_str(&programb, ModuleId::default())
             .parse_errs_as_err()
             .unwrap();
-        universe.insert("b.kcl".to_owned(), (&programb).into());
+        universe.insert("b.kcl".to_owned(), programb);
 
         // program c.kcl
         let programc = r#"
@@ -2241,13 +2253,64 @@ import 'a.kcl'
         let programc = crate::parsing::parse_str(&programc, ModuleId::default())
             .parse_errs_as_err()
             .unwrap();
-        universe.insert("c.kcl".to_owned(), (&programc).into());
+        universe.insert("c.kcl".to_owned(), programc);
 
         // ok we have all the "files" loaded, let's do a sort and concurrent
         // run here.
 
-        for modules in crate::walk::import_graph(universe).into_iter() {
-            //
+        let exec_ctxt = ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new()
+                    .await
+                    .map_err(|err| {
+                        KclError::Internal(crate::errors::KclErrorDetails {
+                            message: format!("Failed to create mock engine connection: {}", err),
+                            source_ranges: vec![SourceRange::default()],
+                        })
+                    })
+                    .unwrap(),
+            )),
+            fs: Arc::new(crate::fs::FileManager::new()),
+            stdlib: Arc::new(crate::std::StdLib::new()),
+            settings: Default::default(),
+            context_type: ContextType::Mock,
+        };
+        let mut exec_state = ExecState::new(&exec_ctxt.settings);
+
+        eprintln!("{:?}", universe);
+        for modules in crate::walk::import_graph(&universe).unwrap().into_iter() {
+            eprintln!("Spawning {:?}", modules);
+
+            let mut set = JoinSet::new();
+            for module in modules {
+                eprintln!("{:?}", universe.get(&module));
+
+                let program = universe.get(&module).unwrap().clone();
+                let module = module.clone();
+                let mut exec_state = exec_state.clone();
+                let exec_ctxt = exec_ctxt.clone();
+
+                set.spawn(async move {
+                    let module = module;
+                    let mut exec_state = exec_state;
+                    let exec_ctxt = exec_ctxt;
+                    let program = program;
+
+                    // do we need to do anything with the result here?
+                    let _ = exec_ctxt
+                        .run(
+                            &crate::Program {
+                                ast: program.clone(),
+                                original_file_contents: "".to_owned(),
+                            },
+                            &mut exec_state,
+                        )
+                        .await
+                        .unwrap();
+                });
+            }
+
+            set.join_all().await;
         }
     }
 }
