@@ -169,10 +169,10 @@ export class ElectronZoo {
       await new Promise((resolve) => {
         if (process.platform === 'darwin') {
           setTimeout(() => {
-            electroLaunch().then(resolve).catch(console.error)
+            electronLaunch().then(resolve).catch(console.error)
           }, 1000)
         } else {
-          electroLaunch().then(resolve).catch(console.error)
+          electronLaunch().then(resolve).catch(console.error)
         }
       })
 
