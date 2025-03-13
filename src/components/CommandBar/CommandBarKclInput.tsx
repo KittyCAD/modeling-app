@@ -81,7 +81,8 @@ function CommandBarKclInput({
   const [value, setValue] = useState(initialValue)
   const [createNewVariable, setCreateNewVariable] = useState(
     (previouslySetValue && 'variableName' in previouslySetValue) ||
-      arg.createVariableByDefault ||
+      arg.createVariable === 'byDefault' ||
+      arg.createVariable === 'force' ||
       false
   )
   const [canSubmit, setCanSubmit] = useState(true)
@@ -248,7 +249,7 @@ function CommandBarKclInput({
         </span>
       </label>
       {createNewVariable ? (
-        <div className="flex items-baseline gap-4 mx-4 border-solid border-0 border-b border-chalkboard-50">
+        <div className="flex mb-2 items-baseline gap-4 mx-4 border-solid border-0 border-b border-chalkboard-50">
           <label
             htmlFor="variable-name"
             className="text-base text-chalkboard-80 dark:text-chalkboard-20"
@@ -269,7 +270,11 @@ function CommandBarKclInput({
             autoFocus
             onChange={(e) => setNewVariableName(e.target.value)}
             onKeyDown={(e) => {
-              if (e.currentTarget.value === '' && e.key === 'Backspace') {
+              if (
+                e.currentTarget.value === '' &&
+                e.key === 'Backspace' &&
+                arg.createVariable !== 'force'
+              ) {
                 setCreateNewVariable(false)
               }
             }}
@@ -290,15 +295,17 @@ function CommandBarKclInput({
           </span>
         </div>
       ) : (
-        <div className="flex justify-between gap-2 px-4">
-          <button
-            onClick={() => setCreateNewVariable(true)}
-            className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
-          >
-            <CustomIcon name="plus" className="w-5 h-5" />
-            Create new variable
-          </button>
-        </div>
+        arg.createVariable !== 'disallow' && (
+          <div className="flex justify-between gap-2 px-4">
+            <button
+              onClick={() => setCreateNewVariable(true)}
+              className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
+            >
+              <CustomIcon name="plus" className="w-5 h-5" />
+              Create new variable
+            </button>
+          </div>
+        )
       )}
     </form>
   )

@@ -201,7 +201,7 @@ export function buildCommandArgument<
   } else if (arg.inputType === 'kcl') {
     return {
       inputType: arg.inputType,
-      createVariableByDefault: arg.createVariableByDefault,
+      createVariable: arg.createVariable,
       variableName: arg.variableName,
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,
