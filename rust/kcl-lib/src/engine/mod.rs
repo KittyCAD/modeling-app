@@ -243,6 +243,30 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
+    // Add a vector of modeling commands to the batch but don't fire it right away.
+    // This allows you to force them all to be added together in the same order.
+    // When we are running things in parallel this prevents race conditions that might come
+    // if specific commands are run before others.
+    async fn batch_modeling_cmds(
+        &self,
+        source_range: SourceRange,
+        cmds: &[ModelingCmdReq],
+    ) -> Result<(), crate::errors::KclError> {
+        // In isolated mode, we don't send the command to the engine.
+        if self.execution_kind().await.is_isolated() {
+            return Ok(());
+        }
+
+        // Add cmd to the batch.
+        let mut batch = self.batch().write().await.clone();
+        for cmd in cmds {
+            batch.push((WebSocketRequest::ModelingCmdReq(cmd.clone()), source_range));
+        }
+        drop(batch);
+
+        Ok(())
+    }
+
     /// Add a command to the batch that needs to be executed at the very end.
     /// This for stuff like fillets or chamfers where if we execute too soon the
     /// engine will eat the ID and we can't reference it for other commands.

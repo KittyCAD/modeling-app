@@ -4,7 +4,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_derive_docs::stdlib;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
@@ -1217,38 +1217,43 @@ pub(crate) async fn inner_start_profile_at(
         _ => {}
     }
 
-    // Enter sketch mode on the surface.
-    // We call this here so you can reuse the sketch surface for multiple sketches.
-    let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::EnableSketchMode {
-            animated: false,
-            ortho: false,
-            entity_id: sketch_surface.id(),
-            adjust_camera: false,
-            planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
-                // We pass in the normal for the plane here.
-                Some(plane.z_axis.into())
-            } else {
-                None
-            },
-        }),
-    )
-    .await?;
-
-    let id = exec_state.next_uuid();
+    let enable_sketch_id = exec_state.next_uuid();
     let path_id = exec_state.next_uuid();
-
-    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath::default()))
-        .await?;
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::MovePathPen {
-            path: path_id.into(),
-            to: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
-        }),
-    )
+    let move_pen_id = exec_state.next_uuid();
+    args.batch_modeling_cmds(&[
+        // Enter sketch mode on the surface.
+        // We call this here so you can reuse the sketch surface for multiple sketches.
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: sketch_surface.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            }),
+            cmd_id: enable_sketch_id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::StartPath::default()),
+            cmd_id: path_id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::from(mcmd::MovePathPen {
+                path: path_id.into(),
+                to: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
+            }),
+            cmd_id: move_pen_id.into(),
+        },
+        ModelingCmdReq {
+            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+            cmd_id: exec_state.next_uuid().into(),
+        },
+    ])
     .await?;
 
     let current_path = BasePath {
@@ -1257,7 +1262,7 @@ pub(crate) async fn inner_start_profile_at(
         tag: tag.clone(),
         units: sketch_surface.units(),
         geo_meta: GeoMeta {
-            id,
+            id: move_pen_id,
             metadata: args.source_range.into(),
         },
     };
@@ -1418,16 +1423,6 @@ pub(crate) async fn inner_close(
 
     args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }))
         .await?;
-
-    // If we are sketching on a plane we can close the sketch now.
-    if let SketchSurface::Plane(_) = sketch.on {
-        // We were on a plane, disable the sketch mode.
-        args.batch_modeling_cmd(
-            exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-        )
-        .await?;
-    }
 
     let current_path = Path::ToPoint {
         base: BasePath {
