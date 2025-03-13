@@ -13,9 +13,7 @@ once fixed in engine will just start working here with no language changes.
     If you see a red line around your model, it means this is happening.
 
 - **Import**: Right now you can import a file, even if that file has brep data
-    you cannot edit it, after v1, the engine will account for this. You also cannot
-    currently move or transform the imported objects at all, once we have assemblies
-    this will work.
+    you cannot edit it, after v1, the engine will account for this. 
 
 - **Fillets**: Fillets cannot intersect, you will get an error. Only simple fillet
     cases work currently.

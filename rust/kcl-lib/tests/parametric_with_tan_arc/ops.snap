@@ -64,8 +64,8 @@ description: Operations executed parametric_with_tan_arc.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        622,
+        645,
         0
       ]
     }

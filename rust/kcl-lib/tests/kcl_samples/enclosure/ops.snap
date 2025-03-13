@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed enclosure.kcl
 ---
 [
@@ -130,8 +130,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        740,
+        1021,
         0
       ]
     }
@@ -190,8 +190,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1100,
+        1170,
         0
       ]
     }
@@ -1699,8 +1699,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        3601,
+        3882,
         0
       ]
     }
@@ -1997,8 +1997,8 @@ description: Operations executed enclosure.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        5327,
+        5608,
         0
       ]
     }

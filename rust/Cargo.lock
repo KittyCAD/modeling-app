@@ -1783,7 +1783,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.47"
+version = "0.1.49"
 dependencies = [
  "anyhow",
  "clap",
@@ -1794,7 +1794,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.47"
+version = "0.1.49"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1813,7 +1813,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.47"
+version = "0.1.49"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1822,7 +1822,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.47"
+version = "0.2.49"
 dependencies = [
  "anyhow",
  "clap",
@@ -1843,7 +1843,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.47"
+version = "0.1.49"
 dependencies = [
  "anyhow",
  "clap",
@@ -1863,7 +1863,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.47"
+version = "0.2.49"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1931,7 +1931,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.47"
+version = "0.3.49"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1946,7 +1946,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.47"
+version = "0.1.49"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -1959,7 +1959,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.47"
+version = "0.1.49"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1973,7 +1973,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.47"
+version = "0.1.49"
 dependencies = [
  "bson",
  "console_error_panic_hook",
@@ -3097,15 +3097,14 @@ checksum = "e6cd655523701785087f69900df39892fb7b9b0721aa67682f571c38c32ac58a"
 
 [[package]]
 name = "ring"
-version = "0.17.8"
+version = "0.17.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c17fa4cb658e3583423e915b9f3acc01cceaee1860e33d59ebae66adc3a2dc0d"
+checksum = "70ac5d832aa16abd7d1def883a8545280c20a60f523a370aa3a9617c2b8550ee"
 dependencies = [
  "cc",
  "cfg-if",
  "getrandom 0.2.15",
  "libc",
- "spin",
  "untrusted",
  "windows-sys 0.52.0",
 ]
@@ -3559,12 +3558,6 @@ dependencies = [
  "libc",
  "windows-sys 0.52.0",
 ]
-
-[[package]]
-name = "spin"
-version = "0.9.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6980e8d7511241f8acf4aebddbb1ff938df5eebe98691418c4468d0b72a96a67"
 
 [[package]]
 name = "stable_deref_trait"

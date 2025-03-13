@@ -48,6 +48,15 @@ impl ExecErrorWithState {
     }
 }
 
+impl ExecError {
+    pub fn as_kcl_error(&self) -> Option<&crate::KclError> {
+        let ExecError::Kcl(k) = &self else {
+            return None;
+        };
+        Some(&k.error)
+    }
+}
+
 impl From<ExecError> for ExecErrorWithState {
     fn from(error: ExecError) -> Self {
         Self {

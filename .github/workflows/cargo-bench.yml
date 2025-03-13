@@ -26,8 +26,12 @@ name: cargo bench
 jobs:
   cargo-bench:
     name: cargo bench
-    runs-on: ubuntu-latest-8-cores
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=32cpu-linux-x64
+      - extras=s3-cache
     steps:
+      - uses: runs-on/action@v1
       - uses: actions/checkout@v4
       - name: Use correct Rust toolchain
         shell: bash
@@ -40,13 +44,18 @@ jobs:
       - name: Install dependencies
         run: |
           cargo install cargo-criterion
-          sudo apt update
-          sudo apt install -y valgrind
-      - uses: boa-dev/criterion-compare-action@v3
+          cargo install cargo-codspeed
+          cd rust/kcl-lib
+          cargo add --dev codspeed-criterion-compat --rename criterion
+      - name: Build the benchmark target(s)
+        run: |
+          cd rust
+          cargo codspeed build
+      - name: Run the benchmarks
+        uses: CodSpeedHQ/action@v3
         with:
-          cwd: "rust"
-          defaultFeatures: true
-          # Needed. The name of the branch to compare with. This default uses the branch which is being pulled against
-          branchName: ${{ github.base_ref }}
+          working-directory: rust
+          run: cargo codspeed run
+          token: ${{ secrets.CODSPEED_TOKEN }}
         env:
-          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
+          KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN }}

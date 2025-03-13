@@ -1,0 +1,19 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing import_transform.kcl
+---
+{
+  "screw": {
+    "type": "Module",
+    "value": 3,
+    "__meta": [
+      {
+        "sourceRange": [
+          0,
+          43,
+          0
+        ]
+      }
+    ]
+  }
+}

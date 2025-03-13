@@ -13,7 +13,7 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Solid},
+    execution::{ExecState, KclValue, SolidOrImportedGeometry},
     std::Args,
 };
 
@@ -24,7 +24,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let global = args.get_kw_arg_opt("global")?;
 
     let solid = inner_scale(solid, scale, global, exec_state, args).await?;
-    Ok(KclValue::Solid { value: solid })
+    Ok(solid.into())
 }
 
 /// Scale a solid.
@@ -73,6 +73,17 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     scale = [1.0, 1.0, 2.5],
 ///     )
 /// ```
+///
+/// ```no_run
+/// // Scale an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> scale(
+///     scale = [1.0, 1.0, 2.5],
+///     )
+/// ```
 #[stdlib {
     name = "scale",
     feature_tree_operation = false,
@@ -85,18 +96,18 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     }
 }]
 async fn inner_scale(
-    solid: Box<Solid>,
+    solid: SolidOrImportedGeometry,
     scale: [f64; 3],
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<SolidOrImportedGeometry, KclError> {
     let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::SetObjectTransform {
-            object_id: solid.id,
+            object_id: solid.id(),
             transforms: vec![shared::ComponentTransform {
                 scale: Some(shared::TransformBy::<Point3d<f64>> {
                     property: Point3d {
@@ -125,7 +136,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     let global = args.get_kw_arg_opt("global")?;
 
     let solid = inner_translate(solid, translate, global, exec_state, args).await?;
-    Ok(KclValue::Solid { value: solid })
+    Ok(solid.into())
 }
 
 /// Move a solid.
@@ -166,6 +177,17 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     translate = [1.0, 1.0, 2.5],
 ///     )
 /// ```
+///
+/// ```no_run
+/// // Move an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> translate(
+///     translate = [1.0, 1.0, 2.5],
+///     )
+/// ```
 #[stdlib {
     name = "translate",
     feature_tree_operation = false,
@@ -178,18 +200,18 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     }
 }]
 async fn inner_translate(
-    solid: Box<Solid>,
+    solid: SolidOrImportedGeometry,
     translate: [f64; 3],
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<SolidOrImportedGeometry, KclError> {
     let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::SetObjectTransform {
-            object_id: solid.id,
+            object_id: solid.id(),
             transforms: vec![shared::ComponentTransform {
                 translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
                     property: shared::Point3d {
@@ -322,7 +344,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     }
 
     let solid = inner_rotate(solid, roll, pitch, yaw, axis, angle, global, exec_state, args).await?;
-    Ok(KclValue::Solid { value: solid })
+    Ok(solid.into())
 }
 
 /// Rotate a solid.
@@ -425,6 +447,18 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     angle = 90,
 ///     )
 /// ```
+///
+/// ```no_run
+/// // Rotate an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> rotate(
+///     axis =  [0, 0, 1.0],
+///     angle = 90,
+///     )
+/// ```
 #[stdlib {
     name = "rotate",
     feature_tree_operation = false,
@@ -442,7 +476,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_rotate(
-    solid: Box<Solid>,
+    solid: SolidOrImportedGeometry,
     roll: Option<f64>,
     pitch: Option<f64>,
     yaw: Option<f64>,
@@ -451,14 +485,14 @@ async fn inner_rotate(
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<SolidOrImportedGeometry, KclError> {
     let id = exec_state.next_uuid();
 
     if let (Some(roll), Some(pitch), Some(yaw)) = (roll, pitch, yaw) {
         args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::SetObjectTransform {
-                object_id: solid.id,
+                object_id: solid.id(),
                 transforms: vec![shared::ComponentTransform {
                     rotate_rpy: Some(shared::TransformBy::<Point3d<f64>> {
                         property: shared::Point3d {
@@ -482,7 +516,7 @@ async fn inner_rotate(
         args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::SetObjectTransform {
-                object_id: solid.id,
+                object_id: solid.id(),
                 transforms: vec![shared::ComponentTransform {
                     rotate_angle_axis: Some(shared::TransformBy::<Point4d<f64>> {
                         property: shared::Point4d {

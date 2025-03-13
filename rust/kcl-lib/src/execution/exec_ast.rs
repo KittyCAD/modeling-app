@@ -544,12 +544,11 @@ impl ExecutorContext {
                     self.exec_module_for_result(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
                         .await?
                         .unwrap_or_else(|| {
-                            // The module didn't have a return value.  Currently,
-                            // the only way to have a return value is with the final
-                            // statement being an expression statement.
-                            //
-                            // TODO: Make a warning when we support them in the
-                            // execution phase.
+                            exec_state.warn(CompilationError::err(
+                                metadata.source_range,
+                                "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
+                            ));
+
                             let mut new_meta = vec![metadata.to_owned()];
                             new_meta.extend(meta);
                             KclValue::KclNone {
@@ -1135,7 +1134,7 @@ impl Node<CallExpressionKw> {
             },
             self.into(),
             ctx.clone(),
-            exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+            exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
         );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
@@ -1297,7 +1296,7 @@ impl Node<CallExpression> {
                     fn_args,
                     self.into(),
                     ctx.clone(),
-                    exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+                    exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
                 );
                 let mut return_value = {
                     // Don't early-return in this block.
@@ -1948,7 +1947,11 @@ impl FunctionSource {
                     args,
                     source_range,
                     ctx.clone(),
-                    exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+                    exec_state
+                        .mod_local
+                        .pipe_value
+                        .clone()
+                        .map(|v| Arg::new(v, source_range)),
                 );
 
                 func(exec_state, args).await.map(Some)

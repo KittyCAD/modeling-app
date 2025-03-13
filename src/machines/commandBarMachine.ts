@@ -134,8 +134,10 @@ export const commandBarMachine = setup({
         // that is, the first argument that is not already in the argumentsToSubmit
         // or hidden, or that is not undefined, or that is not marked as "skippable".
         // TODO validate the type of the existing arguments
-        const nonHiddenArgs = Object.entries(selectedCommand.args).filter(
-          (a) => !a[1].hidden
+        const nonHiddenArgs = Object.entries(selectedCommand.args).filter((a) =>
+          a[1].hidden && typeof a[1].hidden === 'function'
+            ? !a[1].hidden(context)
+            : !a[1].hidden
         )
         let argIndex = 0
 
@@ -260,7 +262,11 @@ export const commandBarMachine = setup({
     },
     'All arguments are skippable': ({ context }) => {
       return Object.values(context.selectedCommand!.args!).every(
-        (argConfig) => argConfig.skip || argConfig.hidden
+        (argConfig) =>
+          argConfig.skip ||
+          (typeof argConfig.hidden === 'function'
+            ? argConfig.hidden(context)
+            : argConfig.hidden)
       )
     },
     'Has selected command': ({ context }) => !!context.selectedCommand,

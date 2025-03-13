@@ -161,6 +161,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
+        with:
+          path: rust/kcl-python-bindings
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v5
       - name: do uv things
