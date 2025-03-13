@@ -1199,23 +1199,25 @@ async fn kcl_test_plumbus_fillets() {
 fn pentagon = (len) => {
   sg = startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %, $a)
-  |> angledLine({
-       angle: segAng(a) + 180 - 108,
-       length: len
-     }, %, $b)
-  |> angledLine({
-       angle: segAng(b) + 180 - 108,
-       length: len
-     }, %, $c)
-  |> angledLine({
-       angle: segAng(c) + 180 - 108,
-       length: len
-     }, %, $d)
-  |> angledLine({
-       angle: segAng(d) + 180 - 108,
-       length: len
-     }, %)
+  |> angledLine(angle = 0, length = len , tag = $a)
+  |> angledLine(
+       angle = segAng(a) + 180 - 108,
+       length = len,
+       tag = $b,
+     )
+  |> angledLine(
+       angle = segAng(b) + 180 - 108,
+       length = len,
+       tag = $c,
+     )
+  |> angledLine(
+       angle = segAng(c) + 180 - 108,
+       length = len
+     , %, $d)
+  |> angledLine(
+       angle = segAng(d) + 180 - 108,
+       length = len
+     , %)
 
   return sg
 }
@@ -1687,15 +1689,17 @@ async fn kcl_test_duplicate_tags_should_error() {
     let code = r#"fn triangle = (len) => {
   return startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %, $a)
-  |> angledLine({
-       angle: segAng(a) + 120,
-       length: len
-     }, %, $b)
-  |> angledLine({
-       angle: segAng(b) + 120,
-       length: len
-     }, %, $a)
+  |> angledLine(angle = 0, length = len , tag = $a)
+  |> angledLine(
+       angle = segAng(a) + 120,
+       length = len,
+       tag = $b,
+     )
+  |> angledLine(
+       angle = segAng(b) + 120,
+       length = len,
+       tag = $a,
+     )
 }
 
 let p = triangle(200)
@@ -1788,7 +1792,7 @@ async fn kcl_test_arc_error_same_start_end() {
 async fn kcl_test_angled_line_to_x_90() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineToX({ angle: 90, to: 10 }, %)
+  |> angledLine(angle = 90, endAbsoluteX = 10)
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
   |> close()
@@ -1808,7 +1812,7 @@ example = extrude(exampleSketch, length = 10)
 async fn kcl_test_angled_line_to_x_270() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineToX({ angle: 270, to: 10 }, %)
+  |> angledLine(angle = 270, endAbsoluteX = 10)
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
   |> close()
@@ -1828,9 +1832,9 @@ example = extrude(exampleSketch, length = 10)
 async fn kcl_test_angled_line_to_y_0() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineToY({ angle: 0, to: 20 }, %)
+  |> angledLine(angle = 0, endAbsoluteY = 20)
   |> line(end = [-20, 0])
-  |> angledLineToY({ angle: 70, to: 10 }, %)
+  |> angledLine(angle = 70, endAbsoluteY = 10)
   |> close()
 
 example = extrude(exampleSketch, length = 10)
@@ -1848,9 +1852,9 @@ example = extrude(exampleSketch, length = 10)
 async fn kcl_test_angled_line_to_y_180() {
     let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineToY({ angle: 180, to: 20 }, %)
+  |> angledLine(angle = 180, endAbsoluteY = 20)
   |> line(end = [-20, 0])
-  |> angledLineToY({ angle: 70, to: 10 }, %)
+  |> angledLine(angle = 70, endAbsoluteY = 10)
   |> close()
 
 example = extrude(exampleSketch, length = 10)
@@ -1868,8 +1872,8 @@ example = extrude(exampleSketch, length = 10)
 async fn kcl_test_angled_line_of_x_length_90() {
     let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
-  |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
+  |> angledLine(angle = 90, lengthX = 90, tag = $edge1 )
+  |> angledLine(angle = -15, lengthX = -15, tag = $edge2 )
   |> line(end = [0, -5])
   |> close(tag = $edge3)
 
@@ -1888,8 +1892,8 @@ extrusion = extrude(sketch001, length = 10)
 async fn kcl_test_angled_line_of_x_length_270() {
     let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
-  |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
+  |> angledLine(angle = 90, lengthX = 90, tag = $edge1)
+  |> angledLine(angle = -15, lengthX = -15, tag = $edge2)
   |> line(end = [0, -5])
   |> close(tag = $edge3)
 
