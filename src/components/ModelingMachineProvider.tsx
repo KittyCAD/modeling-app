@@ -96,7 +96,7 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
-import { uuidv4 } from 'lib/utils'
+import { platform, uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
@@ -1729,10 +1729,7 @@ export const ModelingMachineProvider = ({
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
   const deleteKeys =
-    (isDesktop() && window.electron.os.isMac) ||
-    navigator.platform.includes('Mac')
-      ? ['backspace', 'delete', 'del']
-      : ['delete', 'del']
+    platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
   useHotkeys(deleteKeys, () => {
     modelingSend({ type: 'Delete selection' })
   })
