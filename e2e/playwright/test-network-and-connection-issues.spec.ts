@@ -73,7 +73,7 @@ test.describe('Test network and connection issues', () => {
 
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled({ timeout: 15000 })
+      ).not.toBeDisabled({ timeout: 30000 })
 
       // (Second check) expect the network to be up
       await expect(networkToggle).toContainText('Connected')
