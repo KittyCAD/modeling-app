@@ -44,7 +44,7 @@ description: Operations executed pipe.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {

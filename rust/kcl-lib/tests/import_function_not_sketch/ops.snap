@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_function_not_sketch.kcl
 ---
 [
@@ -44,7 +44,7 @@ description: Operations executed import_function_not_sketch.kcl
           3
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
