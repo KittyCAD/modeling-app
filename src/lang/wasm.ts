@@ -55,6 +55,7 @@ import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { isArray } from 'lib/utils'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from 'lib/settings/settingsTypes'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
@@ -606,7 +607,8 @@ export function changeKclSettings(
 }
 
 /**
- * Convert a `UnitLength_type` to a `UnitLen`
+ * Convert a `UnitLength` (used in settings and modeling commands) to a
+ * `UnitLen` (used in execution).
  */
 export function unitLengthToUnitLen(input: UnitLength): UnitLen {
   switch (input) {
@@ -626,7 +628,8 @@ export function unitLengthToUnitLen(input: UnitLength): UnitLen {
 }
 
 /**
- * Convert `UnitLen` to `UnitLength_type`.
+ * Convert `UnitLen` (used in execution) to `UnitLength` (used in settings
+ * and modeling commands).
  */
 export function unitLenToUnitLength(input: UnitLen): UnitLength {
   switch (input.type) {
@@ -641,19 +644,35 @@ export function unitLenToUnitLength(input: UnitLen): UnitLength {
     case 'Inches':
       return 'in'
     default:
-      return 'mm'
+      return DEFAULT_DEFAULT_LENGTH_UNIT
+  }
+}
+
+export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
+
+/**
+ * Convert a `UnitAngle` (used in modeling commands) to a `UnitAng` (used in
+ * execution).
+ */
+export function unitAngleToUnitAng(input: UnitAngle): UnitAng {
+  switch (input) {
+    case 'radians':
+      return { type: 'Radians' }
+    default:
+      return { type: 'Degrees' }
   }
 }
 
 /**
- * Convert `UnitAngle` to `UnitAngle_type`.
+ * Convert `UnitAng` (used in execution) to `UnitAngle` (used in modeling
+ * commands).
  */
 export function unitAngToUnitAngle(input: UnitAng): UnitAngle {
   switch (input.type) {
     case 'Radians':
       return 'radians'
     default:
-      return 'degrees'
+      return DEFAULT_DEFAULT_ANGLE_UNIT
   }
 }
 
