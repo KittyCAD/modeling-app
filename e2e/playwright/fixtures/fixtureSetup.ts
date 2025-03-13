@@ -162,10 +162,22 @@ export class ElectronZoo {
 
     // Do this once and then reuse window on subsequent calls.
     if (!this.electron) {
-      this.electron = await electron.launch(options)
-      this.page = await this.electron.firstWindow()
-      this.context = this.electron.context()
-      await this.context.tracing.start({ screenshots: true, snapshots: true })
+      const startElectron = async () => {
+        this.electron = await electron.launch(options)
+        this.page = await this.electron.firstWindow()
+        this.context = this.electron.context()
+        await this.context.tracing.start({ screenshots: true, snapshots: true })
+      }
+
+      await new Promise((resolve) => {
+        if (process.platform === 'darwin') {
+          setTimeout(() => {
+            startElectron().then(resolve).catch(console.error)
+          }, 1000)
+        } else {
+          startElectron().then(resolve).catch(console.error)
+        }
+      })
     }
 
     await this.context.tracing.startChunk()
