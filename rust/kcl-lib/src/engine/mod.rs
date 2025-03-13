@@ -257,12 +257,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             return Ok(());
         }
 
-        // Add cmd to the batch.
-        let mut batch = self.batch().write().await.clone();
+        // Add cmds to the batch.
+        let mut extended_cmds = Vec::with_capacity(cmds.len());
         for cmd in cmds {
-            batch.push((WebSocketRequest::ModelingCmdReq(cmd.clone()), source_range));
+            extended_cmds.push((WebSocketRequest::ModelingCmdReq(cmd.clone()), source_range));
         }
-        drop(batch);
+        self.batch().write().await.extend(extended_cmds);
 
         Ok(())
     }

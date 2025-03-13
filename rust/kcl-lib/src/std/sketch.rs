@@ -230,6 +230,8 @@ async fn straight_line(
         }),
     )
     .await?;
+
+    args.ctx.engine.flush_batch(true, Default::default()).await?;
     let end = if is_absolute {
         point
     } else {
@@ -1248,10 +1250,6 @@ pub(crate) async fn inner_start_profile_at(
                 to: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
             }),
             cmd_id: move_pen_id.into(),
-        },
-        ModelingCmdReq {
-            cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-            cmd_id: exec_state.next_uuid().into(),
         },
     ])
     .await?;

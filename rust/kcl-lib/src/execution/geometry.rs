@@ -558,11 +558,6 @@ impl Sketch {
                 cmd_id: exec_state.next_uuid().into(),
             },
             inner_cmd,
-            // Disable the sketch mode.
-            ModelingCmdReq {
-                cmd_id: exec_state.next_uuid().into(),
-                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-            },
         ]
     }
 }
