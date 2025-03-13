@@ -11,16 +11,16 @@ description: Operations executed multi_transform.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          126,
-          128,
+          123,
+          125,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      112,
-      129,
+      109,
+      126,
       0
     ],
     "type": "StdLibCall",
@@ -43,16 +43,16 @@ description: Operations executed multi_transform.kcl
           }
         },
         "sourceRange": [
-          295,
           296,
+          297,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "type": "StdLibCall",
@@ -64,8 +64,8 @@ description: Operations executed multi_transform.kcl
         }
       },
       "sourceRange": [
-        278,
-        297,
+        279,
+        298,
         0
       ]
     }
@@ -87,8 +87,8 @@ description: Operations executed multi_transform.kcl
           }
         },
         "sourceRange": [
-          332,
           333,
+          334,
           0
         ]
       },
@@ -97,16 +97,16 @@ description: Operations executed multi_transform.kcl
           "type": "Function"
         },
         "sourceRange": [
-          347,
-          356,
+          348,
+          357,
           0
         ]
       }
     },
     "name": "patternTransform",
     "sourceRange": [
-      303,
-      357,
+      304,
+      358,
       0
     ],
     "type": "StdLibCall",
@@ -118,8 +118,8 @@ description: Operations executed multi_transform.kcl
         }
       },
       "sourceRange": [
-        303,
-        357,
+        304,
+        358,
         0
       ]
     }

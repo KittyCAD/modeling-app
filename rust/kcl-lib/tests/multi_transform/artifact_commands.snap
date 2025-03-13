@@ -56,8 +56,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      112,
-      129,
+      109,
+      126,
       0
     ],
     "command": {
@@ -85,8 +85,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      160,
+      132,
+      157,
       0
     ],
     "command": {
@@ -105,8 +105,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      160,
+      132,
+      157,
       0
     ],
     "command": {
@@ -116,8 +116,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      160,
+      132,
+      157,
       0
     ],
     "command": {
@@ -133,8 +133,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      166,
-      272,
+      163,
+      273,
       0
     ],
     "command": {
@@ -153,8 +153,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      166,
-      272,
+      163,
+      273,
       0
     ],
     "command": {
@@ -164,8 +164,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      166,
-      272,
+      163,
+      273,
       0
     ],
     "command": {
@@ -181,8 +181,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      166,
-      272,
+      163,
+      273,
       0
     ],
     "command": {
@@ -202,8 +202,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      166,
-      272,
+      163,
+      273,
       0
     ],
     "command": {
@@ -223,8 +223,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      166,
-      272,
+      163,
+      273,
       0
     ],
     "command": {
@@ -244,8 +244,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      166,
-      272,
+      163,
+      273,
       0
     ],
     "command": {
@@ -265,8 +265,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      166,
-      272,
+      163,
+      273,
       0
     ],
     "command": {
@@ -277,8 +277,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -297,8 +297,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -311,8 +311,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -322,8 +322,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -334,8 +334,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -347,8 +347,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -361,8 +361,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -375,8 +375,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -389,8 +389,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -403,8 +403,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -417,8 +417,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -431,8 +431,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -445,8 +445,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      278,
-      297,
+      279,
+      298,
       0
     ],
     "command": {
@@ -459,8 +459,8 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      303,
-      357,
+      304,
+      358,
       0
     ],
     "command": {
