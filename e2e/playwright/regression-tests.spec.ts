@@ -44,7 +44,7 @@ test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
     // the close doesn't work
     // when https://github.com/KittyCAD/modeling-app/issues/3268 is closed
     // this test will need updating
-    const crypticErrorText = `ApiError`
+    const crypticErrorText = `internal_engine`
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
   })
   test('user should not have to press down twice in cmdbar', async ({

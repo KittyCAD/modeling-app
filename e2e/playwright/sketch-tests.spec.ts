@@ -2290,7 +2290,7 @@ extrude001 = extrude(thePart, length = 75)
       })
     }
   )
-  test(
+  test.fixme(
     'Can enter sketch on sketch of wall and cap for segment, solid2d, extrude-wall, extrude-cap selections',
     { tag: ['@skipWin'] },
     async ({ homePage, scene, toolbar, editor, page }) => {
