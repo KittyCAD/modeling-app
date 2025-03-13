@@ -24,8 +24,8 @@ type Point3D = kcmc::shared::Point3d<f64>;
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Geometry {
-    Sketch(Box<Sketch>),
-    Solid(Box<Solid>),
+    Sketch(Sketch),
+    Solid(Solid),
 }
 
 impl Geometry {
@@ -53,8 +53,8 @@ impl Geometry {
 #[serde(tag = "type")]
 #[allow(clippy::vec_box)]
 pub enum Geometries {
-    Sketches(Vec<Box<Sketch>>),
-    Solids(Vec<Box<Solid>>),
+    Sketches(Vec<Sketch>),
+    Solids(Vec<Solid>),
 }
 
 impl From<Geometry> for Geometries {
@@ -63,150 +63,6 @@ impl From<Geometry> for Geometries {
             Geometry::Sketch(x) => Self::Sketches(vec![x]),
             Geometry::Solid(x) => Self::Solids(vec![x]),
         }
-    }
-}
-
-/// A sketch or a group of sketches.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
-#[allow(clippy::vec_box)]
-pub enum SketchSet {
-    Sketch(Box<Sketch>),
-    Sketches(Vec<Box<Sketch>>),
-}
-
-impl SketchSet {
-    pub fn meta(&self) -> Vec<Metadata> {
-        match self {
-            SketchSet::Sketch(sg) => sg.meta.clone(),
-            SketchSet::Sketches(sg) => sg.iter().flat_map(|sg| sg.meta.clone()).collect(),
-        }
-    }
-}
-
-impl From<SketchSet> for Vec<Sketch> {
-    fn from(value: SketchSet) -> Self {
-        match value {
-            SketchSet::Sketch(sg) => vec![*sg],
-            SketchSet::Sketches(sgs) => sgs.into_iter().map(|sg| *sg).collect(),
-        }
-    }
-}
-
-impl From<Sketch> for SketchSet {
-    fn from(sg: Sketch) -> Self {
-        SketchSet::Sketch(Box::new(sg))
-    }
-}
-
-impl From<Box<Sketch>> for SketchSet {
-    fn from(sg: Box<Sketch>) -> Self {
-        SketchSet::Sketch(sg)
-    }
-}
-
-impl From<Vec<Sketch>> for SketchSet {
-    fn from(sg: Vec<Sketch>) -> Self {
-        if sg.len() == 1 {
-            SketchSet::Sketch(Box::new(sg[0].clone()))
-        } else {
-            SketchSet::Sketches(sg.into_iter().map(Box::new).collect())
-        }
-    }
-}
-
-impl From<Vec<Box<Sketch>>> for SketchSet {
-    fn from(sg: Vec<Box<Sketch>>) -> Self {
-        if sg.len() == 1 {
-            SketchSet::Sketch(sg[0].clone())
-        } else {
-            SketchSet::Sketches(sg)
-        }
-    }
-}
-
-impl From<SketchSet> for Vec<Box<Sketch>> {
-    fn from(sg: SketchSet) -> Self {
-        match sg {
-            SketchSet::Sketch(sg) => vec![sg],
-            SketchSet::Sketches(sgs) => sgs,
-        }
-    }
-}
-
-impl From<&Sketch> for Vec<Box<Sketch>> {
-    fn from(sg: &Sketch) -> Self {
-        vec![Box::new(sg.clone())]
-    }
-}
-
-impl From<Box<Sketch>> for Vec<Box<Sketch>> {
-    fn from(sg: Box<Sketch>) -> Self {
-        vec![sg]
-    }
-}
-
-/// A solid or a group of solids.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
-#[allow(clippy::vec_box)]
-pub enum SolidSet {
-    Solid(Box<Solid>),
-    Solids(Vec<Box<Solid>>),
-}
-
-impl From<Solid> for SolidSet {
-    fn from(eg: Solid) -> Self {
-        SolidSet::Solid(Box::new(eg))
-    }
-}
-
-impl From<Box<Solid>> for SolidSet {
-    fn from(eg: Box<Solid>) -> Self {
-        SolidSet::Solid(eg)
-    }
-}
-
-impl From<Vec<Solid>> for SolidSet {
-    fn from(eg: Vec<Solid>) -> Self {
-        if eg.len() == 1 {
-            SolidSet::Solid(Box::new(eg[0].clone()))
-        } else {
-            SolidSet::Solids(eg.into_iter().map(Box::new).collect())
-        }
-    }
-}
-
-impl From<Vec<Box<Solid>>> for SolidSet {
-    fn from(eg: Vec<Box<Solid>>) -> Self {
-        if eg.len() == 1 {
-            SolidSet::Solid(eg[0].clone())
-        } else {
-            SolidSet::Solids(eg)
-        }
-    }
-}
-
-impl From<SolidSet> for Vec<Box<Solid>> {
-    fn from(eg: SolidSet) -> Self {
-        match eg {
-            SolidSet::Solid(eg) => vec![eg],
-            SolidSet::Solids(egs) => egs,
-        }
-    }
-}
-
-impl From<&Solid> for Vec<Box<Solid>> {
-    fn from(eg: &Solid) -> Self {
-        vec![Box::new(eg.clone())]
-    }
-}
-
-impl From<Box<Solid>> for Vec<Box<Solid>> {
-    fn from(eg: Box<Solid>) -> Self {
-        vec![eg]
     }
 }
 

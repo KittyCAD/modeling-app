@@ -6,7 +6,7 @@ use kittycad_modeling_cmds::shared::Angle;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Point2d, Sketch, TagIdentifier},
+    execution::{kcl_value::RuntimeType, ExecState, KclValue, Point2d, PrimitiveType, Sketch, TagIdentifier},
     std::{utils::between, Args},
 };
 
@@ -282,8 +282,9 @@ fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: 
     Ok(path.get_from()[1])
 }
 /// Returns the last segment of x.
-pub async fn last_segment_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg("sketch")?;
+pub async fn last_segment_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
     let result = inner_last_segment_x(sketch, args.clone())?;
 
     Ok(args.make_user_val_from_f64(result))
@@ -327,8 +328,9 @@ fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<f64, KclError> {
 }
 
 /// Returns the last segment of y.
-pub async fn last_segment_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg("sketch")?;
+pub async fn last_segment_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
     let result = inner_last_segment_y(sketch, args.clone())?;
 
     Ok(args.make_user_val_from_f64(result))

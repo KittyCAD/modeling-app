@@ -10,7 +10,7 @@ Repeat a 2-dimensional sketch along some dimension, with a dynamic amount of dis
 
 ```js
 patternLinear2d(
-  sketchSet: SketchSet,
+  sketches: [Sketch],
   instances: integer,
   distance: number,
   axis: [number],
@@ -23,7 +23,7 @@ patternLinear2d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | The sketch(es) to duplicate | Yes |
+| `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) | The sketch(es) to duplicate | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `distance` | [`number`](/docs/kcl/types/number) | Distance between each repetition. Also known as 'spacing'. | Yes |
 | `axis` | [`[number]`](/docs/kcl/types/number) | The axis of the pattern. A 2D vector. | Yes |

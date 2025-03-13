@@ -7,7 +7,10 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid},
+    execution::{
+        kcl_value::RuntimeType, ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, PrimitiveType,
+        Solid,
+    },
     parsing::ast::types::TagNode,
     std::{fillet::EdgeReference, Args},
 };
@@ -16,7 +19,7 @@ pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid")?;
+    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::Primitive(PrimitiveType::Solid), exec_state)?;
     let length = args.get_kw_arg("length")?;
     let tags = args.kw_arg_array_and_source::<EdgeReference>("tags")?;
     let tag = args.get_kw_arg_opt("tag")?;

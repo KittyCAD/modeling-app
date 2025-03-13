@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    execution::{ExecState, Helix, KclValue, Sketch, Solid},
+    execution::{kcl_value::RuntimeType, ExecState, Helix, KclValue, PrimitiveType, Sketch, Solid},
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
@@ -24,7 +24,8 @@ pub enum SweepPath {
 
 /// Extrude a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg("sketch")?;
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
     let path: SweepPath = args.get_kw_arg("path")?;
     let sectional = args.get_kw_arg_opt("sectional")?;
     let tolerance = args.get_kw_arg_opt("tolerance")?;
@@ -129,5 +130,7 @@ async fn inner_sweep(
     )
     .await?;
 
-    do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await
+    Ok(Box::new(
+        do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await?,
+    ))
 }

@@ -30,9 +30,9 @@ pub struct RevolveData {
 
 /// Revolve a sketch around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch): (RevolveData, Sketch) = args.get_data_and_sketch()?;
+    let (data, sketch): (RevolveData, _) = args.get_data_and_sketch(exec_state)?;
 
-    let value = inner_revolve(data, sketch, exec_state, args).await?;
+    let value = inner_revolve(data, *sketch, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
@@ -230,5 +230,7 @@ async fn inner_revolve(
         }
     }
 
-    do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await
+    Ok(Box::new(
+        do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await?,
+    ))
 }

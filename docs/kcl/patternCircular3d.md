@@ -10,7 +10,7 @@ Repeat a 3-dimensional solid some number of times along a partial or complete ci
 
 ```js
 patternCircular3d(
-  solidSet: SolidSet,
+  solids: [Solid],
   instances: integer,
   axis: [number],
   center: [number],
@@ -25,7 +25,7 @@ patternCircular3d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | Which solid(s) to pattern | Yes |
+| `solids` | [`[Solid]`](/docs/kcl/types/Solid) | Which solid(s) to pattern | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `axis` | [`[number]`](/docs/kcl/types/number) | The axis around which to make the pattern. This is a 3D vector | Yes |
 | `center` | [`[number]`](/docs/kcl/types/number) | The center about which to make the pattern. This is a 3D vector. | Yes |
