@@ -1,0 +1,107 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed out_of_band_sketches.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
+        "sourceRange": [
+          26,
+          30,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      12,
+      31,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": [
+          258,
+          262,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      244,
+      263,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.14,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          763,
+          768,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      704,
+      769,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": [
+        712,
+        752,
+        0
+      ]
+    }
+  }
+]
