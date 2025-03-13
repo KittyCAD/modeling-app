@@ -20,35 +20,40 @@ import { DeepPartial } from 'lib/types'
 import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 test.describe('Testing settings', () => {
-  test(
-    'Stored settings are validated and fall back to defaults',
+  test('Stored settings are validated and fall back to defaults', async ({
+    page,
+    homePage,
+    tronApp,
+  }) => {
+    if (!tronApp) {
+      fail()
+    }
     // Override beforeEach test setup
     // with corrupted settings
-    {
-      appSettings: TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>,
-    },
-    async ({ page, homePage }) => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+    await tronApp.cleanProjectDir(
+      TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>
+    )
 
-      // Check the settings were reset
-      const storedSettings = tomlToSettings(
-        await page.evaluate(
-          ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
-          { settingsKey: TEST_SETTINGS_KEY }
-        )
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    // Check the settings were reset
+    const storedSettings = tomlToSettings(
+      await page.evaluate(
+        ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
+        { settingsKey: TEST_SETTINGS_KEY }
       )
+    )
 
-      expect(storedSettings.settings?.app?.theme).toBe('dark')
+    expect(storedSettings.settings?.app?.theme).toBe('dark')
 
-      // Check that the invalid settings were changed to good defaults
-      expect(storedSettings.settings?.modeling?.base_unit).toBe('in')
-      expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
-      expect(storedSettings.settings?.app?.project_directory).toBe('')
-      expect(storedSettings.settings?.project?.default_project_name).toBe(
-        'project-$nnn'
-      )
-    }
-  )
+    // Check that the invalid settings were changed to good defaults
+    expect(storedSettings.settings?.modeling?.base_unit).toBe('in')
+    expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
+    expect(storedSettings.settings?.app?.project_directory).toBe('')
+    expect(storedSettings.settings?.project?.default_project_name).toBe(
+      'project-$nnn'
+    )
+  })
 
   // The behavior is actually broken. Parent always takes precedence
   test.fixme(
@@ -357,8 +362,6 @@ test.describe('Testing settings', () => {
     `Load desktop app with no settings file`,
     {
       tag: '@electron',
-      // This is what makes no settings file get created
-      cleanProjectDir: false,
     },
     async ({ page }, testInfo) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -379,13 +382,17 @@ test.describe('Testing settings', () => {
     `Load desktop app with a settings file, but no project directory setting`,
     {
       tag: '@electron',
-      appSettings: {
+    },
+    async ({ context, page, tronApp }, testInfo) => {
+      if (!tronApp) {
+        fail()
+      }
+      await tronApp.cleanProjectDir({
         app: {
           theme_color: '259',
         },
-      },
-    },
-    async ({ context, page }, testInfo) => {
+      })
+
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       // Selectors and constants
@@ -405,15 +412,20 @@ test.describe('Testing settings', () => {
     'user settings reload on external change, on project and modeling view',
     {
       tag: '@electron',
-      appSettings: {
+    },
+    async ({ context, page, tronApp }, testInfo) => {
+      if (!tronApp) {
+        fail()
+      }
+
+      await tronApp.cleanProjectDir({
         app: {
           // Doesn't matter what you set it to. It will
           // default to 264.5
           theme_color: '0',
         },
-      },
-    },
-    async ({ context, page }, testInfo) => {
+      })
+
       const { dir: projectDirName } = await context.folderSetupFn(
         async () => {}
       )
@@ -783,128 +795,136 @@ test.describe('Testing settings', () => {
     })
   })
 
-  test(
-    `Changing system theme preferences (via media query) should update UI and stream`,
-    {
-      // Override the settings so that the theme is set to `system`
-      appSettings: TEST_SETTINGS_DEFAULT_THEME,
-    },
-    async ({ page, homePage }) => {
-      const u = await getUtils(page)
-
-      // Selectors and constants
-      const darkBackgroundCss = 'oklch(0.3012 0 264.5)'
-      const lightBackgroundCss = 'oklch(0.9911 0 264.5)'
-      const darkBackgroundColor: [number, number, number] = [27, 27, 27]
-      const lightBackgroundColor: [number, number, number] = [245, 245, 245]
-      const streamBackgroundPixelIsColor = async (
-        color: [number, number, number]
-      ) => {
-        return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
-      }
-      const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
-
-      await test.step(`Test setup`, async () => {
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        await homePage.goToModelingScene()
-        await u.waitForPageLoad()
-        await page.waitForTimeout(1000)
-        await expect(toolbar).toBeVisible()
-      })
-
-      await test.step(`Check the background color is light before`, async () => {
-        await expect(toolbar).toHaveCSS('background-color', lightBackgroundCss)
-        await expect
-          .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
-          .toBeLessThan(15)
-      })
-
-      await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
-        await page.emulateMedia({ colorScheme: 'dark' })
-      })
-
-      await test.step(`Check the background color is dark after`, async () => {
-        await expect(toolbar).toHaveCSS('background-color', darkBackgroundCss)
-        await expect
-          .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
-          .toBeLessThan(15)
-      })
+  test(`Changing system theme preferences (via media query) should update UI and stream`, async ({
+    page,
+    homePage,
+    tronApp,
+  }) => {
+    if (!tronApp) {
+      fail()
     }
-  )
 
-  test(
-    `Turning off "Show debug panel" with debug panel open leaves no phantom panel`,
-    {
+    await tronApp.cleanProjectDir({
+      // Override the settings so that the theme is set to `system`
+      ...TEST_SETTINGS_DEFAULT_THEME,
+    })
+
+    const u = await getUtils(page)
+
+    // Selectors and constants
+    const darkBackgroundCss = 'oklch(0.3012 0 264.5)'
+    const lightBackgroundCss = 'oklch(0.9911 0 264.5)'
+    const darkBackgroundColor: [number, number, number] = [27, 27, 27]
+    const lightBackgroundColor: [number, number, number] = [245, 245, 245]
+    const streamBackgroundPixelIsColor = async (
+      color: [number, number, number]
+    ) => {
+      return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
+    }
+    const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
+
+    await test.step(`Test setup`, async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+      await page.waitForTimeout(1000)
+      await expect(toolbar).toBeVisible()
+    })
+
+    await test.step(`Check the background color is light before`, async () => {
+      await expect(toolbar).toHaveCSS('background-color', lightBackgroundCss)
+      await expect
+        .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
+        .toBeLessThan(15)
+    })
+
+    await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
+      await page.emulateMedia({ colorScheme: 'dark' })
+    })
+
+    await test.step(`Check the background color is dark after`, async () => {
+      await expect(toolbar).toHaveCSS('background-color', darkBackgroundCss)
+      await expect
+        .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
+        .toBeLessThan(15)
+    })
+  })
+
+  test(`Turning off "Show debug panel" with debug panel open leaves no phantom panel`, async ({
+    context,
+    page,
+    homePage,
+    tronApp,
+  }) => {
+    if (!tronApp) {
+      fail()
+    }
+
+    await tronApp.cleanProjectDir({
       // Override beforeEach test setup
       // with debug panel open
       // but "show debug panel" set to false
-      appSettings: {
-        ...TEST_SETTINGS,
-        app: { ...TEST_SETTINGS.app, show_debug_panel: false },
-        modeling: { ...TEST_SETTINGS.modeling },
-      },
-    },
-    async ({ context, page, homePage }) => {
-      const u = await getUtils(page)
+      ...TEST_SETTINGS,
+      app: { ...TEST_SETTINGS.app, show_debug_panel: false },
+      modeling: { ...TEST_SETTINGS.modeling },
+    })
 
-      await context.addInitScript(async () => {
-        localStorage.setItem(
-          'persistModelingContext',
-          '{"openPanes":["debug"]}'
+    const u = await getUtils(page)
+
+    await context.addInitScript(async () => {
+      localStorage.setItem('persistModelingContext', '{"openPanes":["debug"]}')
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
+
+    // Constants and locators
+    const resizeHandle = page.locator('.sidebar-resize-handles > div.block')
+    const debugPaneButton = page.getByTestId('debug-pane-button')
+    const commandsButton = page.getByRole('button', { name: 'Commands' })
+    const debugPaneOption = page.getByRole('option', {
+      name: 'Settings · app · show debug panel',
+    })
+
+    async function setShowDebugPanelTo(value: 'On' | 'Off') {
+      await commandsButton.click()
+      await debugPaneOption.click()
+      await page.getByRole('option', { name: value }).click()
+      await expect(
+        page.getByText(
+          `Set show debug panel to "${value === 'On'}" for this project`
         )
-      })
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-
-      // Constants and locators
-      const resizeHandle = page.locator('.sidebar-resize-handles > div.block')
-      const debugPaneButton = page.getByTestId('debug-pane-button')
-      const commandsButton = page.getByRole('button', { name: 'Commands' })
-      const debugPaneOption = page.getByRole('option', {
-        name: 'Settings · app · show debug panel',
-      })
-
-      async function setShowDebugPanelTo(value: 'On' | 'Off') {
-        await commandsButton.click()
-        await debugPaneOption.click()
-        await page.getByRole('option', { name: value }).click()
-        await expect(
-          page.getByText(
-            `Set show debug panel to "${value === 'On'}" for this project`
-          )
-        ).toBeVisible()
-      }
-
-      await test.step(`Initial load with corrupted settings`, async () => {
-        // Check that the debug panel is not visible
-        await expect(debugPaneButton).not.toBeVisible()
-        // Check the pane resize handle wrapper is not visible
-        await expect(resizeHandle).not.toBeVisible()
-      })
-
-      await test.step(`Open code pane to verify we see the resize handles`, async () => {
-        await u.openKclCodePanel()
-        await expect(resizeHandle).toBeVisible()
-        await u.closeKclCodePanel()
-      })
-
-      await test.step(`Turn on debug panel, open it`, async () => {
-        await setShowDebugPanelTo('On')
-        await expect(debugPaneButton).toBeVisible()
-        // We want the logic to clear the phantom panel, so we shouldn't see
-        // the real panel (and therefore the resize handle) yet
-        await expect(resizeHandle).not.toBeVisible()
-        await u.openDebugPanel()
-        await expect(resizeHandle).toBeVisible()
-      })
-
-      await test.step(`Turn off debug panel setting with it open`, async () => {
-        await setShowDebugPanelTo('Off')
-        await expect(debugPaneButton).not.toBeVisible()
-        await expect(resizeHandle).not.toBeVisible()
-      })
+      ).toBeVisible()
     }
-  )
+
+    await test.step(`Initial load with corrupted settings`, async () => {
+      // Check that the debug panel is not visible
+      await expect(debugPaneButton).not.toBeVisible()
+      // Check the pane resize handle wrapper is not visible
+      await expect(resizeHandle).not.toBeVisible()
+    })
+
+    await test.step(`Open code pane to verify we see the resize handles`, async () => {
+      await u.openKclCodePanel()
+      await expect(resizeHandle).toBeVisible()
+      await u.closeKclCodePanel()
+    })
+
+    await test.step(`Turn on debug panel, open it`, async () => {
+      await setShowDebugPanelTo('On')
+      await expect(debugPaneButton).toBeVisible()
+      // We want the logic to clear the phantom panel, so we shouldn't see
+      // the real panel (and therefore the resize handle) yet
+      await expect(resizeHandle).not.toBeVisible()
+      await u.openDebugPanel()
+      await expect(resizeHandle).toBeVisible()
+    })
+
+    await test.step(`Turn off debug panel setting with it open`, async () => {
+      await setShowDebugPanelTo('Off')
+      await expect(debugPaneButton).not.toBeVisible()
+      await expect(resizeHandle).not.toBeVisible()
+    })
+  })
 
   test(`Change inline units setting`, async ({
     page,
