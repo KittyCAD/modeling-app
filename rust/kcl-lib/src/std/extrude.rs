@@ -196,7 +196,8 @@ pub(crate) async fn do_post_extrude(
     // In case of a sectional sweep, empirically it seems that the first n faces that are yielded from the sweep
     // are the ones that work with GetOppositeEdge and GetNextAdjacentEdge, aka the n sides in the sweep.
     // So here we're figuring out that n number
-    let sketch_has_close = sketch.paths.len() > 1 && sketch.paths.last().unwrap().get_base().from == sketch.paths.last().unwrap().get_base().to;
+    let sketch_has_close = sketch.paths.len() > 1
+        && sketch.paths.last().unwrap().get_base().from == sketch.paths.last().unwrap().get_base().to;
     let yielded_sides_count = if sketch_has_close {
         sketch.paths.len() - 1
     } else {
