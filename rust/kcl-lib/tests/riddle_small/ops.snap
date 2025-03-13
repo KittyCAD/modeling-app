@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed riddle_small.kcl
 ---
 [
@@ -102,8 +102,8 @@ description: Operations executed riddle_small.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        287,
+        306,
         0
       ]
     }

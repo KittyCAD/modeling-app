@@ -1,4 +1,5 @@
-import { test, expect, Page } from './zoo-test'
+import { Page } from '@playwright/test'
+import { test, expect } from './zoo-test'
 import { HomePageFixture } from './fixtures/homePageFixture'
 import { getUtils } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'

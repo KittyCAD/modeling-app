@@ -234,8 +234,8 @@ description: Operations executed ssi_pattern.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        616,
+        637,
         0
       ]
     }

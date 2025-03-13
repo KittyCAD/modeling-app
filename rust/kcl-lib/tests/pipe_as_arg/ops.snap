@@ -93,8 +93,8 @@ description: Operations executed pipe_as_arg.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        367,
+        391,
         0
       ]
     }

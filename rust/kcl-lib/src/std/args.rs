@@ -159,6 +159,49 @@ impl Args {
         })
     }
 
+    /// Get a labelled keyword arg, check it's an array, and return all items in the array
+    /// plus their source range.
+    pub(crate) fn kw_arg_array_and_source<'a, T>(&'a self, label: &str) -> Result<Vec<(T, SourceRange)>, KclError>
+    where
+        T: FromKclValue<'a>,
+    {
+        let Some(arg) = self.kw_args.labeled.get(label) else {
+            let err = KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.source_range],
+                message: format!("This function requires a keyword argument '{label}'"),
+            });
+            return Err(err);
+        };
+        let Some(array) = arg.value.as_array() else {
+            let err = KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![arg.source_range],
+                message: format!(
+                    "Expected an array of {} but found {}",
+                    type_name::<T>(),
+                    arg.value.human_friendly_type()
+                ),
+            });
+            return Err(err);
+        };
+        array
+            .iter()
+            .map(|item| {
+                let source = SourceRange::from(item);
+                let val = FromKclValue::from_kcl_val(item).ok_or_else(|| {
+                    KclError::Semantic(KclErrorDetails {
+                        source_ranges: arg.source_ranges(),
+                        message: format!(
+                            "Expected a {} but found {}",
+                            type_name::<T>(),
+                            arg.value.human_friendly_type()
+                        ),
+                    })
+                })?;
+                Ok((val, source))
+            })
+            .collect::<Result<Vec<_>, _>>()
+    }
+
     /// Get the unlabeled keyword argument. If not set, returns None.
     pub(crate) fn unlabeled_kw_arg_unconverted(&self) -> Option<&Arg> {
         self.kw_args
@@ -184,7 +227,7 @@ impl Args {
         T::from_kcl_val(&arg.value).ok_or_else(|| {
             let expected_type_name = tynm::type_name::<T>();
             let actual_type_name = arg.value.human_friendly_type();
-            let msg_base = format!("This function expected this argument to be of type {expected_type_name} but it's actually of type {actual_type_name}");
+            let msg_base = format!("This function expected the input argument to be of type {expected_type_name} but it's actually of type {actual_type_name}");
             let suggestion = match (expected_type_name.as_str(), actual_type_name) {
                 ("SolidSet", "Sketch") => Some(
                     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
