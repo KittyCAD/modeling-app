@@ -247,7 +247,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       await editor.expectEditor.toContain('mySketch001 = startSketchOn')
       await editor.expectEditor.not.toContain('sketch002 = startSketchOn')
       await editor.expectEditor.toContain(
-        'extrude002 = extrude(mySketch, length = 50)'
+        'extrude002 = extrude(mySketch001, length = 50)'
       )
 
       await acceptBtn.click()
