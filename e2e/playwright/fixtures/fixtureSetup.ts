@@ -166,10 +166,17 @@ export class ElectronZoo {
       this.electron = await electron.launch(options)
 
       // Mac takes quite a long time to create the first window in CI.
-      this.page = this.electron.windows()[0];
-      if (!this.page) {
-        this.page = await this.electron.firstWindow('window',  { timeout: 0 });
+      // Turns out we can't trust firstWindow() either. So loop.
+      let timeoutId = undefined
+      const tryToGetWindowPage = () => {
+        this.page = this.electron.windows()[0];
+        timeoutId = setTimeout(() => {
+          if (this.page) { clearTimeout(timeoutId) }
+          tryToGetWindowPage()
+        }, 1000)
       }
+
+      tryToGetWindowPage()
 
       this.context = this.electron.context()
       await this.context.tracing.start({ screenshots: true, snapshots: true })
