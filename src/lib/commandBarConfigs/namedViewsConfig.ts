@@ -66,7 +66,7 @@ export function createNamedViewsCommand() {
           toast.success(`Named view ${requestedView.name} created.`)
         }
       }
-      invokeAndForgetCreateNamedView()
+      invokeAndForgetCreateNamedView().catch(reportRejection)
     },
     args: {
       name: {
@@ -204,7 +204,7 @@ export function createNamedViewsCommand() {
           toast.error(`Unable to load named view, could not find named view`)
         }
       }
-      invokeAndForgetLoadNamedView()
+      invokeAndForgetLoadNamedView().catch(reportRejection)
     },
     args: {
       name: {
