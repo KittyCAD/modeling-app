@@ -118,13 +118,10 @@ export async function createNewProjectDirectory(
   // When initialCode is present, we're loading existing code.  If it's not
   // present, we're creating a new project, and we want to incorporate the
   // user's settings.
-  const codeToWrite =
-    initialCode ??
-    newKclFile(
-      '',
-      configuration?.settings?.modeling?.base_unit ??
-        DEFAULT_DEFAULT_LENGTH_UNIT
-    )
+  const codeToWrite = newKclFile(
+    initialCode,
+    configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT
+  )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
   await window.electron.writeFile(projectFile, codeToWrite)
   const metadata = await window.electron.stat(projectFile)
