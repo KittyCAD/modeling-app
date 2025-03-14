@@ -24,7 +24,6 @@ use crate::{
 
 mod tokeniser;
 
-#[cfg(test)]
 pub(crate) use tokeniser::RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
@@ -162,7 +161,9 @@ impl IntoIterator for TokenStream {
 #[derive(Debug, Clone)]
 pub(crate) struct TokenSlice<'a> {
     stream: &'a TokenStream,
+    /// Current position of the leading Token in the stream
     start: usize,
+    /// The number of total Tokens in the stream
     end: usize,
 }
 
@@ -189,6 +190,21 @@ impl<'a> TokenSlice<'a> {
             end: self.end - 1,
             stream: self.stream,
         }
+    }
+
+    pub fn as_source_range(&self) -> SourceRange {
+        let stream_len = self.stream.tokens.len();
+        let first_token = if stream_len == self.start {
+            &self.stream.tokens[self.start - 1]
+        } else {
+            self.token(0)
+        };
+        let last_token = if stream_len == self.end {
+            &self.stream.tokens[stream_len - 1]
+        } else {
+            self.token(self.end - self.start)
+        };
+        SourceRange::new(first_token.start, last_token.end, last_token.module_id)
     }
 }
 
@@ -291,6 +307,14 @@ impl<'a> winnow::stream::StreamIsPartial for TokenSlice<'a> {
 
     fn is_partial_supported() -> bool {
         false
+    }
+}
+
+impl<'a> winnow::stream::FindSlice<&str> for TokenSlice<'a> {
+    fn find_slice(&self, substr: &str) -> Option<std::ops::Range<usize>> {
+        self.iter()
+            .enumerate()
+            .find_map(|(i, b)| if b.value == substr { Some(i..self.end) } else { None })
     }
 }
 
