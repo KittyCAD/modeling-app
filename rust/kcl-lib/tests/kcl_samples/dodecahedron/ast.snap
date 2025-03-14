@@ -7,17 +7,17 @@ description: Result of parsing dodecahedron.kcl
     "body": [
       {
         "declaration": {
-          "end": 361,
+          "end": 363,
           "id": {
-            "end": 356,
+            "end": 358,
             "name": "circR",
-            "start": 351,
+            "start": 353,
             "type": "Identifier"
           },
           "init": {
-            "end": 361,
+            "end": 363,
             "raw": "25",
-            "start": 359,
+            "start": 361,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,38 +25,38 @@ description: Result of parsing dodecahedron.kcl
               "suffix": "None"
             }
           },
-          "start": 351,
+          "start": 353,
           "type": "VariableDeclarator"
         },
-        "end": 361,
+        "end": 363,
         "kind": "const",
-        "start": 351,
+        "start": 353,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 448,
+          "end": 450,
           "id": {
-            "end": 434,
+            "end": 436,
             "name": "wallThickness",
-            "start": 421,
+            "start": 423,
             "type": "Identifier"
           },
           "init": {
-            "end": 448,
+            "end": 450,
             "left": {
-              "end": 442,
+              "end": 444,
               "name": "circR",
-              "start": 437,
+              "start": 439,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "*",
             "right": {
-              "end": 448,
+              "end": 450,
               "raw": "0.2",
-              "start": 445,
+              "start": 447,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -64,39 +64,39 @@ description: Result of parsing dodecahedron.kcl
                 "suffix": "None"
               }
             },
-            "start": 437,
+            "start": 439,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 421,
+          "start": 423,
           "type": "VariableDeclarator"
         },
-        "end": 448,
+        "end": 450,
         "kind": "const",
-        "start": 421,
+        "start": 423,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 515,
+          "end": 517,
           "id": {
-            "end": 492,
+            "end": 494,
             "name": "dihedral",
-            "start": 484,
+            "start": 486,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
                 "argument": {
-                  "end": 513,
+                  "end": 515,
                   "left": {
                     "arguments": [
                       {
-                        "end": 508,
+                        "end": 510,
                         "raw": "5",
-                        "start": 507,
+                        "start": 509,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -106,21 +106,21 @@ description: Result of parsing dodecahedron.kcl
                       }
                     ],
                     "callee": {
-                      "end": 506,
+                      "end": 508,
                       "name": "sqrt",
-                      "start": 502,
+                      "start": 504,
                       "type": "Identifier"
                     },
-                    "end": 509,
-                    "start": 502,
+                    "end": 511,
+                    "start": 504,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 513,
+                    "end": 515,
                     "raw": "5",
-                    "start": 512,
+                    "start": 514,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -128,62 +128,62 @@ description: Result of parsing dodecahedron.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 502,
+                  "start": 504,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "end": 513,
+                "end": 515,
                 "operator": "-",
-                "start": 500,
+                "start": 502,
                 "type": "UnaryExpression",
                 "type": "UnaryExpression"
               }
             ],
             "callee": {
-              "end": 499,
+              "end": 501,
               "name": "acos",
-              "start": 495,
+              "start": 497,
               "type": "Identifier"
             },
-            "end": 515,
-            "start": 495,
+            "end": 517,
+            "start": 497,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 484,
+          "start": 486,
           "type": "VariableDeclarator"
         },
-        "end": 515,
+        "end": 517,
         "kind": "const",
-        "start": 484,
+        "start": 486,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 581,
+          "end": 583,
           "id": {
-            "end": 542,
+            "end": 544,
             "name": "inscR",
-            "start": 537,
+            "start": 539,
             "type": "Identifier"
           },
           "init": {
-            "end": 581,
+            "end": 583,
             "left": {
-              "end": 555,
+              "end": 557,
               "left": {
-                "end": 550,
+                "end": 552,
                 "name": "circR",
-                "start": 545,
+                "start": 547,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "/",
               "right": {
-                "end": 555,
+                "end": 557,
                 "raw": "15",
-                "start": 553,
+                "start": 555,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -191,7 +191,7 @@ description: Result of parsing dodecahedron.kcl
                   "suffix": "None"
                 }
               },
-              "start": 545,
+              "start": 547,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
@@ -199,11 +199,11 @@ description: Result of parsing dodecahedron.kcl
             "right": {
               "arguments": [
                 {
-                  "end": 580,
+                  "end": 582,
                   "left": {
-                    "end": 565,
+                    "end": 567,
                     "raw": "75",
-                    "start": 563,
+                    "start": 565,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -213,11 +213,11 @@ description: Result of parsing dodecahedron.kcl
                   },
                   "operator": "+",
                   "right": {
-                    "end": 580,
+                    "end": 582,
                     "left": {
-                      "end": 570,
+                      "end": 572,
                       "raw": "30",
-                      "start": 568,
+                      "start": 570,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -229,9 +229,9 @@ description: Result of parsing dodecahedron.kcl
                     "right": {
                       "arguments": [
                         {
-                          "end": 579,
+                          "end": 581,
                           "raw": "5",
-                          "start": 578,
+                          "start": 580,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -241,66 +241,66 @@ description: Result of parsing dodecahedron.kcl
                         }
                       ],
                       "callee": {
-                        "end": 577,
+                        "end": 579,
                         "name": "sqrt",
-                        "start": 573,
+                        "start": 575,
                         "type": "Identifier"
                       },
-                      "end": 580,
-                      "start": 573,
+                      "end": 582,
+                      "start": 575,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
-                    "start": 568,
+                    "start": 570,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "start": 563,
+                  "start": 565,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 }
               ],
               "callee": {
-                "end": 562,
+                "end": 564,
                 "name": "sqrt",
-                "start": 558,
+                "start": 560,
                 "type": "Identifier"
               },
-              "end": 581,
-              "start": 558,
+              "end": 583,
+              "start": 560,
               "type": "CallExpression",
               "type": "CallExpression"
             },
-            "start": 545,
+            "start": 547,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 537,
+          "start": 539,
           "type": "VariableDeclarator"
         },
-        "end": 581,
+        "end": 583,
         "kind": "const",
-        "start": 537,
+        "start": 539,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 650,
+          "end": 652,
           "id": {
-            "end": 612,
+            "end": 614,
             "name": "edgeL",
-            "start": 607,
+            "start": 609,
             "type": "Identifier"
           },
           "init": {
-            "end": 650,
+            "end": 652,
             "left": {
-              "end": 624,
+              "end": 626,
               "left": {
-                "end": 616,
+                "end": 618,
                 "raw": "4",
-                "start": 615,
+                "start": 617,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -310,25 +310,25 @@ description: Result of parsing dodecahedron.kcl
               },
               "operator": "*",
               "right": {
-                "end": 624,
+                "end": 626,
                 "name": "circR",
-                "start": 619,
+                "start": 621,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 615,
+              "start": 617,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             "operator": "/",
             "right": {
-              "end": 650,
+              "end": 652,
               "left": {
                 "arguments": [
                   {
-                    "end": 634,
+                    "end": 636,
                     "raw": "3",
-                    "start": 633,
+                    "start": 635,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -338,23 +338,23 @@ description: Result of parsing dodecahedron.kcl
                   }
                 ],
                 "callee": {
-                  "end": 632,
+                  "end": 634,
                   "name": "sqrt",
-                  "start": 628,
+                  "start": 630,
                   "type": "Identifier"
                 },
-                "end": 635,
-                "start": 628,
+                "end": 637,
+                "start": 630,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               "operator": "*",
               "right": {
-                "end": 650,
+                "end": 652,
                 "left": {
-                  "end": 640,
+                  "end": 642,
                   "raw": "1",
-                  "start": 639,
+                  "start": 641,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -366,9 +366,9 @@ description: Result of parsing dodecahedron.kcl
                 "right": {
                   "arguments": [
                     {
-                      "end": 649,
+                      "end": 651,
                       "raw": "5",
-                      "start": 648,
+                      "start": 650,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -378,62 +378,62 @@ description: Result of parsing dodecahedron.kcl
                     }
                   ],
                   "callee": {
-                    "end": 647,
+                    "end": 649,
                     "name": "sqrt",
-                    "start": 643,
+                    "start": 645,
                     "type": "Identifier"
                   },
-                  "end": 650,
-                  "start": 643,
+                  "end": 652,
+                  "start": 645,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 },
-                "start": 639,
+                "start": 641,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 628,
+              "start": 630,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 615,
+            "start": 617,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 607,
+          "start": 609,
           "type": "VariableDeclarator"
         },
-        "end": 650,
+        "end": 652,
         "kind": "const",
-        "start": 607,
+        "start": 609,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 711,
+          "end": 713,
           "id": {
-            "end": 678,
+            "end": 680,
             "name": "pentR",
-            "start": 673,
+            "start": 675,
             "type": "Identifier"
           },
           "init": {
-            "end": 711,
+            "end": 713,
             "left": {
-              "end": 690,
+              "end": 692,
               "left": {
-                "end": 686,
+                "end": 688,
                 "name": "edgeL",
-                "start": 681,
+                "start": 683,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "/",
               "right": {
-                "end": 690,
+                "end": 692,
                 "raw": "2",
-                "start": 689,
+                "start": 691,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -441,7 +441,7 @@ description: Result of parsing dodecahedron.kcl
                   "suffix": "None"
                 }
               },
-              "start": 681,
+              "start": 683,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
@@ -451,9 +451,9 @@ description: Result of parsing dodecahedron.kcl
                 {
                   "arguments": [
                     {
-                      "end": 709,
+                      "end": 711,
                       "raw": "36",
-                      "start": 707,
+                      "start": 709,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -463,91 +463,91 @@ description: Result of parsing dodecahedron.kcl
                     }
                   ],
                   "callee": {
-                    "end": 706,
+                    "end": 708,
                     "name": "toRadians",
-                    "start": 697,
+                    "start": 699,
                     "type": "Identifier"
                   },
-                  "end": 710,
-                  "start": 697,
+                  "end": 712,
+                  "start": 699,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 }
               ],
               "callee": {
-                "end": 696,
+                "end": 698,
                 "name": "sin",
-                "start": 693,
+                "start": 695,
                 "type": "Identifier"
               },
-              "end": 711,
-              "start": 693,
+              "end": 713,
+              "start": 695,
               "type": "CallExpression",
               "type": "CallExpression"
             },
-            "start": 681,
+            "start": 683,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 673,
+          "start": 675,
           "type": "VariableDeclarator"
         },
-        "end": 711,
+        "end": 713,
         "kind": "const",
-        "start": 673,
+        "start": 675,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1057,
+          "end": 1059,
           "id": {
-            "end": 763,
+            "end": 765,
             "name": "plane",
-            "start": 758,
+            "start": 760,
             "type": "Identifier"
           },
           "init": {
-            "end": 1057,
+            "end": 1059,
             "properties": [
               {
-                "end": 1055,
+                "end": 1057,
                 "key": {
-                  "end": 775,
+                  "end": 777,
                   "name": "plane",
-                  "start": 770,
+                  "start": 772,
                   "type": "Identifier"
                 },
-                "start": 770,
+                "start": 772,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 1055,
+                  "end": 1057,
                   "properties": [
                     {
-                      "end": 931,
+                      "end": 933,
                       "key": {
-                        "end": 790,
+                        "end": 792,
                         "name": "origin",
-                        "start": 784,
+                        "start": 786,
                         "type": "Identifier"
                       },
-                      "start": 784,
+                      "start": 786,
                       "type": "ObjectProperty",
                       "value": {
                         "elements": [
                           {
-                            "end": 850,
+                            "end": 852,
                             "left": {
                               "argument": {
-                                "end": 807,
+                                "end": 809,
                                 "name": "inscR",
-                                "start": 802,
+                                "start": 804,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "end": 807,
+                              "end": 809,
                               "operator": "-",
-                              "start": 801,
+                              "start": 803,
                               "type": "UnaryExpression",
                               "type": "UnaryExpression"
                             },
@@ -557,33 +557,33 @@ description: Result of parsing dodecahedron.kcl
                                 {
                                   "arguments": [
                                     {
-                                      "end": 848,
+                                      "end": 850,
                                       "left": {
                                         "arguments": [
                                           {
-                                            "end": 842,
+                                            "end": 844,
                                             "name": "dihedral",
-                                            "start": 834,
+                                            "start": 836,
                                             "type": "Identifier",
                                             "type": "Identifier"
                                           }
                                         ],
                                         "callee": {
-                                          "end": 833,
+                                          "end": 835,
                                           "name": "toDegrees",
-                                          "start": 824,
+                                          "start": 826,
                                           "type": "Identifier"
                                         },
-                                        "end": 843,
-                                        "start": 824,
+                                        "end": 845,
+                                        "start": 826,
                                         "type": "CallExpression",
                                         "type": "CallExpression"
                                       },
                                       "operator": "-",
                                       "right": {
-                                        "end": 848,
+                                        "end": 850,
                                         "raw": "90",
-                                        "start": 846,
+                                        "start": 848,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -591,42 +591,42 @@ description: Result of parsing dodecahedron.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 824,
+                                      "start": 826,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 823,
+                                    "end": 825,
                                     "name": "toRadians",
-                                    "start": 814,
+                                    "start": 816,
                                     "type": "Identifier"
                                   },
-                                  "end": 849,
-                                  "start": 814,
+                                  "end": 851,
+                                  "start": 816,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 }
                               ],
                               "callee": {
-                                "end": 813,
+                                "end": 815,
                                 "name": "cos",
-                                "start": 810,
+                                "start": 812,
                                 "type": "Identifier"
                               },
-                              "end": 850,
-                              "start": 810,
+                              "end": 852,
+                              "start": 812,
                               "type": "CallExpression",
                               "type": "CallExpression"
                             },
-                            "start": 801,
+                            "start": 803,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           {
-                            "end": 859,
+                            "end": 861,
                             "raw": "0",
-                            "start": 858,
+                            "start": 860,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -635,21 +635,21 @@ description: Result of parsing dodecahedron.kcl
                             }
                           },
                           {
-                            "end": 924,
+                            "end": 926,
                             "left": {
-                              "end": 872,
+                              "end": 874,
                               "name": "inscR",
-                              "start": 867,
+                              "start": 869,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "-",
                             "right": {
-                              "end": 924,
+                              "end": 926,
                               "left": {
-                                "end": 881,
+                                "end": 883,
                                 "name": "inscR",
-                                "start": 876,
+                                "start": 878,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
@@ -659,33 +659,33 @@ description: Result of parsing dodecahedron.kcl
                                   {
                                     "arguments": [
                                       {
-                                        "end": 922,
+                                        "end": 924,
                                         "left": {
                                           "arguments": [
                                             {
-                                              "end": 916,
+                                              "end": 918,
                                               "name": "dihedral",
-                                              "start": 908,
+                                              "start": 910,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             }
                                           ],
                                           "callee": {
-                                            "end": 907,
+                                            "end": 909,
                                             "name": "toDegrees",
-                                            "start": 898,
+                                            "start": 900,
                                             "type": "Identifier"
                                           },
-                                          "end": 917,
-                                          "start": 898,
+                                          "end": 919,
+                                          "start": 900,
                                           "type": "CallExpression",
                                           "type": "CallExpression"
                                         },
                                         "operator": "-",
                                         "right": {
-                                          "end": 922,
+                                          "end": 924,
                                           "raw": "90",
-                                          "start": 920,
+                                          "start": 922,
                                           "type": "Literal",
                                           "type": "Literal",
                                           "value": {
@@ -693,86 +693,86 @@ description: Result of parsing dodecahedron.kcl
                                             "suffix": "None"
                                           }
                                         },
-                                        "start": 898,
+                                        "start": 900,
                                         "type": "BinaryExpression",
                                         "type": "BinaryExpression"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 897,
+                                      "end": 899,
                                       "name": "toRadians",
-                                      "start": 888,
+                                      "start": 890,
                                       "type": "Identifier"
                                     },
-                                    "end": 923,
-                                    "start": 888,
+                                    "end": 925,
+                                    "start": 890,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
                                 "callee": {
-                                  "end": 887,
+                                  "end": 889,
                                   "name": "sin",
-                                  "start": 884,
+                                  "start": 886,
                                   "type": "Identifier"
                                 },
-                                "end": 924,
-                                "start": 884,
+                                "end": 926,
+                                "start": 886,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
                               },
-                              "start": 876,
+                              "start": 878,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "start": 867,
+                            "start": 869,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           }
                         ],
-                        "end": 931,
-                        "start": 793,
+                        "end": 933,
+                        "start": 795,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     },
                     {
-                      "end": 980,
+                      "end": 982,
                       "key": {
-                        "end": 942,
+                        "end": 944,
                         "name": "xAxis",
-                        "start": 937,
+                        "start": 939,
                         "type": "Identifier"
                       },
-                      "start": 937,
+                      "start": 939,
                       "type": "ObjectProperty",
                       "value": {
                         "elements": [
                           {
                             "arguments": [
                               {
-                                "end": 958,
+                                "end": 960,
                                 "name": "dihedral",
-                                "start": 950,
+                                "start": 952,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             ],
                             "callee": {
-                              "end": 949,
+                              "end": 951,
                               "name": "cos",
-                              "start": 946,
+                              "start": 948,
                               "type": "Identifier"
                             },
-                            "end": 959,
-                            "start": 946,
+                            "end": 961,
+                            "start": 948,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           },
                           {
-                            "end": 964,
+                            "end": 966,
                             "raw": "0.0",
-                            "start": 961,
+                            "start": 963,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -783,47 +783,47 @@ description: Result of parsing dodecahedron.kcl
                           {
                             "arguments": [
                               {
-                                "end": 978,
+                                "end": 980,
                                 "name": "dihedral",
-                                "start": 970,
+                                "start": 972,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             ],
                             "callee": {
-                              "end": 969,
+                              "end": 971,
                               "name": "sin",
-                              "start": 966,
+                              "start": 968,
                               "type": "Identifier"
                             },
-                            "end": 979,
-                            "start": 966,
+                            "end": 981,
+                            "start": 968,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           }
                         ],
-                        "end": 980,
-                        "start": 945,
+                        "end": 982,
+                        "start": 947,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     },
                     {
-                      "end": 1003,
+                      "end": 1005,
                       "key": {
-                        "end": 991,
+                        "end": 993,
                         "name": "yAxis",
-                        "start": 986,
+                        "start": 988,
                         "type": "Identifier"
                       },
-                      "start": 986,
+                      "start": 988,
                       "type": "ObjectProperty",
                       "value": {
                         "elements": [
                           {
-                            "end": 996,
+                            "end": 998,
                             "raw": "0",
-                            "start": 995,
+                            "start": 997,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -832,9 +832,9 @@ description: Result of parsing dodecahedron.kcl
                             }
                           },
                           {
-                            "end": 999,
+                            "end": 1001,
                             "raw": "1",
-                            "start": 998,
+                            "start": 1000,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -843,9 +843,9 @@ description: Result of parsing dodecahedron.kcl
                             }
                           },
                           {
-                            "end": 1002,
+                            "end": 1004,
                             "raw": "0",
-                            "start": 1001,
+                            "start": 1003,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -854,49 +854,49 @@ description: Result of parsing dodecahedron.kcl
                             }
                           }
                         ],
-                        "end": 1003,
-                        "start": 994,
+                        "end": 1005,
+                        "start": 996,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     },
                     {
-                      "end": 1051,
+                      "end": 1053,
                       "key": {
-                        "end": 1014,
+                        "end": 1016,
                         "name": "zAxis",
-                        "start": 1009,
+                        "start": 1011,
                         "type": "Identifier"
                       },
-                      "start": 1009,
+                      "start": 1011,
                       "type": "ObjectProperty",
                       "value": {
                         "elements": [
                           {
                             "arguments": [
                               {
-                                "end": 1030,
+                                "end": 1032,
                                 "name": "dihedral",
-                                "start": 1022,
+                                "start": 1024,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             ],
                             "callee": {
-                              "end": 1021,
+                              "end": 1023,
                               "name": "sin",
-                              "start": 1018,
+                              "start": 1020,
                               "type": "Identifier"
                             },
-                            "end": 1031,
-                            "start": 1018,
+                            "end": 1033,
+                            "start": 1020,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           },
                           {
-                            "end": 1034,
+                            "end": 1036,
                             "raw": "0",
-                            "start": 1033,
+                            "start": 1035,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -908,64 +908,64 @@ description: Result of parsing dodecahedron.kcl
                             "argument": {
                               "arguments": [
                                 {
-                                  "end": 1049,
+                                  "end": 1051,
                                   "name": "dihedral",
-                                  "start": 1041,
+                                  "start": 1043,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 }
                               ],
                               "callee": {
-                                "end": 1040,
+                                "end": 1042,
                                 "name": "cos",
-                                "start": 1037,
+                                "start": 1039,
                                 "type": "Identifier"
                               },
-                              "end": 1050,
-                              "start": 1037,
+                              "end": 1052,
+                              "start": 1039,
                               "type": "CallExpression",
                               "type": "CallExpression"
                             },
-                            "end": 1050,
+                            "end": 1052,
                             "operator": "-",
-                            "start": 1036,
+                            "start": 1038,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           }
                         ],
-                        "end": 1051,
-                        "start": 1017,
+                        "end": 1053,
+                        "start": 1019,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     }
                   ],
-                  "start": 778,
+                  "start": 780,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 }
               }
             ],
-            "start": 766,
+            "start": 768,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
-          "start": 758,
+          "start": 760,
           "type": "VariableDeclarator"
         },
-        "end": 1057,
+        "end": 1059,
         "kind": "const",
-        "start": 758,
+        "start": 760,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1276,
+          "end": 1278,
           "id": {
-            "end": 1136,
+            "end": 1138,
             "name": "bottomFace",
-            "start": 1126,
+            "start": 1128,
             "type": "Identifier"
           },
           "init": {
@@ -973,62 +973,62 @@ description: Result of parsing dodecahedron.kcl
               {
                 "arguments": [
                   {
-                    "end": 1157,
+                    "end": 1159,
                     "raw": "'XY'",
-                    "start": 1153,
+                    "start": 1155,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 1152,
+                  "end": 1154,
                   "name": "startSketchOn",
-                  "start": 1139,
+                  "start": 1141,
                   "type": "Identifier"
                 },
-                "end": 1158,
-                "start": 1139,
+                "end": 1160,
+                "start": 1141,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 1272,
+                    "end": 1274,
                     "properties": [
                       {
-                        "end": 1195,
+                        "end": 1197,
                         "key": {
-                          "end": 1187,
+                          "end": 1189,
                           "name": "radius",
-                          "start": 1181,
+                          "start": 1183,
                           "type": "Identifier"
                         },
-                        "start": 1181,
+                        "start": 1183,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1195,
+                          "end": 1197,
                           "name": "pentR",
-                          "start": 1190,
+                          "start": 1192,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       },
                       {
-                        "end": 1216,
+                        "end": 1218,
                         "key": {
-                          "end": 1212,
+                          "end": 1214,
                           "name": "numSides",
-                          "start": 1204,
+                          "start": 1206,
                           "type": "Identifier"
                         },
-                        "start": 1204,
+                        "start": 1206,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1216,
+                          "end": 1218,
                           "raw": "5",
-                          "start": 1215,
+                          "start": 1217,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1038,21 +1038,21 @@ description: Result of parsing dodecahedron.kcl
                         }
                       },
                       {
-                        "end": 1240,
+                        "end": 1242,
                         "key": {
-                          "end": 1231,
+                          "end": 1233,
                           "name": "center",
-                          "start": 1225,
+                          "start": 1227,
                           "type": "Identifier"
                         },
-                        "start": 1225,
+                        "start": 1227,
                         "type": "ObjectProperty",
                         "value": {
                           "elements": [
                             {
-                              "end": 1236,
+                              "end": 1238,
                               "raw": "0",
-                              "start": 1235,
+                              "start": 1237,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1061,9 +1061,9 @@ description: Result of parsing dodecahedron.kcl
                               }
                             },
                             {
-                              "end": 1239,
+                              "end": 1241,
                               "raw": "0",
-                              "start": 1238,
+                              "start": 1240,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1072,76 +1072,76 @@ description: Result of parsing dodecahedron.kcl
                               }
                             }
                           ],
-                          "end": 1240,
-                          "start": 1234,
+                          "end": 1242,
+                          "start": 1236,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       },
                       {
-                        "end": 1265,
+                        "end": 1267,
                         "key": {
-                          "end": 1258,
+                          "end": 1260,
                           "name": "inscribed",
-                          "start": 1249,
+                          "start": 1251,
                           "type": "Identifier"
                         },
-                        "start": 1249,
+                        "start": 1251,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1265,
+                          "end": 1267,
                           "raw": "true",
-                          "start": 1261,
+                          "start": 1263,
                           "type": "Literal",
                           "type": "Literal",
                           "value": true
                         }
                       }
                     ],
-                    "start": 1172,
+                    "start": 1174,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1275,
-                    "start": 1274,
+                    "end": 1277,
+                    "start": 1276,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1171,
+                  "end": 1173,
                   "name": "polygon",
-                  "start": 1164,
+                  "start": 1166,
                   "type": "Identifier"
                 },
-                "end": 1276,
-                "start": 1164,
+                "end": 1278,
+                "start": 1166,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 1276,
-            "start": 1139,
+            "end": 1278,
+            "start": 1141,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1126,
+          "start": 1128,
           "type": "VariableDeclarator"
         },
-        "end": 1276,
+        "end": 1278,
         "kind": "const",
-        "start": 1126,
+        "start": 1128,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1469,
+          "end": 1471,
           "id": {
-            "end": 1292,
+            "end": 1294,
             "name": "bottomSideFace",
-            "start": 1278,
+            "start": 1280,
             "type": "Identifier"
           },
           "init": {
@@ -1149,61 +1149,61 @@ description: Result of parsing dodecahedron.kcl
               {
                 "arguments": [
                   {
-                    "end": 1314,
+                    "end": 1316,
                     "name": "plane",
-                    "start": 1309,
+                    "start": 1311,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 1308,
+                  "end": 1310,
                   "name": "startSketchOn",
-                  "start": 1295,
+                  "start": 1297,
                   "type": "Identifier"
                 },
-                "end": 1315,
-                "start": 1295,
+                "end": 1317,
+                "start": 1297,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 1429,
+                    "end": 1431,
                     "properties": [
                       {
-                        "end": 1352,
+                        "end": 1354,
                         "key": {
-                          "end": 1344,
+                          "end": 1346,
                           "name": "radius",
-                          "start": 1338,
+                          "start": 1340,
                           "type": "Identifier"
                         },
-                        "start": 1338,
+                        "start": 1340,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1352,
+                          "end": 1354,
                           "name": "pentR",
-                          "start": 1347,
+                          "start": 1349,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       },
                       {
-                        "end": 1373,
+                        "end": 1375,
                         "key": {
-                          "end": 1369,
+                          "end": 1371,
                           "name": "numSides",
-                          "start": 1361,
+                          "start": 1363,
                           "type": "Identifier"
                         },
-                        "start": 1361,
+                        "start": 1363,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1373,
+                          "end": 1375,
                           "raw": "5",
-                          "start": 1372,
+                          "start": 1374,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1213,21 +1213,21 @@ description: Result of parsing dodecahedron.kcl
                         }
                       },
                       {
-                        "end": 1397,
+                        "end": 1399,
                         "key": {
-                          "end": 1388,
+                          "end": 1390,
                           "name": "center",
-                          "start": 1382,
+                          "start": 1384,
                           "type": "Identifier"
                         },
-                        "start": 1382,
+                        "start": 1384,
                         "type": "ObjectProperty",
                         "value": {
                           "elements": [
                             {
-                              "end": 1393,
+                              "end": 1395,
                               "raw": "0",
-                              "start": 1392,
+                              "start": 1394,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1236,9 +1236,9 @@ description: Result of parsing dodecahedron.kcl
                               }
                             },
                             {
-                              "end": 1396,
+                              "end": 1398,
                               "raw": "0",
-                              "start": 1395,
+                              "start": 1397,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1247,62 +1247,62 @@ description: Result of parsing dodecahedron.kcl
                               }
                             }
                           ],
-                          "end": 1397,
-                          "start": 1391,
+                          "end": 1399,
+                          "start": 1393,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       },
                       {
-                        "end": 1422,
+                        "end": 1424,
                         "key": {
-                          "end": 1415,
+                          "end": 1417,
                           "name": "inscribed",
-                          "start": 1406,
+                          "start": 1408,
                           "type": "Identifier"
                         },
-                        "start": 1406,
+                        "start": 1408,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1422,
+                          "end": 1424,
                           "raw": "true",
-                          "start": 1418,
+                          "start": 1420,
                           "type": "Literal",
                           "type": "Literal",
                           "value": true
                         }
                       }
                     ],
-                    "start": 1329,
+                    "start": 1331,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1432,
-                    "start": 1431,
+                    "end": 1434,
+                    "start": 1433,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1328,
+                  "end": 1330,
                   "name": "polygon",
-                  "start": 1321,
+                  "start": 1323,
                   "type": "Identifier"
                 },
-                "end": 1433,
-                "start": 1321,
+                "end": 1435,
+                "start": 1323,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 1469,
+            "end": 1471,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 1469,
-                    "start": 1433,
+                    "end": 1471,
+                    "start": 1435,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1314,26 +1314,26 @@ description: Result of parsing dodecahedron.kcl
               },
               "startNodes": []
             },
-            "start": 1295,
+            "start": 1297,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1278,
+          "start": 1280,
           "type": "VariableDeclarator"
         },
-        "end": 1469,
+        "end": 1471,
         "kind": "const",
-        "start": 1278,
+        "start": 1280,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1522,
+          "end": 1524,
           "id": {
-            "end": 1476,
+            "end": 1478,
             "name": "bottom",
-            "start": 1470,
+            "start": 1472,
             "type": "Identifier"
           },
           "init": {
@@ -1341,54 +1341,54 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1505,
+                  "end": 1507,
                   "name": "length",
-                  "start": 1499,
+                  "start": 1501,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1521,
+                  "end": 1523,
                   "name": "wallThickness",
-                  "start": 1508,
+                  "start": 1510,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
               }
             ],
             "callee": {
-              "end": 1486,
+              "end": 1488,
               "name": "extrude",
-              "start": 1479,
+              "start": 1481,
               "type": "Identifier"
             },
-            "end": 1522,
-            "start": 1479,
+            "end": 1524,
+            "start": 1481,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 1497,
+              "end": 1499,
               "name": "bottomFace",
-              "start": 1487,
+              "start": 1489,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 1470,
+          "start": 1472,
           "type": "VariableDeclarator"
         },
-        "end": 1522,
+        "end": 1524,
         "kind": "const",
-        "start": 1470,
+        "start": 1472,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1583,
+          "end": 1585,
           "id": {
-            "end": 1533,
+            "end": 1535,
             "name": "bottomSide",
-            "start": 1523,
+            "start": 1525,
             "type": "Identifier"
           },
           "init": {
@@ -1396,54 +1396,54 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1566,
+                  "end": 1568,
                   "name": "length",
-                  "start": 1560,
+                  "start": 1562,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1582,
+                  "end": 1584,
                   "name": "wallThickness",
-                  "start": 1569,
+                  "start": 1571,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
               }
             ],
             "callee": {
-              "end": 1543,
+              "end": 1545,
               "name": "extrude",
-              "start": 1536,
+              "start": 1538,
               "type": "Identifier"
             },
-            "end": 1583,
-            "start": 1536,
+            "end": 1585,
+            "start": 1538,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 1558,
+              "end": 1560,
               "name": "bottomSideFace",
-              "start": 1544,
+              "start": 1546,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 1523,
+          "start": 1525,
           "type": "VariableDeclarator"
         },
-        "end": 1583,
+        "end": 1585,
         "kind": "const",
-        "start": 1523,
+        "start": 1525,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1789,
+          "end": 1792,
           "id": {
-            "end": 1647,
+            "end": 1649,
             "name": "bottomBowl",
-            "start": 1637,
+            "start": 1639,
             "type": "Identifier"
           },
           "init": {
@@ -1451,15 +1451,15 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1694,
+                  "end": 1696,
                   "name": "instances",
-                  "start": 1685,
+                  "start": 1687,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1698,
+                  "end": 1700,
                   "raw": "5",
-                  "start": 1697,
+                  "start": 1699,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1471,17 +1471,17 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1706,
+                  "end": 1708,
                   "name": "axis",
-                  "start": 1702,
+                  "start": 1704,
                   "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
                     {
-                      "end": 1711,
+                      "end": 1713,
                       "raw": "0",
-                      "start": 1710,
+                      "start": 1712,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1490,9 +1490,9 @@ description: Result of parsing dodecahedron.kcl
                       }
                     },
                     {
-                      "end": 1714,
+                      "end": 1716,
                       "raw": "0",
-                      "start": 1713,
+                      "start": 1715,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1501,9 +1501,9 @@ description: Result of parsing dodecahedron.kcl
                       }
                     },
                     {
-                      "end": 1717,
+                      "end": 1719,
                       "raw": "1",
-                      "start": 1716,
+                      "start": 1718,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1512,8 +1512,8 @@ description: Result of parsing dodecahedron.kcl
                       }
                     }
                   ],
-                  "end": 1718,
-                  "start": 1709,
+                  "end": 1720,
+                  "start": 1711,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -1521,17 +1521,17 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1728,
+                  "end": 1730,
                   "name": "center",
-                  "start": 1722,
+                  "start": 1724,
                   "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
                     {
-                      "end": 1733,
+                      "end": 1735,
                       "raw": "0",
-                      "start": 1732,
+                      "start": 1734,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1540,9 +1540,9 @@ description: Result of parsing dodecahedron.kcl
                       }
                     },
                     {
-                      "end": 1736,
+                      "end": 1738,
                       "raw": "0",
-                      "start": 1735,
+                      "start": 1737,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1551,9 +1551,9 @@ description: Result of parsing dodecahedron.kcl
                       }
                     },
                     {
-                      "end": 1739,
+                      "end": 1741,
                       "raw": "0",
-                      "start": 1738,
+                      "start": 1740,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1562,8 +1562,8 @@ description: Result of parsing dodecahedron.kcl
                       }
                     }
                   ],
-                  "end": 1740,
-                  "start": 1731,
+                  "end": 1742,
+                  "start": 1733,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -1571,15 +1571,15 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1754,
+                  "end": 1756,
                   "name": "arcDegrees",
-                  "start": 1744,
+                  "start": 1746,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1760,
+                  "end": 1762,
                   "raw": "360",
-                  "start": 1757,
+                  "start": 1759,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1591,15 +1591,15 @@ description: Result of parsing dodecahedron.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1780,
+                  "end": 1782,
                   "name": "rotateDuplicates",
-                  "start": 1764,
+                  "start": 1766,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1787,
+                  "end": 1789,
                   "raw": "true",
-                  "start": 1783,
+                  "start": 1785,
                   "type": "Literal",
                   "type": "Literal",
                   "value": true
@@ -1607,48 +1607,48 @@ description: Result of parsing dodecahedron.kcl
               }
             ],
             "callee": {
-              "end": 1667,
+              "end": 1669,
               "name": "patternCircular3d",
-              "start": 1650,
+              "start": 1652,
               "type": "Identifier"
             },
-            "end": 1789,
-            "start": 1650,
+            "end": 1792,
+            "start": 1652,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 1681,
+              "end": 1683,
               "name": "bottomSide",
-              "start": 1671,
+              "start": 1673,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 1637,
+          "start": 1639,
           "type": "VariableDeclarator"
         },
-        "end": 1789,
+        "end": 1792,
         "kind": "const",
-        "start": 1637,
+        "start": 1639,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 1975,
+        "end": 1979,
         "expression": {
           "arguments": [
             {
               "type": "LabeledArg",
               "label": {
-                "end": 1876,
+                "end": 1879,
                 "name": "instances",
-                "start": 1867,
+                "start": 1870,
                 "type": "Identifier"
               },
               "arg": {
-                "end": 1880,
+                "end": 1883,
                 "raw": "2",
-                "start": 1879,
+                "start": 1882,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -1660,17 +1660,17 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "end": 1888,
+                "end": 1891,
                 "name": "axis",
-                "start": 1884,
+                "start": 1887,
                 "type": "Identifier"
               },
               "arg": {
                 "elements": [
                   {
-                    "end": 1893,
+                    "end": 1896,
                     "raw": "0",
-                    "start": 1892,
+                    "start": 1895,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1679,9 +1679,9 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "end": 1896,
+                    "end": 1899,
                     "raw": "1",
-                    "start": 1895,
+                    "start": 1898,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1690,9 +1690,9 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "end": 1899,
+                    "end": 1902,
                     "raw": "0",
-                    "start": 1898,
+                    "start": 1901,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1701,8 +1701,8 @@ description: Result of parsing dodecahedron.kcl
                     }
                   }
                 ],
-                "end": 1900,
-                "start": 1891,
+                "end": 1903,
+                "start": 1894,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
@@ -1710,24 +1710,13 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "end": 1910,
+                "end": 1913,
                 "name": "center",
-                "start": 1904,
+                "start": 1907,
                 "type": "Identifier"
               },
               "arg": {
                 "elements": [
-                  {
-                    "end": 1915,
-                    "raw": "0",
-                    "start": 1914,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  },
                   {
                     "end": 1918,
                     "raw": "0",
@@ -1740,15 +1729,26 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "end": 1925,
-                    "name": "inscR",
+                    "end": 1921,
+                    "raw": "0",
                     "start": 1920,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "end": 1928,
+                    "name": "inscR",
+                    "start": 1923,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
-                "end": 1926,
-                "start": 1913,
+                "end": 1929,
+                "start": 1916,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
@@ -1756,15 +1756,15 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "end": 1940,
+                "end": 1943,
                 "name": "arcDegrees",
-                "start": 1930,
+                "start": 1933,
                 "type": "Identifier"
               },
               "arg": {
-                "end": 1946,
+                "end": 1949,
                 "raw": "360",
-                "start": 1943,
+                "start": 1946,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -1776,15 +1776,15 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "end": 1966,
+                "end": 1969,
                 "name": "rotateDuplicates",
-                "start": 1950,
+                "start": 1953,
                 "type": "Identifier"
               },
               "arg": {
-                "end": 1973,
+                "end": 1976,
                 "raw": "true",
-                "start": 1969,
+                "start": 1972,
                 "type": "Literal",
                 "type": "Literal",
                 "value": true
@@ -1792,43 +1792,43 @@ description: Result of parsing dodecahedron.kcl
             }
           ],
           "callee": {
-            "end": 1853,
+            "end": 1856,
             "name": "patternCircular3d",
-            "start": 1836,
+            "start": 1839,
             "type": "Identifier"
           },
-          "end": 1975,
-          "start": 1836,
+          "end": 1979,
+          "start": 1839,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
-            "end": 1863,
+            "end": 1866,
             "name": "bottom",
-            "start": 1857,
+            "start": 1860,
             "type": "Identifier",
             "type": "Identifier"
           }
         },
-        "start": 1836,
+        "start": 1839,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 2173,
+        "end": 2178,
         "expression": {
           "arguments": [
             {
               "type": "LabeledArg",
               "label": {
-                "end": 2074,
+                "end": 2078,
                 "name": "instances",
-                "start": 2065,
+                "start": 2069,
                 "type": "Identifier"
               },
               "arg": {
-                "end": 2078,
+                "end": 2082,
                 "raw": "2",
-                "start": 2077,
+                "start": 2081,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -1840,17 +1840,17 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "end": 2086,
+                "end": 2090,
                 "name": "axis",
-                "start": 2082,
+                "start": 2086,
                 "type": "Identifier"
               },
               "arg": {
                 "elements": [
                   {
-                    "end": 2091,
+                    "end": 2095,
                     "raw": "0",
-                    "start": 2090,
+                    "start": 2094,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1859,9 +1859,9 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "end": 2094,
+                    "end": 2098,
                     "raw": "1",
-                    "start": 2093,
+                    "start": 2097,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1870,9 +1870,9 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "end": 2097,
+                    "end": 2101,
                     "raw": "0",
-                    "start": 2096,
+                    "start": 2100,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1881,8 +1881,8 @@ description: Result of parsing dodecahedron.kcl
                     }
                   }
                 ],
-                "end": 2098,
-                "start": 2089,
+                "end": 2102,
+                "start": 2093,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
@@ -1890,17 +1890,17 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "end": 2108,
+                "end": 2112,
                 "name": "center",
-                "start": 2102,
+                "start": 2106,
                 "type": "Identifier"
               },
               "arg": {
                 "elements": [
                   {
-                    "end": 2113,
+                    "end": 2117,
                     "raw": "0",
-                    "start": 2112,
+                    "start": 2116,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1909,9 +1909,9 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "end": 2116,
+                    "end": 2120,
                     "raw": "0",
-                    "start": 2115,
+                    "start": 2119,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1920,15 +1920,15 @@ description: Result of parsing dodecahedron.kcl
                     }
                   },
                   {
-                    "end": 2123,
+                    "end": 2127,
                     "name": "inscR",
-                    "start": 2118,
+                    "start": 2122,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
-                "end": 2124,
-                "start": 2111,
+                "end": 2128,
+                "start": 2115,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
@@ -1936,15 +1936,15 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "end": 2138,
+                "end": 2142,
                 "name": "arcDegrees",
-                "start": 2128,
+                "start": 2132,
                 "type": "Identifier"
               },
               "arg": {
-                "end": 2144,
+                "end": 2148,
                 "raw": "360",
-                "start": 2141,
+                "start": 2145,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -1956,15 +1956,15 @@ description: Result of parsing dodecahedron.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "end": 2164,
+                "end": 2168,
                 "name": "rotateDuplicates",
-                "start": 2148,
+                "start": 2152,
                 "type": "Identifier"
               },
               "arg": {
-                "end": 2171,
+                "end": 2175,
                 "raw": "true",
-                "start": 2167,
+                "start": 2171,
                 "type": "Literal",
                 "type": "Literal",
                 "value": true
@@ -1972,59 +1972,59 @@ description: Result of parsing dodecahedron.kcl
             }
           ],
           "callee": {
-            "end": 2047,
+            "end": 2051,
             "name": "patternCircular3d",
-            "start": 2030,
+            "start": 2034,
             "type": "Identifier"
           },
-          "end": 2173,
-          "start": 2030,
+          "end": 2178,
+          "start": 2034,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
-            "end": 2061,
+            "end": 2065,
             "name": "bottomBowl",
-            "start": 2051,
+            "start": 2055,
             "type": "Identifier",
             "type": "Identifier"
           }
         },
-        "start": 2030,
+        "start": 2034,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 2174,
+    "end": 2179,
     "innerAttrs": [
       {
-        "end": 305,
+        "end": 33,
         "name": {
-          "end": 281,
+          "end": 9,
           "name": "settings",
-          "start": 273,
+          "start": 1,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 304,
+            "end": 32,
             "key": {
-              "end": 299,
+              "end": 27,
               "name": "defaultLengthUnit",
-              "start": 282,
+              "start": 10,
               "type": "Identifier"
             },
-            "start": 282,
+            "start": 10,
             "type": "ObjectProperty",
             "value": {
-              "end": 304,
+              "end": 32,
               "name": "in",
-              "start": 302,
+              "start": 30,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 272,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -2032,8 +2032,8 @@ description: Result of parsing dodecahedron.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "end": 387,
-            "start": 361,
+            "end": 389,
+            "start": 363,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2042,8 +2042,8 @@ description: Result of parsing dodecahedron.kcl
             }
           },
           {
-            "end": 420,
-            "start": 388,
+            "end": 422,
+            "start": 390,
             "type": "NonCodeNode",
             "value": {
               "type": "blockComment",
@@ -2054,8 +2054,8 @@ description: Result of parsing dodecahedron.kcl
         ],
         "1": [
           {
-            "end": 483,
-            "start": 448,
+            "end": 485,
+            "start": 450,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2066,8 +2066,8 @@ description: Result of parsing dodecahedron.kcl
         ],
         "2": [
           {
-            "end": 536,
-            "start": 515,
+            "end": 538,
+            "start": 517,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2078,8 +2078,8 @@ description: Result of parsing dodecahedron.kcl
         ],
         "3": [
           {
-            "end": 606,
-            "start": 581,
+            "end": 608,
+            "start": 583,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2090,8 +2090,8 @@ description: Result of parsing dodecahedron.kcl
         ],
         "4": [
           {
-            "end": 672,
-            "start": 652,
+            "end": 674,
+            "start": 654,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2102,8 +2102,8 @@ description: Result of parsing dodecahedron.kcl
         ],
         "5": [
           {
-            "end": 757,
-            "start": 711,
+            "end": 759,
+            "start": 713,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2114,8 +2114,8 @@ description: Result of parsing dodecahedron.kcl
         ],
         "6": [
           {
-            "end": 1125,
-            "start": 1057,
+            "end": 1127,
+            "start": 1059,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2126,8 +2126,8 @@ description: Result of parsing dodecahedron.kcl
         ],
         "7": [
           {
-            "end": 1278,
-            "start": 1276,
+            "end": 1280,
+            "start": 1278,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2136,8 +2136,8 @@ description: Result of parsing dodecahedron.kcl
         ],
         "10": [
           {
-            "end": 1636,
-            "start": 1583,
+            "end": 1638,
+            "start": 1585,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2148,8 +2148,8 @@ description: Result of parsing dodecahedron.kcl
         ],
         "11": [
           {
-            "end": 1835,
-            "start": 1789,
+            "end": 1838,
+            "start": 1792,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2160,8 +2160,8 @@ description: Result of parsing dodecahedron.kcl
         ],
         "12": [
           {
-            "end": 2029,
-            "start": 1975,
+            "end": 2033,
+            "start": 1979,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2173,8 +2173,8 @@ description: Result of parsing dodecahedron.kcl
       },
       "startNodes": [
         {
-          "end": 22,
-          "start": 0,
+          "end": 56,
+          "start": 34,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2183,8 +2183,8 @@ description: Result of parsing dodecahedron.kcl
           }
         },
         {
-          "end": 257,
-          "start": 23,
+          "end": 291,
+          "start": 57,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2193,16 +2193,16 @@ description: Result of parsing dodecahedron.kcl
           }
         },
         {
-          "end": 259,
-          "start": 257,
+          "end": 294,
+          "start": 291,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 271,
-          "start": 259,
+          "end": 306,
+          "start": 294,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2211,16 +2211,16 @@ description: Result of parsing dodecahedron.kcl
           }
         },
         {
-          "end": 307,
-          "start": 305,
+          "end": 309,
+          "start": 306,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 326,
-          "start": 307,
+          "end": 328,
+          "start": 309,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2229,8 +2229,8 @@ description: Result of parsing dodecahedron.kcl
           }
         },
         {
-          "end": 350,
-          "start": 327,
+          "end": 352,
+          "start": 329,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",

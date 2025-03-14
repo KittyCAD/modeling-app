@@ -7,17 +7,17 @@ description: Result of parsing pipe.kcl
     "body": [
       {
         "declaration": {
-          "end": 241,
+          "end": 243,
           "id": {
-            "end": 236,
+            "end": 238,
             "name": "pipeTotalLength",
-            "start": 221,
+            "start": 223,
             "type": "Identifier"
           },
           "init": {
-            "end": 241,
+            "end": 243,
             "raw": "20",
-            "start": 239,
+            "start": 241,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,57 +25,28 @@ description: Result of parsing pipe.kcl
               "suffix": "None"
             }
           },
-          "start": 221,
+          "start": 223,
           "type": "VariableDeclarator"
         },
-        "end": 241,
+        "end": 243,
         "kind": "const",
-        "start": 221,
+        "start": 223,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 264,
+          "end": 266,
           "id": {
-            "end": 260,
+            "end": 262,
             "name": "pipeLargeDiaLength",
-            "start": 242,
+            "start": 244,
             "type": "Identifier"
           },
           "init": {
-            "end": 264,
+            "end": 266,
             "raw": "1",
-            "start": 263,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 1.0,
-              "suffix": "None"
-            }
-          },
-          "start": 242,
-          "type": "VariableDeclarator"
-        },
-        "end": 264,
-        "kind": "const",
-        "start": 242,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "declaration": {
-          "end": 281,
-          "id": {
-            "end": 277,
-            "name": "pipeLargeDia",
             "start": 265,
-            "type": "Identifier"
-          },
-          "init": {
-            "end": 281,
-            "raw": "1",
-            "start": 280,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +54,57 @@ description: Result of parsing pipe.kcl
               "suffix": "None"
             }
           },
-          "start": 265,
+          "start": 244,
           "type": "VariableDeclarator"
         },
-        "end": 281,
+        "end": 266,
         "kind": "const",
-        "start": 265,
+        "start": 244,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 300,
+          "end": 283,
           "id": {
-            "end": 294,
-            "name": "pipeSmallDia",
-            "start": 282,
+            "end": 279,
+            "name": "pipeLargeDia",
+            "start": 267,
             "type": "Identifier"
           },
           "init": {
-            "end": 300,
+            "end": 283,
+            "raw": "1",
+            "start": 282,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 1.0,
+              "suffix": "None"
+            }
+          },
+          "start": 267,
+          "type": "VariableDeclarator"
+        },
+        "end": 283,
+        "kind": "const",
+        "start": 267,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 302,
+          "id": {
+            "end": 296,
+            "name": "pipeSmallDia",
+            "start": 284,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 302,
             "raw": ".75",
-            "start": 297,
+            "start": 299,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +112,28 @@ description: Result of parsing pipe.kcl
               "suffix": "None"
             }
           },
-          "start": 282,
+          "start": 284,
           "type": "VariableDeclarator"
         },
-        "end": 300,
+        "end": 302,
         "kind": "const",
-        "start": 282,
+        "start": 284,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 318,
+          "end": 320,
           "id": {
-            "end": 310,
+            "end": 312,
             "name": "thickness",
-            "start": 301,
+            "start": 303,
             "type": "Identifier"
           },
           "init": {
-            "end": 318,
+            "end": 320,
             "raw": "0.125",
-            "start": 313,
+            "start": 315,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,28 +141,28 @@ description: Result of parsing pipe.kcl
               "suffix": "None"
             }
           },
-          "start": 301,
+          "start": 303,
           "type": "VariableDeclarator"
         },
-        "end": 318,
+        "end": 320,
         "kind": "const",
-        "start": 301,
+        "start": 303,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 343,
+          "end": 345,
           "id": {
-            "end": 338,
+            "end": 340,
             "name": "pipeTransitionAngle",
-            "start": 319,
+            "start": 321,
             "type": "Identifier"
           },
           "init": {
-            "end": 343,
+            "end": 345,
             "raw": "60",
-            "start": 341,
+            "start": 343,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -170,28 +170,28 @@ description: Result of parsing pipe.kcl
               "suffix": "None"
             }
           },
-          "start": 319,
+          "start": 321,
           "type": "VariableDeclarator"
         },
-        "end": 343,
+        "end": 345,
         "kind": "const",
-        "start": 319,
+        "start": 321,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 370,
+          "end": 372,
           "id": {
-            "end": 364,
+            "end": 366,
             "name": "pipeTransitionLength",
-            "start": 344,
+            "start": 346,
             "type": "Identifier"
           },
           "init": {
-            "end": 370,
+            "end": 372,
             "raw": "0.5",
-            "start": 367,
+            "start": 369,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -199,75 +199,75 @@ description: Result of parsing pipe.kcl
               "suffix": "None"
             }
           },
-          "start": 344,
+          "start": 346,
           "type": "VariableDeclarator"
         },
-        "end": 370,
+        "end": 372,
         "kind": "const",
-        "start": 344,
+        "start": 346,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 451,
+          "end": 453,
           "id": {
-            "end": 389,
+            "end": 391,
             "name": "pipeSmallDiaLength",
-            "start": 371,
+            "start": 373,
             "type": "Identifier"
           },
           "init": {
-            "end": 451,
+            "end": 453,
             "left": {
-              "end": 430,
+              "end": 432,
               "left": {
-                "end": 407,
+                "end": 409,
                 "name": "pipeTotalLength",
-                "start": 392,
+                "start": 394,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "-",
               "right": {
-                "end": 430,
+                "end": 432,
                 "name": "pipeTransitionLength",
-                "start": 410,
+                "start": 412,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 392,
+              "start": 394,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             "operator": "-",
             "right": {
-              "end": 451,
+              "end": 453,
               "name": "pipeLargeDiaLength",
-              "start": 433,
+              "start": 435,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 392,
+            "start": 394,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 371,
+          "start": 373,
           "type": "VariableDeclarator"
         },
-        "end": 451,
+        "end": 453,
         "kind": "const",
-        "start": 371,
+        "start": 373,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1142,
+          "end": 1144,
           "id": {
-            "end": 602,
+            "end": 604,
             "name": "pipeSketch",
-            "start": 592,
+            "start": 594,
             "type": "Identifier"
           },
           "init": {
@@ -275,22 +275,22 @@ description: Result of parsing pipe.kcl
               {
                 "arguments": [
                   {
-                    "end": 623,
+                    "end": 625,
                     "raw": "'XY'",
-                    "start": 619,
+                    "start": 621,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 618,
+                  "end": 620,
                   "name": "startSketchOn",
-                  "start": 605,
+                  "start": 607,
                   "type": "Identifier"
                 },
-                "end": 624,
-                "start": 605,
+                "end": 626,
+                "start": 607,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -299,29 +299,29 @@ description: Result of parsing pipe.kcl
                   {
                     "elements": [
                       {
-                        "end": 675,
+                        "end": 677,
                         "left": {
-                          "end": 658,
+                          "end": 660,
                           "name": "pipeSmallDia",
-                          "start": 646,
+                          "start": 648,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 675,
+                          "end": 677,
                           "left": {
-                            "end": 671,
+                            "end": 673,
                             "name": "thickness",
-                            "start": 662,
+                            "start": 664,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 675,
+                            "end": 677,
                             "raw": "2",
-                            "start": 674,
+                            "start": 676,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -329,18 +329,18 @@ description: Result of parsing pipe.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 662,
+                          "start": 664,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "start": 646,
+                        "start": 648,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 680,
+                        "end": 682,
                         "raw": "38",
-                        "start": 678,
+                        "start": 680,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -349,26 +349,26 @@ description: Result of parsing pipe.kcl
                         }
                       }
                     ],
-                    "end": 681,
-                    "start": 645,
+                    "end": 683,
+                    "start": 647,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 684,
-                    "start": 683,
+                    "end": 686,
+                    "start": 685,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 644,
+                  "end": 646,
                   "name": "startProfileAt",
-                  "start": 630,
+                  "start": 632,
                   "type": "Identifier"
                 },
-                "end": 685,
-                "start": 630,
+                "end": 687,
+                "start": 632,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -377,24 +377,24 @@ description: Result of parsing pipe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 699,
+                      "end": 701,
                       "name": "end",
-                      "start": 696,
+                      "start": 698,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 712,
+                          "end": 714,
                           "name": "thickness",
-                          "start": 703,
+                          "start": 705,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         {
-                          "end": 715,
+                          "end": 717,
                           "raw": "0",
-                          "start": 714,
+                          "start": 716,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -403,21 +403,21 @@ description: Result of parsing pipe.kcl
                           }
                         }
                       ],
-                      "end": 716,
-                      "start": 702,
+                      "end": 718,
+                      "start": 704,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 695,
+                  "end": 697,
                   "name": "line",
-                  "start": 691,
+                  "start": 693,
                   "type": "Identifier"
                 },
-                "end": 717,
-                "start": 691,
+                "end": 719,
+                "start": 693,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -427,17 +427,17 @@ description: Result of parsing pipe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 731,
+                      "end": 733,
                       "name": "end",
-                      "start": 728,
+                      "start": 730,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 736,
+                          "end": 738,
                           "raw": "0",
-                          "start": 735,
+                          "start": 737,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -447,34 +447,34 @@ description: Result of parsing pipe.kcl
                         },
                         {
                           "argument": {
-                            "end": 757,
+                            "end": 759,
                             "name": "pipeSmallDiaLength",
-                            "start": 739,
+                            "start": 741,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 757,
+                          "end": 759,
                           "operator": "-",
-                          "start": 738,
+                          "start": 740,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 758,
-                      "start": 734,
+                      "end": 760,
+                      "start": 736,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 727,
+                  "end": 729,
                   "name": "line",
-                  "start": 723,
+                  "start": 725,
                   "type": "Identifier"
                 },
-                "end": 759,
-                "start": 723,
+                "end": 761,
+                "start": 725,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -482,23 +482,23 @@ description: Result of parsing pipe.kcl
               {
                 "arguments": [
                   {
-                    "end": 850,
+                    "end": 852,
                     "properties": [
                       {
-                        "end": 805,
+                        "end": 807,
                         "key": {
-                          "end": 799,
+                          "end": 801,
                           "name": "angle",
-                          "start": 794,
+                          "start": 796,
                           "type": "Identifier"
                         },
-                        "start": 794,
+                        "start": 796,
                         "type": "ObjectProperty",
                         "value": {
                           "argument": {
-                            "end": 805,
+                            "end": 807,
                             "raw": "60",
-                            "start": 803,
+                            "start": 805,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -506,51 +506,51 @@ description: Result of parsing pipe.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 805,
+                          "end": 807,
                           "operator": "-",
-                          "start": 802,
+                          "start": 804,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       },
                       {
-                        "end": 843,
+                        "end": 845,
                         "key": {
-                          "end": 820,
+                          "end": 822,
                           "name": "length",
-                          "start": 814,
+                          "start": 816,
                           "type": "Identifier"
                         },
-                        "start": 814,
+                        "start": 816,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 843,
+                          "end": 845,
                           "name": "pipeTransitionLength",
-                          "start": 823,
+                          "start": 825,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
-                    "start": 785,
+                    "start": 787,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 853,
-                    "start": 852,
+                    "end": 855,
+                    "start": 854,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 784,
+                  "end": 786,
                   "name": "angledLineOfYLength",
-                  "start": 765,
+                  "start": 767,
                   "type": "Identifier"
                 },
-                "end": 854,
-                "start": 765,
+                "end": 856,
+                "start": 767,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -559,17 +559,17 @@ description: Result of parsing pipe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 868,
+                      "end": 870,
                       "name": "end",
-                      "start": 865,
+                      "start": 867,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 873,
+                          "end": 875,
                           "raw": "0",
-                          "start": 872,
+                          "start": 874,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -579,34 +579,34 @@ description: Result of parsing pipe.kcl
                         },
                         {
                           "argument": {
-                            "end": 894,
+                            "end": 896,
                             "name": "pipeLargeDiaLength",
-                            "start": 876,
+                            "start": 878,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 894,
+                          "end": 896,
                           "operator": "-",
-                          "start": 875,
+                          "start": 877,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 895,
-                      "start": 871,
+                      "end": 897,
+                      "start": 873,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 864,
+                  "end": 866,
                   "name": "line",
-                  "start": 860,
+                  "start": 862,
                   "type": "Identifier"
                 },
-                "end": 896,
-                "start": 860,
+                "end": 898,
+                "start": 862,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -616,35 +616,35 @@ description: Result of parsing pipe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 914,
+                      "end": 916,
                       "name": "length",
-                      "start": 908,
+                      "start": 910,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 927,
+                        "end": 929,
                         "name": "thickness",
-                        "start": 918,
+                        "start": 920,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 927,
+                      "end": 929,
                       "operator": "-",
-                      "start": 917,
+                      "start": 919,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 907,
+                  "end": 909,
                   "name": "xLine",
-                  "start": 902,
+                  "start": 904,
                   "type": "Identifier"
                 },
-                "end": 928,
-                "start": 902,
+                "end": 930,
+                "start": 904,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -654,17 +654,17 @@ description: Result of parsing pipe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 942,
+                      "end": 944,
                       "name": "end",
-                      "start": 939,
+                      "start": 941,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 947,
+                          "end": 949,
                           "raw": "0",
-                          "start": 946,
+                          "start": 948,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -673,28 +673,28 @@ description: Result of parsing pipe.kcl
                           }
                         },
                         {
-                          "end": 967,
+                          "end": 969,
                           "name": "pipeLargeDiaLength",
-                          "start": 949,
+                          "start": 951,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
-                      "end": 968,
-                      "start": 945,
+                      "end": 970,
+                      "start": 947,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 938,
+                  "end": 940,
                   "name": "line",
-                  "start": 934,
+                  "start": 936,
                   "type": "Identifier"
                 },
-                "end": 969,
-                "start": 934,
+                "end": 971,
+                "start": 936,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -702,39 +702,39 @@ description: Result of parsing pipe.kcl
               {
                 "arguments": [
                   {
-                    "end": 1083,
+                    "end": 1085,
                     "properties": [
                       {
-                        "end": 1032,
+                        "end": 1034,
                         "key": {
-                          "end": 1003,
+                          "end": 1005,
                           "name": "angle",
-                          "start": 998,
+                          "start": 1000,
                           "type": "Identifier"
                         },
-                        "start": 998,
+                        "start": 1000,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1032,
+                          "end": 1034,
                           "left": {
                             "argument": {
-                              "end": 1026,
+                              "end": 1028,
                               "name": "pipeTransitionAngle",
-                              "start": 1007,
+                              "start": 1009,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 1026,
+                            "end": 1028,
                             "operator": "-",
-                            "start": 1006,
+                            "start": 1008,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 1032,
+                            "end": 1034,
                             "raw": "180",
-                            "start": 1029,
+                            "start": 1031,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -742,45 +742,45 @@ description: Result of parsing pipe.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1006,
+                          "start": 1008,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       },
                       {
-                        "end": 1075,
+                        "end": 1077,
                         "key": {
-                          "end": 1043,
+                          "end": 1045,
                           "name": "to",
-                          "start": 1041,
+                          "start": 1043,
                           "type": "Identifier"
                         },
-                        "start": 1041,
+                        "start": 1043,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1075,
+                          "end": 1077,
                           "left": {
-                            "end": 1058,
+                            "end": 1060,
                             "name": "pipeSmallDia",
-                            "start": 1046,
+                            "start": 1048,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 1075,
+                            "end": 1077,
                             "left": {
-                              "end": 1071,
+                              "end": 1073,
                               "name": "thickness",
-                              "start": 1062,
+                              "start": 1064,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 1075,
+                              "end": 1077,
                               "raw": "2",
-                              "start": 1074,
+                              "start": 1076,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -788,59 +788,59 @@ description: Result of parsing pipe.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 1062,
+                            "start": 1064,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 1046,
+                          "start": 1048,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
-                    "start": 989,
+                    "start": 991,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1086,
-                    "start": 1085,
+                    "end": 1088,
+                    "start": 1087,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 988,
+                  "end": 990,
                   "name": "angledLineToX",
-                  "start": 975,
+                  "start": 977,
                   "type": "Identifier"
                 },
-                "end": 1087,
-                "start": 975,
+                "end": 1089,
+                "start": 977,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [],
                 "callee": {
-                  "end": 1098,
+                  "end": 1100,
                   "name": "close",
-                  "start": 1093,
+                  "start": 1095,
                   "type": "Identifier"
                 },
-                "end": 1100,
-                "start": 1093,
+                "end": 1102,
+                "start": 1095,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 1142,
+            "end": 1144,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "9": [
                   {
-                    "end": 1142,
-                    "start": 1100,
+                    "end": 1144,
+                    "start": 1102,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -852,117 +852,117 @@ description: Result of parsing pipe.kcl
               },
               "startNodes": []
             },
-            "start": 605,
+            "start": 607,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 592,
+          "start": 594,
           "type": "VariableDeclarator"
         },
-        "end": 1142,
+        "end": 1144,
         "kind": "const",
-        "start": 592,
+        "start": 594,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1185,
+          "end": 1187,
           "id": {
-            "end": 1147,
+            "end": 1149,
             "name": "pipe",
-            "start": 1143,
+            "start": 1145,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 1172,
+                "end": 1174,
                 "properties": [
                   {
-                    "end": 1170,
+                    "end": 1172,
                     "key": {
-                      "end": 1164,
+                      "end": 1166,
                       "name": "axis",
-                      "start": 1160,
+                      "start": 1162,
                       "type": "Identifier"
                     },
-                    "start": 1160,
+                    "start": 1162,
                     "type": "ObjectProperty",
                     "value": {
-                      "end": 1170,
+                      "end": 1172,
                       "raw": "'y'",
-                      "start": 1167,
+                      "start": 1169,
                       "type": "Literal",
                       "type": "Literal",
                       "value": "y"
                     }
                   }
                 ],
-                "start": 1158,
+                "start": 1160,
                 "type": "ObjectExpression",
                 "type": "ObjectExpression"
               },
               {
-                "end": 1184,
+                "end": 1186,
                 "name": "pipeSketch",
-                "start": 1174,
+                "start": 1176,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 1157,
+              "end": 1159,
               "name": "revolve",
-              "start": 1150,
+              "start": 1152,
               "type": "Identifier"
             },
-            "end": 1185,
-            "start": 1150,
+            "end": 1187,
+            "start": 1152,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 1143,
+          "start": 1145,
           "type": "VariableDeclarator"
         },
-        "end": 1185,
+        "end": 1187,
         "kind": "const",
-        "start": 1143,
+        "start": 1145,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 1186,
+    "end": 1188,
     "innerAttrs": [
       {
-        "end": 199,
+        "end": 33,
         "name": {
-          "end": 175,
+          "end": 9,
           "name": "settings",
-          "start": 167,
+          "start": 1,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 198,
+            "end": 32,
             "key": {
-              "end": 193,
+              "end": 27,
               "name": "defaultLengthUnit",
-              "start": 176,
+              "start": 10,
               "type": "Identifier"
             },
-            "start": 176,
+            "start": 10,
             "type": "ObjectProperty",
             "value": {
-              "end": 198,
+              "end": 32,
               "name": "in",
-              "start": 196,
+              "start": 30,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 166,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -970,8 +970,8 @@ description: Result of parsing pipe.kcl
       "nonCodeNodes": {
         "7": [
           {
-            "end": 591,
-            "start": 451,
+            "end": 593,
+            "start": 453,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -983,8 +983,8 @@ description: Result of parsing pipe.kcl
       },
       "startNodes": [
         {
-          "end": 7,
-          "start": 0,
+          "end": 41,
+          "start": 34,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -993,8 +993,8 @@ description: Result of parsing pipe.kcl
           }
         },
         {
-          "end": 151,
-          "start": 8,
+          "end": 185,
+          "start": 42,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1003,16 +1003,16 @@ description: Result of parsing pipe.kcl
           }
         },
         {
-          "end": 153,
-          "start": 151,
+          "end": 188,
+          "start": 185,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 165,
-          "start": 153,
+          "end": 200,
+          "start": 188,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1021,16 +1021,16 @@ description: Result of parsing pipe.kcl
           }
         },
         {
-          "end": 201,
-          "start": 199,
+          "end": 203,
+          "start": 200,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 220,
-          "start": 201,
+          "end": 222,
+          "start": 203,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",

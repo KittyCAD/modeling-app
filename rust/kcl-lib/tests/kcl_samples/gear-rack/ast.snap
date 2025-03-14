@@ -7,17 +7,17 @@ description: Result of parsing gear-rack.kcl
     "body": [
       {
         "declaration": {
-          "end": 457,
+          "end": 459,
           "id": {
-            "end": 451,
+            "end": 453,
             "name": "length",
-            "start": 445,
+            "start": 447,
             "type": "Identifier"
           },
           "init": {
-            "end": 457,
+            "end": 459,
             "raw": "100",
-            "start": 454,
+            "start": 456,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +25,28 @@ description: Result of parsing gear-rack.kcl
               "suffix": "None"
             }
           },
-          "start": 445,
+          "start": 447,
           "type": "VariableDeclarator"
         },
-        "end": 457,
+        "end": 459,
         "kind": "const",
-        "start": 445,
+        "start": 447,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 476,
+          "end": 478,
           "id": {
-            "end": 469,
+            "end": 471,
             "name": "pitchHeight",
-            "start": 458,
+            "start": 460,
             "type": "Identifier"
           },
           "init": {
-            "end": 476,
+            "end": 478,
             "raw": "11.5",
-            "start": 472,
+            "start": 474,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing gear-rack.kcl
               "suffix": "None"
             }
           },
-          "start": 458,
+          "start": 460,
           "type": "VariableDeclarator"
         },
-        "end": 476,
+        "end": 478,
         "kind": "const",
-        "start": 458,
+        "start": 460,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 486,
+          "end": 488,
           "id": {
-            "end": 482,
+            "end": 484,
             "name": "width",
-            "start": 477,
+            "start": 479,
             "type": "Identifier"
           },
           "init": {
-            "end": 486,
+            "end": 488,
             "raw": "5",
-            "start": 485,
+            "start": 487,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing gear-rack.kcl
               "suffix": "None"
             }
           },
-          "start": 477,
+          "start": 479,
           "type": "VariableDeclarator"
         },
-        "end": 486,
+        "end": 488,
         "kind": "const",
-        "start": 477,
+        "start": 479,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 498,
+          "end": 500,
           "id": {
-            "end": 493,
+            "end": 495,
             "name": "height",
-            "start": 487,
+            "start": 489,
             "type": "Identifier"
           },
           "init": {
-            "end": 498,
+            "end": 500,
             "raw": "12",
-            "start": 496,
+            "start": 498,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +112,28 @@ description: Result of parsing gear-rack.kcl
               "suffix": "None"
             }
           },
-          "start": 487,
+          "start": 489,
           "type": "VariableDeclarator"
         },
-        "end": 498,
+        "end": 500,
         "kind": "const",
-        "start": 487,
+        "start": 489,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 517,
+          "end": 519,
           "id": {
-            "end": 508,
+            "end": 510,
             "name": "minHeight",
-            "start": 499,
+            "start": 501,
             "type": "Identifier"
           },
           "init": {
-            "end": 517,
+            "end": 519,
             "raw": "10.875",
-            "start": 511,
+            "start": 513,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,22 +141,22 @@ description: Result of parsing gear-rack.kcl
               "suffix": "None"
             }
           },
-          "start": 499,
+          "start": 501,
           "type": "VariableDeclarator"
         },
-        "end": 517,
+        "end": 519,
         "kind": "const",
-        "start": 499,
+        "start": 501,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 805,
+          "end": 807,
           "id": {
-            "end": 558,
+            "end": 560,
             "name": "rackBody",
-            "start": 550,
+            "start": 552,
             "type": "Identifier"
           },
           "init": {
@@ -164,22 +164,22 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
-                    "end": 579,
+                    "end": 581,
                     "raw": "'XY'",
-                    "start": 575,
+                    "start": 577,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 574,
+                  "end": 576,
                   "name": "startSketchOn",
-                  "start": 561,
+                  "start": 563,
                   "type": "Identifier"
                 },
-                "end": 580,
-                "start": 561,
+                "end": 582,
+                "start": 563,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -188,26 +188,26 @@ description: Result of parsing gear-rack.kcl
                   {
                     "elements": [
                       {
-                        "end": 613,
+                        "end": 615,
                         "left": {
                           "argument": {
-                            "end": 609,
+                            "end": 611,
                             "name": "length",
-                            "start": 603,
+                            "start": 605,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 609,
+                          "end": 611,
                           "operator": "-",
-                          "start": 602,
+                          "start": 604,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 613,
+                          "end": 615,
                           "raw": "2",
-                          "start": 612,
+                          "start": 614,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -215,14 +215,14 @@ description: Result of parsing gear-rack.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 602,
+                        "start": 604,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 616,
+                        "end": 618,
                         "raw": "0",
-                        "start": 615,
+                        "start": 617,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -231,26 +231,26 @@ description: Result of parsing gear-rack.kcl
                         }
                       }
                     ],
-                    "end": 617,
-                    "start": 601,
+                    "end": 619,
+                    "start": 603,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 620,
-                    "start": 619,
+                    "end": 622,
+                    "start": 621,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 600,
+                  "end": 602,
                   "name": "startProfileAt",
-                  "start": 586,
+                  "start": 588,
                   "type": "Identifier"
                 },
-                "end": 621,
-                "start": 586,
+                "end": 623,
+                "start": 588,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -259,24 +259,24 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 635,
+                      "end": 637,
                       "name": "end",
-                      "start": 632,
+                      "start": 634,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 645,
+                          "end": 647,
                           "name": "length",
-                          "start": 639,
+                          "start": 641,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         {
-                          "end": 648,
+                          "end": 650,
                           "raw": "0",
-                          "start": 647,
+                          "start": 649,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -285,21 +285,21 @@ description: Result of parsing gear-rack.kcl
                           }
                         }
                       ],
-                      "end": 649,
-                      "start": 638,
+                      "end": 651,
+                      "start": 640,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 631,
+                  "end": 633,
                   "name": "line",
-                  "start": 627,
+                  "start": 629,
                   "type": "Identifier"
                 },
-                "end": 650,
-                "start": 627,
+                "end": 652,
+                "start": 629,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -309,17 +309,17 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 664,
+                      "end": 666,
                       "name": "end",
-                      "start": 661,
+                      "start": 663,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 669,
+                          "end": 671,
                           "raw": "0",
-                          "start": 668,
+                          "start": 670,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -328,28 +328,28 @@ description: Result of parsing gear-rack.kcl
                           }
                         },
                         {
-                          "end": 680,
+                          "end": 682,
                           "name": "minHeight",
-                          "start": 671,
+                          "start": 673,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
-                      "end": 681,
-                      "start": 667,
+                      "end": 683,
+                      "start": 669,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 660,
+                  "end": 662,
                   "name": "line",
-                  "start": 656,
+                  "start": 658,
                   "type": "Identifier"
                 },
-                "end": 682,
-                "start": 656,
+                "end": 684,
+                "start": 658,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -359,31 +359,31 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 696,
+                      "end": 698,
                       "name": "end",
-                      "start": 693,
+                      "start": 695,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 707,
+                            "end": 709,
                             "name": "length",
-                            "start": 701,
+                            "start": 703,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 707,
+                          "end": 709,
                           "operator": "-",
-                          "start": 700,
+                          "start": 702,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
-                          "end": 710,
+                          "end": 712,
                           "raw": "0",
-                          "start": 709,
+                          "start": 711,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -392,21 +392,21 @@ description: Result of parsing gear-rack.kcl
                           }
                         }
                       ],
-                      "end": 711,
-                      "start": 699,
+                      "end": 713,
+                      "start": 701,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 692,
+                  "end": 694,
                   "name": "line",
-                  "start": 688,
+                  "start": 690,
                   "type": "Identifier"
                 },
-                "end": 712,
-                "start": 688,
+                "end": 714,
+                "start": 690,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -414,13 +414,13 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 723,
+                  "end": 725,
                   "name": "close",
-                  "start": 718,
+                  "start": 720,
                   "type": "Identifier"
                 },
-                "end": 725,
-                "start": 718,
+                "end": 727,
+                "start": 720,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -429,40 +429,40 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 745,
+                      "end": 747,
                       "name": "length",
-                      "start": 739,
+                      "start": 741,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 753,
+                      "end": 755,
                       "name": "width",
-                      "start": 748,
+                      "start": 750,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 738,
+                  "end": 740,
                   "name": "extrude",
-                  "start": 731,
+                  "start": 733,
                   "type": "Identifier"
                 },
-                "end": 754,
-                "start": 731,
+                "end": 756,
+                "start": 733,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 805,
+            "end": 807,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
-                    "end": 805,
-                    "start": 754,
+                    "end": 807,
+                    "start": 756,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -474,26 +474,26 @@ description: Result of parsing gear-rack.kcl
               },
               "startNodes": []
             },
-            "start": 561,
+            "start": 563,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 550,
+          "start": 552,
           "type": "VariableDeclarator"
         },
-        "end": 805,
+        "end": 807,
         "kind": "const",
-        "start": 550,
+        "start": 552,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1325,
+          "end": 1327,
           "id": {
-            "end": 814,
+            "end": 816,
             "name": "tooth",
-            "start": 809,
+            "start": 811,
             "type": "Identifier"
           },
           "init": {
@@ -501,11 +501,11 @@ description: Result of parsing gear-rack.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 1302,
+                    "end": 1304,
                     "id": {
-                      "end": 832,
+                      "end": 834,
                       "name": "toothSketch",
-                      "start": 821,
+                      "start": 823,
                       "type": "Identifier"
                     },
                     "init": {
@@ -513,22 +513,22 @@ description: Result of parsing gear-rack.kcl
                         {
                           "arguments": [
                             {
-                              "end": 853,
+                              "end": 855,
                               "raw": "'XY'",
-                              "start": 849,
+                              "start": 851,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XY"
                             }
                           ],
                           "callee": {
-                            "end": 848,
+                            "end": 850,
                             "name": "startSketchOn",
-                            "start": 835,
+                            "start": 837,
                             "type": "Identifier"
                           },
-                          "end": 854,
-                          "start": 835,
+                          "end": 856,
+                          "start": 837,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -537,28 +537,28 @@ description: Result of parsing gear-rack.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 900,
+                                  "end": 902,
                                   "left": {
-                                    "end": 889,
+                                    "end": 891,
                                     "left": {
                                       "argument": {
-                                        "end": 885,
+                                        "end": 887,
                                         "name": "length",
-                                        "start": 879,
+                                        "start": 881,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
-                                      "end": 885,
+                                      "end": 887,
                                       "operator": "-",
-                                      "start": 878,
+                                      "start": 880,
                                       "type": "UnaryExpression",
                                       "type": "UnaryExpression"
                                     },
                                     "operator": "/",
                                     "right": {
-                                      "end": 889,
+                                      "end": 891,
                                       "raw": "2",
-                                      "start": 888,
+                                      "start": 890,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -566,15 +566,15 @@ description: Result of parsing gear-rack.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 878,
+                                    "start": 880,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   },
                                   "operator": "+",
                                   "right": {
-                                    "end": 900,
+                                    "end": 902,
                                     "raw": "0.567672",
-                                    "start": 892,
+                                    "start": 894,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -582,38 +582,38 @@ description: Result of parsing gear-rack.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 878,
+                                  "start": 880,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "end": 911,
+                                  "end": 913,
                                   "name": "minHeight",
-                                  "start": 902,
+                                  "start": 904,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 }
                               ],
-                              "end": 912,
-                              "start": 877,
+                              "end": 914,
+                              "start": 879,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 915,
-                              "start": 914,
+                              "end": 917,
+                              "start": 916,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 876,
+                            "end": 878,
                             "name": "startProfileAt",
-                            "start": 862,
+                            "start": 864,
                             "type": "Identifier"
                           },
-                          "end": 916,
-                          "start": 862,
+                          "end": 918,
+                          "start": 864,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -622,9 +622,9 @@ description: Result of parsing gear-rack.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 957,
+                                  "end": 959,
                                   "raw": "0.157636",
-                                  "start": 949,
+                                  "start": 951,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -633,9 +633,9 @@ description: Result of parsing gear-rack.kcl
                                   }
                                 },
                                 {
-                                  "end": 967,
+                                  "end": 969,
                                   "raw": "0.110378",
-                                  "start": 959,
+                                  "start": 961,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -644,26 +644,26 @@ description: Result of parsing gear-rack.kcl
                                   }
                                 }
                               ],
-                              "end": 968,
-                              "start": 948,
+                              "end": 970,
+                              "start": 950,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 971,
-                              "start": 970,
+                              "end": 973,
+                              "start": 972,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 947,
+                            "end": 949,
                             "name": "tangentialArcToRelative",
-                            "start": 924,
+                            "start": 926,
                             "type": "Identifier"
                           },
-                          "end": 972,
-                          "start": 924,
+                          "end": 974,
+                          "start": 926,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -672,17 +672,17 @@ description: Result of parsing gear-rack.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 988,
+                                "end": 990,
                                 "name": "end",
-                                "start": 985,
+                                "start": 987,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 1000,
+                                    "end": 1002,
                                     "raw": "0.329118",
-                                    "start": 992,
+                                    "start": 994,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -691,9 +691,9 @@ description: Result of parsing gear-rack.kcl
                                     }
                                   },
                                   {
-                                    "end": 1010,
+                                    "end": 1012,
                                     "raw": "0.904244",
-                                    "start": 1002,
+                                    "start": 1004,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -702,21 +702,21 @@ description: Result of parsing gear-rack.kcl
                                     }
                                   }
                                 ],
-                                "end": 1011,
-                                "start": 991,
+                                "end": 1013,
+                                "start": 993,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 984,
+                            "end": 986,
                             "name": "line",
-                            "start": 980,
+                            "start": 982,
                             "type": "Identifier"
                           },
-                          "end": 1012,
-                          "start": 980,
+                          "end": 1014,
+                          "start": 982,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -726,9 +726,9 @@ description: Result of parsing gear-rack.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 1053,
+                                  "end": 1055,
                                   "raw": "0.157636",
-                                  "start": 1045,
+                                  "start": 1047,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -737,9 +737,9 @@ description: Result of parsing gear-rack.kcl
                                   }
                                 },
                                 {
-                                  "end": 1063,
+                                  "end": 1065,
                                   "raw": "0.110378",
-                                  "start": 1055,
+                                  "start": 1057,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -748,26 +748,26 @@ description: Result of parsing gear-rack.kcl
                                   }
                                 }
                               ],
-                              "end": 1064,
-                              "start": 1044,
+                              "end": 1066,
+                              "start": 1046,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 1067,
-                              "start": 1066,
+                              "end": 1069,
+                              "start": 1068,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1043,
+                            "end": 1045,
                             "name": "tangentialArcToRelative",
-                            "start": 1020,
+                            "start": 1022,
                             "type": "Identifier"
                           },
-                          "end": 1068,
-                          "start": 1020,
+                          "end": 1070,
+                          "start": 1022,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -776,17 +776,17 @@ description: Result of parsing gear-rack.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1084,
+                                "end": 1086,
                                 "name": "end",
-                                "start": 1081,
+                                "start": 1083,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 1096,
+                                    "end": 1098,
                                     "raw": "0.186505",
-                                    "start": 1088,
+                                    "start": 1090,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -795,9 +795,9 @@ description: Result of parsing gear-rack.kcl
                                     }
                                   },
                                   {
-                                    "end": 1099,
+                                    "end": 1101,
                                     "raw": "0",
-                                    "start": 1098,
+                                    "start": 1100,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -806,21 +806,21 @@ description: Result of parsing gear-rack.kcl
                                     }
                                   }
                                 ],
-                                "end": 1100,
-                                "start": 1087,
+                                "end": 1102,
+                                "start": 1089,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1080,
+                            "end": 1082,
                             "name": "line",
-                            "start": 1076,
+                            "start": 1078,
                             "type": "Identifier"
                           },
-                          "end": 1101,
-                          "start": 1076,
+                          "end": 1103,
+                          "start": 1078,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -830,9 +830,9 @@ description: Result of parsing gear-rack.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 1142,
+                                  "end": 1144,
                                   "raw": "0.157636",
-                                  "start": 1134,
+                                  "start": 1136,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -842,9 +842,9 @@ description: Result of parsing gear-rack.kcl
                                 },
                                 {
                                   "argument": {
-                                    "end": 1153,
+                                    "end": 1155,
                                     "raw": "0.110378",
-                                    "start": 1145,
+                                    "start": 1147,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -852,33 +852,33 @@ description: Result of parsing gear-rack.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "end": 1153,
+                                  "end": 1155,
                                   "operator": "-",
-                                  "start": 1144,
+                                  "start": 1146,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 }
                               ],
-                              "end": 1154,
-                              "start": 1133,
+                              "end": 1156,
+                              "start": 1135,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 1157,
-                              "start": 1156,
+                              "end": 1159,
+                              "start": 1158,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1132,
+                            "end": 1134,
                             "name": "tangentialArcToRelative",
-                            "start": 1109,
+                            "start": 1111,
                             "type": "Identifier"
                           },
-                          "end": 1158,
-                          "start": 1109,
+                          "end": 1160,
+                          "start": 1111,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -887,17 +887,17 @@ description: Result of parsing gear-rack.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1174,
+                                "end": 1176,
                                 "name": "end",
-                                "start": 1171,
+                                "start": 1173,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 1186,
+                                    "end": 1188,
                                     "raw": "0.329118",
-                                    "start": 1178,
+                                    "start": 1180,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -907,9 +907,9 @@ description: Result of parsing gear-rack.kcl
                                   },
                                   {
                                     "argument": {
-                                      "end": 1197,
+                                      "end": 1199,
                                       "raw": "0.904244",
-                                      "start": 1189,
+                                      "start": 1191,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -917,28 +917,28 @@ description: Result of parsing gear-rack.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "end": 1197,
+                                    "end": 1199,
                                     "operator": "-",
-                                    "start": 1188,
+                                    "start": 1190,
                                     "type": "UnaryExpression",
                                     "type": "UnaryExpression"
                                   }
                                 ],
-                                "end": 1198,
-                                "start": 1177,
+                                "end": 1200,
+                                "start": 1179,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1170,
+                            "end": 1172,
                             "name": "line",
-                            "start": 1166,
+                            "start": 1168,
                             "type": "Identifier"
                           },
-                          "end": 1199,
-                          "start": 1166,
+                          "end": 1201,
+                          "start": 1168,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -948,9 +948,9 @@ description: Result of parsing gear-rack.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 1240,
+                                  "end": 1242,
                                   "raw": "0.157636",
-                                  "start": 1232,
+                                  "start": 1234,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -960,9 +960,9 @@ description: Result of parsing gear-rack.kcl
                                 },
                                 {
                                   "argument": {
-                                    "end": 1251,
+                                    "end": 1253,
                                     "raw": "0.110378",
-                                    "start": 1243,
+                                    "start": 1245,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -970,46 +970,46 @@ description: Result of parsing gear-rack.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "end": 1251,
+                                  "end": 1253,
                                   "operator": "-",
-                                  "start": 1242,
+                                  "start": 1244,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 }
                               ],
-                              "end": 1252,
-                              "start": 1231,
+                              "end": 1254,
+                              "start": 1233,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 1255,
-                              "start": 1254,
+                              "end": 1257,
+                              "start": 1256,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1230,
+                            "end": 1232,
                             "name": "tangentialArcToRelative",
-                            "start": 1207,
+                            "start": 1209,
                             "type": "Identifier"
                           },
-                          "end": 1256,
-                          "start": 1207,
+                          "end": 1258,
+                          "start": 1209,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [],
                           "callee": {
-                            "end": 1269,
+                            "end": 1271,
                             "name": "close",
-                            "start": 1264,
+                            "start": 1266,
                             "type": "Identifier"
                           },
-                          "end": 1271,
-                          "start": 1264,
+                          "end": 1273,
+                          "start": 1266,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1018,86 +1018,86 @@ description: Result of parsing gear-rack.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1293,
+                                "end": 1295,
                                 "name": "length",
-                                "start": 1287,
+                                "start": 1289,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1301,
+                                "end": 1303,
                                 "name": "width",
-                                "start": 1296,
+                                "start": 1298,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1286,
+                            "end": 1288,
                             "name": "extrude",
-                            "start": 1279,
+                            "start": 1281,
                             "type": "Identifier"
                           },
-                          "end": 1302,
-                          "start": 1279,
+                          "end": 1304,
+                          "start": 1281,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 1302,
-                      "start": 835,
+                      "end": 1304,
+                      "start": 837,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 821,
+                    "start": 823,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1302,
+                  "end": 1304,
                   "kind": "const",
-                  "start": 821,
+                  "start": 823,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 1323,
+                    "end": 1325,
                     "name": "toothSketch",
-                    "start": 1312,
+                    "start": 1314,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1323,
-                  "start": 1305,
+                  "end": 1325,
+                  "start": 1307,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1325,
-              "start": 817
+              "end": 1327,
+              "start": 819
             },
-            "end": 1325,
+            "end": 1327,
             "params": [],
-            "start": 814,
+            "start": 816,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 809,
+          "start": 811,
           "type": "VariableDeclarator"
         },
-        "end": 1325,
+        "end": 1327,
         "kind": "fn",
-        "start": 806,
+        "start": 808,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1574,
+          "end": 1548,
           "id": {
-            "end": 1393,
+            "end": 1395,
             "name": "teeth",
-            "start": 1388,
+            "start": 1390,
             "type": "Identifier"
           },
           "init": {
@@ -1105,13 +1105,13 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 1401,
+                  "end": 1403,
                   "name": "tooth",
-                  "start": 1396,
+                  "start": 1398,
                   "type": "Identifier"
                 },
-                "end": 1403,
-                "start": 1396,
+                "end": 1405,
+                "start": 1398,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1120,17 +1120,17 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1437,
+                      "end": 1431,
                       "name": "axis",
-                      "start": 1433,
+                      "start": 1427,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1443,
+                          "end": 1437,
                           "raw": "10",
-                          "start": 1441,
+                          "start": 1435,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1139,9 +1139,9 @@ description: Result of parsing gear-rack.kcl
                           }
                         },
                         {
-                          "end": 1446,
+                          "end": 1440,
                           "raw": "0",
-                          "start": 1445,
+                          "start": 1439,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1150,9 +1150,9 @@ description: Result of parsing gear-rack.kcl
                           }
                         },
                         {
-                          "end": 1449,
+                          "end": 1443,
                           "raw": "0",
-                          "start": 1448,
+                          "start": 1442,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1161,8 +1161,8 @@ description: Result of parsing gear-rack.kcl
                           }
                         }
                       ],
-                      "end": 1450,
-                      "start": 1440,
+                      "end": 1444,
+                      "start": 1434,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1170,15 +1170,15 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1467,
+                      "end": 1454,
                       "name": "distance",
-                      "start": 1459,
+                      "start": 1446,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1478,
+                      "end": 1465,
                       "raw": "1.570796",
-                      "start": 1470,
+                      "start": 1457,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1190,15 +1190,15 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1496,
+                      "end": 1476,
                       "name": "instances",
-                      "start": 1487,
+                      "start": 1467,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1501,
+                      "end": 1481,
                       "raw": "63",
-                      "start": 1499,
+                      "start": 1479,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1209,25 +1209,25 @@ description: Result of parsing gear-rack.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1424,
+                  "end": 1426,
                   "name": "patternLinear3d",
-                  "start": 1409,
+                  "start": 1411,
                   "type": "Identifier"
                 },
-                "end": 1508,
-                "start": 1409,
+                "end": 1482,
+                "start": 1411,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1574,
+            "end": 1548,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 1574,
-                    "start": 1508,
+                    "end": 1548,
+                    "start": 1482,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1239,26 +1239,26 @@ description: Result of parsing gear-rack.kcl
               },
               "startNodes": []
             },
-            "start": 1396,
+            "start": 1398,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1388,
+          "start": 1390,
           "type": "VariableDeclarator"
         },
-        "end": 1574,
+        "end": 1548,
         "kind": "const",
-        "start": 1388,
+        "start": 1390,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1910,
+          "end": 1884,
           "id": {
-            "end": 1586,
+            "end": 1560,
             "name": "endCapTooth",
-            "start": 1575,
+            "start": 1549,
             "type": "Identifier"
           },
           "init": {
@@ -1266,22 +1266,22 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
-                    "end": 1607,
+                    "end": 1581,
                     "raw": "'XY'",
-                    "start": 1603,
+                    "start": 1577,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 1602,
+                  "end": 1576,
                   "name": "startSketchOn",
-                  "start": 1589,
+                  "start": 1563,
                   "type": "Identifier"
                 },
-                "end": 1608,
-                "start": 1589,
+                "end": 1582,
+                "start": 1563,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1290,26 +1290,26 @@ description: Result of parsing gear-rack.kcl
                   {
                     "elements": [
                       {
-                        "end": 1641,
+                        "end": 1615,
                         "left": {
                           "argument": {
-                            "end": 1637,
+                            "end": 1611,
                             "name": "length",
-                            "start": 1631,
+                            "start": 1605,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 1637,
+                          "end": 1611,
                           "operator": "-",
-                          "start": 1630,
+                          "start": 1604,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 1641,
+                          "end": 1615,
                           "raw": "2",
-                          "start": 1640,
+                          "start": 1614,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1317,14 +1317,14 @@ description: Result of parsing gear-rack.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 1630,
+                        "start": 1604,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 1652,
+                        "end": 1626,
                         "raw": "11.849525",
-                        "start": 1643,
+                        "start": 1617,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1333,26 +1333,26 @@ description: Result of parsing gear-rack.kcl
                         }
                       }
                     ],
-                    "end": 1653,
-                    "start": 1629,
+                    "end": 1627,
+                    "start": 1603,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1656,
-                    "start": 1655,
+                    "end": 1630,
+                    "start": 1629,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1628,
+                  "end": 1602,
                   "name": "startProfileAt",
-                  "start": 1614,
+                  "start": 1588,
                   "type": "Identifier"
                 },
-                "end": 1657,
-                "start": 1614,
+                "end": 1631,
+                "start": 1588,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1361,17 +1361,17 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1671,
+                      "end": 1645,
                       "name": "end",
-                      "start": 1668,
+                      "start": 1642,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1683,
+                          "end": 1657,
                           "raw": "0.314524",
-                          "start": 1675,
+                          "start": 1649,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1381,9 +1381,9 @@ description: Result of parsing gear-rack.kcl
                         },
                         {
                           "argument": {
-                            "end": 1694,
+                            "end": 1668,
                             "raw": "0.864147",
-                            "start": 1686,
+                            "start": 1660,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1391,28 +1391,28 @@ description: Result of parsing gear-rack.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 1694,
+                          "end": 1668,
                           "operator": "-",
-                          "start": 1685,
+                          "start": 1659,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 1695,
-                      "start": 1674,
+                      "end": 1669,
+                      "start": 1648,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1667,
+                  "end": 1641,
                   "name": "line",
-                  "start": 1663,
+                  "start": 1637,
                   "type": "Identifier"
                 },
-                "end": 1696,
-                "start": 1663,
+                "end": 1670,
+                "start": 1637,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1422,9 +1422,9 @@ description: Result of parsing gear-rack.kcl
                   {
                     "elements": [
                       {
-                        "end": 1735,
+                        "end": 1709,
                         "raw": "0.157636",
-                        "start": 1727,
+                        "start": 1701,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1434,9 +1434,9 @@ description: Result of parsing gear-rack.kcl
                       },
                       {
                         "argument": {
-                          "end": 1746,
+                          "end": 1720,
                           "raw": "0.110378",
-                          "start": 1738,
+                          "start": 1712,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1444,33 +1444,33 @@ description: Result of parsing gear-rack.kcl
                             "suffix": "None"
                           }
                         },
-                        "end": 1746,
+                        "end": 1720,
                         "operator": "-",
-                        "start": 1737,
+                        "start": 1711,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     ],
-                    "end": 1747,
-                    "start": 1726,
+                    "end": 1721,
+                    "start": 1700,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1750,
-                    "start": 1749,
+                    "end": 1724,
+                    "start": 1723,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1725,
+                  "end": 1699,
                   "name": "tangentialArcToRelative",
-                  "start": 1702,
+                  "start": 1676,
                   "type": "Identifier"
                 },
-                "end": 1751,
-                "start": 1702,
+                "end": 1725,
+                "start": 1676,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1479,34 +1479,34 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1773,
+                      "end": 1747,
                       "name": "endAbsolute",
-                      "start": 1762,
+                      "start": 1736,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1788,
+                          "end": 1762,
                           "left": {
                             "argument": {
-                              "end": 1784,
+                              "end": 1758,
                               "name": "length",
-                              "start": 1778,
+                              "start": 1752,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 1784,
+                            "end": 1758,
                             "operator": "-",
-                            "start": 1777,
+                            "start": 1751,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1788,
+                            "end": 1762,
                             "raw": "2",
-                            "start": 1787,
+                            "start": 1761,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1514,33 +1514,33 @@ description: Result of parsing gear-rack.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1777,
+                          "start": 1751,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 1799,
+                          "end": 1773,
                           "name": "minHeight",
-                          "start": 1790,
+                          "start": 1764,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
-                      "end": 1800,
-                      "start": 1776,
+                      "end": 1774,
+                      "start": 1750,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1761,
+                  "end": 1735,
                   "name": "line",
-                  "start": 1757,
+                  "start": 1731,
                   "type": "Identifier"
                 },
-                "end": 1801,
-                "start": 1757,
+                "end": 1775,
+                "start": 1731,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1548,13 +1548,13 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 1812,
+                  "end": 1786,
                   "name": "close",
-                  "start": 1807,
+                  "start": 1781,
                   "type": "Identifier"
                 },
-                "end": 1814,
-                "start": 1807,
+                "end": 1788,
+                "start": 1781,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1563,40 +1563,40 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1834,
+                      "end": 1808,
                       "name": "length",
-                      "start": 1828,
+                      "start": 1802,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1842,
+                      "end": 1816,
                       "name": "width",
-                      "start": 1837,
+                      "start": 1811,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1827,
+                  "end": 1801,
                   "name": "extrude",
-                  "start": 1820,
+                  "start": 1794,
                   "type": "Identifier"
                 },
-                "end": 1843,
-                "start": 1820,
+                "end": 1817,
+                "start": 1794,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1910,
+            "end": 1884,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
-                    "end": 1910,
-                    "start": 1843,
+                    "end": 1884,
+                    "start": 1817,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1608,26 +1608,26 @@ description: Result of parsing gear-rack.kcl
               },
               "startNodes": []
             },
-            "start": 1589,
+            "start": 1563,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1575,
+          "start": 1549,
           "type": "VariableDeclarator"
         },
-        "end": 1910,
+        "end": 1884,
         "kind": "const",
-        "start": 1575,
+        "start": 1549,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2180,
+          "end": 2154,
           "id": {
-            "end": 1923,
+            "end": 1897,
             "name": "endCapTooth2",
-            "start": 1911,
+            "start": 1885,
             "type": "Identifier"
           },
           "init": {
@@ -1635,22 +1635,22 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [
                   {
-                    "end": 1944,
+                    "end": 1918,
                     "raw": "'XY'",
-                    "start": 1940,
+                    "start": 1914,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 1939,
+                  "end": 1913,
                   "name": "startSketchOn",
-                  "start": 1926,
+                  "start": 1900,
                   "type": "Identifier"
                 },
-                "end": 1945,
-                "start": 1926,
+                "end": 1919,
+                "start": 1900,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1659,19 +1659,19 @@ description: Result of parsing gear-rack.kcl
                   {
                     "elements": [
                       {
-                        "end": 1977,
+                        "end": 1951,
                         "left": {
-                          "end": 1973,
+                          "end": 1947,
                           "name": "length",
-                          "start": 1967,
+                          "start": 1941,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 1977,
+                          "end": 1951,
                           "raw": "2",
-                          "start": 1976,
+                          "start": 1950,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1679,14 +1679,14 @@ description: Result of parsing gear-rack.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 1967,
+                        "start": 1941,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 1988,
+                        "end": 1962,
                         "raw": "11.849525",
-                        "start": 1979,
+                        "start": 1953,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1695,26 +1695,26 @@ description: Result of parsing gear-rack.kcl
                         }
                       }
                     ],
-                    "end": 1989,
-                    "start": 1966,
+                    "end": 1963,
+                    "start": 1940,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1992,
-                    "start": 1991,
+                    "end": 1966,
+                    "start": 1965,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1965,
+                  "end": 1939,
                   "name": "startProfileAt",
-                  "start": 1951,
+                  "start": 1925,
                   "type": "Identifier"
                 },
-                "end": 1993,
-                "start": 1951,
+                "end": 1967,
+                "start": 1925,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1723,18 +1723,18 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2007,
+                      "end": 1981,
                       "name": "end",
-                      "start": 2004,
+                      "start": 1978,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 2020,
+                            "end": 1994,
                             "raw": "0.314524",
-                            "start": 2012,
+                            "start": 1986,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1742,17 +1742,17 @@ description: Result of parsing gear-rack.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 2020,
+                          "end": 1994,
                           "operator": "-",
-                          "start": 2011,
+                          "start": 1985,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
                           "argument": {
-                            "end": 2031,
+                            "end": 2005,
                             "raw": "0.864147",
-                            "start": 2023,
+                            "start": 1997,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1760,28 +1760,28 @@ description: Result of parsing gear-rack.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 2031,
+                          "end": 2005,
                           "operator": "-",
-                          "start": 2022,
+                          "start": 1996,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 2032,
-                      "start": 2010,
+                      "end": 2006,
+                      "start": 1984,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2003,
+                  "end": 1977,
                   "name": "line",
-                  "start": 1999,
+                  "start": 1973,
                   "type": "Identifier"
                 },
-                "end": 2033,
-                "start": 1999,
+                "end": 2007,
+                "start": 1973,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1792,9 +1792,9 @@ description: Result of parsing gear-rack.kcl
                     "elements": [
                       {
                         "argument": {
-                          "end": 2073,
+                          "end": 2047,
                           "raw": "0.157636",
-                          "start": 2065,
+                          "start": 2039,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1802,17 +1802,17 @@ description: Result of parsing gear-rack.kcl
                             "suffix": "None"
                           }
                         },
-                        "end": 2073,
+                        "end": 2047,
                         "operator": "-",
-                        "start": 2064,
+                        "start": 2038,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       {
                         "argument": {
-                          "end": 2084,
+                          "end": 2058,
                           "raw": "0.110378",
-                          "start": 2076,
+                          "start": 2050,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1820,33 +1820,33 @@ description: Result of parsing gear-rack.kcl
                             "suffix": "None"
                           }
                         },
-                        "end": 2084,
+                        "end": 2058,
                         "operator": "-",
-                        "start": 2075,
+                        "start": 2049,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     ],
-                    "end": 2085,
-                    "start": 2063,
+                    "end": 2059,
+                    "start": 2037,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2088,
-                    "start": 2087,
+                    "end": 2062,
+                    "start": 2061,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2062,
+                  "end": 2036,
                   "name": "tangentialArcToRelative",
-                  "start": 2039,
+                  "start": 2013,
                   "type": "Identifier"
                 },
-                "end": 2089,
-                "start": 2039,
+                "end": 2063,
+                "start": 2013,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1855,27 +1855,27 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2111,
+                      "end": 2085,
                       "name": "endAbsolute",
-                      "start": 2100,
+                      "start": 2074,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2125,
+                          "end": 2099,
                           "left": {
-                            "end": 2121,
+                            "end": 2095,
                             "name": "length",
-                            "start": 2115,
+                            "start": 2089,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 2125,
+                            "end": 2099,
                             "raw": "2",
-                            "start": 2124,
+                            "start": 2098,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1883,33 +1883,33 @@ description: Result of parsing gear-rack.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 2115,
+                          "start": 2089,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 2136,
+                          "end": 2110,
                           "name": "minHeight",
-                          "start": 2127,
+                          "start": 2101,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
-                      "end": 2137,
-                      "start": 2114,
+                      "end": 2111,
+                      "start": 2088,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2099,
+                  "end": 2073,
                   "name": "line",
-                  "start": 2095,
+                  "start": 2069,
                   "type": "Identifier"
                 },
-                "end": 2138,
-                "start": 2095,
+                "end": 2112,
+                "start": 2069,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1917,13 +1917,13 @@ description: Result of parsing gear-rack.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 2149,
+                  "end": 2123,
                   "name": "close",
-                  "start": 2144,
+                  "start": 2118,
                   "type": "Identifier"
                 },
-                "end": 2151,
-                "start": 2144,
+                "end": 2125,
+                "start": 2118,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1932,79 +1932,79 @@ description: Result of parsing gear-rack.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2171,
+                      "end": 2145,
                       "name": "length",
-                      "start": 2165,
+                      "start": 2139,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2179,
+                      "end": 2153,
                       "name": "width",
-                      "start": 2174,
+                      "start": 2148,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2164,
+                  "end": 2138,
                   "name": "extrude",
-                  "start": 2157,
+                  "start": 2131,
                   "type": "Identifier"
                 },
-                "end": 2180,
-                "start": 2157,
+                "end": 2154,
+                "start": 2131,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2180,
-            "start": 1926,
+            "end": 2154,
+            "start": 1900,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1911,
+          "start": 1885,
           "type": "VariableDeclarator"
         },
-        "end": 2180,
+        "end": 2154,
         "kind": "const",
-        "start": 1911,
+        "start": 1885,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 2181,
+    "end": 2155,
     "innerAttrs": [
       {
-        "end": 423,
+        "end": 33,
         "name": {
-          "end": 399,
+          "end": 9,
           "name": "settings",
-          "start": 391,
+          "start": 1,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 422,
+            "end": 32,
             "key": {
-              "end": 417,
+              "end": 27,
               "name": "defaultLengthUnit",
-              "start": 400,
+              "start": 10,
               "type": "Identifier"
             },
-            "start": 400,
+            "start": 10,
             "type": "ObjectProperty",
             "value": {
-              "end": 422,
+              "end": 32,
               "name": "mm",
-              "start": 420,
+              "start": 30,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 390,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -2012,8 +2012,8 @@ description: Result of parsing gear-rack.kcl
       "nonCodeNodes": {
         "4": [
           {
-            "end": 549,
-            "start": 517,
+            "end": 551,
+            "start": 519,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2024,8 +2024,8 @@ description: Result of parsing gear-rack.kcl
         ],
         "6": [
           {
-            "end": 1387,
-            "start": 1325,
+            "end": 1389,
+            "start": 1327,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2037,8 +2037,8 @@ description: Result of parsing gear-rack.kcl
       },
       "startNodes": [
         {
-          "end": 18,
-          "start": 0,
+          "end": 52,
+          "start": 34,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2047,8 +2047,8 @@ description: Result of parsing gear-rack.kcl
           }
         },
         {
-          "end": 375,
-          "start": 19,
+          "end": 409,
+          "start": 53,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2057,16 +2057,16 @@ description: Result of parsing gear-rack.kcl
           }
         },
         {
-          "end": 377,
-          "start": 375,
+          "end": 412,
+          "start": 409,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 389,
-          "start": 377,
+          "end": 424,
+          "start": 412,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2075,16 +2075,16 @@ description: Result of parsing gear-rack.kcl
           }
         },
         {
-          "end": 425,
-          "start": 423,
+          "end": 427,
+          "start": 424,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 444,
-          "start": 425,
+          "end": 446,
+          "start": 427,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",

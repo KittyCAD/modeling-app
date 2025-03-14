@@ -7,11 +7,11 @@ description: Result of parsing cycloidal-gear.kcl
     "body": [
       {
         "declaration": {
-          "end": 1721,
+          "end": 1689,
           "id": {
-            "end": 222,
+            "end": 223,
             "name": "cycloidalGear",
-            "start": 209,
+            "start": 210,
             "type": "Identifier"
           },
           "init": {
@@ -19,11 +19,11 @@ description: Result of parsing cycloidal-gear.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 1512,
+                    "end": 1480,
                     "id": {
-                      "end": 448,
+                      "end": 449,
                       "name": "gearSketch",
-                      "start": 438,
+                      "start": 439,
                       "type": "Identifier"
                     },
                     "init": {
@@ -31,64 +31,64 @@ description: Result of parsing cycloidal-gear.kcl
                         "body": [
                           {
                             "declaration": {
-                              "end": 511,
+                              "end": 512,
                               "id": {
-                                "end": 475,
+                                "end": 476,
                                 "name": "helixAngleP",
-                                "start": 464,
+                                "start": 465,
                                 "type": "Identifier"
                               },
                               "init": {
-                                "end": 511,
+                                "end": 512,
                                 "left": {
-                                  "end": 498,
+                                  "end": 499,
                                   "left": {
-                                    "end": 488,
+                                    "end": 489,
                                     "name": "helixAngle",
-                                    "start": 478,
+                                    "start": 479,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "*",
                                   "right": {
-                                    "end": 498,
+                                    "end": 499,
                                     "name": "gHeight",
-                                    "start": 491,
+                                    "start": 492,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "start": 478,
+                                  "start": 479,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 511,
+                                  "end": 512,
                                   "name": "gearHeight",
-                                  "start": 501,
+                                  "start": 502,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 478,
+                                "start": 479,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
-                              "start": 464,
+                              "start": 465,
                               "type": "VariableDeclarator"
                             },
-                            "end": 511,
+                            "end": 512,
                             "kind": "const",
-                            "start": 464,
+                            "start": 465,
                             "type": "VariableDeclaration",
                             "type": "VariableDeclaration"
                           },
                           {
                             "declaration": {
-                              "end": 1485,
+                              "end": 1453,
                               "id": {
-                                "end": 527,
+                                "end": 528,
                                 "name": "gearProfile",
-                                "start": 516,
+                                "start": 517,
                                 "type": "Identifier"
                               },
                               "init": {
@@ -100,34 +100,34 @@ description: Result of parsing cycloidal-gear.kcl
                                           {
                                             "type": "LabeledArg",
                                             "label": {
-                                              "end": 568,
+                                              "end": 569,
                                               "name": "offset",
-                                              "start": 562,
+                                              "start": 563,
                                               "type": "Identifier"
                                             },
                                             "arg": {
-                                              "end": 578,
+                                              "end": 579,
                                               "name": "gHeight",
-                                              "start": 571,
+                                              "start": 572,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             }
                                           }
                                         ],
                                         "callee": {
-                                          "end": 555,
+                                          "end": 556,
                                           "name": "offsetPlane",
-                                          "start": 544,
+                                          "start": 545,
                                           "type": "Identifier"
                                         },
-                                        "end": 579,
-                                        "start": 544,
+                                        "end": 580,
+                                        "start": 545,
                                         "type": "CallExpressionKw",
                                         "type": "CallExpressionKw",
                                         "unlabeled": {
-                                          "end": 560,
+                                          "end": 561,
                                           "raw": "\"XY\"",
-                                          "start": 556,
+                                          "start": 557,
                                           "type": "Literal",
                                           "type": "Literal",
                                           "value": "XY"
@@ -135,13 +135,13 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
-                                      "end": 543,
+                                      "end": 544,
                                       "name": "startSketchOn",
-                                      "start": 530,
+                                      "start": 531,
                                       "type": "Identifier"
                                     },
-                                    "end": 580,
-                                    "start": 530,
+                                    "end": 581,
+                                    "start": 531,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -150,23 +150,23 @@ description: Result of parsing cycloidal-gear.kcl
                                       {
                                         "elements": [
                                           {
-                                            "end": 707,
+                                            "end": 708,
                                             "left": {
-                                              "end": 664,
+                                              "end": 665,
                                               "left": {
-                                                "end": 634,
+                                                "end": 635,
                                                 "left": {
-                                                  "end": 627,
+                                                  "end": 628,
                                                   "name": "gearPitch",
-                                                  "start": 618,
+                                                  "start": 619,
                                                   "type": "Identifier",
                                                   "type": "Identifier"
                                                 },
                                                 "operator": "*",
                                                 "right": {
-                                                  "end": 634,
+                                                  "end": 635,
                                                   "raw": "1.55",
-                                                  "start": 630,
+                                                  "start": 631,
                                                   "type": "Literal",
                                                   "type": "Literal",
                                                   "value": {
@@ -174,7 +174,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "suffix": "None"
                                                   }
                                                 },
-                                                "start": 618,
+                                                "start": 619,
                                                 "type": "BinaryExpression",
                                                 "type": "BinaryExpression"
                                               },
@@ -184,47 +184,47 @@ description: Result of parsing cycloidal-gear.kcl
                                                   {
                                                     "arguments": [
                                                       {
-                                                        "end": 662,
+                                                        "end": 663,
                                                         "name": "helixAngleP",
-                                                        "start": 651,
+                                                        "start": 652,
                                                         "type": "Identifier",
                                                         "type": "Identifier"
                                                       }
                                                     ],
                                                     "callee": {
-                                                      "end": 650,
+                                                      "end": 651,
                                                       "name": "toRadians",
-                                                      "start": 641,
+                                                      "start": 642,
                                                       "type": "Identifier"
                                                     },
-                                                    "end": 663,
-                                                    "start": 641,
+                                                    "end": 664,
+                                                    "start": 642,
                                                     "type": "CallExpression",
                                                     "type": "CallExpression"
                                                   }
                                                 ],
                                                 "callee": {
-                                                  "end": 640,
+                                                  "end": 641,
                                                   "name": "cos",
-                                                  "start": 637,
+                                                  "start": 638,
                                                   "type": "Identifier"
                                                 },
-                                                "end": 664,
-                                                "start": 637,
+                                                "end": 665,
+                                                "start": 638,
                                                 "type": "CallExpression",
                                                 "type": "CallExpression"
                                               },
-                                              "start": 618,
+                                              "start": 619,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             },
                                             "operator": "+",
                                             "right": {
-                                              "end": 707,
+                                              "end": 708,
                                               "left": {
-                                                "end": 676,
+                                                "end": 677,
                                                 "name": "gearPitch",
-                                                "start": 667,
+                                                "start": 668,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
@@ -235,68 +235,68 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "arguments": [
                                                       {
                                                         "argument": {
-                                                          "end": 705,
+                                                          "end": 706,
                                                           "name": "helixAngleP",
-                                                          "start": 694,
+                                                          "start": 695,
                                                           "type": "Identifier",
                                                           "type": "Identifier"
                                                         },
-                                                        "end": 705,
+                                                        "end": 706,
                                                         "operator": "-",
-                                                        "start": 693,
+                                                        "start": 694,
                                                         "type": "UnaryExpression",
                                                         "type": "UnaryExpression"
                                                       }
                                                     ],
                                                     "callee": {
-                                                      "end": 692,
+                                                      "end": 693,
                                                       "name": "toRadians",
-                                                      "start": 683,
+                                                      "start": 684,
                                                       "type": "Identifier"
                                                     },
-                                                    "end": 706,
-                                                    "start": 683,
+                                                    "end": 707,
+                                                    "start": 684,
                                                     "type": "CallExpression",
                                                     "type": "CallExpression"
                                                   }
                                                 ],
                                                 "callee": {
-                                                  "end": 682,
+                                                  "end": 683,
                                                   "name": "sin",
-                                                  "start": 679,
+                                                  "start": 680,
                                                   "type": "Identifier"
                                                 },
-                                                "end": 707,
-                                                "start": 679,
+                                                "end": 708,
+                                                "start": 680,
                                                 "type": "CallExpression",
                                                 "type": "CallExpression"
                                               },
-                                              "start": 667,
+                                              "start": 668,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             },
-                                            "start": 618,
+                                            "start": 619,
                                             "type": "BinaryExpression",
                                             "type": "BinaryExpression"
                                           },
                                           {
-                                            "end": 809,
+                                            "end": 810,
                                             "left": {
-                                              "end": 766,
+                                              "end": 767,
                                               "left": {
-                                                "end": 736,
+                                                "end": 737,
                                                 "left": {
-                                                  "end": 729,
+                                                  "end": 730,
                                                   "name": "gearPitch",
-                                                  "start": 720,
+                                                  "start": 721,
                                                   "type": "Identifier",
                                                   "type": "Identifier"
                                                 },
                                                 "operator": "*",
                                                 "right": {
-                                                  "end": 736,
+                                                  "end": 737,
                                                   "raw": "1.55",
-                                                  "start": 732,
+                                                  "start": 733,
                                                   "type": "Literal",
                                                   "type": "Literal",
                                                   "value": {
@@ -304,7 +304,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "suffix": "None"
                                                   }
                                                 },
-                                                "start": 720,
+                                                "start": 721,
                                                 "type": "BinaryExpression",
                                                 "type": "BinaryExpression"
                                               },
@@ -314,47 +314,47 @@ description: Result of parsing cycloidal-gear.kcl
                                                   {
                                                     "arguments": [
                                                       {
-                                                        "end": 764,
+                                                        "end": 765,
                                                         "name": "helixAngleP",
-                                                        "start": 753,
+                                                        "start": 754,
                                                         "type": "Identifier",
                                                         "type": "Identifier"
                                                       }
                                                     ],
                                                     "callee": {
-                                                      "end": 752,
+                                                      "end": 753,
                                                       "name": "toRadians",
-                                                      "start": 743,
+                                                      "start": 744,
                                                       "type": "Identifier"
                                                     },
-                                                    "end": 765,
-                                                    "start": 743,
+                                                    "end": 766,
+                                                    "start": 744,
                                                     "type": "CallExpression",
                                                     "type": "CallExpression"
                                                   }
                                                 ],
                                                 "callee": {
-                                                  "end": 742,
+                                                  "end": 743,
                                                   "name": "sin",
-                                                  "start": 739,
+                                                  "start": 740,
                                                   "type": "Identifier"
                                                 },
-                                                "end": 766,
-                                                "start": 739,
+                                                "end": 767,
+                                                "start": 740,
                                                 "type": "CallExpression",
                                                 "type": "CallExpression"
                                               },
-                                              "start": 720,
+                                              "start": 721,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             },
                                             "operator": "+",
                                             "right": {
-                                              "end": 809,
+                                              "end": 810,
                                               "left": {
-                                                "end": 778,
+                                                "end": 779,
                                                 "name": "gearPitch",
-                                                "start": 769,
+                                                "start": 770,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
@@ -365,95 +365,95 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "arguments": [
                                                       {
                                                         "argument": {
-                                                          "end": 807,
+                                                          "end": 808,
                                                           "name": "helixAngleP",
-                                                          "start": 796,
+                                                          "start": 797,
                                                           "type": "Identifier",
                                                           "type": "Identifier"
                                                         },
-                                                        "end": 807,
+                                                        "end": 808,
                                                         "operator": "-",
-                                                        "start": 795,
+                                                        "start": 796,
                                                         "type": "UnaryExpression",
                                                         "type": "UnaryExpression"
                                                       }
                                                     ],
                                                     "callee": {
-                                                      "end": 794,
+                                                      "end": 795,
                                                       "name": "toRadians",
-                                                      "start": 785,
+                                                      "start": 786,
                                                       "type": "Identifier"
                                                     },
-                                                    "end": 808,
-                                                    "start": 785,
+                                                    "end": 809,
+                                                    "start": 786,
                                                     "type": "CallExpression",
                                                     "type": "CallExpression"
                                                   }
                                                 ],
                                                 "callee": {
-                                                  "end": 784,
+                                                  "end": 785,
                                                   "name": "cos",
-                                                  "start": 781,
+                                                  "start": 782,
                                                   "type": "Identifier"
                                                 },
-                                                "end": 809,
-                                                "start": 781,
+                                                "end": 810,
+                                                "start": 782,
                                                 "type": "CallExpression",
                                                 "type": "CallExpression"
                                               },
-                                              "start": 769,
+                                              "start": 770,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             },
-                                            "start": 720,
+                                            "start": 721,
                                             "type": "BinaryExpression",
                                             "type": "BinaryExpression"
                                           }
                                         ],
-                                        "end": 820,
-                                        "start": 605,
+                                        "end": 821,
+                                        "start": 606,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "end": 823,
-                                        "start": 822,
+                                        "end": 824,
+                                        "start": 823,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 604,
+                                      "end": 605,
                                       "name": "startProfileAt",
-                                      "start": 590,
+                                      "start": 591,
                                       "type": "Identifier"
                                     },
-                                    "end": 824,
-                                    "start": 590,
+                                    "end": 825,
+                                    "start": 591,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 963,
+                                        "end": 964,
                                         "properties": [
                                           {
-                                            "end": 880,
+                                            "end": 881,
                                             "key": {
-                                              "end": 861,
+                                              "end": 862,
                                               "name": "angleStart",
-                                              "start": 851,
+                                              "start": 852,
                                               "type": "Identifier"
                                             },
-                                            "start": 851,
+                                            "start": 852,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 880,
+                                              "end": 881,
                                               "left": {
-                                                "end": 866,
+                                                "end": 867,
                                                 "raw": "90",
-                                                "start": 864,
+                                                "start": 865,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -463,34 +463,34 @@ description: Result of parsing cycloidal-gear.kcl
                                               },
                                               "operator": "+",
                                               "right": {
-                                                "end": 880,
+                                                "end": 881,
                                                 "name": "helixAngleP",
-                                                "start": 869,
+                                                "start": 870,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
-                                              "start": 864,
+                                              "start": 865,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             }
                                           },
                                           {
-                                            "end": 921,
+                                            "end": 922,
                                             "key": {
-                                              "end": 901,
+                                              "end": 902,
                                               "name": "angleEnd",
-                                              "start": 893,
+                                              "start": 894,
                                               "type": "Identifier"
                                             },
-                                            "start": 893,
+                                            "start": 894,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 921,
+                                              "end": 922,
                                               "left": {
                                                 "argument": {
-                                                  "end": 907,
+                                                  "end": 908,
                                                   "raw": "90",
-                                                  "start": 905,
+                                                  "start": 906,
                                                   "type": "Literal",
                                                   "type": "Literal",
                                                   "value": {
@@ -498,95 +498,95 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "suffix": "None"
                                                   }
                                                 },
-                                                "end": 907,
+                                                "end": 908,
                                                 "operator": "-",
-                                                "start": 904,
+                                                "start": 905,
                                                 "type": "UnaryExpression",
                                                 "type": "UnaryExpression"
                                               },
                                               "operator": "+",
                                               "right": {
-                                                "end": 921,
+                                                "end": 922,
                                                 "name": "helixAngleP",
-                                                "start": 910,
+                                                "start": 911,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
-                                              "start": 904,
+                                              "start": 905,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             }
                                           },
                                           {
-                                            "end": 952,
+                                            "end": 953,
                                             "key": {
-                                              "end": 940,
+                                              "end": 941,
                                               "name": "radius",
-                                              "start": 934,
+                                              "start": 935,
                                               "type": "Identifier"
                                             },
-                                            "start": 934,
+                                            "start": 935,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 952,
+                                              "end": 953,
                                               "name": "gearPitch",
-                                              "start": 943,
+                                              "start": 944,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             }
                                           }
                                         ],
-                                        "start": 838,
+                                        "start": 839,
                                         "type": "ObjectExpression",
                                         "type": "ObjectExpression"
                                       },
                                       {
-                                        "end": 966,
-                                        "start": 965,
+                                        "end": 967,
+                                        "start": 966,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 837,
+                                      "end": 838,
                                       "name": "arc",
-                                      "start": 834,
+                                      "start": 835,
                                       "type": "Identifier"
                                     },
-                                    "end": 967,
-                                    "start": 834,
+                                    "end": 968,
+                                    "start": 835,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1064,
+                                        "end": 1065,
                                         "properties": [
                                           {
-                                            "end": 1029,
+                                            "end": 1030,
                                             "key": {
-                                              "end": 1010,
+                                              "end": 1011,
                                               "name": "radius",
-                                              "start": 1004,
+                                              "start": 1005,
                                               "type": "Identifier"
                                             },
-                                            "start": 1004,
+                                            "start": 1005,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1029,
+                                              "end": 1030,
                                               "left": {
-                                                "end": 1022,
+                                                "end": 1023,
                                                 "name": "gearPitch",
-                                                "start": 1013,
+                                                "start": 1014,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
                                               "operator": "*",
                                               "right": {
-                                                "end": 1029,
+                                                "end": 1030,
                                                 "raw": "1.67",
-                                                "start": 1025,
+                                                "start": 1026,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -594,25 +594,25 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "start": 1013,
+                                              "start": 1014,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             }
                                           },
                                           {
-                                            "end": 1053,
+                                            "end": 1054,
                                             "key": {
-                                              "end": 1048,
+                                              "end": 1049,
                                               "name": "offset",
-                                              "start": 1042,
+                                              "start": 1043,
                                               "type": "Identifier"
                                             },
-                                            "start": 1042,
+                                            "start": 1043,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1053,
+                                              "end": 1054,
                                               "raw": "60",
-                                              "start": 1051,
+                                              "start": 1052,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
@@ -622,66 +622,66 @@ description: Result of parsing cycloidal-gear.kcl
                                             }
                                           }
                                         ],
-                                        "start": 991,
+                                        "start": 992,
                                         "type": "ObjectExpression",
                                         "type": "ObjectExpression"
                                       },
                                       {
-                                        "end": 1067,
-                                        "start": 1066,
+                                        "end": 1068,
+                                        "start": 1067,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 990,
+                                      "end": 991,
                                       "name": "tangentialArc",
-                                      "start": 977,
+                                      "start": 978,
                                       "type": "Identifier"
                                     },
-                                    "end": 1068,
-                                    "start": 977,
+                                    "end": 1069,
+                                    "start": 978,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1129,
+                                        "end": 1130,
                                         "properties": [
                                           {
-                                            "end": 1112,
+                                            "end": 1113,
                                             "key": {
-                                              "end": 1100,
+                                              "end": 1101,
                                               "name": "radius",
-                                              "start": 1094,
+                                              "start": 1095,
                                               "type": "Identifier"
                                             },
-                                            "start": 1094,
+                                            "start": 1095,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1112,
+                                              "end": 1113,
                                               "name": "gearPitch",
-                                              "start": 1103,
+                                              "start": 1104,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             }
                                           },
                                           {
-                                            "end": 1127,
+                                            "end": 1128,
                                             "key": {
-                                              "end": 1120,
+                                              "end": 1121,
                                               "name": "offset",
-                                              "start": 1114,
+                                              "start": 1115,
                                               "type": "Identifier"
                                             },
-                                            "start": 1114,
+                                            "start": 1115,
                                             "type": "ObjectProperty",
                                             "value": {
                                               "argument": {
-                                                "end": 1127,
+                                                "end": 1128,
                                                 "raw": "180",
-                                                "start": 1124,
+                                                "start": 1125,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -689,65 +689,65 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "end": 1127,
+                                              "end": 1128,
                                               "operator": "-",
-                                              "start": 1123,
+                                              "start": 1124,
                                               "type": "UnaryExpression",
                                               "type": "UnaryExpression"
                                             }
                                           }
                                         ],
-                                        "start": 1092,
+                                        "start": 1093,
                                         "type": "ObjectExpression",
                                         "type": "ObjectExpression"
                                       },
                                       {
-                                        "end": 1132,
-                                        "start": 1131,
+                                        "end": 1133,
+                                        "start": 1132,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1091,
+                                      "end": 1092,
                                       "name": "tangentialArc",
-                                      "start": 1078,
+                                      "start": 1079,
                                       "type": "Identifier"
                                     },
-                                    "end": 1133,
-                                    "start": 1078,
+                                    "end": 1134,
+                                    "start": 1079,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1230,
+                                        "end": 1231,
                                         "properties": [
                                           {
-                                            "end": 1195,
+                                            "end": 1196,
                                             "key": {
-                                              "end": 1176,
+                                              "end": 1177,
                                               "name": "radius",
-                                              "start": 1170,
+                                              "start": 1171,
                                               "type": "Identifier"
                                             },
-                                            "start": 1170,
+                                            "start": 1171,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1195,
+                                              "end": 1196,
                                               "left": {
-                                                "end": 1188,
+                                                "end": 1189,
                                                 "name": "gearPitch",
-                                                "start": 1179,
+                                                "start": 1180,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
                                               "operator": "*",
                                               "right": {
-                                                "end": 1195,
+                                                "end": 1196,
                                                 "raw": "1.67",
-                                                "start": 1191,
+                                                "start": 1192,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -755,25 +755,25 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "start": 1179,
+                                              "start": 1180,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             }
                                           },
                                           {
-                                            "end": 1219,
+                                            "end": 1220,
                                             "key": {
-                                              "end": 1214,
+                                              "end": 1215,
                                               "name": "offset",
-                                              "start": 1208,
+                                              "start": 1209,
                                               "type": "Identifier"
                                             },
-                                            "start": 1208,
+                                            "start": 1209,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1219,
+                                              "end": 1220,
                                               "raw": "60",
-                                              "start": 1217,
+                                              "start": 1218,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
@@ -783,66 +783,66 @@ description: Result of parsing cycloidal-gear.kcl
                                             }
                                           }
                                         ],
-                                        "start": 1157,
+                                        "start": 1158,
                                         "type": "ObjectExpression",
                                         "type": "ObjectExpression"
                                       },
                                       {
-                                        "end": 1233,
-                                        "start": 1232,
+                                        "end": 1234,
+                                        "start": 1233,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1156,
+                                      "end": 1157,
                                       "name": "tangentialArc",
-                                      "start": 1143,
+                                      "start": 1144,
                                       "type": "Identifier"
                                     },
-                                    "end": 1234,
-                                    "start": 1143,
+                                    "end": 1235,
+                                    "start": 1144,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1295,
+                                        "end": 1296,
                                         "properties": [
                                           {
-                                            "end": 1278,
+                                            "end": 1279,
                                             "key": {
-                                              "end": 1266,
+                                              "end": 1267,
                                               "name": "radius",
-                                              "start": 1260,
+                                              "start": 1261,
                                               "type": "Identifier"
                                             },
-                                            "start": 1260,
+                                            "start": 1261,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1278,
+                                              "end": 1279,
                                               "name": "gearPitch",
-                                              "start": 1269,
+                                              "start": 1270,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             }
                                           },
                                           {
-                                            "end": 1293,
+                                            "end": 1294,
                                             "key": {
-                                              "end": 1286,
+                                              "end": 1287,
                                               "name": "offset",
-                                              "start": 1280,
+                                              "start": 1281,
                                               "type": "Identifier"
                                             },
-                                            "start": 1280,
+                                            "start": 1281,
                                             "type": "ObjectProperty",
                                             "value": {
                                               "argument": {
-                                                "end": 1293,
+                                                "end": 1294,
                                                 "raw": "180",
-                                                "start": 1290,
+                                                "start": 1291,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -850,33 +850,33 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "end": 1293,
+                                              "end": 1294,
                                               "operator": "-",
-                                              "start": 1289,
+                                              "start": 1290,
                                               "type": "UnaryExpression",
                                               "type": "UnaryExpression"
                                             }
                                           }
                                         ],
-                                        "start": 1258,
+                                        "start": 1259,
                                         "type": "ObjectExpression",
                                         "type": "ObjectExpression"
                                       },
                                       {
-                                        "end": 1298,
-                                        "start": 1297,
+                                        "end": 1299,
+                                        "start": 1298,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1257,
+                                      "end": 1258,
                                       "name": "tangentialArc",
-                                      "start": 1244,
+                                      "start": 1245,
                                       "type": "Identifier"
                                     },
-                                    "end": 1299,
-                                    "start": 1244,
+                                    "end": 1300,
+                                    "start": 1245,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -887,84 +887,84 @@ description: Result of parsing cycloidal-gear.kcl
                                           {
                                             "arguments": [
                                               {
-                                                "end": 1341,
-                                                "start": 1340,
+                                                "end": 1342,
+                                                "start": 1341,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 1339,
+                                              "end": 1340,
                                               "name": "profileStartX",
-                                              "start": 1326,
+                                              "start": 1327,
                                               "type": "Identifier"
                                             },
-                                            "end": 1342,
-                                            "start": 1326,
+                                            "end": 1343,
+                                            "start": 1327,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 1359,
-                                                "start": 1358,
+                                                "end": 1360,
+                                                "start": 1359,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 1357,
+                                              "end": 1358,
                                               "name": "profileStartY",
-                                              "start": 1344,
+                                              "start": 1345,
                                               "type": "Identifier"
                                             },
-                                            "end": 1360,
-                                            "start": 1344,
+                                            "end": 1361,
+                                            "start": 1345,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           }
                                         ],
-                                        "end": 1361,
-                                        "start": 1325,
+                                        "end": 1362,
+                                        "start": 1326,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "end": 1364,
-                                        "start": 1363,
+                                        "end": 1365,
+                                        "start": 1364,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1324,
+                                      "end": 1325,
                                       "name": "tangentialArcTo",
-                                      "start": 1309,
+                                      "start": 1310,
                                       "type": "Identifier"
                                     },
-                                    "end": 1365,
-                                    "start": 1309,
+                                    "end": 1366,
+                                    "start": 1310,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1382,
-                                        "start": 1381,
+                                        "end": 1383,
+                                        "start": 1382,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1380,
+                                      "end": 1381,
                                       "name": "close",
-                                      "start": 1375,
+                                      "start": 1376,
                                       "type": "Identifier"
                                     },
-                                    "end": 1383,
-                                    "start": 1375,
+                                    "end": 1384,
+                                    "start": 1376,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -975,17 +975,17 @@ description: Result of parsing cycloidal-gear.kcl
                                           {
                                             "type": "LabeledArg",
                                             "label": {
-                                              "end": 1423,
+                                              "end": 1412,
                                               "name": "center",
-                                              "start": 1417,
+                                              "start": 1406,
                                               "type": "Identifier"
                                             },
                                             "arg": {
                                               "elements": [
                                                 {
-                                                  "end": 1428,
+                                                  "end": 1417,
                                                   "raw": "0",
-                                                  "start": 1427,
+                                                  "start": 1416,
                                                   "type": "Literal",
                                                   "type": "Literal",
                                                   "value": {
@@ -994,9 +994,9 @@ description: Result of parsing cycloidal-gear.kcl
                                                   }
                                                 },
                                                 {
-                                                  "end": 1431,
+                                                  "end": 1420,
                                                   "raw": "0",
-                                                  "start": 1430,
+                                                  "start": 1419,
                                                   "type": "Literal",
                                                   "type": "Literal",
                                                   "value": {
@@ -1005,8 +1005,8 @@ description: Result of parsing cycloidal-gear.kcl
                                                   }
                                                 }
                                               ],
-                                              "end": 1432,
-                                              "start": 1426,
+                                              "end": 1421,
+                                              "start": 1415,
                                               "type": "ArrayExpression",
                                               "type": "ArrayExpression"
                                             }
@@ -1014,25 +1014,25 @@ description: Result of parsing cycloidal-gear.kcl
                                           {
                                             "type": "LabeledArg",
                                             "label": {
-                                              "end": 1451,
+                                              "end": 1429,
                                               "name": "radius",
-                                              "start": 1445,
+                                              "start": 1423,
                                               "type": "Identifier"
                                             },
                                             "arg": {
-                                              "end": 1470,
+                                              "end": 1448,
                                               "left": {
-                                                "end": 1466,
+                                                "end": 1444,
                                                 "name": "holeDiameter",
-                                                "start": 1454,
+                                                "start": 1432,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
                                               "operator": "/",
                                               "right": {
-                                                "end": 1470,
+                                                "end": 1448,
                                                 "raw": "2",
-                                                "start": 1469,
+                                                "start": 1447,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -1040,106 +1040,106 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "start": 1454,
+                                              "start": 1432,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             }
                                           }
                                         ],
                                         "callee": {
-                                          "end": 1404,
+                                          "end": 1405,
                                           "name": "circle",
-                                          "start": 1398,
+                                          "start": 1399,
                                           "type": "Identifier"
                                         },
-                                        "end": 1481,
-                                        "start": 1398,
+                                        "end": 1449,
+                                        "start": 1399,
                                         "type": "CallExpressionKw",
                                         "type": "CallExpressionKw",
                                         "unlabeled": null
                                       },
                                       {
-                                        "end": 1484,
-                                        "start": 1483,
+                                        "end": 1452,
+                                        "start": 1451,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1397,
+                                      "end": 1398,
                                       "name": "hole",
-                                      "start": 1393,
+                                      "start": 1394,
                                       "type": "Identifier"
                                     },
-                                    "end": 1485,
-                                    "start": 1393,
+                                    "end": 1453,
+                                    "start": 1394,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
-                                "end": 1485,
-                                "start": 530,
+                                "end": 1453,
+                                "start": 531,
                                 "type": "PipeExpression",
                                 "type": "PipeExpression"
                               },
-                              "start": 516,
+                              "start": 517,
                               "type": "VariableDeclarator"
                             },
-                            "end": 1485,
+                            "end": 1453,
                             "kind": "const",
-                            "start": 516,
+                            "start": 517,
                             "type": "VariableDeclaration",
                             "type": "VariableDeclaration"
                           },
                           {
                             "argument": {
-                              "end": 1508,
+                              "end": 1476,
                               "name": "gearProfile",
-                              "start": 1497,
+                              "start": 1465,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 1508,
-                            "start": 1490,
+                            "end": 1476,
+                            "start": 1458,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
                           }
                         ],
-                        "end": 1512,
-                        "start": 458
+                        "end": 1480,
+                        "start": 459
                       },
-                      "end": 1512,
+                      "end": 1480,
                       "params": [
                         {
                           "type": "Parameter",
                           "identifier": {
-                            "end": 456,
+                            "end": 457,
                             "name": "gHeight",
-                            "start": 449,
+                            "start": 450,
                             "type": "Identifier"
                           }
                         }
                       ],
-                      "start": 448,
+                      "start": 449,
                       "type": "FunctionExpression",
                       "type": "FunctionExpression"
                     },
-                    "start": 438,
+                    "start": 439,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1512,
+                  "end": 1480,
                   "kind": "fn",
-                  "start": 435,
+                  "start": 436,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 1700,
+                    "end": 1668,
                     "id": {
-                      "end": 1608,
+                      "end": 1576,
                       "name": "gearLoft",
-                      "start": 1600,
+                      "start": 1568,
                       "type": "Identifier"
                     },
                     "init": {
@@ -1149,9 +1149,9 @@ description: Result of parsing cycloidal-gear.kcl
                             {
                               "arguments": [
                                 {
-                                  "end": 1634,
+                                  "end": 1602,
                                   "raw": "0",
-                                  "start": 1633,
+                                  "start": 1601,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1161,32 +1161,32 @@ description: Result of parsing cycloidal-gear.kcl
                                 }
                               ],
                               "callee": {
-                                "end": 1632,
+                                "end": 1600,
                                 "name": "gearSketch",
-                                "start": 1622,
+                                "start": 1590,
                                 "type": "Identifier"
                               },
-                              "end": 1635,
-                              "start": 1622,
+                              "end": 1603,
+                              "start": 1590,
                               "type": "CallExpression",
                               "type": "CallExpression"
                             },
                             {
                               "arguments": [
                                 {
-                                  "end": 1666,
+                                  "end": 1634,
                                   "left": {
-                                    "end": 1662,
+                                    "end": 1630,
                                     "name": "gearHeight",
-                                    "start": 1652,
+                                    "start": 1620,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "end": 1666,
+                                    "end": 1634,
                                     "raw": "2",
-                                    "start": 1665,
+                                    "start": 1633,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -1194,9 +1194,30 @@ description: Result of parsing cycloidal-gear.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 1652,
+                                  "start": 1620,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
+                                }
+                              ],
+                              "callee": {
+                                "end": 1619,
+                                "name": "gearSketch",
+                                "start": 1609,
+                                "type": "Identifier"
+                              },
+                              "end": 1635,
+                              "start": 1609,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            {
+                              "arguments": [
+                                {
+                                  "end": 1662,
+                                  "name": "gearHeight",
+                                  "start": 1652,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
                                 }
                               ],
                               "callee": {
@@ -1205,80 +1226,59 @@ description: Result of parsing cycloidal-gear.kcl
                                 "start": 1641,
                                 "type": "Identifier"
                               },
-                              "end": 1667,
+                              "end": 1663,
                               "start": 1641,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
-                            },
-                            {
-                              "arguments": [
-                                {
-                                  "end": 1694,
-                                  "name": "gearHeight",
-                                  "start": 1684,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                }
-                              ],
-                              "callee": {
-                                "end": 1683,
-                                "name": "gearSketch",
-                                "start": 1673,
-                                "type": "Identifier"
-                              },
-                              "end": 1695,
-                              "start": 1673,
                               "type": "CallExpression",
                               "type": "CallExpression"
                             }
                           ],
-                          "end": 1699,
-                          "start": 1616,
+                          "end": 1667,
+                          "start": 1584,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       ],
                       "callee": {
-                        "end": 1615,
+                        "end": 1583,
                         "name": "loft",
-                        "start": 1611,
+                        "start": 1579,
                         "type": "Identifier"
                       },
-                      "end": 1700,
-                      "start": 1611,
+                      "end": 1668,
+                      "start": 1579,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
-                    "start": 1600,
+                    "start": 1568,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1700,
+                  "end": 1668,
                   "kind": "const",
-                  "start": 1600,
+                  "start": 1568,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 1719,
+                    "end": 1687,
                     "name": "gearLoft",
-                    "start": 1711,
+                    "start": 1679,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1719,
-                  "start": 1704,
+                  "end": 1687,
+                  "start": 1672,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1721,
+              "end": 1689,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
-                      "end": 1597,
-                      "start": 1514,
+                      "end": 1565,
+                      "start": 1482,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLineBlockComment",
@@ -1289,8 +1289,8 @@ description: Result of parsing cycloidal-gear.kcl
                   ],
                   "1": [
                     {
-                      "end": 1704,
-                      "start": 1700,
+                      "end": 1672,
+                      "start": 1668,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -1300,8 +1300,8 @@ description: Result of parsing cycloidal-gear.kcl
                 },
                 "startNodes": [
                   {
-                    "end": 433,
-                    "start": 273,
+                    "end": 434,
+                    "start": 274,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
@@ -1311,68 +1311,68 @@ description: Result of parsing cycloidal-gear.kcl
                   }
                 ]
               },
-              "start": 273
+              "start": 274
             },
-            "end": 1721,
+            "end": 1689,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 232,
+                  "end": 233,
                   "name": "gearPitch",
-                  "start": 223,
+                  "start": 224,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 244,
+                  "end": 245,
                   "name": "gearHeight",
-                  "start": 234,
+                  "start": 235,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 258,
+                  "end": 259,
                   "name": "holeDiameter",
-                  "start": 246,
+                  "start": 247,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 270,
+                  "end": 271,
                   "name": "helixAngle",
-                  "start": 260,
+                  "start": 261,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 222,
+            "start": 223,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 209,
+          "start": 210,
           "type": "VariableDeclarator"
         },
-        "end": 1721,
+        "end": 1689,
         "kind": "fn",
-        "start": 206,
+        "start": 207,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 1757,
+        "end": 1725,
         "expression": {
           "arguments": [
             {
-              "end": 1739,
+              "end": 1707,
               "raw": ".3",
-              "start": 1737,
+              "start": 1705,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -1381,9 +1381,9 @@ description: Result of parsing cycloidal-gear.kcl
               }
             },
             {
-              "end": 1744,
+              "end": 1712,
               "raw": "1.5",
-              "start": 1741,
+              "start": 1709,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -1392,9 +1392,9 @@ description: Result of parsing cycloidal-gear.kcl
               }
             },
             {
-              "end": 1751,
+              "end": 1719,
               "raw": "0.297",
-              "start": 1746,
+              "start": 1714,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -1404,9 +1404,9 @@ description: Result of parsing cycloidal-gear.kcl
             },
             {
               "argument": {
-                "end": 1756,
+                "end": 1724,
                 "raw": "80",
-                "start": 1754,
+                "start": 1722,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -1414,60 +1414,60 @@ description: Result of parsing cycloidal-gear.kcl
                   "suffix": "None"
                 }
               },
-              "end": 1756,
+              "end": 1724,
               "operator": "-",
-              "start": 1753,
+              "start": 1721,
               "type": "UnaryExpression",
               "type": "UnaryExpression"
             }
           ],
           "callee": {
-            "end": 1736,
+            "end": 1704,
             "name": "cycloidalGear",
-            "start": 1723,
+            "start": 1691,
             "type": "Identifier"
           },
-          "end": 1757,
-          "start": 1723,
+          "end": 1725,
+          "start": 1691,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1723,
+        "start": 1691,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 1758,
+    "end": 1726,
     "innerAttrs": [
       {
-        "end": 203,
+        "end": 33,
         "name": {
-          "end": 179,
+          "end": 9,
           "name": "settings",
-          "start": 171,
+          "start": 1,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 202,
+            "end": 32,
             "key": {
-              "end": 197,
+              "end": 27,
               "name": "defaultLengthUnit",
-              "start": 180,
+              "start": 10,
               "type": "Identifier"
             },
-            "start": 180,
+            "start": 10,
             "type": "ObjectProperty",
             "value": {
-              "end": 202,
+              "end": 32,
               "name": "in",
-              "start": 200,
+              "start": 30,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 170,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -1475,8 +1475,8 @@ description: Result of parsing cycloidal-gear.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "end": 1723,
-            "start": 1721,
+            "end": 1691,
+            "start": 1689,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -1486,8 +1486,8 @@ description: Result of parsing cycloidal-gear.kcl
       },
       "startNodes": [
         {
-          "end": 17,
-          "start": 0,
+          "end": 51,
+          "start": 34,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1496,8 +1496,8 @@ description: Result of parsing cycloidal-gear.kcl
           }
         },
         {
-          "end": 155,
-          "start": 18,
+          "end": 189,
+          "start": 52,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1506,16 +1506,16 @@ description: Result of parsing cycloidal-gear.kcl
           }
         },
         {
-          "end": 157,
-          "start": 155,
+          "end": 192,
+          "start": 189,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 169,
-          "start": 157,
+          "end": 204,
+          "start": 192,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1524,8 +1524,8 @@ description: Result of parsing cycloidal-gear.kcl
           }
         },
         {
-          "end": 206,
-          "start": 203,
+          "end": 207,
+          "start": 204,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"

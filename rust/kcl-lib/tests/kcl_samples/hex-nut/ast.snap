@@ -7,17 +7,17 @@ description: Result of parsing hex-nut.kcl
     "body": [
       {
         "declaration": {
-          "end": 419,
+          "end": 421,
           "id": {
-            "end": 413,
+            "end": 415,
             "name": "wallToWallLength",
-            "start": 397,
+            "start": 399,
             "type": "Identifier"
           },
           "init": {
-            "end": 419,
+            "end": 421,
             "raw": "0.5",
-            "start": 416,
+            "start": 418,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +25,28 @@ description: Result of parsing hex-nut.kcl
               "suffix": "None"
             }
           },
-          "start": 397,
+          "start": 399,
           "type": "VariableDeclarator"
         },
-        "end": 419,
+        "end": 421,
         "kind": "const",
-        "start": 397,
+        "start": 399,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 437,
+          "end": 439,
           "id": {
-            "end": 429,
+            "end": 431,
             "name": "thickness",
-            "start": 420,
+            "start": 422,
             "type": "Identifier"
           },
           "init": {
-            "end": 437,
+            "end": 439,
             "raw": "0.266",
-            "start": 432,
+            "start": 434,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing hex-nut.kcl
               "suffix": "None"
             }
           },
-          "start": 420,
+          "start": 422,
           "type": "VariableDeclarator"
         },
-        "end": 437,
+        "end": 439,
         "kind": "const",
-        "start": 420,
+        "start": 422,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 455,
+          "end": 457,
           "id": {
-            "end": 446,
+            "end": 448,
             "name": "diameter",
-            "start": 438,
+            "start": 440,
             "type": "Identifier"
           },
           "init": {
-            "end": 455,
+            "end": 457,
             "raw": "0.3125",
-            "start": 449,
+            "start": 451,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,22 +83,22 @@ description: Result of parsing hex-nut.kcl
               "suffix": "None"
             }
           },
-          "start": 438,
+          "start": 440,
           "type": "VariableDeclarator"
         },
-        "end": 455,
+        "end": 457,
         "kind": "const",
-        "start": 438,
+        "start": 440,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1083,
+          "end": 1058,
           "id": {
-            "end": 503,
+            "end": 505,
             "name": "hexNut",
-            "start": 497,
+            "start": 499,
             "type": "Identifier"
           },
           "init": {
@@ -106,11 +106,11 @@ description: Result of parsing hex-nut.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 1059,
+                    "end": 1034,
                     "id": {
-                      "end": 542,
+                      "end": 544,
                       "name": "hexNutSketch",
-                      "start": 530,
+                      "start": 532,
                       "type": "Identifier"
                     },
                     "init": {
@@ -118,22 +118,22 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [
                             {
-                              "end": 564,
+                              "end": 566,
                               "raw": "'-XZ'",
-                              "start": 559,
+                              "start": 561,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "-XZ"
                             }
                           ],
                           "callee": {
-                            "end": 558,
+                            "end": 560,
                             "name": "startSketchOn",
-                            "start": 545,
+                            "start": 547,
                             "type": "Identifier"
                           },
-                          "end": 565,
-                          "start": 545,
+                          "end": 567,
+                          "start": 547,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -142,21 +142,21 @@ description: Result of parsing hex-nut.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 608,
+                                  "end": 610,
                                   "left": {
                                     "computed": false,
-                                    "end": 597,
+                                    "end": 599,
                                     "object": {
-                                      "end": 594,
+                                      "end": 596,
                                       "name": "start",
-                                      "start": 589,
+                                      "start": 591,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "end": 596,
+                                      "end": 598,
                                       "raw": "0",
-                                      "start": 595,
+                                      "start": 597,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -164,36 +164,36 @@ description: Result of parsing hex-nut.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 589,
+                                    "start": 591,
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
                                   "operator": "+",
                                   "right": {
-                                    "end": 608,
+                                    "end": 610,
                                     "name": "innerDia",
-                                    "start": 600,
+                                    "start": 602,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "start": 589,
+                                  "start": 591,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
                                 {
                                   "computed": false,
-                                  "end": 618,
+                                  "end": 620,
                                   "object": {
-                                    "end": 615,
+                                    "end": 617,
                                     "name": "start",
-                                    "start": 610,
+                                    "start": 612,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "property": {
-                                    "end": 617,
+                                    "end": 619,
                                     "raw": "1",
-                                    "start": 616,
+                                    "start": 618,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -201,53 +201,53 @@ description: Result of parsing hex-nut.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 610,
+                                  "start": 612,
                                   "type": "MemberExpression",
                                   "type": "MemberExpression"
                                 }
                               ],
-                              "end": 619,
-                              "start": 588,
+                              "end": 621,
+                              "start": 590,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 622,
-                              "start": 621,
+                              "end": 624,
+                              "start": 623,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 587,
+                            "end": 589,
                             "name": "startProfileAt",
-                            "start": 573,
+                            "start": 575,
                             "type": "Identifier"
                           },
-                          "end": 623,
-                          "start": 573,
+                          "end": 625,
+                          "start": 575,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 676,
+                              "end": 678,
                               "properties": [
                                 {
-                                  "end": 655,
+                                  "end": 657,
                                   "key": {
-                                    "end": 649,
+                                    "end": 651,
                                     "name": "angle",
-                                    "start": 644,
+                                    "start": 646,
                                     "type": "Identifier"
                                   },
-                                  "start": 644,
+                                  "start": 646,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 655,
+                                    "end": 657,
                                     "raw": "240",
-                                    "start": 652,
+                                    "start": 654,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -257,65 +257,65 @@ description: Result of parsing hex-nut.kcl
                                   }
                                 },
                                 {
-                                  "end": 674,
+                                  "end": 676,
                                   "key": {
-                                    "end": 663,
+                                    "end": 665,
                                     "name": "length",
-                                    "start": 657,
+                                    "start": 659,
                                     "type": "Identifier"
                                   },
-                                  "start": 657,
+                                  "start": 659,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 674,
+                                    "end": 676,
                                     "name": "innerDia",
-                                    "start": 666,
+                                    "start": 668,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 642,
+                              "start": 644,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 679,
-                              "start": 678,
+                              "end": 681,
+                              "start": 680,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 641,
+                            "end": 643,
                             "name": "angledLine",
-                            "start": 631,
+                            "start": 633,
                             "type": "Identifier"
                           },
-                          "end": 680,
-                          "start": 631,
+                          "end": 682,
+                          "start": 633,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 733,
+                              "end": 735,
                               "properties": [
                                 {
-                                  "end": 712,
+                                  "end": 714,
                                   "key": {
-                                    "end": 706,
+                                    "end": 708,
                                     "name": "angle",
-                                    "start": 701,
+                                    "start": 703,
                                     "type": "Identifier"
                                   },
-                                  "start": 701,
+                                  "start": 703,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 712,
+                                    "end": 714,
                                     "raw": "180",
-                                    "start": 709,
+                                    "start": 711,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -325,65 +325,65 @@ description: Result of parsing hex-nut.kcl
                                   }
                                 },
                                 {
-                                  "end": 731,
+                                  "end": 733,
                                   "key": {
-                                    "end": 720,
+                                    "end": 722,
                                     "name": "length",
-                                    "start": 714,
+                                    "start": 716,
                                     "type": "Identifier"
                                   },
-                                  "start": 714,
+                                  "start": 716,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 731,
+                                    "end": 733,
                                     "name": "innerDia",
-                                    "start": 723,
+                                    "start": 725,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 699,
+                              "start": 701,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 736,
-                              "start": 735,
+                              "end": 738,
+                              "start": 737,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 698,
+                            "end": 700,
                             "name": "angledLine",
-                            "start": 688,
+                            "start": 690,
                             "type": "Identifier"
                           },
-                          "end": 737,
-                          "start": 688,
+                          "end": 739,
+                          "start": 690,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 790,
+                              "end": 792,
                               "properties": [
                                 {
-                                  "end": 769,
+                                  "end": 771,
                                   "key": {
-                                    "end": 763,
+                                    "end": 765,
                                     "name": "angle",
-                                    "start": 758,
+                                    "start": 760,
                                     "type": "Identifier"
                                   },
-                                  "start": 758,
+                                  "start": 760,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 769,
+                                    "end": 771,
                                     "raw": "120",
-                                    "start": 766,
+                                    "start": 768,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -393,65 +393,65 @@ description: Result of parsing hex-nut.kcl
                                   }
                                 },
                                 {
-                                  "end": 788,
+                                  "end": 790,
                                   "key": {
-                                    "end": 777,
+                                    "end": 779,
                                     "name": "length",
-                                    "start": 771,
+                                    "start": 773,
                                     "type": "Identifier"
                                   },
-                                  "start": 771,
+                                  "start": 773,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 788,
+                                    "end": 790,
                                     "name": "innerDia",
-                                    "start": 780,
+                                    "start": 782,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 756,
+                              "start": 758,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 793,
-                              "start": 792,
+                              "end": 795,
+                              "start": 794,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 755,
+                            "end": 757,
                             "name": "angledLine",
-                            "start": 745,
+                            "start": 747,
                             "type": "Identifier"
                           },
-                          "end": 794,
-                          "start": 745,
+                          "end": 796,
+                          "start": 747,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 846,
+                              "end": 848,
                               "properties": [
                                 {
-                                  "end": 825,
+                                  "end": 827,
                                   "key": {
-                                    "end": 820,
+                                    "end": 822,
                                     "name": "angle",
-                                    "start": 815,
+                                    "start": 817,
                                     "type": "Identifier"
                                   },
-                                  "start": 815,
+                                  "start": 817,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 825,
+                                    "end": 827,
                                     "raw": "60",
-                                    "start": 823,
+                                    "start": 825,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -461,65 +461,65 @@ description: Result of parsing hex-nut.kcl
                                   }
                                 },
                                 {
-                                  "end": 844,
+                                  "end": 846,
                                   "key": {
-                                    "end": 833,
+                                    "end": 835,
                                     "name": "length",
-                                    "start": 827,
+                                    "start": 829,
                                     "type": "Identifier"
                                   },
-                                  "start": 827,
+                                  "start": 829,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 844,
+                                    "end": 846,
                                     "name": "innerDia",
-                                    "start": 836,
+                                    "start": 838,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 813,
+                              "start": 815,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 849,
-                              "start": 848,
+                              "end": 851,
+                              "start": 850,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 812,
+                            "end": 814,
                             "name": "angledLine",
-                            "start": 802,
+                            "start": 804,
                             "type": "Identifier"
                           },
-                          "end": 850,
-                          "start": 802,
+                          "end": 852,
+                          "start": 804,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 907,
+                              "end": 909,
                               "properties": [
                                 {
-                                  "end": 880,
+                                  "end": 882,
                                   "key": {
-                                    "end": 876,
+                                    "end": 878,
                                     "name": "angle",
-                                    "start": 871,
+                                    "start": 873,
                                     "type": "Identifier"
                                   },
-                                  "start": 871,
+                                  "start": 873,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 880,
+                                    "end": 882,
                                     "raw": "0",
-                                    "start": 879,
+                                    "start": 881,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -529,29 +529,29 @@ description: Result of parsing hex-nut.kcl
                                   }
                                 },
                                 {
-                                  "end": 905,
+                                  "end": 907,
                                   "key": {
-                                    "end": 888,
+                                    "end": 890,
                                     "name": "length",
-                                    "start": 882,
+                                    "start": 884,
                                     "type": "Identifier"
                                   },
-                                  "start": 882,
+                                  "start": 884,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 905,
+                                    "end": 907,
                                     "left": {
-                                      "end": 899,
+                                      "end": 901,
                                       "name": "innerDia",
-                                      "start": 891,
+                                      "start": 893,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "*",
                                     "right": {
-                                      "end": 905,
+                                      "end": 907,
                                       "raw": ".90",
-                                      "start": 902,
+                                      "start": 904,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -559,44 +559,44 @@ description: Result of parsing hex-nut.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 891,
+                                    "start": 893,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 }
                               ],
-                              "start": 869,
+                              "start": 871,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 910,
-                              "start": 909,
+                              "end": 912,
+                              "start": 911,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 868,
+                            "end": 870,
                             "name": "angledLine",
-                            "start": 858,
+                            "start": 860,
                             "type": "Identifier"
                           },
-                          "end": 911,
-                          "start": 858,
+                          "end": 913,
+                          "start": 860,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [],
                           "callee": {
-                            "end": 924,
+                            "end": 926,
                             "name": "close",
-                            "start": 919,
+                            "start": 921,
                             "type": "Identifier"
                           },
-                          "end": 926,
-                          "start": 919,
+                          "end": 928,
+                          "start": 921,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -607,27 +607,27 @@ description: Result of parsing hex-nut.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "end": 962,
+                                    "end": 954,
                                     "name": "center",
-                                    "start": 956,
+                                    "start": 948,
                                     "type": "Identifier"
                                   },
                                   "arg": {
                                     "elements": [
                                       {
                                         "computed": false,
-                                        "end": 974,
+                                        "end": 966,
                                         "object": {
-                                          "end": 971,
+                                          "end": 963,
                                           "name": "start",
-                                          "start": 966,
+                                          "start": 958,
                                           "type": "Identifier",
                                           "type": "Identifier"
                                         },
                                         "property": {
-                                          "end": 973,
+                                          "end": 965,
                                           "raw": "0",
-                                          "start": 972,
+                                          "start": 964,
                                           "type": "Literal",
                                           "type": "Literal",
                                           "value": {
@@ -635,24 +635,24 @@ description: Result of parsing hex-nut.kcl
                                             "suffix": "None"
                                           }
                                         },
-                                        "start": 966,
+                                        "start": 958,
                                         "type": "MemberExpression",
                                         "type": "MemberExpression"
                                       },
                                       {
                                         "computed": false,
-                                        "end": 984,
+                                        "end": 976,
                                         "object": {
-                                          "end": 981,
+                                          "end": 973,
                                           "name": "start",
-                                          "start": 976,
+                                          "start": 968,
                                           "type": "Identifier",
                                           "type": "Identifier"
                                         },
                                         "property": {
-                                          "end": 983,
+                                          "end": 975,
                                           "raw": "1",
-                                          "start": 982,
+                                          "start": 974,
                                           "type": "Literal",
                                           "type": "Literal",
                                           "value": {
@@ -660,13 +660,13 @@ description: Result of parsing hex-nut.kcl
                                             "suffix": "None"
                                           }
                                         },
-                                        "start": 976,
+                                        "start": 968,
                                         "type": "MemberExpression",
                                         "type": "MemberExpression"
                                       }
                                     ],
-                                    "end": 985,
-                                    "start": 965,
+                                    "end": 977,
+                                    "start": 957,
                                     "type": "ArrayExpression",
                                     "type": "ArrayExpression"
                                   }
@@ -674,25 +674,25 @@ description: Result of parsing hex-nut.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "end": 1002,
+                                    "end": 985,
                                     "name": "radius",
-                                    "start": 996,
+                                    "start": 979,
                                     "type": "Identifier"
                                   },
                                   "arg": {
-                                    "end": 1017,
+                                    "end": 1000,
                                     "left": {
-                                      "end": 1013,
+                                      "end": 996,
                                       "name": "innerDia",
-                                      "start": 1005,
+                                      "start": 988,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "/",
                                     "right": {
-                                      "end": 1017,
+                                      "end": 1000,
                                       "raw": "2",
-                                      "start": 1016,
+                                      "start": 999,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -700,39 +700,39 @@ description: Result of parsing hex-nut.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 1005,
+                                    "start": 988,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 }
                               ],
                               "callee": {
-                                "end": 945,
+                                "end": 947,
                                 "name": "circle",
-                                "start": 939,
+                                "start": 941,
                                 "type": "Identifier"
                               },
-                              "end": 1026,
-                              "start": 939,
+                              "end": 1001,
+                              "start": 941,
                               "type": "CallExpressionKw",
                               "type": "CallExpressionKw",
                               "unlabeled": null
                             },
                             {
-                              "end": 1029,
-                              "start": 1028,
+                              "end": 1004,
+                              "start": 1003,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 938,
+                            "end": 940,
                             "name": "hole",
-                            "start": 934,
+                            "start": 936,
                             "type": "Identifier"
                           },
-                          "end": 1030,
-                          "start": 934,
+                          "end": 1005,
+                          "start": 936,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -741,117 +741,117 @@ description: Result of parsing hex-nut.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1052,
+                                "end": 1027,
                                 "name": "length",
-                                "start": 1046,
+                                "start": 1021,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1058,
+                                "end": 1033,
                                 "name": "thk",
-                                "start": 1055,
+                                "start": 1030,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1045,
+                            "end": 1020,
                             "name": "extrude",
-                            "start": 1038,
+                            "start": 1013,
                             "type": "Identifier"
                           },
-                          "end": 1059,
-                          "start": 1038,
+                          "end": 1034,
+                          "start": 1013,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 1059,
-                      "start": 545,
+                      "end": 1034,
+                      "start": 547,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 530,
+                    "start": 532,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1059,
+                  "end": 1034,
                   "kind": "const",
-                  "start": 530,
+                  "start": 532,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 1081,
+                    "end": 1056,
                     "name": "hexNutSketch",
-                    "start": 1069,
+                    "start": 1044,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1081,
-                  "start": 1062,
+                  "end": 1056,
+                  "start": 1037,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1083,
-              "start": 526
+              "end": 1058,
+              "start": 528
             },
-            "end": 1083,
+            "end": 1058,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 509,
+                  "end": 511,
                   "name": "start",
-                  "start": 504,
+                  "start": 506,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 514,
+                  "end": 516,
                   "name": "thk",
-                  "start": 511,
+                  "start": 513,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 524,
+                  "end": 526,
                   "name": "innerDia",
-                  "start": 516,
+                  "start": 518,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 503,
+            "start": 505,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 497,
+          "start": 499,
           "type": "VariableDeclarator"
         },
-        "end": 1083,
+        "end": 1058,
         "kind": "fn",
-        "start": 494,
+        "start": 496,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 1140,
+        "end": 1115,
         "expression": {
           "arguments": [
             {
               "elements": [
                 {
-                  "end": 1114,
+                  "end": 1089,
                   "raw": "0",
-                  "start": 1113,
+                  "start": 1088,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -860,9 +860,9 @@ description: Result of parsing hex-nut.kcl
                   }
                 },
                 {
-                  "end": 1117,
+                  "end": 1092,
                   "raw": "0",
-                  "start": 1116,
+                  "start": 1091,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -871,73 +871,73 @@ description: Result of parsing hex-nut.kcl
                   }
                 }
               ],
-              "end": 1118,
-              "start": 1112,
+              "end": 1093,
+              "start": 1087,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             },
             {
-              "end": 1129,
+              "end": 1104,
               "name": "thickness",
-              "start": 1120,
+              "start": 1095,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1139,
+              "end": 1114,
               "name": "diameter",
-              "start": 1131,
+              "start": 1106,
               "type": "Identifier",
               "type": "Identifier"
             }
           ],
           "callee": {
-            "end": 1111,
+            "end": 1086,
             "name": "hexNut",
-            "start": 1105,
+            "start": 1080,
             "type": "Identifier"
           },
-          "end": 1140,
-          "start": 1105,
+          "end": 1115,
+          "start": 1080,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1105,
+        "start": 1080,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 1141,
+    "end": 1116,
     "innerAttrs": [
       {
-        "end": 350,
+        "end": 33,
         "name": {
-          "end": 326,
+          "end": 9,
           "name": "settings",
-          "start": 318,
+          "start": 1,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 349,
+            "end": 32,
             "key": {
-              "end": 344,
+              "end": 27,
               "name": "defaultLengthUnit",
-              "start": 327,
+              "start": 10,
               "type": "Identifier"
             },
-            "start": 327,
+            "start": 10,
             "type": "ObjectProperty",
             "value": {
-              "end": 349,
+              "end": 32,
               "name": "in",
-              "start": 347,
+              "start": 30,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 317,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -945,8 +945,8 @@ description: Result of parsing hex-nut.kcl
       "nonCodeNodes": {
         "2": [
           {
-            "end": 493,
-            "start": 455,
+            "end": 495,
+            "start": 457,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -957,8 +957,8 @@ description: Result of parsing hex-nut.kcl
         ],
         "3": [
           {
-            "end": 1104,
-            "start": 1083,
+            "end": 1079,
+            "start": 1058,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -970,8 +970,8 @@ description: Result of parsing hex-nut.kcl
       },
       "startNodes": [
         {
-          "end": 10,
-          "start": 0,
+          "end": 44,
+          "start": 34,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -980,8 +980,8 @@ description: Result of parsing hex-nut.kcl
           }
         },
         {
-          "end": 302,
-          "start": 11,
+          "end": 336,
+          "start": 45,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -990,16 +990,16 @@ description: Result of parsing hex-nut.kcl
           }
         },
         {
-          "end": 304,
-          "start": 302,
+          "end": 339,
+          "start": 336,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 316,
-          "start": 304,
+          "end": 351,
+          "start": 339,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1008,16 +1008,16 @@ description: Result of parsing hex-nut.kcl
           }
         },
         {
-          "end": 352,
-          "start": 350,
+          "end": 354,
+          "start": 351,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 396,
-          "start": 352,
+          "end": 398,
+          "start": 354,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
