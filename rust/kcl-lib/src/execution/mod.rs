@@ -1883,7 +1883,11 @@ let w = f() + f()
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
-        ctx.run_with_caching(old_program).await.unwrap();
+        if let Err(err) = ctx.run_with_caching(old_program).await {
+            let report = err.into_miette_report_with_outputs(code).unwrap();
+            let report = miette::Report::new(report);
+            panic!("Error executing program: {:?}", report);
+        }
 
         // Get the id_generator from the first execution.
         let id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;

@@ -1098,24 +1098,11 @@ async fn make_sketch_plane_from_orientation(
     let hide = Some(true);
     match data {
         PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
-            let x_axis = match data {
-                PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0),
-                PlaneData::NegXZ => Point3d::new(-1.0, 0.0, 0.0),
-                PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0),
-                _ => plane.x_axis,
-            };
-            args.batch_modeling_cmd(
-                plane.id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber,
-                    origin: plane.origin.into(),
-                    size,
-                    x_axis: x_axis.into(),
-                    y_axis: plane.y_axis.into(),
-                    hide,
-                }),
-            )
-            .await?;
+            // Make the default planes, if they don't already exist.
+            args.ctx
+                .engine
+                .default_planes(exec_state.id_generator(), args.source_range)
+                .await?;
         }
         PlaneData::Plane {
             origin,

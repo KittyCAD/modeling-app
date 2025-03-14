@@ -160,6 +160,10 @@ impl ExecState {
         self.mod_local.id_generator.next_uuid()
     }
 
+    pub fn id_generator(&mut self) -> &mut IdGenerator {
+        &mut self.mod_local.id_generator
+    }
+
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
@@ -273,7 +277,7 @@ impl ModuleState {
         exec_settings: &ExecutorSettings,
         std_path: Option<String>,
         memory: Arc<ProgramMemory>,
-        module_id: ModuleId,
+        module_id: Option<ModuleId>,
     ) -> Self {
         ModuleState {
             id_generator: IdGenerator::new(module_id),

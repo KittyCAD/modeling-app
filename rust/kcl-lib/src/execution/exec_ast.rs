@@ -106,7 +106,7 @@ impl ExecutorContext {
             &self.settings,
             path.std_path(),
             exec_state.stack().memory.clone(),
-            module_id,
+            Some(module_id),
         );
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
