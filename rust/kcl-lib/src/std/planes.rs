@@ -127,6 +127,10 @@ async fn inner_offset_plane(
     // Though offset planes might be derived from standard planes, they are not
     // standard planes themselves.
     plane.value = PlaneType::Custom;
+    // Always pop the id here since these are offset.
+    let id = exec_state.next_uuid();
+    plane.id = id;
+    plane.artifact_id = id.into();
 
     plane.origin += plane.z_axis * offset;
 
