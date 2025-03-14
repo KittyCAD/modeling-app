@@ -1090,7 +1090,12 @@ async fn make_sketch_plane_from_orientation(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Plane>, KclError> {
-    let plane = Plane::from_plane_data(data.clone(), exec_state);
+    let default_planes = args
+        .ctx
+        .engine
+        .default_planes(exec_state.id_generator(), args.source_range)
+        .await?;
+    let plane = Plane::from_plane_data(data.clone(), exec_state, default_planes);
 
     // Create the plane on the fly.
     let clobber = false;
@@ -1098,25 +1103,8 @@ async fn make_sketch_plane_from_orientation(
     let hide = Some(true);
     match data {
         PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
-            // Make the default planes, if they don't already exist.
-            let x_axis = match data {
-                PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0),
-                PlaneData::NegXZ => Point3d::new(-1.0, 0.0, 0.0),
-                PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0),
-                _ => plane.x_axis,
-            };
-            args.batch_modeling_cmd(
-                plane.id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber,
-                    origin: plane.origin.into(),
-                    size,
-                    x_axis: x_axis.into(),
-                    y_axis: plane.y_axis.into(),
-                    hide,
-                }),
-            )
-            .await?;
+            // Ignore the default planes since they are already created or existing is received above in the default planes
+            // call.
         }
         PlaneData::Plane {
             origin,

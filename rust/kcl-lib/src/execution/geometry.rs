@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    execution::{ArtifactId, ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
+    execution::{ArtifactId, DefaultPlanes, ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::sketch::PlaneData,
 };
@@ -369,12 +369,11 @@ impl Plane {
         }
     }
 
-    pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Self {
-        let id = exec_state.next_uuid();
+    pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState, default_planes: DefaultPlanes) -> Self {
         match value {
             PlaneData::XY => Plane {
-                id,
-                artifact_id: id.into(),
+                id: default_planes.xy.into(),
+                artifact_id: default_planes.xy.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
@@ -384,8 +383,8 @@ impl Plane {
                 meta: vec![],
             },
             PlaneData::NegXY => Plane {
-                id,
-                artifact_id: id.into(),
+                id: default_planes.neg_xy.into(),
+                artifact_id: default_planes.neg_xy.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
@@ -395,8 +394,8 @@ impl Plane {
                 meta: vec![],
             },
             PlaneData::XZ => Plane {
-                id,
-                artifact_id: id.into(),
+                id: default_planes.xz.into(),
+                artifact_id: default_planes.xz.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
@@ -406,8 +405,8 @@ impl Plane {
                 meta: vec![],
             },
             PlaneData::NegXZ => Plane {
-                id,
-                artifact_id: id.into(),
+                id: default_planes.neg_xz.into(),
+                artifact_id: default_planes.neg_xz.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(-1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
@@ -417,8 +416,8 @@ impl Plane {
                 meta: vec![],
             },
             PlaneData::YZ => Plane {
-                id,
-                artifact_id: id.into(),
+                id: default_planes.yz.into(),
+                artifact_id: default_planes.yz.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(0.0, 1.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
@@ -428,8 +427,8 @@ impl Plane {
                 meta: vec![],
             },
             PlaneData::NegYZ => Plane {
-                id,
-                artifact_id: id.into(),
+                id: default_planes.neg_yz.into(),
+                artifact_id: default_planes.neg_yz.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(0.0, 1.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
@@ -443,17 +442,20 @@ impl Plane {
                 x_axis,
                 y_axis,
                 z_axis,
-            } => Plane {
-                id,
-                artifact_id: id.into(),
-                origin,
-                x_axis,
-                y_axis,
-                z_axis,
-                value: PlaneType::Custom,
-                units: exec_state.length_unit(),
-                meta: vec![],
-            },
+            } => {
+                let id = exec_state.next_uuid().into();
+                Plane {
+                    id,
+                    artifact_id: id.into(),
+                    origin,
+                    x_axis,
+                    y_axis,
+                    z_axis,
+                    value: PlaneType::Custom,
+                    units: exec_state.length_unit(),
+                    meta: vec![],
+                }
+            }
         }
     }
 
