@@ -14,3 +14,15 @@ pivot_position = [ 0, 0, 0 ]
 pivot_rotation = [ 0.5380994, 0.0, 0.0, 0.8428814 ]
 world_coord_system = "right_handed_up_z"
 version = 1
+
+[settings.app.named_views.c810cf04-c6cc-4a4a-8b11-17bf445dcab7]
+name = "uuid2"
+eye_offset = 1_378.0059
+fov_y = 45
+is_ortho = false
+ortho_scale_enabled = true
+ortho_scale_factor = 1.6
+pivot_position = [ 1_826.5239, 0.0, 0.0 ]
+pivot_rotation = [ 0.5380994, 0.0, 0.0, 0.8428814 ]
+world_coord_system = "right_handed_up_z"
+version = 1

@@ -1231,3 +1231,7 @@ export function tomlToPerProjectSettings(
 ): DeepPartial<ProjectConfiguration> {
   return TOML.parse(toml)
 }
+
+export function perProjectsettingsToToml(settings: DeepPartial<ProjectConfiguration>) {
+  return TOML.stringify(settings as any)
+}
