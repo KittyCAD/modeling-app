@@ -11,7 +11,29 @@ import {
   WorldCoordinateSystem_type,
 } from '@kittycad/lib/dist/types/src/models'
 
-function namedViewToCameraViewState (namedView: NamedView) : CameraViewState_type {
+function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem_type {
+  return x === 'right_handed_up_z' || x === 'right_handed_up_y'
+}
+
+function namedViewToCameraViewState (namedView: NamedView) : CameraViewState_type | Error {
+  const worldCoordinateSystem : string = namedView.world_coord_system
+
+  if (!isWorldCoordinateSystemType(worldCoordinateSystem)) {
+    return new Error("world coordinate system is not typed")
+  }
+
+  const cameraViewState : CameraViewState_type =  {
+    eye_offset: namedView.eye_offset,
+    fov_y: namedView.fov_y,
+    ortho_scale_enabled: namedView.ortho_scale_enabled,
+    ortho_scale_factor: namedView.ortho_scale_factor,
+    world_coord_system: worldCoordinateSystem,
+    is_ortho: namedView.is_ortho,
+    pivot_position: namedView.pivot_position,
+    pivot_rotation: namedView.pivot_rotation,
+  }
+
+  return cameraViewState
 }
 
 function cameraViewStateToNamedView(
@@ -228,6 +250,12 @@ export function createNamedViewsCommand() {
         if (viewToLoad) {
           // Split into the name and the engine data
           const { name, version, ...engineViewData } = viewToLoad
+          const cameraViewState = namedViewToCameraViewState(viewToLoad)
+
+          if (err(cameraViewState)) {
+            toast.error(`Unable to load named view ${data.name}`)
+            return
+          }
 
           // Only send the specific camera information, the NamedView itself
           // is not directly compatible with the engine API
@@ -237,7 +265,7 @@ export function createNamedViewsCommand() {
             cmd: {
               type: 'default_camera_set_view',
               view: {
-                ...engineViewData,
+                ...cameraViewState,
               },
             },
           })
