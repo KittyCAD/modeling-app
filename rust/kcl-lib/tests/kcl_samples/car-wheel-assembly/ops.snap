@@ -1845,7 +1845,7 @@ description: Operations executed car-wheel-assembly.kcl
           3
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1909,7 +1909,7 @@ description: Operations executed car-wheel-assembly.kcl
           3
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -2851,7 +2851,7 @@ description: Operations executed car-wheel-assembly.kcl
           3
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -3101,7 +3101,7 @@ description: Operations executed car-wheel-assembly.kcl
           6
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -3540,7 +3540,7 @@ description: Operations executed car-wheel-assembly.kcl
           5
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -3604,7 +3604,7 @@ description: Operations executed car-wheel-assembly.kcl
           7
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {

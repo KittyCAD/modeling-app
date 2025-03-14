@@ -133,6 +133,17 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      37,
+      65,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       71,
       121,
       0
@@ -229,17 +240,6 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      421,
-      428,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       441,
       461,
       0
@@ -312,6 +312,17 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
         "y": 14.36,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      467,
+      496,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

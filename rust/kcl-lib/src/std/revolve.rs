@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Sketch, Solid},
+    execution::{ExecState, KclValue, Sketch, SketchSet, SolidSet},
     std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
@@ -28,12 +28,12 @@ pub struct RevolveData {
     pub tolerance: Option<f64>,
 }
 
-/// Revolve a sketch around an axis.
+/// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch): (RevolveData, Sketch) = args.get_data_and_sketch()?;
+    let (data, sketch_set): (RevolveData, SketchSet) = args.get_data_and_sketch_set()?;
 
-    let value = inner_revolve(data, sketch, exec_state, args).await?;
-    Ok(KclValue::Solid { value })
+    let value = inner_revolve(data, sketch_set, exec_state, args).await?;
+    Ok(value.into())
 }
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
@@ -45,6 +45,9 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// dimension.
 ///
 /// Revolve occurs around a local sketch axis rather than a global axis.
+///
+/// You can provide more than one sketch to revolve, and they will all be
+/// revolved around the same axis.
 ///
 /// ```no_run
 /// part001 = startSketchOn('XY')
@@ -174,16 +177,39 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///   }
 /// }, sketch001)
 /// ```
+///
+/// ```no_run
+/// // Revolve two sketches around the same axis.
+///
+/// sketch001 = startSketchOn('XY')
+/// profile001 = startProfileAt([4, 8], sketch001)
+///     |> xLine(length = 3)
+///     |> yLine(length = -3)
+///     |> xLine(length = -3)
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// profile002 = startProfileAt([-5, 8], sketch001)
+///     |> xLine(length = 3)
+///     |> yLine(length = -3)
+///     |> xLine(length = -3)
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// revolve({
+///     axis = "X",
+/// }, [profile001, profile002])
+/// ```
 #[stdlib {
     name = "revolve",
     feature_tree_operation = true,
 }]
 async fn inner_revolve(
     data: RevolveData,
-    sketch: Sketch,
+    sketch_set: SketchSet,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<SolidSet, KclError> {
     if let Some(angle) = data.angle {
         // Return an error if the angle is zero.
         // We don't use validate() here because we want to return a specific error message that is
@@ -198,37 +224,44 @@ async fn inner_revolve(
 
     let angle = Angle::from_degrees(data.angle.unwrap_or(360.0));
 
-    let id = exec_state.next_uuid();
-    match data.axis {
-        Axis2dOrEdgeReference::Axis(axis) => {
-            let (axis, origin) = axis.axis_and_origin()?;
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::Revolve {
-                    angle,
-                    target: sketch.id.into(),
-                    axis,
-                    origin,
-                    tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
-                    axis_is_2d: true,
-                }),
-            )
-            .await?;
+    let sketches: Vec<Sketch> = sketch_set.into();
+    let mut solids = Vec::new();
+    for sketch in &sketches {
+        let id = exec_state.next_uuid();
+
+        match &data.axis {
+            Axis2dOrEdgeReference::Axis(axis) => {
+                let (axis, origin) = axis.axis_and_origin()?;
+                args.batch_modeling_cmd(
+                    id,
+                    ModelingCmd::from(mcmd::Revolve {
+                        angle,
+                        target: sketch.id.into(),
+                        axis,
+                        origin,
+                        tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                        axis_is_2d: true,
+                    }),
+                )
+                .await?;
+            }
+            Axis2dOrEdgeReference::Edge(edge) => {
+                let edge_id = edge.get_engine_id(exec_state, &args)?;
+                args.batch_modeling_cmd(
+                    id,
+                    ModelingCmd::from(mcmd::RevolveAboutEdge {
+                        angle,
+                        target: sketch.id.into(),
+                        edge_id,
+                        tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                    }),
+                )
+                .await?;
+            }
         }
-        Axis2dOrEdgeReference::Edge(edge) => {
-            let edge_id = edge.get_engine_id(exec_state, &args)?;
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::RevolveAboutEdge {
-                    angle,
-                    target: sketch.id.into(),
-                    edge_id,
-                    tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
-                }),
-            )
-            .await?;
-        }
+
+        solids.push(do_post_extrude(sketch.clone(), id.into(), 0.0, exec_state, args.clone()).await?);
     }
 
-    do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await
+    Ok(solids.into())
 }

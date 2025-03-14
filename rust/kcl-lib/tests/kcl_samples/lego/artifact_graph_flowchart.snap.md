@@ -21,10 +21,10 @@ flowchart LR
     44["Segment<br>[2331, 2477, 0]"]
     45[Solid2d]
   end
-  subgraph path52 [Path]
-    52["Path<br>[2805, 2979, 0]"]
-    53["Segment<br>[2805, 2979, 0]"]
-    54[Solid2d]
+  subgraph path66 [Path]
+    66["Path<br>[2805, 2979, 0]"]
+    67["Segment<br>[2805, 2979, 0]"]
+    68[Solid2d]
   end
   1["Plane<br>[1581, 1600, 0]"]
   8["Sweep Extrusion<br>[1780, 1804, 0]"]
@@ -61,15 +61,36 @@ flowchart LR
   48["Cap End"]
   49["SweepEdge Opposite"]
   50["SweepEdge Adjacent"]
-  51["Plane<br>[2776, 2799, 0]"]
-  55["Sweep Extrusion<br>[3197, 3226, 0]"]
-  56[Wall]
-  57["Cap Start"]
-  58["Cap End"]
-  59["SweepEdge Opposite"]
-  60["SweepEdge Adjacent"]
-  61["StartSketchOnFace<br>[1951, 1976, 0]"]
-  62["StartSketchOnFace<br>[2302, 2325, 0]"]
+  51["Sweep Extrusion<br>[2687, 2715, 0]"]
+  52["Sweep Extrusion<br>[2687, 2715, 0]"]
+  53["Sweep Extrusion<br>[2687, 2715, 0]"]
+  54["Sweep Extrusion<br>[2687, 2715, 0]"]
+  55["Sweep Extrusion<br>[2687, 2715, 0]"]
+  56["Sweep Extrusion<br>[2687, 2715, 0]"]
+  57["Sweep Extrusion<br>[2687, 2715, 0]"]
+  58["Sweep Extrusion<br>[2687, 2715, 0]"]
+  59["Sweep Extrusion<br>[2687, 2715, 0]"]
+  60["Sweep Extrusion<br>[2687, 2715, 0]"]
+  61["Sweep Extrusion<br>[2687, 2715, 0]"]
+  62["Sweep Extrusion<br>[2687, 2715, 0]"]
+  63["Sweep Extrusion<br>[2687, 2715, 0]"]
+  64["Sweep Extrusion<br>[2687, 2715, 0]"]
+  65["Plane<br>[2776, 2799, 0]"]
+  69["Sweep Extrusion<br>[3197, 3226, 0]"]
+  70[Wall]
+  71["Cap Start"]
+  72["Cap End"]
+  73["SweepEdge Opposite"]
+  74["SweepEdge Adjacent"]
+  75["Sweep Extrusion<br>[3197, 3226, 0]"]
+  76["Sweep Extrusion<br>[3197, 3226, 0]"]
+  77["Sweep Extrusion<br>[3197, 3226, 0]"]
+  78["Sweep Extrusion<br>[3197, 3226, 0]"]
+  79["Sweep Extrusion<br>[3197, 3226, 0]"]
+  80["Sweep Extrusion<br>[3197, 3226, 0]"]
+  81["Sweep Extrusion<br>[3197, 3226, 0]"]
+  82["StartSketchOnFace<br>[1951, 1976, 0]"]
+  83["StartSketchOnFace<br>[2302, 2325, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -146,18 +167,18 @@ flowchart LR
   46 --- 48
   46 --- 49
   46 --- 50
-  51 --- 52
-  52 --- 53
-  52 ---- 55
-  52 --- 54
-  53 --- 56
-  53 --- 59
-  53 --- 60
-  55 --- 56
-  55 --- 57
-  55 --- 58
-  55 --- 59
-  55 --- 60
-  13 <--x 61
-  14 <--x 62
+  65 --- 66
+  66 --- 67
+  66 ---- 69
+  66 --- 68
+  67 --- 70
+  67 --- 73
+  67 --- 74
+  69 --- 70
+  69 --- 71
+  69 --- 72
+  69 --- 73
+  69 --- 74
+  13 <--x 82
+  14 <--x 83
 ```

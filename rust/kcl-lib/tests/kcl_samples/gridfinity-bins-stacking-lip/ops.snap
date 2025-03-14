@@ -473,7 +473,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -3012,7 +3012,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -3346,7 +3346,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {

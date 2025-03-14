@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing if_else.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing if_else.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          64,
-          65,
-          0
-        ]
-      }
-    ]
+    }
   },
   "b": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing if_else.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          199,
-          200,
-          0
-        ]
-      }
-    ]
+    }
   },
   "c": {
     "type": "Number",
@@ -58,15 +40,6 @@ description: Variables in memory after executing if_else.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          332,
-          333,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

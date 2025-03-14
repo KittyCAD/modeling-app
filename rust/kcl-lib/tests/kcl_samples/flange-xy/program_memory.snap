@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing flange-xy.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          408,
-          413,
-          0
-        ]
-      }
-    ]
+    }
   },
   "baseThickness": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          595,
-          599,
-          0
-        ]
-      }
-    ]
+    }
   },
   "bottomExtrusion": {
     "type": "Solid",
@@ -127,8 +109,7 @@ description: Variables in memory after executing flange-xy.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -156,32 +137,14 @@ description: Variables in memory after executing flange-xy.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2214,
-              2292,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -0.06,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2214,
-            2292,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "bottomThickness": {
@@ -195,16 +158,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          512,
-          516,
-          0
-        ]
-      }
-    ]
+    }
   },
   "bottomTotalDiameter": {
     "type": "Number",
@@ -217,16 +171,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          539,
-          542,
-          0
-        ]
-      }
-    ]
+    }
   },
   "flangeBase": {
     "type": "Solid",
@@ -308,8 +253,7 @@ description: Variables in memory after executing flange-xy.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -337,32 +281,14 @@ description: Variables in memory after executing flange-xy.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              916,
-              982,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.625,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            916,
-            982,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "holeLocator": {
@@ -376,23 +302,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          408,
-          413,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          695,
-          696,
-          0
-        ]
-      }
-    ]
+    }
   },
   "mountingHoleDia": {
     "type": "Number",
@@ -405,16 +315,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          393,
-          397,
-          0
-        ]
-      }
-    ]
+    }
   },
   "mountingHolePlacementDiameter": {
     "type": "Number",
@@ -427,16 +328,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          575,
-          578,
-          0
-        ]
-      }
-    ]
+    }
   },
   "nHoles": {
     "type": "Number",
@@ -449,16 +341,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          706,
-          707,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeDia": {
     "type": "Number",
@@ -471,16 +354,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          424,
-          428,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thickness": {
     "type": "Number",
@@ -493,16 +367,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          441,
-          445,
-          0
-        ]
-      }
-    ]
+    }
   },
   "topExtrusion": {
     "type": "Solid",
@@ -584,8 +449,7 @@ description: Variables in memory after executing flange-xy.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -613,32 +477,14 @@ description: Variables in memory after executing flange-xy.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1915,
-              1990,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.1279999999999999,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1915,
-            1990,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "topFacePlane": {
@@ -661,16 +507,7 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1658,
-                      1659,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -683,16 +520,7 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1665,
-                      1666,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -705,27 +533,9 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      595,
-                      599,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1652,
-                  1687,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -741,16 +551,7 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1707,
-                      1708,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -763,16 +564,7 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1714,
-                      1715,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -785,27 +577,9 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1721,
-                      1722,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1701,
-                  1724,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -821,16 +595,7 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1744,
-                      1745,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -843,16 +608,7 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1751,
-                      1752,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -865,27 +621,9 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1758,
-                      1759,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1738,
-                  1761,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -901,16 +639,7 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1781,
-                      1782,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -923,16 +652,7 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1788,
-                      1789,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -945,49 +665,13 @@ description: Variables in memory after executing flange-xy.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1795,
-                      1796,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1775,
-                  1798,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1637,
-              1802,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1625,
-          1804,
-          0
-        ]
-      }
-    ]
+    }
   },
   "topTotalDiameter": {
     "type": "Number",
@@ -1000,16 +684,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          488,
-          493,
-          0
-        ]
-      }
-    ]
+    }
   },
   "topTotalThickness": {
     "type": "Number",
@@ -1022,30 +697,7 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          463,
-          468,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          512,
-          516,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          595,
-          599,
-          0
-        ]
-      }
-    ]
+    }
   },
   "totalThickness": {
     "type": "Number",
@@ -1058,15 +710,6 @@ description: Variables in memory after executing flange-xy.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          463,
-          468,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

@@ -35,7 +35,7 @@ test.fixme('Units menu', async ({ page, homePage }) => {
 test(
   'Successful export shows a success toast',
   { tag: '@skipLocalEngine' },
-  async ({ page, homePage }) => {
+  async ({ page, homePage, tronApp }) => {
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -92,12 +92,17 @@ part001 = startSketchOn('-XZ')
     await page.waitForTimeout(1000)
     await u.clearAndCloseDebugPanel()
 
+    if (!tronApp?.projectDirName) {
+      fail()
+    }
+
     await doExport(
       {
         type: 'gltf',
         storage: 'embedded',
         presentation: 'pretty',
       },
+      tronApp?.projectDirName,
       page
     )
   }
@@ -465,7 +470,7 @@ test('Delete key does not navigate back', async ({ page, homePage }) => {
   await expect.poll(() => page.url()).not.toContain('/settings')
 })
 
-test('Sketch on face', async ({ page, homePage, scene, cmdBar }) => {
+test('Sketch on face', async ({ page, homePage, scene, cmdBar, toolbar }) => {
   test.setTimeout(90_000)
   const u = await getUtils(page)
   await page.addInitScript(async () => {
@@ -491,25 +496,22 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
   await page.setBodyDimensions({ width: 1200, height: 500 })
 
   await homePage.goToModelingScene()
-  await scene.waitForExecutionDone()
-
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(300)
+  await scene.connectionEstablished()
+  await scene.settled(cmdBar)
 
   let previousCodeContent = await page.locator('.cm-content').innerText()
 
-  await u.openAndClearDebugPanel()
-  await u.doAndWaitForCmd(
-    () => page.mouse.click(625, 165),
-    'default_camera_get_settings',
-    true
-  )
-  await page.waitForTimeout(150)
-  await u.closeDebugPanel()
+  await toolbar.startSketchThenCallbackThenWaitUntilReady(async () => {
+    await u.openAndClearDebugPanel()
+    await u.doAndWaitForCmd(
+      () => page.mouse.click(625, 165),
+      'default_camera_get_settings',
+      true
+    )
+    await page.waitForTimeout(150)
+    await u.closeDebugPanel()
+  })
+  await page.waitForTimeout(300)
 
   const firstClickPosition = [612, 238]
   const secondClickPosition = [661, 242]

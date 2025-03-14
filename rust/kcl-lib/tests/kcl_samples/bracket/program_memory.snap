@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing bracket.kcl
 ---
 {
@@ -199,8 +199,7 @@ description: Variables in memory after executing bracket.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -276,16 +275,7 @@ description: Variables in memory after executing bracket.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1252,
-                  1260,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "fillet2": {
             "type": "TagIdentifier",
@@ -338,32 +328,14 @@ description: Variables in memory after executing bracket.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1296,
-                  1304,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1171,
-              1196,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.35132402626147197,
       "startCapId": "[uuid]",
@@ -386,16 +358,7 @@ description: Variables in memory after executing bracket.kcl
       ],
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1171,
-            1196,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "bracketLeg1Sketch": {
@@ -534,8 +497,7 @@ description: Variables in memory after executing bracket.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -611,16 +573,7 @@ description: Variables in memory after executing bracket.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1252,
-                1260,
-                0
-              ]
-            }
-          ]
+          }
         },
         "fillet2": {
           "type": "TagIdentifier",
@@ -673,32 +626,14 @@ description: Variables in memory after executing bracket.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1296,
-                1304,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1171,
-            1196,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "bracketLeg2Extrude": {
@@ -897,8 +832,7 @@ description: Variables in memory after executing bracket.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -974,16 +908,7 @@ description: Variables in memory after executing bracket.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2943,
-                  2951,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "fillet4": {
             "type": "TagIdentifier",
@@ -1036,32 +961,14 @@ description: Variables in memory after executing bracket.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2988,
-                  2996,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2837,
-              2874,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -0.35132402626147197,
       "startCapId": "[uuid]",
@@ -1084,16 +991,7 @@ description: Variables in memory after executing bracket.kcl
       ],
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2837,
-            2874,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "bracketLeg2Sketch": {
@@ -1232,8 +1130,7 @@ description: Variables in memory after executing bracket.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -1309,16 +1206,7 @@ description: Variables in memory after executing bracket.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2943,
-                2951,
-                0
-              ]
-            }
-          ]
+          }
         },
         "fillet4": {
           "type": "TagIdentifier",
@@ -1371,32 +1259,14 @@ description: Variables in memory after executing bracket.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2988,
-                2996,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2837,
-            2874,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "customPlane": {
@@ -1419,16 +1289,7 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2599,
-                      2612,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -1441,16 +1302,7 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2618,
-                      2619,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -1463,27 +1315,9 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2625,
-                      2626,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2593,
-                  2628,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -1499,16 +1333,7 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2648,
-                      2649,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -1521,16 +1346,7 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2655,
-                      2656,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -1543,27 +1359,9 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2662,
-                      2663,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2642,
-                  2665,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -1579,16 +1377,7 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2685,
-                      2686,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -1601,16 +1390,7 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2692,
-                      2693,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -1623,27 +1403,9 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2699,
-                      2700,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2679,
-                  2702,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -1659,16 +1421,7 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2722,
-                      2723,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -1681,16 +1434,7 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2729,
-                      2730,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -1703,49 +1447,13 @@ description: Variables in memory after executing bracket.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2736,
-                      2737,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2716,
-                  2739,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2578,
-              2743,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2566,
-          2745,
-          0
-        ]
-      }
-    ]
+    }
   },
   "extFilletRadius": {
     "type": "Number",
@@ -1758,16 +1466,7 @@ description: Variables in memory after executing bracket.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          831,
-          834,
-          0
-        ]
-      }
-    ]
+    }
   },
   "factorOfSafety": {
     "type": "Number",
@@ -1780,16 +1479,7 @@ description: Variables in memory after executing bracket.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          575,
-          578,
-          0
-        ]
-      }
-    ]
+    }
   },
   "fillet1": {
     "type": "TagIdentifier",
@@ -1843,16 +1533,7 @@ description: Variables in memory after executing bracket.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1252,
-          1260,
-          0
-        ]
-      }
-    ]
+    }
   },
   "fillet2": {
     "type": "TagIdentifier",
@@ -1906,16 +1587,7 @@ description: Variables in memory after executing bracket.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1296,
-          1304,
-          0
-        ]
-      }
-    ]
+    }
   },
   "fillet3": {
     "type": "TagIdentifier",
@@ -1969,16 +1641,7 @@ description: Variables in memory after executing bracket.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2943,
-          2951,
-          0
-        ]
-      }
-    ]
+    }
   },
   "fillet4": {
     "type": "TagIdentifier",
@@ -2032,16 +1695,7 @@ description: Variables in memory after executing bracket.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2988,
-          2996,
-          0
-        ]
-      }
-    ]
+    }
   },
   "filletExtrude": {
     "type": "Solid",
@@ -2231,8 +1885,7 @@ description: Variables in memory after executing bracket.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -2260,32 +1913,14 @@ description: Variables in memory after executing bracket.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2119,
-              2144,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2119,
-            2144,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "filletRadius": {
@@ -2299,16 +1934,7 @@ description: Variables in memory after executing bracket.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          808,
-          812,
-          0
-        ]
-      }
-    ]
+    }
   },
   "filletSketch": {
     "type": "Sketch",
@@ -2448,8 +2074,7 @@ description: Variables in memory after executing bracket.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -2477,16 +2102,7 @@ description: Variables in memory after executing bracket.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2119,
-            2144,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "moment": {
@@ -2494,23 +2110,7 @@ description: Variables in memory after executing bracket.kcl
     "value": 3600.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          637,
-          639,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          530,
-          533,
-          0
-        ]
-      }
-    ]
+    }
   },
   "mountingHoleDiameter": {
     "type": "Number",
@@ -2523,16 +2123,7 @@ description: Variables in memory after executing bracket.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          858,
-          861,
-          0
-        ]
-      }
-    ]
+    }
   },
   "p": {
     "type": "Number",
@@ -2545,16 +2136,7 @@ description: Variables in memory after executing bracket.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          530,
-          533,
-          0
-        ]
-      }
-    ]
+    }
   },
   "shelfDepth": {
     "type": "Number",
@@ -2567,16 +2149,7 @@ description: Variables in memory after executing bracket.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          637,
-          639,
-          0
-        ]
-      }
-    ]
+    }
   },
   "shelfMountL": {
     "type": "Number",
@@ -2589,16 +2162,7 @@ description: Variables in memory after executing bracket.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          607,
-          608,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sigmaAllow": {
     "type": "Number",
@@ -2611,32 +2175,14 @@ description: Variables in memory after executing bracket.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          484,
-          489,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thickness": {
     "type": "Number",
     "value": 0.3513,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          918,
-          974,
-          0
-        ]
-      }
-    ]
+    }
   },
   "wallMountL": {
     "type": "Number",
@@ -2649,16 +2195,7 @@ description: Variables in memory after executing bracket.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          622,
-          623,
-          0
-        ]
-      }
-    ]
+    }
   },
   "width": {
     "type": "Number",
@@ -2671,15 +2208,6 @@ description: Variables in memory after executing bracket.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          524,
-          525,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

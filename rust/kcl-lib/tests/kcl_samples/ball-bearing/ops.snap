@@ -325,7 +325,7 @@ description: Operations executed ball-bearing.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -585,7 +585,7 @@ description: Operations executed ball-bearing.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -833,7 +833,7 @@ description: Operations executed ball-bearing.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {

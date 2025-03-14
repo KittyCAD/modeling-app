@@ -38,7 +38,36 @@ flowchart LR
   32[Wall]
   33["SweepEdge Opposite"]
   34["SweepEdge Adjacent"]
-  35["StartSketchOnFace<br>[344, 376, 0]"]
+  35["Sweep Extrusion<br>[616, 637, 0]"]
+  36["Sweep Extrusion<br>[616, 637, 0]"]
+  37["Sweep Extrusion<br>[616, 637, 0]"]
+  38["Sweep Extrusion<br>[616, 637, 0]"]
+  39["Sweep Extrusion<br>[616, 637, 0]"]
+  40["Sweep Extrusion<br>[616, 637, 0]"]
+  41["Sweep Extrusion<br>[616, 637, 0]"]
+  42["Sweep Extrusion<br>[616, 637, 0]"]
+  43["Sweep Extrusion<br>[616, 637, 0]"]
+  44["Sweep Extrusion<br>[616, 637, 0]"]
+  45["Sweep Extrusion<br>[616, 637, 0]"]
+  46["Sweep Extrusion<br>[616, 637, 0]"]
+  47["Sweep Extrusion<br>[616, 637, 0]"]
+  48["Sweep Extrusion<br>[616, 637, 0]"]
+  49["Sweep Extrusion<br>[616, 637, 0]"]
+  50["Sweep Extrusion<br>[616, 637, 0]"]
+  51["Sweep Extrusion<br>[616, 637, 0]"]
+  52["Sweep Extrusion<br>[616, 637, 0]"]
+  53["Sweep Extrusion<br>[616, 637, 0]"]
+  54["Sweep Extrusion<br>[616, 637, 0]"]
+  55["Sweep Extrusion<br>[616, 637, 0]"]
+  56["Sweep Extrusion<br>[616, 637, 0]"]
+  57["Sweep Extrusion<br>[616, 637, 0]"]
+  58["Sweep Extrusion<br>[616, 637, 0]"]
+  59["Sweep Extrusion<br>[616, 637, 0]"]
+  60["Sweep Extrusion<br>[616, 637, 0]"]
+  61["Sweep Extrusion<br>[616, 637, 0]"]
+  62["Sweep Extrusion<br>[616, 637, 0]"]
+  63["Sweep Extrusion<br>[616, 637, 0]"]
+  64["StartSketchOnFace<br>[344, 376, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -90,5 +119,5 @@ flowchart LR
   31 --- 32
   31 --- 33
   31 --- 34
-  11 <--x 35
+  11 <--x 64
 ```

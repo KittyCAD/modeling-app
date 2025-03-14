@@ -251,8 +251,7 @@ description: Variables in memory after executing ssi_pattern.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -328,48 +327,21 @@ description: Variables in memory after executing ssi_pattern.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  264,
-                  270,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              37,
-              71,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 50.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            71,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "seg01": {
@@ -424,16 +396,7 @@ description: Variables in memory after executing ssi_pattern.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          264,
-          270,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch001": {
     "type": "Sketch",
@@ -617,8 +580,7 @@ description: Variables in memory after executing ssi_pattern.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -694,32 +656,14 @@ description: Variables in memory after executing ssi_pattern.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                264,
-                270,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            71,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -1042,8 +986,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -1119,61 +1062,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -1201,32 +1108,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1545,8 +1434,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -1622,61 +1510,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -1704,32 +1556,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2048,8 +1882,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -2125,61 +1958,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -2207,32 +2004,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2551,8 +2330,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -2628,61 +2406,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -2710,32 +2452,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3054,8 +2778,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -3131,61 +2854,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -3213,32 +2900,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3557,8 +3226,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -3634,61 +3302,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -3716,32 +3348,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4060,8 +3674,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -4137,61 +3750,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -4219,32 +3796,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4563,8 +4122,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -4640,61 +4198,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -4722,32 +4244,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5066,8 +4570,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -5143,61 +4646,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -5225,32 +4692,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5569,8 +5018,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -5646,61 +5094,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -5728,32 +5140,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6072,8 +5466,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -6149,61 +5542,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -6231,32 +5588,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6575,8 +5914,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -6652,61 +5990,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -6734,32 +6036,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7078,8 +6362,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -7155,61 +6438,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -7237,32 +6484,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7581,8 +6810,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -7658,61 +6886,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -7740,32 +6932,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8084,8 +7258,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -8161,61 +7334,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -8243,32 +7380,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8587,8 +7706,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -8664,61 +7782,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -8746,32 +7828,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9090,8 +8154,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -9167,61 +8230,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -9249,32 +8276,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9593,8 +8602,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -9670,61 +8678,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -9752,32 +8724,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10096,8 +9050,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -10173,61 +9126,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -10255,32 +9172,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10599,8 +9498,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -10676,61 +9574,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -10758,32 +9620,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11102,8 +9946,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -11179,61 +10022,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -11261,32 +10068,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11605,8 +10394,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -11682,61 +10470,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -11764,32 +10516,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12108,8 +10842,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -12185,61 +10918,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -12267,32 +10964,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12611,8 +11290,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -12688,61 +11366,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -12770,32 +11412,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13114,8 +11738,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -13191,61 +11814,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -13273,32 +11860,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13617,8 +12186,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -13694,61 +12262,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -13776,32 +12308,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -14120,8 +12634,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -14197,61 +12710,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -14279,32 +12756,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -14623,8 +13082,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -14700,61 +13158,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -14782,32 +13204,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -15126,8 +13530,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -15203,61 +13606,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -15285,32 +13652,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -15629,8 +13978,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -15706,61 +14054,25 @@ description: Variables in memory after executing ssi_pattern.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          264,
-                          270,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      71,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 50.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    71,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  344,
-                  376,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -15788,32 +14100,14 @@ description: Variables in memory after executing ssi_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                382,
-                426,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -40.0,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              382,
-              426,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   }

@@ -150,6 +150,17 @@ description: Artifact commands dodecahedron.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1164,
+      1276,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -334,6 +345,17 @@ description: Artifact commands dodecahedron.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1321,
+      1433,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

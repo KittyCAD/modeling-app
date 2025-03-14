@@ -14,16 +14,7 @@ description: Variables in memory after executing array_range_expr.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          175,
-          188,
-          0
-        ]
-      }
-    ]
+    }
   },
   "four": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing array_range_expr.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          79,
-          80,
-          0
-        ]
-      }
-    ]
+    }
   },
   "r1": {
     "type": "MixedArray",
@@ -56,16 +38,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              11,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -73,16 +46,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              11,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -90,16 +54,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              11,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -107,16 +62,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              11,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -124,25 +70,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              11,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          5,
-          11,
-          0
-        ]
+        }
       }
     ]
   },
@@ -155,16 +83,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              95,
-              107,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -172,16 +91,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              95,
-              107,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -189,16 +99,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              95,
-              107,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -206,16 +107,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              95,
-              107,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -223,25 +115,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              95,
-              107,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          95,
-          107,
-          0
-        ]
+        }
       }
     ]
   },
@@ -254,16 +128,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              194,
-              206,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -271,16 +136,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              194,
-              206,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -288,16 +144,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              194,
-              206,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -305,16 +152,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              194,
-              206,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -322,16 +160,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              194,
-              206,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -339,25 +168,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              194,
-              206,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          194,
-          206,
-          0
-        ]
+        }
       }
     ]
   },
@@ -370,16 +181,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              341,
-              373,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -387,16 +189,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              341,
-              373,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -404,16 +197,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              341,
-              373,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -421,25 +205,7 @@ description: Variables in memory after executing array_range_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              341,
-              373,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          341,
-          373,
-          0
-        ]
+        }
       }
     ]
   },
@@ -454,15 +220,6 @@ description: Variables in memory after executing array_range_expr.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          88,
-          89,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

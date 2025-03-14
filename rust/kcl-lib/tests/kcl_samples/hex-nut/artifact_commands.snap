@@ -145,6 +145,17 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      573,
+      623,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       631,
       680,
       0
@@ -262,17 +273,6 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      919,
-      926,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       939,
       1026,
       0
@@ -316,6 +316,17 @@ description: Artifact commands hex-nut.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      939,
+      1026,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

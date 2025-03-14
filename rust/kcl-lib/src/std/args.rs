@@ -1,12 +1,14 @@
 use std::{any::type_name, collections::HashMap, num::NonZeroU32};
 
 use anyhow::Result;
-use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
+use kcmc::{
+    websocket::{ModelingCmdReq, OkWebSocketResponseData},
+    ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::shapes::PolygonType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -16,7 +18,11 @@ use crate::{
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
-    std::{shapes::SketchOrSurface, sketch::FaceTag, sweep::SweepPath},
+    std::{
+        shapes::{PolygonType, SketchOrSurface},
+        sketch::FaceTag,
+        sweep::SweepPath,
+    },
     ModuleId,
 };
 
@@ -252,6 +258,11 @@ impl Args {
         cmd: ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
+    }
+
+    // Add multiple modeling commands to the batch but don't fire them right away.
+    pub(crate) async fn batch_modeling_cmds(&self, cmds: &[ModelingCmdReq]) -> Result<(), crate::errors::KclError> {
+        self.ctx.engine.batch_modeling_cmds(self.source_range, cmds).await
     }
 
     // Add a modeling command to the batch that gets executed at the end of the file.
@@ -518,13 +529,6 @@ impl Args {
     pub(crate) fn get_data_and_optional_tag<'a, T>(&'a self) -> Result<(T, Option<FaceTag>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_data_and_sketch<'a, T>(&'a self) -> Result<(T, Sketch), KclError>
-    where
-        T: serde::de::DeserializeOwned + FromArgs<'a>,
     {
         FromArgs::from_args(self, 0)
     }

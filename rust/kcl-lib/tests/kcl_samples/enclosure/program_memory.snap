@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing enclosure.kcl
 ---
 {
@@ -242,8 +242,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -319,16 +318,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  325,
-                  346,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentB001": {
             "type": "TagIdentifier",
@@ -381,16 +371,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  433,
-                  454,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentC001": {
             "type": "TagIdentifier",
@@ -443,16 +424,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  559,
-                  580,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentD001": {
             "type": "TagIdentifier",
@@ -505,32 +477,14 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  650,
-                  671,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              268,
-              293,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 70.0,
       "startCapId": "[uuid]",
@@ -567,16 +521,7 @@ description: Variables in memory after executing enclosure.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            268,
-            293,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude003": {
@@ -818,8 +763,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -895,16 +839,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2473,
-                  2494,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentB002": {
             "type": "TagIdentifier",
@@ -957,16 +892,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2581,
-                  2602,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentC002": {
             "type": "TagIdentifier",
@@ -1019,16 +945,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2707,
-                  2728,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentD002": {
             "type": "TagIdentifier",
@@ -1081,32 +998,14 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2798,
-                  2819,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2406,
-              2441,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": "[uuid]",
@@ -1143,16 +1042,7 @@ description: Variables in memory after executing enclosure.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2406,
-            2441,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude004": {
@@ -1624,8 +1514,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -1701,16 +1590,7 @@ description: Variables in memory after executing enclosure.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2473,
-                        2494,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "rectangleSegmentB002": {
                   "type": "TagIdentifier",
@@ -1763,16 +1643,7 @@ description: Variables in memory after executing enclosure.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2581,
-                        2602,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "rectangleSegmentC002": {
                   "type": "TagIdentifier",
@@ -1825,16 +1696,7 @@ description: Variables in memory after executing enclosure.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2707,
-                        2728,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "rectangleSegmentD002": {
                   "type": "TagIdentifier",
@@ -1887,32 +1749,14 @@ description: Variables in memory after executing enclosure.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2798,
-                        2819,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2406,
-                    2441,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.0,
             "startCapId": "[uuid]",
@@ -1949,29 +1793,11 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2406,
-                  2441,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                3937,
-                3969,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -2047,16 +1873,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4113,
-                  4134,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentB003": {
             "type": "TagIdentifier",
@@ -2109,16 +1926,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4243,
-                  4264,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentC003": {
             "type": "TagIdentifier",
@@ -2171,16 +1979,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4369,
-                  4390,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentD003": {
             "type": "TagIdentifier",
@@ -2233,32 +2032,14 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4460,
-                  4481,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3975,
-              4059,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": "[uuid]",
@@ -2295,29 +2076,11 @@ description: Variables in memory after executing enclosure.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3975,
-            4059,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "function001": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          1276,
-          1927,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "height": {
     "type": "Number",
@@ -2330,16 +2093,7 @@ description: Variables in memory after executing enclosure.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          151,
-          153,
-          0
-        ]
-      }
-    ]
+    }
   },
   "holeDia": {
     "type": "Number",
@@ -2352,16 +2106,7 @@ description: Variables in memory after executing enclosure.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          182,
-          183,
-          0
-        ]
-      }
-    ]
+    }
   },
   "length": {
     "type": "Number",
@@ -2374,16 +2119,7 @@ description: Variables in memory after executing enclosure.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          126,
-          129,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
@@ -2437,16 +2173,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          325,
-          346,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA002": {
     "type": "TagIdentifier",
@@ -2500,16 +2227,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2473,
-          2494,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA003": {
     "type": "TagIdentifier",
@@ -2563,16 +2281,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4113,
-          4134,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
@@ -2626,16 +2335,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          433,
-          454,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB002": {
     "type": "TagIdentifier",
@@ -2689,16 +2389,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2581,
-          2602,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB003": {
     "type": "TagIdentifier",
@@ -2752,16 +2443,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4243,
-          4264,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC001": {
     "type": "TagIdentifier",
@@ -2815,16 +2497,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          559,
-          580,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC002": {
     "type": "TagIdentifier",
@@ -2878,16 +2551,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2707,
-          2728,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC003": {
     "type": "TagIdentifier",
@@ -2941,16 +2605,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4369,
-          4390,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentD001": {
     "type": "TagIdentifier",
@@ -3004,16 +2659,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          650,
-          671,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentD002": {
     "type": "TagIdentifier",
@@ -3067,16 +2713,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2798,
-          2819,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentD003": {
     "type": "TagIdentifier",
@@ -3130,16 +2767,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4460,
-          4481,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch001": {
     "type": "Sketch",
@@ -3310,8 +2938,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -3387,16 +3014,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                325,
-                346,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
@@ -3449,16 +3067,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                433,
-                454,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentC001": {
           "type": "TagIdentifier",
@@ -3511,16 +3120,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                559,
-                580,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentD001": {
           "type": "TagIdentifier",
@@ -3573,32 +3173,14 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                650,
-                671,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            268,
-            293,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch003": {
@@ -3770,8 +3352,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -3847,16 +3428,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2473,
-                2494,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentB002": {
           "type": "TagIdentifier",
@@ -3909,16 +3481,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2581,
-                2602,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentC002": {
           "type": "TagIdentifier",
@@ -3971,16 +3534,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2707,
-                2728,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentD002": {
           "type": "TagIdentifier",
@@ -4033,32 +3587,14 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2798,
-                2819,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2406,
-            2441,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch004": {
@@ -4460,8 +3996,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -4537,16 +4072,7 @@ description: Variables in memory after executing enclosure.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2473,
-                      2494,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "rectangleSegmentB002": {
                 "type": "TagIdentifier",
@@ -4599,16 +4125,7 @@ description: Variables in memory after executing enclosure.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2581,
-                      2602,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "rectangleSegmentC002": {
                 "type": "TagIdentifier",
@@ -4661,16 +4178,7 @@ description: Variables in memory after executing enclosure.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2707,
-                      2728,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "rectangleSegmentD002": {
                 "type": "TagIdentifier",
@@ -4723,32 +4231,14 @@ description: Variables in memory after executing enclosure.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2798,
-                      2819,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2406,
-                  2441,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 3.0,
           "startCapId": "[uuid]",
@@ -4785,29 +4275,11 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2406,
-                2441,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3937,
-              3969,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -4883,16 +4355,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4113,
-                4134,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentB003": {
           "type": "TagIdentifier",
@@ -4945,16 +4408,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4243,
-                4264,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentC003": {
           "type": "TagIdentifier",
@@ -5007,16 +4461,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4369,
-                4390,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentD003": {
           "type": "TagIdentifier",
@@ -5069,32 +4514,14 @@ description: Variables in memory after executing enclosure.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4460,
-                4481,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3975,
-            4059,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "wallThickness": {
@@ -5108,16 +4535,7 @@ description: Variables in memory after executing enclosure.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          170,
-          171,
-          0
-        ]
-      }
-    ]
+    }
   },
   "width": {
     "type": "Number",
@@ -5130,15 +4548,6 @@ description: Variables in memory after executing enclosure.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          138,
-          141,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

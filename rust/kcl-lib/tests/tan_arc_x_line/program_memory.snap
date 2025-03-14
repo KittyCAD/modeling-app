@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing tan_arc_x_line.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing tan_arc_x_line.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          36,
-          39,
-          0
-        ]
-      }
-    ]
+    }
   },
   "angleStart": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing tan_arc_x_line.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          59,
-          62,
-          0
-        ]
-      }
-    ]
+    }
   },
   "arc1": {
     "type": "TagIdentifier",
@@ -89,16 +71,7 @@ description: Variables in memory after executing tan_arc_x_line.kcl
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          246,
-          251,
-          0
-        ]
-      }
-    ]
+    }
   },
   "arc2": {
     "type": "TagIdentifier",
@@ -142,16 +115,7 @@ description: Variables in memory after executing tan_arc_x_line.kcl
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          338,
-          343,
-          0
-        ]
-      }
-    ]
+    }
   },
   "arc3": {
     "type": "TagIdentifier",
@@ -195,16 +159,7 @@ description: Variables in memory after executing tan_arc_x_line.kcl
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          431,
-          436,
-          0
-        ]
-      }
-    ]
+    }
   },
   "r": {
     "type": "Number",
@@ -217,16 +172,7 @@ description: Variables in memory after executing tan_arc_x_line.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          44,
-          45,
-          0
-        ]
-      }
-    ]
+    }
   },
   "startX": {
     "type": "Number",
@@ -239,16 +185,7 @@ description: Variables in memory after executing tan_arc_x_line.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          9,
-          10,
-          0
-        ]
-      }
-    ]
+    }
   },
   "startY": {
     "type": "Number",
@@ -261,15 +198,6 @@ description: Variables in memory after executing tan_arc_x_line.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          20,
-          21,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

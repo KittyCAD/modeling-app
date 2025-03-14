@@ -32,7 +32,6 @@ A sketch or a group of sketches.
 | `artifactId` |[`ArtifactId`](/docs/kcl/types/ArtifactId)| The original id of the sketch. This stays the same even if the sketch is is sketched on face etc. | No |
 | `originalId` |[`string`](/docs/kcl/types/string)|  | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`| Metadata. | No |
 
 
 ----

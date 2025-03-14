@@ -33,7 +33,6 @@ A solid or a group of solids.
 | `endCapId` |[`string`](/docs/kcl/types/string)| The id of the extrusion end cap | No |
 | `edgeCuts` |`[` [`EdgeCut`](/docs/kcl/types/EdgeCut) `]`| Chamfers or fillets on this solid. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`| Metadata. | No |
 
 
 ----

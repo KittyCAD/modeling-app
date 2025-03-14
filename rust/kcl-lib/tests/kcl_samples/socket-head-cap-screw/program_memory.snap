@@ -8,35 +8,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "value": 0.607,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          460,
-          464,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          480,
-          484,
-          0
-        ]
-      }
-    ]
+    }
   },
   "capScrew": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          861,
-          2274,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "headDiameter": {
     "type": "Number",
@@ -49,16 +24,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          480,
-          484,
-          0
-        ]
-      }
-    ]
+    }
   },
   "headLength": {
     "type": "Number",
@@ -71,16 +37,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          460,
-          464,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexChangeAngle": {
     "type": "Number",
@@ -93,23 +50,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          767,
-          770,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          746,
-          749,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexInteriorAngle": {
     "type": "Number",
@@ -122,46 +63,14 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          746,
-          749,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexRatio": {
     "type": "Number",
     "value": 0.4992,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          528,
-          529,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          532,
-          534,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          480,
-          484,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexStartingAngle": {
     "type": "Number",
@@ -174,83 +83,21 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          693,
-          696,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexWallLength": {
     "type": "Number",
     "value": 0.0902,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          528,
-          529,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          532,
-          534,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          647,
-          648,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          651,
-          652,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          655,
-          673,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexWallToWall": {
     "type": "Number",
     "value": 0.1563,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          528,
-          529,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          532,
-          534,
-          0
-        ]
-      }
-    ]
+    }
   },
   "screwDiameter": {
     "type": "Number",
@@ -263,16 +110,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          460,
-          464,
-          0
-        ]
-      }
-    ]
+    }
   },
   "screwLength": {
     "type": "Number",
@@ -285,15 +123,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          440,
-          443,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

@@ -473,7 +473,7 @@ description: Operations executed gridfinity-baseplate.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {

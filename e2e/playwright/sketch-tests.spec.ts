@@ -1,4 +1,5 @@
-import { test, expect, Page } from './zoo-test'
+import { Page } from '@playwright/test'
+import { test, expect } from './zoo-test'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { HomePageFixture } from './fixtures/homePageFixture'
@@ -2353,6 +2354,8 @@ extrude001 = extrude(profile003, length = 5)
 
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+
+    await page.waitForTimeout(5000)
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
@@ -2365,7 +2368,7 @@ extrude001 = extrude(profile003, length = 5)
     await page.waitForTimeout(600)
 
     await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')`)
-    await toolbar.exitSketchBtn.click()
+    await toolbar.exitSketch()
 
     await editor.expectEditor.not.toContain(`sketch001 = startSketchOn('XZ')`)
 
@@ -2380,6 +2383,8 @@ extrude001 = extrude(profile003, length = 5)
     radius = myVar
   )`
       )
+
+      await scene.settled(cmdBar)
 
       await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
     })

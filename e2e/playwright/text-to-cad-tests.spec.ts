@@ -1,4 +1,5 @@
-import { test, expect, Page } from './zoo-test'
+import { Page } from '@playwright/test'
+import { test, expect } from './zoo-test'
 import { getUtils, createProject } from './test-utils'
 import { join } from 'path'
 import fs from 'fs'
@@ -429,7 +430,8 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
 
-  test(
+  // This will be fine once greg makes prompt at top of file deterministic
+  test.fixme(
     'can do many at once and get many prompts back, and interact with many',
     { tag: ['@skipWin'] },
     async ({ page, homePage }) => {

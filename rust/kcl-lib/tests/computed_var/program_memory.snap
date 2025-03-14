@@ -17,16 +17,7 @@ description: Variables in memory after executing computed_var.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              44,
-              45,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -39,16 +30,7 @@ description: Variables in memory after executing computed_var.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              47,
-              48,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -61,16 +43,7 @@ description: Variables in memory after executing computed_var.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              50,
-              51,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -83,25 +56,7 @@ description: Variables in memory after executing computed_var.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              53,
-              55,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          43,
-          56,
-          0
-        ]
+        }
       }
     ]
   },
@@ -116,16 +71,7 @@ description: Variables in memory after executing computed_var.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          61,
-          62,
-          0
-        ]
-      }
-    ]
+    }
   },
   "obj": {
     "type": "Object",
@@ -141,16 +87,7 @@ description: Variables in memory after executing computed_var.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              150,
-              151,
-              0
-            ]
-          }
-        ]
+        }
       },
       "foo": {
         "type": "Number",
@@ -163,27 +100,9 @@ description: Variables in memory after executing computed_var.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              141,
-              142,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          133,
-          153,
-          0
-        ]
-      }
-    ]
+    }
   },
   "one": {
     "type": "Number",
@@ -196,29 +115,11 @@ description: Variables in memory after executing computed_var.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          141,
-          142,
-          0
-        ]
-      }
-    ]
+    }
   },
   "p": {
     "type": "String",
-    "value": "foo",
-    "__meta": [
-      {
-        "sourceRange": [
-          121,
-          126,
-          0
-        ]
-      }
-    ]
+    "value": "foo"
   },
   "ten": {
     "type": "Number",
@@ -231,16 +132,7 @@ description: Variables in memory after executing computed_var.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          53,
-          55,
-          0
-        ]
-      }
-    ]
+    }
   },
   "x": {
     "type": "Number",
@@ -248,15 +140,6 @@ description: Variables in memory after executing computed_var.kcl
     "ty": {
       "type": "Known",
       "type": "Count"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          247,
-          258,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

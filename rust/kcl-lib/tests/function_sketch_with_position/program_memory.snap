@@ -1,19 +1,10 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing function_sketch_with_position.kcl
 ---
 {
   "box": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          6,
-          218,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "thing": {
     "type": "Solid",
@@ -191,8 +182,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -220,32 +210,14 @@ description: Variables in memory after executing function_sketch_with_position.k
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              58,
-              78,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            58,
-            78,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }
