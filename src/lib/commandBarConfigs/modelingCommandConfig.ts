@@ -10,7 +10,7 @@ import {
 } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 import {
@@ -19,6 +19,7 @@ import {
   shellValidator,
   sweepValidator,
 } from './validators'
+import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -94,6 +95,9 @@ export type ModelingCommandSchema = {
     length: KclCommandValue
   }
   'event.parameter.create': {
+    value: KclCommandValue
+  }
+  'event.parameter.edit': {
     name: string
     value: KclCommandValue
   }
@@ -596,6 +600,50 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'event.parameter.edit': {
+    displayName: 'Edit parameter',
+    description: 'Edit the value of a named constant',
+    icon: 'make-variable',
+    status: 'development',
+    needsReview: false,
+    args: {
+      name: {
+        inputType: 'options',
+        required: true,
+        options() {
+          return (
+            Object.keys(kclManager.execState.variables).map((name) => ({
+              name: name,
+              value: name,
+            })) || []
+          )
+        },
+      },
+      value: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue(commandBarContext) {
+          const variableName = commandBarContext.argumentsToSubmit.name
+          if (typeof variableName !== 'string') return '5'
+          const variableNode = getVariableDeclaration(
+            kclManager.ast,
+            variableName
+          )
+          if (!variableNode) return '5'
+          const code = codeManager.code.slice(
+            variableNode.declaration.init.start,
+            variableNode.declaration.init.end
+          )
+          return code
+        },
+        createVariable: 'disallow',
+        variableName(commandBarContext) {
+          const variableName = commandBarContext.argumentsToSubmit.name
+          return typeof variableName === 'string' ? variableName : 'myParamater'
+        },
+      },
+    },
+  },
   'Constrain length': {
     description: 'Constrain the length of one or more segments.',
     icon: 'dimension',
@@ -610,7 +658,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       length: {
         inputType: 'kcl',
         required: true,
-        createVariableByDefault: true,
+        createVariable: 'byDefault',
         defaultValue(_, machineContext) {
           const selectionRanges = machineContext?.selectionRanges
           if (!selectionRanges) return KCL_DEFAULT_LENGTH

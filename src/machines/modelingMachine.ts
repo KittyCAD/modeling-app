@@ -90,6 +90,9 @@ import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
 import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
+import { getVariableDeclarationIndex } from 'lang/queryAst/getVariableDeclarationIndex'
+import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
+import { getSafeInsertIndex } from 'lang/queryAst/getSafeInsertIndex'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -302,6 +305,10 @@ export type ModelingMachineEvent =
   | {
       type: 'event.parameter.create'
       data: ModelingCommandSchema['event.parameter.create']
+    }
+  | {
+      type: 'event.parameter.edit'
+      data: ModelingCommandSchema['event.parameter.edit']
     }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
@@ -2107,6 +2114,49 @@ export const modelingMachine = setup({
         }
       }
     ),
+    'actor.parameter.edit': fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['event.parameter.edit'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        console.log('FRANK here is the input', input)
+        const { name, value } = input
+        const insertIndex = getVariableDeclarationIndex(kclManager.ast, name)
+        const variableNode = getVariableDeclaration(kclManager.ast, name)
+        if (insertIndex === -1 || !variableNode) {
+          return new Error(`No variable with name "${name}" found in file`)
+        }
+        const variableDeclarationAst = structuredClone(variableNode)
+        variableDeclarationAst.declaration.init = value.valueAst
+
+        const astWithVariableRemoved = structuredClone(kclManager.ast)
+        const safeInsertIndex = getSafeInsertIndex(
+          value.valueAst,
+          astWithVariableRemoved
+        )
+        astWithVariableRemoved.body.splice(insertIndex, 1)
+        const newAst = insertNamedConstant({
+          node: astWithVariableRemoved,
+          newExpression: {
+            ...value,
+            variableName: name,
+            insertIndex: safeInsertIndex,
+            variableDeclarationAst,
+            variableIdentifierAst: variableDeclarationAst.declaration.id,
+          },
+        })
+
+        const updateAstResult = await kclManager.updateAst(newAst, true)
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
     'set-up-draft-circle': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'sketchDetails'> & {
@@ -2325,6 +2375,9 @@ export const modelingMachine = setup({
 
         'event.parameter.create': {
           target: '#Modeling.parameter.creating',
+        },
+        'event.parameter.edit': {
+          target: '#Modeling.parameter.editing',
         },
 
         Export: {
@@ -3459,6 +3512,18 @@ export const modelingMachine = setup({
             id: 'actor.parameter.create',
             input: ({ event }) => {
               if (event.type !== 'event.parameter.create') return undefined
+              return event.data
+            },
+            onDone: ['#Modeling.idle'],
+            onError: ['#Modeling.idle'],
+          },
+        },
+        editing: {
+          invoke: {
+            src: 'actor.parameter.edit',
+            id: 'actor.parameter.edit',
+            input: ({ event }) => {
+              if (event.type !== 'event.parameter.edit') return undefined
               return event.data
             },
             onDone: ['#Modeling.idle'],
