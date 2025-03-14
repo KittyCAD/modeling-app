@@ -167,20 +167,21 @@ export class ElectronZoo {
 
       // Mac takes quite a long time to create the first window in CI.
       // Turns out we can't trust firstWindow() either. So loop.
-      let timeoutId = undefined
-      const tryToGetWindowPage = () => new Promise((resolve) => {
-        const fn = () => {
-          this.page = this.electron.windows()[0];
-          timeoutId = setTimeout(() => {
-            if (this.page) {
-              clearTimeout(timeoutId)
-              return resolve(undefined)
-            }
-            fn()
-          }, 0)
-        }
-        fn()
-      })
+      let timeoutId: ReturnType<typeof setTimeout>
+      const tryToGetWindowPage = () =>
+        new Promise((resolve) => {
+          const fn = () => {
+            this.page = this.electron.windows()[0]
+            timeoutId = setTimeout(() => {
+              if (this.page) {
+                clearTimeout(timeoutId)
+                return resolve(undefined)
+              }
+              fn()
+            }, 0)
+          }
+          fn()
+        })
 
       await tryToGetWindowPage()
 
