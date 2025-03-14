@@ -96,6 +96,10 @@ export type ModelingCommandSchema = {
     axis: string
     length: KclCommandValue
   }
+  'event.parameter.create': {
+    name: string
+    value: KclCommandValue
+  }
   'change tool': {
     tool: SketchTool
   }
@@ -583,6 +587,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+    },
+  },
+  'event.parameter.create': {
+    displayName: 'Create named parameter',
+    description: 'Add a named parameter to use in geometry',
+    icon: 'make-variable',
+    status: 'development',
+    needsReview: false,
+    args: {
+      value: {
+        inputType: 'kcl',
+        required: true,
+        createVariable: 'force',
+        variableName: 'myParameter',
+        defaultValue: '5',
       },
     },
   },
