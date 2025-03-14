@@ -27,7 +27,6 @@ impl IdGenerator {
             self.module_id.map(|id| id.to_string()).unwrap_or("none".to_string()),
             next_id
         );
-        println!("next: {}", next);
         let next_uuid = uuid::Uuid::new_v5(&NAMESPACE_KCL, next.as_bytes());
 
         self.next_id += 1;
