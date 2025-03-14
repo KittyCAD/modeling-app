@@ -20,7 +20,7 @@ import {
   sweepValidator,
 } from './validators'
 
-type OutputFormat = Models['OutputFormat_type']
+type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
 type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>

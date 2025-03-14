@@ -7,7 +7,7 @@ import { uuidv4 } from 'lib/utils'
 export async function exportFromEngine({
   format,
 }: {
-  format: Models['OutputFormat_type']
+  format: Models['OutputFormat3d_type']
 }): Promise<Models['WebSocketResponse_type'] | null> {
   let exportPromise = engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
