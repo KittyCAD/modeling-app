@@ -2879,14 +2879,14 @@ description: Operations executed car-wheel-assembly.kcl
     "name": "lug",
     "functionSourceRange": [
       666,
-      1300,
+      1285,
       6
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1302,
-      1342,
+      1287,
+      1327,
       6
     ]
   },
@@ -3096,8 +3096,8 @@ description: Operations executed car-wheel-assembly.kcl
           }
         },
         "sourceRange": [
-          1192,
-          1206,
+          1177,
+          1191,
           6
         ]
       },
@@ -3109,16 +3109,16 @@ description: Operations executed car-wheel-assembly.kcl
           }
         },
         "sourceRange": [
-          1208,
-          1209,
+          1193,
+          1194,
           6
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      1184,
-      1210,
+      1169,
+      1195,
       6
     ],
     "type": "StdLibCall",

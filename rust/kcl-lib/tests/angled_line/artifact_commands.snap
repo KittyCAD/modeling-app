@@ -197,7 +197,7 @@ description: Artifact commands angled_line.kcl
     "cmdId": "[uuid]",
     "range": [
       180,
-      217,
+      229,
       0
     ],
     "command": {
@@ -217,8 +217,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      223,
-      250,
+      235,
+      262,
       0
     ],
     "command": {
@@ -238,8 +238,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      256,
-      264,
+      268,
+      275,
       0
     ],
     "command": {
@@ -250,8 +250,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      256,
-      264,
+      268,
+      275,
       0
     ],
     "command": {
@@ -261,8 +261,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -281,8 +281,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -295,8 +295,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -306,8 +306,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -318,8 +318,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -331,8 +331,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -345,8 +345,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -359,8 +359,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -373,8 +373,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -387,8 +387,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -401,8 +401,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -415,8 +415,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -429,8 +429,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -443,8 +443,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -457,8 +457,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -471,8 +471,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {
@@ -485,8 +485,8 @@ description: Artifact commands angled_line.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      270,
-      289,
+      281,
+      300,
       0
     ],
     "command": {

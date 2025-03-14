@@ -134,7 +134,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
     "cmdId": "[uuid]",
     "range": [
       71,
-      121,
+      139,
       0
     ],
     "command": {
@@ -154,8 +154,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      127,
-      227,
+      145,
+      271,
       0
     ],
     "command": {
@@ -175,8 +175,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      233,
-      353,
+      277,
+      423,
       0
     ],
     "command": {
@@ -196,8 +196,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      359,
-      415,
+      429,
+      485,
       0
     ],
     "command": {
@@ -217,8 +217,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      421,
-      428,
+      491,
+      498,
       0
     ],
     "command": {
@@ -229,8 +229,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      421,
-      428,
+      491,
+      498,
       0
     ],
     "command": {
@@ -240,8 +240,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      441,
-      461,
+      511,
+      531,
       0
     ],
     "command": {
@@ -269,8 +269,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      467,
-      496,
+      537,
+      566,
       0
     ],
     "command": {
@@ -289,8 +289,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      467,
-      496,
+      537,
+      566,
       0
     ],
     "command": {
@@ -300,8 +300,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      467,
-      496,
+      537,
+      566,
       0
     ],
     "command": {
@@ -317,8 +317,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      502,
-      527,
+      572,
+      597,
       0
     ],
     "command": {
@@ -338,8 +338,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      533,
-      559,
+      603,
+      629,
       0
     ],
     "command": {
@@ -359,8 +359,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      565,
-      597,
+      635,
+      667,
       0
     ],
     "command": {

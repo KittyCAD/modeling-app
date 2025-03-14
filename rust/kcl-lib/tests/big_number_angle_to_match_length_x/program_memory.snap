@@ -31,7 +31,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           "id": "[uuid]",
           "sourceRange": [
             107,
-            163,
+            178,
             0
           ],
           "tag": null,
@@ -41,8 +41,8 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            169,
-            177,
+            184,
+            192,
             0
           ],
           "tag": null,
@@ -86,7 +86,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
               "id": "[uuid]",
               "sourceRange": [
                 107,
-                163,
+                178,
                 0
               ]
             },
@@ -108,8 +108,8 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                169,
-                177,
+                184,
+                192,
                 0
               ]
             },

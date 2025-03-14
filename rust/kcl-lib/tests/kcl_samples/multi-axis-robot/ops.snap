@@ -119,16 +119,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          744,
-          762,
+          814,
+          832,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      716,
-      763,
+      786,
+      833,
       3
     ],
     "type": "StdLibCall",
@@ -140,8 +140,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        724,
-        733,
+        794,
+        803,
         3
       ]
     }
@@ -163,8 +163,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          794,
-          805,
+          864,
+          875,
           3
         ]
       },
@@ -191,16 +191,16 @@ description: Operations executed multi-axis-robot.kcl
           ]
         },
         "sourceRange": [
-          821,
-          1038,
+          891,
+          1108,
           3
         ]
       }
     },
     "name": "chamfer",
     "sourceRange": [
-      769,
-      1045,
+      839,
+      1115,
       3
     ],
     "type": "StdLibCall",
@@ -212,8 +212,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        769,
-        1045,
+        839,
+        1115,
         3
       ]
     }
@@ -228,8 +228,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1113,
-          1123,
+          1183,
+          1193,
           3
         ]
       },
@@ -239,16 +239,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          1125,
-          1130,
+          1195,
+          1200,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1099,
-      1131,
+      1169,
+      1201,
       3
     ],
     "type": "StdLibCall",
@@ -271,16 +271,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1236,
-          1273,
+          1306,
+          1343,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1208,
-      1274,
+      1278,
+      1344,
       3
     ],
     "type": "StdLibCall",
@@ -292,8 +292,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1216,
-        1225,
+        1286,
+        1295,
         3
       ]
     }
@@ -315,8 +315,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1304,
-          1307,
+          1374,
+          1377,
           3
         ]
       },
@@ -331,16 +331,16 @@ description: Operations executed multi-axis-robot.kcl
           ]
         },
         "sourceRange": [
-          1323,
-          1355,
+          1393,
+          1425,
           3
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      1280,
-      1362,
+      1350,
+      1432,
       3
     ],
     "type": "StdLibCall",
@@ -352,8 +352,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1280,
-        1362,
+        1350,
+        1432,
         3
       ]
     }
@@ -368,8 +368,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1389,
-          1399,
+          1459,
+          1469,
           3
         ]
       },
@@ -379,16 +379,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          1401,
-          1406,
+          1471,
+          1476,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1375,
-      1407,
+      1445,
+      1477,
       3
     ],
     "type": "StdLibCall",
@@ -411,16 +411,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1492,
-          1493,
+          1562,
+          1563,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1464,
-      1494,
+      1534,
+      1564,
       3
     ],
     "type": "StdLibCall",
@@ -432,8 +432,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1472,
-        1481,
+        1542,
+        1551,
         3
       ]
     }
@@ -448,8 +448,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1558,
-          1568,
+          1628,
+          1638,
           3
         ]
       },
@@ -459,16 +459,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          1570,
-          1575,
+          1640,
+          1645,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1544,
-      1576,
+      1614,
+      1646,
       3
     ],
     "type": "StdLibCall",
@@ -491,16 +491,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1895,
-          1914,
+          1965,
+          1984,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1868,
-      1915,
+      1938,
+      1985,
       3
     ],
     "type": "StdLibCall",
@@ -523,8 +523,8 @@ description: Operations executed multi-axis-robot.kcl
         ]
       },
       "sourceRange": [
-        1876,
-        1884,
+        1946,
+        1954,
         3
       ]
     }
@@ -539,8 +539,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1942,
-          1952,
+          2012,
+          2022,
           3
         ]
       },
@@ -550,16 +550,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          1954,
-          1959,
+          2024,
+          2029,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1928,
-      1960,
+      1998,
+      2030,
       3
     ],
     "type": "StdLibCall",
@@ -582,16 +582,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          2267,
-          2286,
+          2337,
+          2356,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2240,
-      2287,
+      2310,
+      2357,
       3
     ],
     "type": "StdLibCall",
@@ -614,8 +614,8 @@ description: Operations executed multi-axis-robot.kcl
         ]
       },
       "sourceRange": [
-        2248,
-        2256,
+        2318,
+        2326,
         3
       ]
     }
@@ -1141,16 +1141,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          869,
-          870,
+          862,
+          863,
           4
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      841,
-      871,
+      834,
+      864,
       4
     ],
     "type": "StdLibCall",
@@ -1162,8 +1162,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        849,
-        858,
+        842,
+        851,
         4
       ]
     }
@@ -1178,8 +1178,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          899,
-          909,
+          892,
+          902,
           4
         ]
       },
@@ -1189,16 +1189,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          911,
-          916,
+          904,
+          909,
           4
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      885,
-      917,
+      878,
+      910,
       4
     ],
     "type": "StdLibCall",
@@ -1215,8 +1215,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      965,
-      987,
+      958,
+      980,
       4
     ]
   },
@@ -1234,8 +1234,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      994,
-      1016,
+      987,
+      1009,
       4
     ]
   },
@@ -1259,16 +1259,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1133,
-          1136,
+          1126,
+          1129,
           4
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1105,
-      1137,
+      1098,
+      1130,
       4
     ],
     "type": "StdLibCall",
@@ -1280,8 +1280,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1113,
-        1122,
+        1106,
+        1115,
         4
       ]
     }
@@ -1303,8 +1303,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1167,
-          1170,
+          1160,
+          1163,
           4
         ]
       },
@@ -1319,16 +1319,16 @@ description: Operations executed multi-axis-robot.kcl
           ]
         },
         "sourceRange": [
-          1186,
-          1219,
+          1179,
+          1212,
           4
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      1143,
-      1226,
+      1136,
+      1219,
       4
     ],
     "type": "StdLibCall",
@@ -1340,8 +1340,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1143,
-        1226,
+        1136,
+        1219,
         4
       ]
     }
@@ -1356,8 +1356,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1292,
-          1302,
+          1285,
+          1295,
           4
         ]
       },
@@ -1367,16 +1367,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          1304,
-          1309,
+          1297,
+          1302,
           4
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1278,
-      1310,
+      1271,
+      1303,
       4
     ],
     "type": "StdLibCall",
@@ -1393,8 +1393,27 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1358,
+      1351,
+      1373,
+      4
+    ]
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "cos",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
       1380,
+      1402,
       4
     ]
   },
@@ -1412,8 +1431,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1387,
-      1409,
+      1514,
+      1536,
       4
     ]
   },
@@ -1431,27 +1450,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1521,
       1543,
-      4
-    ]
-  },
-  {
-    "type": "UserDefinedFunctionReturn"
-  },
-  {
-    "type": "UserDefinedFunctionCall",
-    "name": "cos",
-    "functionSourceRange": [
-      0,
-      0,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      1550,
-      1572,
+      1565,
       4
     ]
   },
@@ -1475,16 +1475,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1722,
-          1725,
+          1715,
+          1718,
           4
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1694,
-      1726,
+      1687,
+      1719,
       4
     ],
     "type": "StdLibCall",
@@ -1507,8 +1507,8 @@ description: Operations executed multi-axis-robot.kcl
         ]
       },
       "sourceRange": [
-        1702,
-        1711,
+        1695,
+        1704,
         4
       ]
     }
@@ -1523,8 +1523,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1754,
-          1764,
+          1747,
+          1757,
           4
         ]
       },
@@ -1534,16 +1534,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          1766,
-          1771,
+          1759,
+          1764,
           4
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1740,
-      1772,
+      1733,
+      1765,
       4
     ],
     "type": "StdLibCall",
@@ -1560,8 +1560,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1820,
-      1842,
+      1813,
+      1835,
       4
     ]
   },
@@ -1579,8 +1579,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1849,
-      1871,
+      1842,
+      1864,
       4
     ]
   },
@@ -1604,16 +1604,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1985,
-          1989,
+          1978,
+          1982,
           4
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1957,
-      1990,
+      1950,
+      1983,
       4
     ],
     "type": "StdLibCall",
@@ -1625,8 +1625,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1965,
-        1974,
+        1958,
+        1967,
         4
       ]
     }
@@ -1648,8 +1648,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          2020,
-          2023,
+          2013,
+          2016,
           4
         ]
       },
@@ -1664,16 +1664,16 @@ description: Operations executed multi-axis-robot.kcl
           ]
         },
         "sourceRange": [
-          2039,
-          2072,
+          2032,
+          2065,
           4
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      1996,
-      2079,
+      1989,
+      2072,
       4
     ],
     "type": "StdLibCall",
@@ -1685,8 +1685,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1996,
-        2079,
+        1989,
+        2072,
         4
       ]
     }
@@ -1871,16 +1871,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          2174,
-          2182,
+          2167,
+          2175,
           4
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2160,
-      2183,
+      2153,
+      2176,
       4
     ],
     "type": "StdLibCall",
@@ -1903,16 +1903,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          2259,
-          2261,
+          2252,
+          2254,
           4
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2231,
-      2262,
+      2224,
+      2255,
       4
     ],
     "type": "StdLibCall",
@@ -1924,8 +1924,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        2239,
-        2248,
+        2232,
+        2241,
         4
       ]
     }
@@ -2180,16 +2180,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          841,
-          860,
+          837,
+          856,
           5
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      813,
-      861,
+      809,
+      857,
       5
     ],
     "type": "StdLibCall",
@@ -2201,8 +2201,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        821,
-        830,
+        817,
+        826,
         5
       ]
     }
@@ -2217,8 +2217,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          889,
-          899,
+          885,
+          895,
           5
         ]
       },
@@ -2228,16 +2228,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "START"
         },
         "sourceRange": [
-          901,
-          908,
+          897,
+          904,
           5
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      875,
-      909,
+      871,
+      905,
       5
     ],
     "type": "StdLibCall",
@@ -2260,16 +2260,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
+          1018,
           1022,
-          1026,
           5
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      994,
-      1027,
+      990,
+      1023,
       5
     ],
     "type": "StdLibCall",
@@ -2281,8 +2281,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1002,
-        1011,
+        998,
+        1007,
         5
       ]
     }
@@ -2304,8 +2304,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1057,
-          1060,
+          1053,
+          1056,
           5
         ]
       },
@@ -2320,16 +2320,16 @@ description: Operations executed multi-axis-robot.kcl
           ]
         },
         "sourceRange": [
-          1076,
-          1109,
+          1072,
+          1105,
           5
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      1033,
-      1116,
+      1029,
+      1112,
       5
     ],
     "type": "StdLibCall",
@@ -2341,8 +2341,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1033,
-        1116,
+        1029,
+        1112,
         5
       ]
     }
@@ -2357,8 +2357,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1143,
-          1153,
+          1139,
+          1149,
           5
         ]
       },
@@ -2368,16 +2368,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "START"
         },
         "sourceRange": [
-          1155,
-          1162,
+          1151,
+          1158,
           5
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1129,
-      1163,
+      1125,
+      1159,
       5
     ],
     "type": "StdLibCall",
@@ -2394,8 +2394,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1229,
-      1251,
+      1225,
+      1247,
       5
     ]
   },
@@ -2413,8 +2413,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1285,
-      1307,
+      1281,
+      1303,
       5
     ]
   },
@@ -2438,16 +2438,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1407,
-          1408,
+          1403,
+          1404,
           5
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1379,
-      1409,
+      1375,
+      1405,
       5
     ],
     "type": "StdLibCall",
@@ -2459,8 +2459,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1387,
-        1396,
+        1383,
+        1392,
         5
       ]
     }
@@ -2482,8 +2482,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1439,
-          1442,
+          1435,
+          1438,
           5
         ]
       },
@@ -2498,16 +2498,16 @@ description: Operations executed multi-axis-robot.kcl
           ]
         },
         "sourceRange": [
-          1458,
-          1491,
+          1454,
+          1487,
           5
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      1415,
-      1498,
+      1411,
+      1494,
       5
     ],
     "type": "StdLibCall",
@@ -2519,8 +2519,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1415,
-        1498,
+        1411,
+        1494,
         5
       ]
     }
@@ -2535,8 +2535,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1564,
-          1574,
+          1560,
+          1570,
           5
         ]
       },
@@ -2546,16 +2546,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          1576,
-          1581,
+          1572,
+          1577,
           5
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1550,
-      1582,
+      1546,
+      1578,
       5
     ],
     "type": "StdLibCall",
@@ -2578,16 +2578,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
+          1808,
           1812,
-          1816,
           5
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1784,
-      1817,
+      1780,
+      1813,
       5
     ],
     "type": "StdLibCall",
@@ -2622,8 +2622,8 @@ description: Operations executed multi-axis-robot.kcl
         ]
       },
       "sourceRange": [
-        1792,
-        1801,
+        1788,
+        1797,
         5
       ]
     }
@@ -2638,8 +2638,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1845,
-          1855,
+          1841,
+          1851,
           5
         ]
       },
@@ -2649,16 +2649,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          1857,
-          1862,
+          1853,
+          1858,
           5
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1831,
-      1863,
+      1827,
+      1859,
       5
     ],
     "type": "StdLibCall",
@@ -2675,8 +2675,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1937,
-      1959,
+      1933,
+      1955,
       5
     ]
   },
@@ -2694,8 +2694,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2001,
-      2023,
+      1997,
+      2019,
       5
     ]
   },
@@ -2713,8 +2713,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2139,
-      2161,
+      2135,
+      2157,
       5
     ]
   },
@@ -2732,8 +2732,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2195,
-      2217,
+      2191,
+      2213,
       5
     ]
   },
@@ -2757,16 +2757,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
+          2351,
           2355,
-          2359,
           5
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2327,
-      2360,
+      2323,
+      2356,
       5
     ],
     "type": "StdLibCall",
@@ -2789,8 +2789,8 @@ description: Operations executed multi-axis-robot.kcl
         ]
       },
       "sourceRange": [
-        2335,
-        2344,
+        2331,
+        2340,
         5
       ]
     }
@@ -2805,8 +2805,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          2388,
-          2398,
+          2384,
+          2394,
           5
         ]
       },
@@ -2816,16 +2816,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          2400,
-          2405,
+          2396,
+          2401,
           5
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2374,
-      2406,
+      2370,
+      2402,
       5
     ],
     "type": "StdLibCall",
@@ -2842,8 +2842,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2472,
-      2494,
+      2468,
+      2490,
       5
     ]
   },
@@ -2861,8 +2861,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2527,
-      2549,
+      2523,
+      2545,
       5
     ]
   },
@@ -2886,16 +2886,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          2616,
-          2617,
+          2612,
+          2613,
           5
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2588,
-      2618,
+      2584,
+      2614,
       5
     ],
     "type": "StdLibCall",
@@ -2907,8 +2907,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        2596,
-        2605,
+        2592,
+        2601,
         5
       ]
     }
@@ -3201,16 +3201,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          973,
-          992,
+          969,
+          988,
           6
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      945,
-      993,
+      941,
+      989,
       6
     ],
     "type": "StdLibCall",
@@ -3222,8 +3222,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        953,
-        962,
+        949,
+        958,
         6
       ]
     }
@@ -3238,8 +3238,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1021,
-          1031,
+          1017,
+          1027,
           6
         ]
       },
@@ -3249,16 +3249,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          1033,
-          1038,
+          1029,
+          1034,
           6
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1007,
-      1039,
+      1003,
+      1035,
       6
     ],
     "type": "StdLibCall",
@@ -3275,8 +3275,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1105,
-      1127,
+      1101,
+      1123,
       6
     ]
   },
@@ -3294,8 +3294,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1160,
-      1182,
+      1156,
+      1178,
       6
     ]
   },
@@ -3319,16 +3319,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
+          1284,
           1288,
-          1292,
           6
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1260,
-      1293,
+      1256,
+      1289,
       6
     ],
     "type": "StdLibCall",
@@ -3340,8 +3340,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1268,
-        1277,
+        1264,
+        1273,
         6
       ]
     }
@@ -3363,8 +3363,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1323,
-          1326,
+          1319,
+          1322,
           6
         ]
       },
@@ -3379,16 +3379,16 @@ description: Operations executed multi-axis-robot.kcl
           ]
         },
         "sourceRange": [
-          1342,
-          1375,
+          1338,
+          1371,
           6
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      1299,
-      1382,
+      1295,
+      1378,
       6
     ],
     "type": "StdLibCall",
@@ -3400,8 +3400,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        1299,
-        1382,
+        1295,
+        1378,
         6
       ]
     }
@@ -3416,8 +3416,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          1447,
-          1457,
+          1443,
+          1453,
           6
         ]
       },
@@ -3427,16 +3427,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          1459,
-          1464,
+          1455,
+          1460,
           6
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1433,
-      1465,
+      1429,
+      1461,
       6
     ],
     "type": "StdLibCall",
@@ -3453,8 +3453,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1537,
-      1559,
+      1533,
+      1555,
       6
     ]
   },
@@ -3472,8 +3472,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1600,
-      1622,
+      1596,
+      1618,
       6
     ]
   },
@@ -3491,8 +3491,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1736,
-      1758,
+      1732,
+      1754,
       6
     ]
   },
@@ -3510,8 +3510,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1791,
-      1813,
+      1787,
+      1809,
       6
     ]
   },
@@ -3535,16 +3535,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
+          1947,
           1951,
-          1955,
           6
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1923,
-      1956,
+      1919,
+      1952,
       6
     ],
     "type": "StdLibCall",
@@ -3579,8 +3579,8 @@ description: Operations executed multi-axis-robot.kcl
         ]
       },
       "sourceRange": [
-        1931,
-        1940,
+        1927,
+        1936,
         6
       ]
     }
@@ -3595,8 +3595,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          2053,
-          2063,
+          2049,
+          2059,
           6
         ]
       },
@@ -3606,16 +3606,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "START"
         },
         "sourceRange": [
-          2065,
-          2072,
+          2061,
+          2068,
           6
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2039,
-      2073,
+      2035,
+      2069,
       6
     ],
     "type": "StdLibCall",
@@ -3632,8 +3632,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2141,
-      2163,
+      2137,
+      2159,
       6
     ]
   },
@@ -3651,8 +3651,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2187,
-      2210,
+      2183,
+      2206,
       6
     ]
   },
@@ -3670,8 +3670,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2244,
-      2266,
+      2240,
+      2262,
       6
     ]
   },
@@ -3689,8 +3689,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2288,
-      2311,
+      2284,
+      2307,
       6
     ]
   },
@@ -3714,16 +3714,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
+          2402,
           2406,
-          2410,
           6
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2378,
-      2411,
+      2374,
+      2407,
       6
     ],
     "type": "StdLibCall",
@@ -3735,8 +3735,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        2386,
-        2395,
+        2382,
+        2391,
         6
       ]
     }
@@ -3751,8 +3751,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          2439,
-          2449,
+          2435,
+          2445,
           6
         ]
       },
@@ -3762,16 +3762,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "END"
         },
         "sourceRange": [
-          2451,
-          2456,
+          2447,
+          2452,
           6
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2425,
-      2457,
+      2421,
+      2453,
       6
     ],
     "type": "StdLibCall",
@@ -3788,8 +3788,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2523,
-      2545,
+      2519,
+      2541,
       6
     ]
   },
@@ -3807,8 +3807,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2567,
-      2590,
+      2563,
+      2586,
       6
     ]
   },
@@ -3826,8 +3826,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2623,
-      2645,
+      2619,
+      2641,
       6
     ]
   },
@@ -3845,8 +3845,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2667,
-      2690,
+      2663,
+      2686,
       6
     ]
   },
@@ -3870,16 +3870,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
+          2785,
           2789,
-          2793,
           6
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2761,
-      2794,
+      2757,
+      2790,
       6
     ],
     "type": "StdLibCall",
@@ -3891,8 +3891,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        2769,
-        2778,
+        2765,
+        2774,
         6
       ]
     }
@@ -3907,8 +3907,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          2874,
-          2884,
+          2870,
+          2880,
           6
         ]
       },
@@ -3918,16 +3918,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "START"
         },
         "sourceRange": [
-          2886,
-          2893,
+          2882,
+          2889,
           6
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2860,
-      2894,
+      2856,
+      2890,
       6
     ],
     "type": "StdLibCall",
@@ -3950,16 +3950,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          2981,
-          2986,
+          2977,
+          2982,
           6
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2953,
-      2987,
+      2949,
+      2983,
       6
     ],
     "type": "StdLibCall",
@@ -3971,8 +3971,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        2961,
-        2970,
+        2957,
+        2966,
         6
       ]
     }
@@ -3987,8 +3987,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          3042,
-          3052,
+          3038,
+          3048,
           6
         ]
       },
@@ -3998,16 +3998,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "START"
         },
         "sourceRange": [
-          3054,
-          3061,
+          3050,
+          3057,
           6
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3028,
-      3062,
+      3024,
+      3058,
       6
     ],
     "type": "StdLibCall",
@@ -4024,8 +4024,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3117,
-      3139,
+      3113,
+      3135,
       6
     ]
   },
@@ -4043,8 +4043,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3161,
-      3184,
+      3157,
+      3180,
       6
     ]
   },
@@ -4062,8 +4062,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3215,
-      3237,
+      3211,
+      3233,
       6
     ]
   },
@@ -4081,8 +4081,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3259,
-      3282,
+      3255,
+      3278,
       6
     ]
   },
@@ -4106,16 +4106,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          4082,
-          4086,
+          4058,
+          4062,
           6
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      4054,
-      4087,
+      4030,
+      4063,
       6
     ],
     "type": "StdLibCall",
@@ -4127,8 +4127,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        4062,
-        4071,
+        4038,
+        4047,
         6
       ]
     }
@@ -4143,8 +4143,8 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          4142,
-          4152,
+          4118,
+          4128,
           6
         ]
       },
@@ -4154,16 +4154,16 @@ description: Operations executed multi-axis-robot.kcl
           "value": "START"
         },
         "sourceRange": [
-          4154,
-          4161,
+          4130,
+          4137,
           6
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      4128,
-      4162,
+      4104,
+      4138,
       6
     ],
     "type": "StdLibCall",
@@ -4180,8 +4180,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      4217,
-      4239,
+      4193,
+      4215,
       6
     ]
   },
@@ -4199,8 +4199,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      4261,
-      4284,
+      4237,
+      4260,
       6
     ]
   },
@@ -4218,8 +4218,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      4315,
-      4337,
+      4291,
+      4313,
       6
     ]
   },
@@ -4237,8 +4237,8 @@ description: Operations executed multi-axis-robot.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      4359,
-      4382,
+      4335,
+      4358,
       6
     ]
   },
@@ -4262,16 +4262,16 @@ description: Operations executed multi-axis-robot.kcl
           }
         },
         "sourceRange": [
-          5184,
-          5188,
+          5140,
+          5144,
           6
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      5156,
-      5189,
+      5112,
+      5145,
       6
     ],
     "type": "StdLibCall",
@@ -4283,8 +4283,8 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        5164,
-        5173,
+        5120,
+        5129,
         6
       ]
     }

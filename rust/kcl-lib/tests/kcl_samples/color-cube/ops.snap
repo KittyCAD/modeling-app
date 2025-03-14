@@ -224,15 +224,15 @@ description: Operations executed color-cube.kcl
     "name": "sketchRectangle",
     "functionSourceRange": [
       737,
-      1309,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
-    "sourceRange": [
-      1343,
       1379,
       0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      1413,
+      1449,
+      0
     ]
   },
   {
@@ -252,16 +252,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1204,
-          1217,
+          1274,
+          1287,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "type": "StdLibCall",
@@ -273,8 +273,8 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1192,
-        1193,
+        1262,
+        1263,
         0
       ]
     }
@@ -287,14 +287,14 @@ description: Operations executed color-cube.kcl
     "name": "sketchRectangle",
     "functionSourceRange": [
       737,
-      1309,
+      1379,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1380,
-      1418,
+      1450,
+      1488,
       0
     ]
   },
@@ -315,16 +315,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1204,
-          1217,
+          1274,
+          1287,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "type": "StdLibCall",
@@ -336,8 +336,8 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1192,
-        1193,
+        1262,
+        1263,
         0
       ]
     }
@@ -350,14 +350,14 @@ description: Operations executed color-cube.kcl
     "name": "sketchRectangle",
     "functionSourceRange": [
       737,
-      1309,
+      1379,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1419,
-      1456,
+      1489,
+      1526,
       0
     ]
   },
@@ -378,16 +378,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1204,
-          1217,
+          1274,
+          1287,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "type": "StdLibCall",
@@ -399,8 +399,8 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1192,
-        1193,
+        1262,
+        1263,
         0
       ]
     }
@@ -413,14 +413,14 @@ description: Operations executed color-cube.kcl
     "name": "sketchRectangle",
     "functionSourceRange": [
       737,
-      1309,
+      1379,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1457,
-      1492,
+      1527,
+      1562,
       0
     ]
   },
@@ -441,16 +441,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1204,
-          1217,
+          1274,
+          1287,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "type": "StdLibCall",
@@ -462,8 +462,8 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1192,
-        1193,
+        1262,
+        1263,
         0
       ]
     }
@@ -476,14 +476,14 @@ description: Operations executed color-cube.kcl
     "name": "sketchRectangle",
     "functionSourceRange": [
       737,
-      1309,
+      1379,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1493,
-      1529,
+      1563,
+      1599,
       0
     ]
   },
@@ -504,16 +504,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1204,
-          1217,
+          1274,
+          1287,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "type": "StdLibCall",
@@ -525,8 +525,8 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1192,
-        1193,
+        1262,
+        1263,
         0
       ]
     }
@@ -539,14 +539,14 @@ description: Operations executed color-cube.kcl
     "name": "sketchRectangle",
     "functionSourceRange": [
       737,
-      1309,
+      1379,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1530,
-      1568,
+      1600,
+      1638,
       0
     ]
   },
@@ -567,16 +567,16 @@ description: Operations executed color-cube.kcl
           }
         },
         "sourceRange": [
-          1204,
-          1217,
+          1274,
+          1287,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1184,
-      1218,
+      1254,
+      1288,
       0
     ],
     "type": "StdLibCall",
@@ -588,8 +588,8 @@ description: Operations executed color-cube.kcl
         }
       },
       "sourceRange": [
-        1192,
-        1193,
+        1262,
+        1263,
         0
       ]
     }

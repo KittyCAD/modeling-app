@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact graph flowchart artifact_graph_example_code_no_3d.kcl
 extension: md
 snapshot_kind: binary

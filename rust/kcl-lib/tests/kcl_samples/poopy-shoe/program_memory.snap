@@ -631,12 +631,12 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [
             367,
-            424,
+            430,
             0
           ],
           "tag": {
-            "end": 423,
-            "start": 417,
+            "end": 429,
+            "start": 423,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -646,19 +646,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            430,
-            457,
-            0
-          ],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [
+            436,
             463,
-            493,
             0
           ],
           "tag": null,
@@ -668,8 +657,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
+            469,
             499,
-            534,
             0
           ],
           "tag": null,
@@ -679,8 +668,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
+            505,
             540,
-            632,
             0
           ],
           "tag": null,
@@ -690,8 +679,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            638,
-            668,
+            546,
+            641,
             0
           ],
           "tag": null,
@@ -701,8 +690,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            674,
-            732,
+            647,
+            677,
             0
           ],
           "tag": null,
@@ -712,8 +701,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            738,
-            765,
+            683,
+            741,
             0
           ],
           "tag": null,
@@ -723,8 +712,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            771,
-            793,
+            747,
+            774,
             0
           ],
           "tag": null,
@@ -734,8 +723,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            799,
-            834,
+            780,
+            802,
             0
           ],
           "tag": null,
@@ -745,8 +734,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            840,
-            886,
+            808,
+            843,
             0
           ],
           "tag": null,
@@ -756,8 +745,19 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            892,
-            899,
+            849,
+            895,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            901,
+            908,
             0
           ],
           "tag": null,
@@ -796,7 +796,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "id": "[uuid]",
               "sourceRange": [
                 367,
-                424,
+                430,
                 0
               ]
             },
@@ -805,8 +805,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "end": 423,
-              "start": 417,
+              "end": 429,
+              "start": 423,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -823,31 +823,31 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                430,
-                457,
-                0
-              ]
-            },
-            "from": [
-              3.0,
-              2.4898
-            ],
-            "tag": null,
-            "to": [
-              3.0,
-              5.125
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
+                436,
                 463,
-                493,
+                0
+              ]
+            },
+            "from": [
+              3.0,
+              2.4898
+            ],
+            "tag": null,
+            "to": [
+              3.0,
+              5.125
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                469,
+                499,
                 0
               ]
             },
@@ -869,31 +869,31 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                499,
-                534,
-                0
-              ]
-            },
-            "from": [
-              2.875,
-              5.125
-            ],
-            "tag": null,
-            "to": [
-              2.875,
-              2.4898
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
+                505,
                 540,
-                632,
+                0
+              ]
+            },
+            "from": [
+              2.875,
+              5.125
+            ],
+            "tag": null,
+            "to": [
+              2.875,
+              2.4898
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                546,
+                641,
                 0
               ]
             },
@@ -915,8 +915,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                638,
-                668,
+                647,
+                677,
                 0
               ]
             },
@@ -938,8 +938,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                674,
-                732,
+                683,
+                741,
                 0
               ]
             },
@@ -961,8 +961,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                738,
-                765,
+                747,
+                774,
                 0
               ]
             },
@@ -984,8 +984,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                771,
-                793,
+                780,
+                802,
                 0
               ]
             },
@@ -1007,8 +1007,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                799,
-                834,
+                808,
+                843,
                 0
               ]
             },
@@ -1030,8 +1030,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                840,
-                886,
+                849,
+                895,
                 0
               ]
             },
@@ -1053,8 +1053,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                892,
-                899,
+                901,
+                908,
                 0
               ]
             },
@@ -1137,7 +1137,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     367,
-                    424,
+                    430,
                     0
                   ]
                 },
@@ -1146,8 +1146,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 423,
-                  "start": 417,
+                  "end": 429,
+                  "start": 423,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1165,12 +1165,12 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   367,
-                  424,
+                  430,
                   0
                 ],
                 "tag": {
-                  "end": 423,
-                  "start": 417,
+                  "end": 429,
+                  "start": 423,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1206,7 +1206,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [
             367,
-            424,
+            430,
             0
           ]
         },
@@ -1215,8 +1215,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           0.0
         ],
         "tag": {
-          "end": 423,
-          "start": 417,
+          "end": 429,
+          "start": 423,
           "type": "TagDeclarator",
           "value": "seg01"
         },
@@ -1234,12 +1234,12 @@ description: Variables in memory after executing poopy-shoe.kcl
         "id": "[uuid]",
         "sourceRange": [
           367,
-          424,
+          430,
           0
         ],
         "tag": {
-          "end": 423,
-          "start": 417,
+          "end": 429,
+          "start": 423,
           "type": "TagDeclarator",
           "value": "seg01"
         },
@@ -1259,8 +1259,8 @@ description: Variables in memory after executing poopy-shoe.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            1168,
-            1225,
+            1177,
+            1240,
             0
           ]
         },
@@ -1269,8 +1269,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           0.0
         ],
         "tag": {
-          "end": 1224,
-          "start": 1218,
+          "end": 1239,
+          "start": 1233,
           "type": "TagDeclarator",
           "value": "seg02"
         },
@@ -1287,13 +1287,13 @@ description: Variables in memory after executing poopy-shoe.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          1168,
-          1225,
+          1177,
+          1240,
           0
         ],
         "tag": {
-          "end": 1224,
-          "start": 1218,
+          "end": 1239,
+          "start": 1233,
           "type": "TagDeclarator",
           "value": "seg02"
         },
@@ -1313,8 +1313,8 @@ description: Variables in memory after executing poopy-shoe.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            3511,
-            3547,
+            3532,
+            3568,
             0
           ]
         },
@@ -1323,8 +1323,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           1.0
         ],
         "tag": {
-          "end": 3546,
-          "start": 3540,
+          "end": 3567,
+          "start": 3561,
           "type": "TagDeclarator",
           "value": "seg03"
         },
@@ -1341,13 +1341,13 @@ description: Variables in memory after executing poopy-shoe.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          3511,
-          3547,
+          3532,
+          3568,
           0
         ],
         "tag": {
-          "end": 3546,
-          "start": 3540,
+          "end": 3567,
+          "start": 3561,
           "type": "TagDeclarator",
           "value": "seg03"
         },
@@ -1367,8 +1367,8 @@ description: Variables in memory after executing poopy-shoe.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2882,
-            2901,
+            2903,
+            2922,
             0
           ]
         },
@@ -1377,8 +1377,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           0.0
         ],
         "tag": {
-          "end": 2900,
-          "start": 2894,
+          "end": 2921,
+          "start": 2915,
           "type": "TagDeclarator",
           "value": "seg04"
         },
@@ -1395,13 +1395,13 @@ description: Variables in memory after executing poopy-shoe.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          2882,
-          2901,
+          2903,
+          2922,
           0
         ],
         "tag": {
-          "end": 2900,
-          "start": 2894,
+          "end": 2921,
+          "start": 2915,
           "type": "TagDeclarator",
           "value": "seg04"
         },
@@ -1443,7 +1443,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "id": "[uuid]",
             "sourceRange": [
               367,
-              424,
+              430,
               0
             ]
           },
@@ -1452,8 +1452,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0
           ],
           "tag": {
-            "end": 423,
-            "start": 417,
+            "end": 429,
+            "start": 423,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1470,31 +1470,31 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              430,
-              457,
-              0
-            ]
-          },
-          "from": [
-            3.0,
-            2.4898
-          ],
-          "tag": null,
-          "to": [
-            3.0,
-            5.125
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": [
+              436,
               463,
-              493,
+              0
+            ]
+          },
+          "from": [
+            3.0,
+            2.4898
+          ],
+          "tag": null,
+          "to": [
+            3.0,
+            5.125
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              469,
+              499,
               0
             ]
           },
@@ -1516,31 +1516,31 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              499,
-              534,
-              0
-            ]
-          },
-          "from": [
-            2.875,
-            5.125
-          ],
-          "tag": null,
-          "to": [
-            2.875,
-            2.4898
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": [
+              505,
               540,
-              632,
+              0
+            ]
+          },
+          "from": [
+            2.875,
+            5.125
+          ],
+          "tag": null,
+          "to": [
+            2.875,
+            2.4898
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Inches"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": [
+              546,
+              641,
               0
             ]
           },
@@ -1562,8 +1562,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              638,
-              668,
+              647,
+              677,
               0
             ]
           },
@@ -1585,8 +1585,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              674,
-              732,
+              683,
+              741,
               0
             ]
           },
@@ -1608,8 +1608,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              738,
-              765,
+              747,
+              774,
               0
             ]
           },
@@ -1631,8 +1631,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              771,
-              793,
+              780,
+              802,
               0
             ]
           },
@@ -1654,8 +1654,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              799,
-              834,
+              808,
+              843,
               0
             ]
           },
@@ -1677,8 +1677,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              840,
-              886,
+              849,
+              895,
               0
             ]
           },
@@ -1700,8 +1700,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              892,
-              899,
+              901,
+              908,
               0
             ]
           },
@@ -1784,7 +1784,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   367,
-                  424,
+                  430,
                   0
                 ]
               },
@@ -1793,8 +1793,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 0.0
               ],
               "tag": {
-                "end": 423,
-                "start": 417,
+                "end": 429,
+                "start": 423,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1812,12 +1812,12 @@ description: Variables in memory after executing poopy-shoe.kcl
               "id": "[uuid]",
               "sourceRange": [
                 367,
-                424,
+                430,
                 0
               ],
               "tag": {
-                "end": 423,
-                "start": 417,
+                "end": 429,
+                "start": 423,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1844,8 +1844,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1129,
-            1162,
+            1138,
+            1171,
             0
           ],
           "tag": null,
@@ -1855,13 +1855,13 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1168,
-            1225,
+            1177,
+            1240,
             0
           ],
           "tag": {
-            "end": 1224,
-            "start": 1218,
+            "end": 1239,
+            "start": 1233,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1871,8 +1871,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1231,
-            1258,
+            1246,
+            1273,
             0
           ],
           "tag": null,
@@ -1882,8 +1882,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1264,
-            1294,
+            1279,
+            1309,
             0
           ],
           "tag": null,
@@ -1893,8 +1893,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1300,
-            1335,
+            1315,
+            1350,
             0
           ],
           "tag": null,
@@ -1904,8 +1904,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1341,
-            1433,
+            1356,
+            1451,
             0
           ],
           "tag": null,
@@ -1915,8 +1915,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1439,
-            1469,
+            1457,
+            1487,
             0
           ],
           "tag": null,
@@ -1926,8 +1926,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1475,
-            1533,
+            1493,
+            1551,
             0
           ],
           "tag": null,
@@ -1937,8 +1937,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1539,
-            1566,
+            1557,
+            1584,
             0
           ],
           "tag": null,
@@ -1948,8 +1948,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1572,
-            1594,
+            1590,
+            1612,
             0
           ],
           "tag": null,
@@ -1959,8 +1959,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1600,
-            1635,
+            1618,
+            1653,
             0
           ],
           "tag": null,
@@ -1970,8 +1970,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1641,
-            1687,
+            1659,
+            1705,
             0
           ],
           "tag": null,
@@ -1981,8 +1981,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1693,
-            1700,
+            1711,
+            1718,
             0
           ],
           "tag": null,
@@ -1997,8 +1997,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1129,
-                1162,
+                1138,
+                1171,
                 0
               ]
             },
@@ -2020,8 +2020,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1168,
-                1225,
+                1177,
+                1240,
                 0
               ]
             },
@@ -2030,8 +2030,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "end": 1224,
-              "start": 1218,
+              "end": 1239,
+              "start": 1233,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2048,8 +2048,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1231,
-                1258,
+                1246,
+                1273,
                 0
               ]
             },
@@ -2071,8 +2071,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1264,
-                1294,
+                1279,
+                1309,
                 0
               ]
             },
@@ -2094,8 +2094,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1300,
-                1335,
+                1315,
+                1350,
                 0
               ]
             },
@@ -2117,8 +2117,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1341,
-                1433,
+                1356,
+                1451,
                 0
               ]
             },
@@ -2140,8 +2140,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1439,
-                1469,
+                1457,
+                1487,
                 0
               ]
             },
@@ -2163,8 +2163,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1475,
-                1533,
+                1493,
+                1551,
                 0
               ]
             },
@@ -2186,8 +2186,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1539,
-                1566,
+                1557,
+                1584,
                 0
               ]
             },
@@ -2209,8 +2209,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1572,
-                1594,
+                1590,
+                1612,
                 0
               ]
             },
@@ -2232,8 +2232,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1600,
-                1635,
+                1618,
+                1653,
                 0
               ]
             },
@@ -2255,8 +2255,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1641,
-                1687,
+                1659,
+                1705,
                 0
               ]
             },
@@ -2278,8 +2278,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1693,
-                1700,
+                1711,
+                1718,
                 0
               ]
             },
@@ -2343,8 +2343,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1085,
-              1123,
+              1094,
+              1132,
               0
             ]
           }
@@ -2361,8 +2361,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1168,
-                    1225,
+                    1177,
+                    1240,
                     0
                   ]
                 },
@@ -2371,8 +2371,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 1224,
-                  "start": 1218,
+                  "end": 1239,
+                  "start": 1233,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2389,13 +2389,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1168,
-                  1225,
+                  1177,
+                  1240,
                   0
                 ],
                 "tag": {
-                  "end": 1224,
-                  "start": 1218,
+                  "end": 1239,
+                  "start": 1233,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2429,8 +2429,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2063,
-            2113,
+            2081,
+            2131,
             0
           ],
           "tag": null,
@@ -2440,8 +2440,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2119,
-            2159,
+            2137,
+            2177,
             0
           ],
           "tag": null,
@@ -2451,8 +2451,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2165,
-            2172,
+            2183,
+            2190,
             0
           ],
           "tag": null,
@@ -2467,8 +2467,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2063,
-                2113,
+                2081,
+                2131,
                 0
               ]
             },
@@ -2495,8 +2495,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2119,
-                2159,
+                2137,
+                2177,
                 0
               ]
             },
@@ -2518,8 +2518,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2165,
-                2172,
+                2183,
+                2190,
                 0
               ]
             },
@@ -2583,8 +2583,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2032,
-              2057,
+              2050,
+              2075,
               0
             ]
           }
@@ -2614,8 +2614,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2291,
-            2318,
+            2309,
+            2336,
             0
           ],
           "tag": null,
@@ -2625,8 +2625,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2324,
-            2358,
+            2342,
+            2376,
             0
           ],
           "tag": null,
@@ -2636,8 +2636,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2364,
-            2399,
+            2382,
+            2417,
             0
           ],
           "tag": null,
@@ -2647,8 +2647,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2405,
-            2505,
+            2423,
+            2526,
             0
           ],
           "tag": null,
@@ -2658,8 +2658,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2511,
-            2540,
+            2532,
+            2561,
             0
           ],
           "tag": null,
@@ -2669,8 +2669,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2546,
-            2599,
+            2567,
+            2620,
             0
           ],
           "tag": null,
@@ -2680,8 +2680,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2605,
-            2632,
+            2626,
+            2653,
             0
           ],
           "tag": null,
@@ -2691,8 +2691,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2638,
-            2667,
+            2659,
+            2688,
             0
           ],
           "tag": null,
@@ -2702,8 +2702,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2673,
-            2797,
+            2694,
+            2818,
             0
           ],
           "tag": null,
@@ -2713,8 +2713,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2803,
-            2848,
+            2824,
+            2869,
             0
           ],
           "tag": null,
@@ -2724,8 +2724,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2854,
-            2876,
+            2875,
+            2897,
             0
           ],
           "tag": null,
@@ -2735,13 +2735,13 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2882,
-            2901,
+            2903,
+            2922,
             0
           ],
           "tag": {
-            "end": 2900,
-            "start": 2894,
+            "end": 2921,
+            "start": 2915,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2756,8 +2756,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2291,
-                2318,
+                2309,
+                2336,
                 0
               ]
             },
@@ -2779,8 +2779,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2324,
-                2358,
+                2342,
+                2376,
                 0
               ]
             },
@@ -2802,8 +2802,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2364,
-                2399,
+                2382,
+                2417,
                 0
               ]
             },
@@ -2825,8 +2825,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2405,
-                2505,
+                2423,
+                2526,
                 0
               ]
             },
@@ -2848,8 +2848,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2511,
-                2540,
+                2532,
+                2561,
                 0
               ]
             },
@@ -2871,8 +2871,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2546,
-                2599,
+                2567,
+                2620,
                 0
               ]
             },
@@ -2894,8 +2894,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2605,
-                2632,
+                2626,
+                2653,
                 0
               ]
             },
@@ -2917,8 +2917,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2638,
-                2667,
+                2659,
+                2688,
                 0
               ]
             },
@@ -2940,8 +2940,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2673,
-                2797,
+                2694,
+                2818,
                 0
               ]
             },
@@ -2968,8 +2968,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2803,
-                2848,
+                2824,
+                2869,
                 0
               ]
             },
@@ -2996,8 +2996,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2854,
-                2876,
+                2875,
+                2897,
                 0
               ]
             },
@@ -3019,8 +3019,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2882,
-                2901,
+                2903,
+                2922,
                 0
               ]
             },
@@ -3029,8 +3029,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "end": 2900,
-              "start": 2894,
+              "end": 2921,
+              "start": 2915,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -3073,8 +3073,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1129,
-                  1162,
+                  1138,
+                  1171,
                   0
                 ],
                 "tag": null,
@@ -3084,13 +3084,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1168,
-                  1225,
+                  1177,
+                  1240,
                   0
                 ],
                 "tag": {
-                  "end": 1224,
-                  "start": 1218,
+                  "end": 1239,
+                  "start": 1233,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -3100,8 +3100,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1231,
-                  1258,
+                  1246,
+                  1273,
                   0
                 ],
                 "tag": null,
@@ -3111,8 +3111,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1264,
-                  1294,
+                  1279,
+                  1309,
                   0
                 ],
                 "tag": null,
@@ -3122,8 +3122,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1300,
-                  1335,
+                  1315,
+                  1350,
                   0
                 ],
                 "tag": null,
@@ -3133,8 +3133,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1341,
-                  1433,
+                  1356,
+                  1451,
                   0
                 ],
                 "tag": null,
@@ -3144,8 +3144,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1439,
-                  1469,
+                  1457,
+                  1487,
                   0
                 ],
                 "tag": null,
@@ -3155,8 +3155,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1475,
-                  1533,
+                  1493,
+                  1551,
                   0
                 ],
                 "tag": null,
@@ -3166,8 +3166,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1539,
-                  1566,
+                  1557,
+                  1584,
                   0
                 ],
                 "tag": null,
@@ -3177,8 +3177,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1572,
-                  1594,
+                  1590,
+                  1612,
                   0
                 ],
                 "tag": null,
@@ -3188,8 +3188,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1600,
-                  1635,
+                  1618,
+                  1653,
                   0
                 ],
                 "tag": null,
@@ -3199,8 +3199,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1641,
-                  1687,
+                  1659,
+                  1705,
                   0
                 ],
                 "tag": null,
@@ -3210,8 +3210,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1693,
-                  1700,
+                  1711,
+                  1718,
                   0
                 ],
                 "tag": null,
@@ -3226,8 +3226,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1129,
-                      1162,
+                      1138,
+                      1171,
                       0
                     ]
                   },
@@ -3249,8 +3249,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1168,
-                      1225,
+                      1177,
+                      1240,
                       0
                     ]
                   },
@@ -3259,8 +3259,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 1224,
-                    "start": 1218,
+                    "end": 1239,
+                    "start": 1233,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -3277,8 +3277,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1231,
-                      1258,
+                      1246,
+                      1273,
                       0
                     ]
                   },
@@ -3300,8 +3300,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1264,
-                      1294,
+                      1279,
+                      1309,
                       0
                     ]
                   },
@@ -3323,8 +3323,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1300,
-                      1335,
+                      1315,
+                      1350,
                       0
                     ]
                   },
@@ -3346,8 +3346,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1341,
-                      1433,
+                      1356,
+                      1451,
                       0
                     ]
                   },
@@ -3369,8 +3369,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1439,
-                      1469,
+                      1457,
+                      1487,
                       0
                     ]
                   },
@@ -3392,8 +3392,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1475,
-                      1533,
+                      1493,
+                      1551,
                       0
                     ]
                   },
@@ -3415,8 +3415,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1539,
-                      1566,
+                      1557,
+                      1584,
                       0
                     ]
                   },
@@ -3438,8 +3438,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1572,
-                      1594,
+                      1590,
+                      1612,
                       0
                     ]
                   },
@@ -3461,8 +3461,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1600,
-                      1635,
+                      1618,
+                      1653,
                       0
                     ]
                   },
@@ -3484,8 +3484,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1641,
-                      1687,
+                      1659,
+                      1705,
                       0
                     ]
                   },
@@ -3507,8 +3507,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      1693,
-                      1700,
+                      1711,
+                      1718,
                       0
                     ]
                   },
@@ -3572,8 +3572,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1085,
-                    1123,
+                    1094,
+                    1132,
                     0
                   ]
                 }
@@ -3590,8 +3590,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          1168,
-                          1225,
+                          1177,
+                          1240,
                           0
                         ]
                       },
@@ -3600,8 +3600,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         0.0
                       ],
                       "tag": {
-                        "end": 1224,
-                        "start": 1218,
+                        "end": 1239,
+                        "start": 1233,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3618,13 +3618,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1168,
-                        1225,
+                        1177,
+                        1240,
                         0
                       ],
                       "tag": {
-                        "end": 1224,
-                        "start": 1218,
+                        "end": 1239,
+                        "start": 1233,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3666,8 +3666,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2260,
-              2285,
+              2278,
+              2303,
               0
             ]
           }
@@ -3684,8 +3684,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2882,
-                    2901,
+                    2903,
+                    2922,
                     0
                   ]
                 },
@@ -3694,8 +3694,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 2900,
-                  "start": 2894,
+                  "end": 2921,
+                  "start": 2915,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -3712,13 +3712,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2882,
-                  2901,
+                  2903,
+                  2922,
                   0
                 ],
                 "tag": {
-                  "end": 2900,
-                  "start": 2894,
+                  "end": 2921,
+                  "start": 2915,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -3752,8 +3752,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3260,
-            3287,
+            3281,
+            3308,
             0
           ],
           "tag": null,
@@ -3763,8 +3763,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3293,
-            3324,
+            3314,
+            3345,
             0
           ],
           "tag": null,
@@ -3774,8 +3774,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3330,
-            3454,
+            3351,
+            3475,
             0
           ],
           "tag": null,
@@ -3785,8 +3785,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3460,
-            3505,
+            3481,
+            3526,
             0
           ],
           "tag": null,
@@ -3796,13 +3796,13 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3511,
-            3547,
+            3532,
+            3568,
             0
           ],
           "tag": {
-            "end": 3546,
-            "start": 3540,
+            "end": 3567,
+            "start": 3561,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -3812,8 +3812,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3553,
-            3560,
+            3574,
+            3581,
             0
           ],
           "tag": null,
@@ -3828,8 +3828,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3260,
-                3287,
+                3281,
+                3308,
                 0
               ]
             },
@@ -3851,8 +3851,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3293,
-                3324,
+                3314,
+                3345,
                 0
               ]
             },
@@ -3874,8 +3874,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3330,
-                3454,
+                3351,
+                3475,
                 0
               ]
             },
@@ -3902,8 +3902,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3460,
-                3505,
+                3481,
+                3526,
                 0
               ]
             },
@@ -3930,8 +3930,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3511,
-                3547,
+                3532,
+                3568,
                 0
               ]
             },
@@ -3940,8 +3940,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               1.0
             ],
             "tag": {
-              "end": 3546,
-              "start": 3540,
+              "end": 3567,
+              "start": 3561,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -3958,8 +3958,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3553,
-                3560,
+                3574,
+                3581,
                 0
               ]
             },
@@ -4023,8 +4023,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3229,
-              3254,
+              3250,
+              3275,
               0
             ]
           }
@@ -4041,8 +4041,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    3511,
-                    3547,
+                    3532,
+                    3568,
                     0
                   ]
                 },
@@ -4051,8 +4051,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   1.0
                 ],
                 "tag": {
-                  "end": 3546,
-                  "start": 3540,
+                  "end": 3567,
+                  "start": 3561,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -4069,13 +4069,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  3511,
-                  3547,
+                  3532,
+                  3568,
                   0
                 ],
                 "tag": {
-                  "end": 3546,
-                  "start": 3540,
+                  "end": 3567,
+                  "start": 3561,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -4109,8 +4109,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3704,
-            3736,
+            3725,
+            3757,
             0
           ],
           "tag": null,
@@ -4120,8 +4120,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3742,
-            3769,
+            3763,
+            3790,
             0
           ],
           "tag": null,
@@ -4131,8 +4131,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3775,
-            3797,
+            3796,
+            3818,
             0
           ],
           "tag": null,
@@ -4142,8 +4142,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3803,
-            3810,
+            3824,
+            3831,
             0
           ],
           "tag": null,
@@ -4158,8 +4158,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3704,
-                3736,
+                3725,
+                3757,
                 0
               ]
             },
@@ -4181,8 +4181,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3742,
-                3769,
+                3763,
+                3790,
                 0
               ]
             },
@@ -4204,8 +4204,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3775,
-                3797,
+                3796,
+                3818,
                 0
               ]
             },
@@ -4227,8 +4227,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3803,
-                3810,
+                3824,
+                3831,
                 0
               ]
             },
@@ -4276,8 +4276,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  3260,
-                  3287,
+                  3281,
+                  3308,
                   0
                 ],
                 "tag": null,
@@ -4287,8 +4287,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  3293,
-                  3324,
+                  3314,
+                  3345,
                   0
                 ],
                 "tag": null,
@@ -4298,8 +4298,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  3330,
-                  3454,
+                  3351,
+                  3475,
                   0
                 ],
                 "tag": null,
@@ -4309,8 +4309,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  3460,
-                  3505,
+                  3481,
+                  3526,
                   0
                 ],
                 "tag": null,
@@ -4320,13 +4320,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  3511,
-                  3547,
+                  3532,
+                  3568,
                   0
                 ],
                 "tag": {
-                  "end": 3546,
-                  "start": 3540,
+                  "end": 3567,
+                  "start": 3561,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -4336,8 +4336,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  3553,
-                  3560,
+                  3574,
+                  3581,
                   0
                 ],
                 "tag": null,
@@ -4352,8 +4352,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      3260,
-                      3287,
+                      3281,
+                      3308,
                       0
                     ]
                   },
@@ -4375,8 +4375,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      3293,
-                      3324,
+                      3314,
+                      3345,
                       0
                     ]
                   },
@@ -4398,8 +4398,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      3330,
-                      3454,
+                      3351,
+                      3475,
                       0
                     ]
                   },
@@ -4426,8 +4426,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      3460,
-                      3505,
+                      3481,
+                      3526,
                       0
                     ]
                   },
@@ -4454,8 +4454,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      3511,
-                      3547,
+                      3532,
+                      3568,
                       0
                     ]
                   },
@@ -4464,8 +4464,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                     1.0
                   ],
                   "tag": {
-                    "end": 3546,
-                    "start": 3540,
+                    "end": 3567,
+                    "start": 3561,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
@@ -4482,8 +4482,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      3553,
-                      3560,
+                      3574,
+                      3581,
                       0
                     ]
                   },
@@ -4547,8 +4547,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    3229,
-                    3254,
+                    3250,
+                    3275,
                     0
                   ]
                 }
@@ -4565,8 +4565,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          3511,
-                          3547,
+                          3532,
+                          3568,
                           0
                         ]
                       },
@@ -4575,8 +4575,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         1.0
                       ],
                       "tag": {
-                        "end": 3546,
-                        "start": 3540,
+                        "end": 3567,
+                        "start": 3561,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -4593,13 +4593,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        3511,
-                        3547,
+                        3532,
+                        3568,
                         0
                       ],
                       "tag": {
-                        "end": 3546,
-                        "start": 3540,
+                        "end": 3567,
+                        "start": 3561,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -4641,8 +4641,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3648,
-              3698,
+              3669,
+              3719,
               0
             ]
           }
@@ -4672,8 +4672,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3929,
-            3963,
+            3950,
+            3984,
             0
           ],
           "tag": null,
@@ -4683,8 +4683,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3969,
-            3996,
+            3990,
+            4017,
             0
           ],
           "tag": null,
@@ -4694,8 +4694,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4002,
-            4024,
+            4023,
+            4045,
             0
           ],
           "tag": null,
@@ -4705,8 +4705,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4030,
-            4037,
+            4051,
+            4058,
             0
           ],
           "tag": null,
@@ -4721,8 +4721,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3929,
-                3963,
+                3950,
+                3984,
                 0
               ]
             },
@@ -4744,8 +4744,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3969,
-                3996,
+                3990,
+                4017,
                 0
               ]
             },
@@ -4767,8 +4767,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4002,
-                4024,
+                4023,
+                4045,
                 0
               ]
             },
@@ -4790,8 +4790,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4030,
-                4037,
+                4051,
+                4058,
                 0
               ]
             },
@@ -4839,8 +4839,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2291,
-                  2318,
+                  2309,
+                  2336,
                   0
                 ],
                 "tag": null,
@@ -4850,8 +4850,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2324,
-                  2358,
+                  2342,
+                  2376,
                   0
                 ],
                 "tag": null,
@@ -4861,8 +4861,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2364,
-                  2399,
+                  2382,
+                  2417,
                   0
                 ],
                 "tag": null,
@@ -4872,8 +4872,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2405,
-                  2505,
+                  2423,
+                  2526,
                   0
                 ],
                 "tag": null,
@@ -4883,8 +4883,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2511,
-                  2540,
+                  2532,
+                  2561,
                   0
                 ],
                 "tag": null,
@@ -4894,8 +4894,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2546,
-                  2599,
+                  2567,
+                  2620,
                   0
                 ],
                 "tag": null,
@@ -4905,8 +4905,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2605,
-                  2632,
+                  2626,
+                  2653,
                   0
                 ],
                 "tag": null,
@@ -4916,8 +4916,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2638,
-                  2667,
+                  2659,
+                  2688,
                   0
                 ],
                 "tag": null,
@@ -4927,8 +4927,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2673,
-                  2797,
+                  2694,
+                  2818,
                   0
                 ],
                 "tag": null,
@@ -4938,8 +4938,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2803,
-                  2848,
+                  2824,
+                  2869,
                   0
                 ],
                 "tag": null,
@@ -4949,8 +4949,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2854,
-                  2876,
+                  2875,
+                  2897,
                   0
                 ],
                 "tag": null,
@@ -4960,13 +4960,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2882,
-                  2901,
+                  2903,
+                  2922,
                   0
                 ],
                 "tag": {
-                  "end": 2900,
-                  "start": 2894,
+                  "end": 2921,
+                  "start": 2915,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -4981,8 +4981,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2291,
-                      2318,
+                      2309,
+                      2336,
                       0
                     ]
                   },
@@ -5004,8 +5004,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2324,
-                      2358,
+                      2342,
+                      2376,
                       0
                     ]
                   },
@@ -5027,8 +5027,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2364,
-                      2399,
+                      2382,
+                      2417,
                       0
                     ]
                   },
@@ -5050,8 +5050,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2405,
-                      2505,
+                      2423,
+                      2526,
                       0
                     ]
                   },
@@ -5073,8 +5073,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2511,
-                      2540,
+                      2532,
+                      2561,
                       0
                     ]
                   },
@@ -5096,8 +5096,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2546,
-                      2599,
+                      2567,
+                      2620,
                       0
                     ]
                   },
@@ -5119,8 +5119,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2605,
-                      2632,
+                      2626,
+                      2653,
                       0
                     ]
                   },
@@ -5142,8 +5142,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2638,
-                      2667,
+                      2659,
+                      2688,
                       0
                     ]
                   },
@@ -5165,8 +5165,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2673,
-                      2797,
+                      2694,
+                      2818,
                       0
                     ]
                   },
@@ -5193,8 +5193,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2803,
-                      2848,
+                      2824,
+                      2869,
                       0
                     ]
                   },
@@ -5221,8 +5221,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2854,
-                      2876,
+                      2875,
+                      2897,
                       0
                     ]
                   },
@@ -5244,8 +5244,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2882,
-                      2901,
+                      2903,
+                      2922,
                       0
                     ]
                   },
@@ -5254,8 +5254,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 2900,
-                    "start": 2894,
+                    "end": 2921,
+                    "start": 2915,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -5298,8 +5298,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1129,
-                        1162,
+                        1138,
+                        1171,
                         0
                       ],
                       "tag": null,
@@ -5309,13 +5309,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1168,
-                        1225,
+                        1177,
+                        1240,
                         0
                       ],
                       "tag": {
-                        "end": 1224,
-                        "start": 1218,
+                        "end": 1239,
+                        "start": 1233,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -5325,8 +5325,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1231,
-                        1258,
+                        1246,
+                        1273,
                         0
                       ],
                       "tag": null,
@@ -5336,8 +5336,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1264,
-                        1294,
+                        1279,
+                        1309,
                         0
                       ],
                       "tag": null,
@@ -5347,8 +5347,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1300,
-                        1335,
+                        1315,
+                        1350,
                         0
                       ],
                       "tag": null,
@@ -5358,8 +5358,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1341,
-                        1433,
+                        1356,
+                        1451,
                         0
                       ],
                       "tag": null,
@@ -5369,8 +5369,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1439,
-                        1469,
+                        1457,
+                        1487,
                         0
                       ],
                       "tag": null,
@@ -5380,8 +5380,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1475,
-                        1533,
+                        1493,
+                        1551,
                         0
                       ],
                       "tag": null,
@@ -5391,8 +5391,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1539,
-                        1566,
+                        1557,
+                        1584,
                         0
                       ],
                       "tag": null,
@@ -5402,8 +5402,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1572,
-                        1594,
+                        1590,
+                        1612,
                         0
                       ],
                       "tag": null,
@@ -5413,8 +5413,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1600,
-                        1635,
+                        1618,
+                        1653,
                         0
                       ],
                       "tag": null,
@@ -5424,8 +5424,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1641,
-                        1687,
+                        1659,
+                        1705,
                         0
                       ],
                       "tag": null,
@@ -5435,8 +5435,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        1693,
-                        1700,
+                        1711,
+                        1718,
                         0
                       ],
                       "tag": null,
@@ -5451,8 +5451,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1129,
-                            1162,
+                            1138,
+                            1171,
                             0
                           ]
                         },
@@ -5474,8 +5474,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1168,
-                            1225,
+                            1177,
+                            1240,
                             0
                           ]
                         },
@@ -5484,8 +5484,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                           0.0
                         ],
                         "tag": {
-                          "end": 1224,
-                          "start": 1218,
+                          "end": 1239,
+                          "start": 1233,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -5502,8 +5502,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1231,
-                            1258,
+                            1246,
+                            1273,
                             0
                           ]
                         },
@@ -5525,8 +5525,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1264,
-                            1294,
+                            1279,
+                            1309,
                             0
                           ]
                         },
@@ -5548,8 +5548,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1300,
-                            1335,
+                            1315,
+                            1350,
                             0
                           ]
                         },
@@ -5571,8 +5571,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1341,
-                            1433,
+                            1356,
+                            1451,
                             0
                           ]
                         },
@@ -5594,8 +5594,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1439,
-                            1469,
+                            1457,
+                            1487,
                             0
                           ]
                         },
@@ -5617,8 +5617,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1475,
-                            1533,
+                            1493,
+                            1551,
                             0
                           ]
                         },
@@ -5640,8 +5640,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1539,
-                            1566,
+                            1557,
+                            1584,
                             0
                           ]
                         },
@@ -5663,8 +5663,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1572,
-                            1594,
+                            1590,
+                            1612,
                             0
                           ]
                         },
@@ -5686,8 +5686,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1600,
-                            1635,
+                            1618,
+                            1653,
                             0
                           ]
                         },
@@ -5709,8 +5709,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1641,
-                            1687,
+                            1659,
+                            1705,
                             0
                           ]
                         },
@@ -5732,8 +5732,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            1693,
-                            1700,
+                            1711,
+                            1718,
                             0
                           ]
                         },
@@ -5797,8 +5797,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          1085,
-                          1123,
+                          1094,
+                          1132,
                           0
                         ]
                       }
@@ -5815,8 +5815,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
-                                1168,
-                                1225,
+                                1177,
+                                1240,
                                 0
                               ]
                             },
@@ -5825,8 +5825,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                               0.0
                             ],
                             "tag": {
-                              "end": 1224,
-                              "start": 1218,
+                              "end": 1239,
+                              "start": 1233,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -5843,13 +5843,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                             "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              1168,
-                              1225,
+                              1177,
+                              1240,
                               0
                             ],
                             "tag": {
-                              "end": 1224,
-                              "start": 1218,
+                              "end": 1239,
+                              "start": 1233,
                               "type": "TagDeclarator",
                               "value": "seg02"
                             },
@@ -5891,8 +5891,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2260,
-                    2285,
+                    2278,
+                    2303,
                     0
                   ]
                 }
@@ -5909,8 +5909,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2882,
-                          2901,
+                          2903,
+                          2922,
                           0
                         ]
                       },
@@ -5919,8 +5919,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         0.0
                       ],
                       "tag": {
-                        "end": 2900,
-                        "start": 2894,
+                        "end": 2921,
+                        "start": 2915,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -5937,13 +5937,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        2882,
-                        2901,
+                        2903,
+                        2922,
                         0
                       ],
                       "tag": {
-                        "end": 2900,
-                        "start": 2894,
+                        "end": 2921,
+                        "start": 2915,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -5985,8 +5985,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3898,
-              3923,
+              3919,
+              3944,
               0
             ]
           }
@@ -6016,8 +6016,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4452,
-            4484,
+            4473,
+            4505,
             0
           ],
           "tag": null,
@@ -6027,8 +6027,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4490,
-            4538,
+            4511,
+            4559,
             0
           ],
           "tag": null,
@@ -6038,8 +6038,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4544,
-            4578,
+            4565,
+            4599,
             0
           ],
           "tag": null,
@@ -6049,8 +6049,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4584,
-            4591,
+            4605,
+            4612,
             0
           ],
           "tag": null,
@@ -6065,8 +6065,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4452,
-                4484,
+                4473,
+                4505,
                 0
               ]
             },
@@ -6088,8 +6088,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4490,
-                4538,
+                4511,
+                4559,
                 0
               ]
             },
@@ -6111,8 +6111,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4544,
-                4578,
+                4565,
+                4599,
                 0
               ]
             },
@@ -6134,8 +6134,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4584,
-                4591,
+                4605,
+                4612,
                 0
               ]
             },
@@ -6199,8 +6199,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4397,
-              4446,
+              4418,
+              4467,
               0
             ]
           }
