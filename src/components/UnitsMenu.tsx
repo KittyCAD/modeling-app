@@ -58,7 +58,6 @@ export function UnitsMenu() {
                         const newCode = changeKclSettings(codeManager.code, {
                           defaultLengthUnits: unitLengthToUnitLen(unit),
                           defaultAngleUnits: { type: 'Degrees' },
-                          stdPath: null,
                         })
                         if (err(newCode)) {
                           toast.error(
