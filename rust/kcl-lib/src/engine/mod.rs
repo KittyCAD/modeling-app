@@ -252,9 +252,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Set the edge visibility.
         self.set_edge_visibility(settings.highlight_edges, source_range).await?;
 
-        // Change the units.
-        self.set_units(settings.units, source_range).await?;
-
         // Send the command to show the grid.
         self.modify_grid(!settings.show_grid, source_range).await?;
 
