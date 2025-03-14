@@ -150,6 +150,17 @@ description: Artifact commands socket-head-cap-screw.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      984,
+      1077,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -323,6 +334,17 @@ description: Artifact commands socket-head-cap-screw.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1298,
+      1339,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -767,6 +789,17 @@ description: Artifact commands socket-head-cap-screw.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2115,
+      2197,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

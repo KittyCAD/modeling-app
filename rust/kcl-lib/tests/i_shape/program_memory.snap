@@ -672,8 +672,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -701,16 +700,7 @@ description: Variables in memory after executing i_shape.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            422,
-            459,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "corner_radius": {
@@ -724,16 +714,7 @@ description: Variables in memory after executing i_shape.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          216,
-          219,
-          0
-        ]
-      }
-    ]
+    }
   },
   "d_wrist_circumference": {
     "type": "MixedArray",
@@ -749,16 +730,7 @@ description: Variables in memory after executing i_shape.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              25,
-              29,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -771,16 +743,7 @@ description: Variables in memory after executing i_shape.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              31,
-              35,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -793,16 +756,7 @@ description: Variables in memory after executing i_shape.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              37,
-              41,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -815,25 +769,7 @@ description: Variables in memory after executing i_shape.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              43,
-              47,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          24,
-          48,
-          0
-        ]
+        }
       }
     ]
   },
@@ -1776,8 +1712,7 @@ description: Variables in memory after executing i_shape.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1805,32 +1740,14 @@ description: Variables in memory after executing i_shape.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              422,
-              459,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            422,
-            459,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "hand_thickness": {
@@ -1844,16 +1761,7 @@ description: Variables in memory after executing i_shape.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          195,
-          199,
-          0
-        ]
-      }
-    ]
+    }
   },
   "inner": {
     "type": "Sketch",
@@ -2116,8 +2024,7 @@ description: Variables in memory after executing i_shape.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -2145,16 +2052,7 @@ description: Variables in memory after executing i_shape.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2015,
-            2040,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "length": {
@@ -2168,16 +2066,7 @@ description: Variables in memory after executing i_shape.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          172,
-          177,
-          0
-        ]
-      }
-    ]
+    }
   },
   "width": {
     "type": "Number",
@@ -2190,36 +2079,6 @@ description: Variables in memory after executing i_shape.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          25,
-          29,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          31,
-          35,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          37,
-          41,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          43,
-          47,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

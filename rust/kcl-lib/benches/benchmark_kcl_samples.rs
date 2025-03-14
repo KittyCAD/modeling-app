@@ -45,7 +45,7 @@ fn run_benchmarks(c: &mut Criterion) {
 
     let benchmark_dirs = discover_benchmark_dirs(&base_dir);
 
-    //let rt = tokio::runtime::Runtime::new().unwrap();
+    let rt = tokio::runtime::Runtime::new().unwrap();
 
     for dir in benchmark_dirs {
         let dir_name = dir.file_name().unwrap().to_string_lossy().to_string();
@@ -67,35 +67,25 @@ fn run_benchmarks(c: &mut Criterion) {
             .sample_size(10)
             .measurement_time(std::time::Duration::from_secs(1)); // Short measurement time to keep it from running in parallel
 
-        //let program = kcl_lib::Program::parse_no_errs(&input_content).unwrap();
+        let program = kcl_lib::Program::parse_no_errs(&input_content).unwrap();
 
         group.bench_function(format!("parse_{}", dir_name), |b| {
             b.iter(|| kcl_lib::Program::parse_no_errs(black_box(&input_content)).unwrap())
         });
 
-        /*group.bench_function(format!("execute_{}", dir_name), |b| {
+        group.bench_function(format!("execute_{}", dir_name), |b| {
             b.iter(|| {
-                let mut result = Err(());
-                for _ in 0..5 {
-                    // Try up to 3 times
-                    match rt.block_on(async {
-                        let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
-                        let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
-                        ctx.run(black_box(&program), &mut exec_state).await?;
-                        ctx.close().await;
-                        Ok::<(), anyhow::Error>(())
-                    }) {
-                        Ok(value) => {
-                            result = Ok(value);
-                            break;
-                        }
-                        Err(_) => continue,
-                    }
+                if let Err(err) = rt.block_on(async {
+                    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
+                    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+                    ctx.run(black_box(&program), &mut exec_state).await?;
+                    ctx.close().await;
+                    Ok::<(), anyhow::Error>(())
+                }) {
+                    panic!("Failed to execute program: {}", err);
                 }
-
-                result.unwrap()
             })
-        });*/
+        });
 
         group.finish();
     }

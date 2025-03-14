@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing property_of_object.kcl
 ---
 {
@@ -17,16 +17,7 @@ description: Variables in memory after executing property_of_object.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              73,
-              74,
-              0
-            ]
-          }
-        ]
+        }
       },
       "foo": {
         "type": "Number",
@@ -39,27 +30,9 @@ description: Variables in memory after executing property_of_object.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              64,
-              65,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          56,
-          76,
-          0
-        ]
-      }
-    ]
+    }
   },
   "obj2": {
     "type": "Object",
@@ -78,16 +51,7 @@ description: Variables in memory after executing property_of_object.kcl
               "angle": {
                 "type": "Degrees"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  73,
-                  74,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "foo": {
             "type": "Number",
@@ -100,38 +64,11 @@ description: Variables in memory after executing property_of_object.kcl
               "angle": {
                 "type": "Degrees"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  64,
-                  65,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              56,
-              76,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          531,
-          546,
-          0
-        ]
-      }
-    ]
+    }
   },
   "one_a": {
     "type": "Number",
@@ -144,16 +81,7 @@ description: Variables in memory after executing property_of_object.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          64,
-          65,
-          0
-        ]
-      }
-    ]
+    }
   },
   "one_b": {
     "type": "Number",
@@ -166,16 +94,7 @@ description: Variables in memory after executing property_of_object.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          64,
-          65,
-          0
-        ]
-      }
-    ]
+    }
   },
   "one_c": {
     "type": "Number",
@@ -188,16 +107,7 @@ description: Variables in memory after executing property_of_object.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          64,
-          65,
-          0
-        ]
-      }
-    ]
+    }
   },
   "one_d": {
     "type": "Number",
@@ -210,28 +120,10 @@ description: Variables in memory after executing property_of_object.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          64,
-          65,
-          0
-        ]
-      }
-    ]
+    }
   },
   "p": {
     "type": "String",
-    "value": "foo",
-    "__meta": [
-      {
-        "sourceRange": [
-          344,
-          349,
-          0
-        ]
-      }
-    ]
+    "value": "foo"
   }
 }

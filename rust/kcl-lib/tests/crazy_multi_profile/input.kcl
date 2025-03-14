@@ -1,0 +1,68 @@
+sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([6.71, -3.66], sketch001)
+  |> line(end = [2.65, 9.02], tag = $seg02)
+  |> line(end = [3.73, -9.36], tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 20)
+sketch002 = startSketchOn(extrude001, seg01)
+profile002 = startProfileAt([0.75, 13.46], sketch002)
+  |> line(end = [4.52, 3.79])
+  |> line(end = [5.98, -2.81])
+profile003 = startProfileAt([3.19, 13.3], sketch002)
+  |> angledLine([0, 6.64], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       2.81
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile004 = startProfileAt([3.15, 9.39], sketch002)
+  |> xLine(length = 6.92)
+  |> line(end = [-7.41, -2.85])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile005 = circle(sketch002, center = [5.15, 4.34], radius = 1.66)
+profile006 = startProfileAt([9.65, 3.82], sketch002)
+  |> line(end = [2.38, 5.62])
+  |> line(end = [2.13, -5.57])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve({
+  angle = 45,
+  axis = getNextAdjacentEdge(seg01)
+}, profile004)
+extrude002 = extrude(profile006, length = 4)
+sketch003 = startSketchOn('-XZ')
+profile007 = startProfileAt([4.8, 7.55], sketch003)
+  |> line(end = [7.39, 2.58])
+  |> line(end = [7.02, -2.85])
+profile008 = startProfileAt([5.54, 5.49], sketch003)
+  |> line(end = [6.34, 2.64])
+  |> line(end = [6.33, -2.96])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile009 = startProfileAt([5.23, 1.95], sketch003)
+  |> line(end = [6.8, 2.17])
+  |> line(end = [7.34, -2.75])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+profile010 = circle(sketch003, center = [7.18, -2.11], radius = 2.67)
+profile011 = startProfileAt([5.07, -6.39], sketch003)
+  |> angledLine([0, 4.54], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) - 90,
+       4.17
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude003 = extrude(profile011, length = 2.5)
+revolve002 = revolve({ angle = 45, axis = seg02 }, profile008)

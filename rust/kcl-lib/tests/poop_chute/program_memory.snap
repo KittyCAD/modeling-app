@@ -14,16 +14,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          156,
-          159,
-          0
-        ]
-      }
-    ]
+    }
   },
   "Fy": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          165,
-          168,
-          0
-        ]
-      }
-    ]
+    }
   },
   "back_length": {
     "type": "Number",
@@ -58,16 +40,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          116,
-          117,
-          0
-        ]
-      }
-    ]
+    }
   },
   "back_walls_width": {
     "type": "Number",
@@ -80,16 +53,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          42,
-          43,
-          0
-        ]
-      }
-    ]
+    }
   },
   "exit_height": {
     "type": "Number",
@@ -102,16 +66,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          132,
-          133,
-          0
-        ]
-      }
-    ]
+    }
   },
   "filletRadius": {
     "type": "Number",
@@ -124,16 +79,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          96,
-          101,
-          0
-        ]
-      }
-    ]
+    }
   },
   "front_length": {
     "type": "Number",
@@ -146,16 +92,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          149,
-          150,
-          0
-        ]
-      }
-    ]
+    }
   },
   "front_walls_width": {
     "type": "Number",
@@ -168,16 +105,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          64,
-          67,
-          0
-        ]
-      }
-    ]
+    }
   },
   "height": {
     "type": "Number",
@@ -190,16 +118,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          77,
-          80,
-          0
-        ]
-      }
-    ]
+    }
   },
   "part001": {
     "type": "Solid",
@@ -693,8 +612,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -770,48 +688,21 @@ description: Variables in memory after executing poop_chute.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  354,
-                  360,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              208,
-              252,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            208,
-            252,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "seg01": {
@@ -866,16 +757,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          354,
-          360,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg02": {
     "type": "TagIdentifier",
@@ -929,16 +811,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1201,
-          1207,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch001": {
     "type": "Sketch",
@@ -1278,8 +1151,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -1355,32 +1227,14 @@ description: Variables in memory after executing poop_chute.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                354,
-                360,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            208,
-            252,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -1875,8 +1729,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1952,48 +1805,21 @@ description: Variables in memory after executing poop_chute.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1201,
-                  1207,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1055,
-              1099,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1055,
-            1099,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "wall_thickness": {
@@ -2007,15 +1833,6 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          17,
-          22,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

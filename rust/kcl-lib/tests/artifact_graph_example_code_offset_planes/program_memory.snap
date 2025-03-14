@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing artifact_graph_example_code_offset_planes.kcl
 ---
 {
@@ -31,8 +31,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "offsetPlane002": {
@@ -63,8 +62,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "offsetPlane003": {
@@ -95,8 +93,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "sketch002": {
@@ -156,8 +153,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -185,16 +181,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            193,
-            218,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

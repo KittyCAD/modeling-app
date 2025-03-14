@@ -15,90 +15,57 @@ padding = 1.5
 bearingDia = 3
 
 // (Needs to be updated). Sketch the block and extrude up to where the counterbore diameter starts.
-block = startSketchOn('XY')
+extrude001 = startSketchOn('XY')
   |> startProfileAt([-width / 2, -length / 2], %)
   |> line(endAbsolute = [width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, length / 2])
   |> line(endAbsolute = [-width / 2, length / 2])
   |> close()
-  |> hole(circle(
-       center = [
+  |> extrude(length = height)
+  
+extrude002 = startSketchOn(extrude001, 'end')
+  |> circle(
+      center = [
          -(width / 2 - (padding / 2)),
          -(length / 2 - (padding / 2))
-       ],
-       radius = holeDia / 2
-     ), %)
-  |> hole(circle(
-       center = [
-         -(width / 2 - (padding / 2)),
-         length / 2 - (padding / 2)
-       ],
-       radius = holeDia / 2
-     ), %)
-  |> hole(circle(
-       center = [
-         width / 2 - (padding / 2),
-         length / 2 - (padding / 2)
-       ],
-       radius = holeDia / 2
-     ), %)
-  |> hole(circle(
-       center = [
-         width / 2 - (padding / 2),
-         -(length / 2 - (padding / 2))
-       ],
-       radius = holeDia / 2
-     ), %)
-  |> hole(circle(
-       center = [0, 0],
-       radius = bearingDia / 2
-     ), %)
-  |> extrude(length = height - cbDepth)
+      ],
+      radius = cbDia / 2,
+     )
+  |> patternLinear2d(
+      instances = 2,
+      distance = length - padding,
+      axis = [0, 1],
+     )
+  |> patternLinear2d(
+      instances = 2,
+      distance = width - padding,
+      axis = [1, 0],
+    )
+  |> extrude(%, length = -cbDepth)
 
-// Create a second sketch that creates the counterbore diameters and extrude the rest of the way to get the total height. Note: You cannot use startSketchOn(block, 'end'). The extrude lives outside the bounds, and the engine will not execute. This is a known issue.
-secondHalf = startSketchOn({
-       plane = {
-         origin = { x = 0, y = 0, z = height - cbDepth },
-         xAxis = { x = 1, y = 0, z = 0 },
-         yAxis = { x = 0, y = 1, z = 0 },
-         zAxis = { x = 0, y = 0, z = 1 }
-       }
-     })
-  |> startProfileAt([-width / 2, -length / 2], %)
-  |> line(endAbsolute = [width / 2, -length / 2])
-  |> line(endAbsolute = [width / 2, length / 2])
-  |> line(endAbsolute = [-width / 2, length / 2])
-  |> close()
-  |> hole(circle(
-       center = [
-         -(width / 2 - (padding / 2)),
-         -(length / 2 - (padding / 2))
-       ],
-       radius = cbDia / 2
-     ), %)
-  |> hole(circle(
-       center = [
-         -(width / 2 - (padding / 2)),
-         length / 2 - (padding / 2)
-       ],
-       radius = cbDia / 2
-     ), %)
-  |> hole(circle(
-       center = [
-         width / 2 - (padding / 2),
-         length / 2 - (padding / 2)
-       ],
-       radius = cbDia / 2
-     ), %)
-  |> hole(circle(
-       center = [
-         width / 2 - (padding / 2),
-         -(length / 2 - (padding / 2))
-       ],
-       radius = cbDia / 2
-     ), %)
-  |> hole(circle(
-       center = [0, 0],
-       radius = bearingDia / 2
-     ), %)
-  |> extrude(length = cbDepth)
+extrude003 = startSketchOn(extrude001, 'start')
+  |> circle(
+        center = [
+           -(width / 2 - (padding / 2)),
+           -(length / 2 - (padding / 2))
+        ],
+        radius = holeDia / 2,
+     )
+  |> patternLinear2d(
+      instances = 2,
+      distance = length - padding,
+      axis = [0, 1],
+    )
+  |> patternLinear2d(
+      instances = 2,
+      distance = width - padding,
+      axis = [1, 0],
+    )
+  |> extrude(length = -height + cbDepth)
+
+extrude004 = startSketchOn(extrude001, 'end')
+  |> circle(
+      center = [0, 0],
+      radius = bearingDia/2,
+    )
+  |> extrude(length = -height)

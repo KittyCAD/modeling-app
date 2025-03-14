@@ -133,6 +133,17 @@ description: Artifact commands tangential_arc.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      35,
+      60,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       66,
       85,
       0
